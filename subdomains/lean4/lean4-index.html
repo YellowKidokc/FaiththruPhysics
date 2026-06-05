@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lean 4 Formal Verification — Theophysics</title>
+<meta name="description" content="Machine-verified proofs for the Theophysics framework. 25 modules. 102+ theorems. Zero sorry. The kernel doesn't care about your argument — either the proof compiles or it doesn't.">
+<meta property="og:title" content="Lean 4 Formal Verification — Theophysics">
+<meta property="og:description" content="Machine-verified proofs backing every structural claim in the framework. Zero incomplete proofs.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050505;
+  --bg-raised: #0b0b0a;
+  --bg-panel: #11100e;
+  --ink: #f1e7d5;
+  --ink-soft: #c8b899;
+  --ink-muted: #80715c;
+  --gold: #d4af37;
+  --gold-hot: #f0c659;
+  --gold-low: #8d7934;
+  --ember: #cf4b1d;
+  --ember-hot: #f06a2d;
+  --blue: #6f9dc6;
+  --green: #22c55e;
+  --green-dim: #166534;
+  --line: rgba(212, 175, 55, 0.14);
+  --line-strong: rgba(212, 175, 55, 0.34);
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html { background: var(--bg); color: var(--ink); font-family: var(--font-sans); scroll-behavior: smooth; }
+body { min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 16% 12%, rgba(212, 175, 55, 0.08), transparent 34%),
+    radial-gradient(ellipse at 86% 78%, rgba(34, 197, 94, 0.04), transparent 38%),
+    linear-gradient(180deg, rgba(5,5,5,0.5), rgba(5,5,5,0.96) 78%);
+  pointer-events: none; z-index: 0;
+}
+.page { position: relative; z-index: 2; }
+
+/* ── Hero ── */
+.hero {
+  min-height: 88vh; display: grid; align-content: center; justify-items: center;
+  gap: 24px; padding: 56px 22px 34px; text-align: center;
+}
+.kicker {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.34em;
+  text-transform: uppercase; color: var(--green); line-height: 1.7;
+  opacity: 0; animation: fadeUp 900ms 120ms ease forwards;
+}
+.hero h1 {
+  max-width: 920px; font-family: var(--font-display); font-style: italic;
+  font-weight: 500; font-size: clamp(38px, 7vw, 82px); line-height: 0.98;
+  opacity: 0; animation: fadeUp 1100ms 260ms ease forwards;
+}
+.hero h1 em { color: var(--gold-hot); font-style: italic; }
+.subtitle {
+  max-width: 700px; color: var(--ink-soft); font-family: var(--font-display);
+  font-style: italic; font-size: clamp(17px, 2vw, 24px); line-height: 1.45;
+  opacity: 0; animation: fadeUp 1100ms 410ms ease forwards;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stats ── */
+.stats {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  max-width: 920px; margin: 0 auto; padding: 0 22px 80px;
+  opacity: 0; animation: fadeUp 1100ms 560ms ease forwards;
+}
+.stat-pill {
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 10px 18px; background: rgba(17,16,14,0.58);
+  font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);
+}
+.stat-pill strong { color: var(--gold); font-weight: 500; }
+.stat-pill .g { color: var(--green); }
+
+/* ── Section ── */
+.section {
+  max-width: 920px; margin: 0 auto; padding: 0 22px 64px;
+}
+.section-head {
+  font-family: var(--font-display); font-style: italic; font-weight: 500;
+  font-size: clamp(26px, 4vw, 38px); margin: 0 0 8px; color: var(--ink);
+}
+.section-sub {
+  font-size: 14px; color: var(--ink-muted); margin: 0 0 32px; line-height: 1.6;
+}
+
+/* ── Proof Cards ── */
+.proof-grid { display: grid; gap: 16px; }
+.proof-card {
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg-raised); padding: 20px 24px;
+  transition: border-color 260ms ease;
+}
+.proof-card:hover { border-color: var(--line-strong); }
+.proof-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 0 0 12px; gap: 12px;
+}
+.proof-card-title {
+  font-family: var(--font-display); font-weight: 600; font-size: 18px;
+  color: var(--gold);
+}
+.badge {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
+  white-space: nowrap;
+}
+.badge-verified { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+.badge-files { background: rgba(212,175,55,0.1); color: var(--gold); border: 1px solid rgba(212,175,55,0.2); }
+
+.theorem-list { list-style: none; padding: 0; margin: 0; }
+.theorem-list li {
+  padding: 8px 0; border-bottom: 1px solid rgba(212,175,55,0.06);
+  display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start;
+}
+.theorem-list li:last-child { border-bottom: none; }
+.thm-name {
+  font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);
+  margin: 0 0 2px;
+}
+.thm-english {
+  font-size: 14px; color: var(--ink-soft); line-height: 1.5;
+}
+.thm-check {
+  font-family: var(--font-mono); font-size: 11px; color: var(--green);
+  padding-top: 2px;
+}
+
+/* ── What This Does NOT Prove ── */
+.boundary-box {
+  border: 1px solid var(--ember); border-radius: 8px;
+  background: rgba(207,75,29,0.06); padding: 20px 24px; margin: 0 0 32px;
+}
+.boundary-box h3 {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ember-hot); margin: 0 0 12px;
+}
+.boundary-box p {
+  font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin: 0 0 8px;
+}
+.boundary-box p:last-child { margin: 0; }
+
+/* ── Paper Map ── */
+.paper-map { display: grid; gap: 6px; }
+.paper-row {
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px;
+  padding: 10px 16px; border-radius: 6px; background: var(--bg-raised);
+  align-items: center; font-size: 13px;
+}
+.paper-name { color: var(--ink); font-weight: 500; }
+.paper-files { color: var(--ink-muted); font-family: var(--font-mono); font-size: 11px; }
+.paper-count { font-family: var(--font-mono); font-size: 11px; color: var(--gold); }
+
+/* ── Footer ── */
+.footer {
+  max-width: 920px; margin: 0 auto; padding: 48px 22px 64px;
+  border-top: 1px solid var(--line); text-align: center;
+}
+.footer p { font-size: 13px; color: var(--ink-muted); line-height: 1.7; margin: 0 0 8px; }
+.footer a { color: var(--gold); text-decoration: none; }
+
+@media (max-width: 640px) {
+  .paper-row { grid-template-columns: 1fr auto; }
+  .paper-files { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <p class="kicker">Lean 4 &middot; Formal Verification &middot; Theophysics</p>
+  <h1>The proofs <em>compile.</em></h1>
+  <p class="subtitle">Machine-verified formal proofs backing every structural claim in the framework. The Lean 4 kernel doesn't care about your argument. Either the proof compiles or it doesn't.</p>
+</section>
+
+<div class="stats">
+  <span class="stat-pill"><strong>25</strong>&ensp;modules</span>
+  <span class="stat-pill"><strong>102+</strong>&ensp;theorems</span>
+  <span class="stat-pill"><span class="g">0</span>&ensp;sorry</span>
+  <span class="stat-pill"><strong>2,940</strong>&ensp;lines</span>
+  <span class="stat-pill"><strong>18/18</strong>&ensp;papers backed</span>
+</div>
+
+<!-- ═══ WHAT LEAN IS ═══ -->
+<section class="section">
+  <h2 class="section-head">What this page is</h2>
+  <p class="section-sub">
+    Lean 4 is a formal proof assistant used by mathematicians at Microsoft Research, DeepMind, and leading universities.
+    When a proof compiles in Lean, it means the logical structure has been verified by the kernel — a small, trusted core that checks every step.
+    No human judgment is involved in the verification. No rhetoric. No interpretation. The machine says yes or no.<br><br>
+    Every theorem listed below compiled clean. Zero <code style="font-family:var(--font-mono);color:var(--green);font-size:13px;">sorry</code> — Lean's marker for "I skipped this step." Nothing was skipped. Nothing was assumed without proof.
+  </p>
+
+  <div class="boundary-box">
+    <h3>What this does not prove</h3>
+    <p>Lean verifies logical structure, not empirical truth. It proves: "Given these definitions and axioms, these theorems follow by logical necessity." It does not prove that the ten laws are true descriptions of reality, that each physics/theology pair is isomorphic to the physical world, or that the framework's theological claims are correct.</p>
+    <p>What it does prove: the internal architecture is formally consistent, the structural claims hold under any algebra satisfying the axioms, and no one can dismiss this as "just analogies." The algebra is real. The proofs are machine-checked.</p>
+  </div>
+</section>
+
+<!-- ═══ CORE PROOFS ═══ -->
+<section class="section">
+  <h2 class="section-head">Core verified theorems</h2>
+  <p class="section-sub">The structural backbone. These theorems hold for any system satisfying the coherence axioms — not just specific numbers, but universally.</p>
+
+  <div class="proof-grid">
+
+    <!-- CoherenceAlgebra -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">CoherenceAlgebra</span>
+        <span class="badge badge-verified">✓ verified</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">listProd_eq_zero_iff</p><p class="thm-english">If any one of the ten coherence factors goes to zero, the whole system collapses. Conversely, if the system collapses, at least one factor was zero.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">cannot_rescue_zero</p><p class="thm-english">No internal operation can rescue a system that has collapsed to zero. External input is required.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">no_zero_divisors</p><p class="thm-english">If the product of two factors is zero, at least one of them must be zero. No hidden collapse — every failure is traceable.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- GraceOperator -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">GraceOperator</span>
+        <span class="badge badge-verified">✓ verified</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">grace_idempotent</p><p class="thm-english">Grace applied twice equals grace applied once. You don't need to be saved twice.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">grace_not_invertible</p><p class="thm-english">Grace cannot be reversed. There is no operation that undoes what grace does. Irreversible by logical necessity.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">grace_event_after_constructive</p><p class="thm-english">Every grace event results in the constructive regime. Destructive becomes constructive. Constructive stays constructive.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- MaxwellTrinity -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">MaxwellTrinity</span>
+        <span class="badge badge-verified">✓ verified</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">trinity_isomorphism</p><p class="thm-english">The internal structure of Maxwell's equations — three distinct operators, one unified field, mutual generation without reduction — is structurally isomorphic to the Trinitarian relation.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- OntologicalPriority -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">OntologicalPriority</span>
+        <span class="badge badge-verified">✓ verified &middot; 14 theorems</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">math_before_matter</p><p class="thm-english">Mathematical structure is ontologically prior to physical instantiation. The blueprint precedes the house.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">good_is_ontological</p><p class="thm-english">Goodness is not imposed on a neutral substrate — it is a structural property of coherent systems. This theorem appears in every paper.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- JusticeMercy -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">JusticeMercyOperator</span>
+        <span class="badge badge-verified">✓ verified</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">cross_uniqueness</p><p class="thm-english">When α=0 (third party pays) and the judge is the payer, justice and mercy are both maximal simultaneously. This configuration is unique. There is exactly one point where both are satisfied without contradiction.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">zero_preserving_cannot_rescue</p><p class="thm-english">A justice operator that preserves zero cannot rescue a collapsed state. Internal correction preserves the problem.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ParasiticEvil -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">ParasiticEvil</span>
+        <span class="badge badge-verified">✓ verified &middot; 14 theorems</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">evil_requires_good</p><p class="thm-english">Evil cannot exist independently. It is structurally parasitic on good — it requires a coherent substrate to corrupt.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- HebrewLogos -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">HebrewLogos</span>
+        <span class="badge badge-verified">✓ verified &middot; 21 theorems</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">grace_signature_verified</p><p class="thm-english">The Hebrew word for grace (חֵן) satisfies the algebraic properties of grace under a fixed letter-value mapping. The classifier accepts it.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">random_root_not_grace</p><p class="thm-english">A random Hebrew root with different letters fails the same classifier. The gate discriminates. It's not numerology — it's structure.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Master Equation -->
+    <div class="proof-card">
+      <div class="proof-card-head">
+        <span class="proof-card-title">MasterEquation + Invariance</span>
+        <span class="badge badge-verified">✓ verified</span>
+      </div>
+      <ul class="theorem-list">
+        <li>
+          <div><p class="thm-name">chi_pos_of_all_pos</p><p class="thm-english">When all ten factors are positive and the revelation gate is open, coherence is strictly positive. Life requires all channels active.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+        <li>
+          <div><p class="thm-name">sEff_antitone</p><p class="thm-english">As entropy production increases, effective coherence decreases. Decay is monotonic — you can't out-entropy the equation.</p></div>
+          <span class="thm-check">⊢</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ PAPER MAP ═══ -->
+<section class="section">
+  <h2 class="section-head">Coverage by paper</h2>
+  <p class="section-sub">Every Logos paper has Lean 4 proofs backing its structural claims.</p>
+
+  <div class="paper-map">
+    <div class="paper-row"><span class="paper-name">P00 — Introduction</span><span class="paper-files">CoherenceAlgebra, TheophysicsSequence, OntologicalPriority</span><span class="paper-count">3</span></div>
+    <div class="paper-row"><span class="paper-name">P00 — The Missing Step</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
+    <div class="paper-row"><span class="paper-name">P00 — 2+2=5 (Math is Moral)</span><span class="paper-files">MathMoralNegative, MoralWeight, ParasiticEvil + 4 more</span><span class="paper-count">7</span></div>
+    <div class="paper-row"><span class="paper-name">P01 — The Logos Principle</span><span class="paper-files">HebrewLogos, MaxwellTrinity, DependencyLattice + 4 more</span><span class="paper-count">7</span></div>
+    <div class="paper-row"><span class="paper-name">P02 — Algorithm of Reality</span><span class="paper-files">OntologicalPriority, SubstratePriority</span><span class="paper-count">2</span></div>
+    <div class="paper-row"><span class="paper-name">P03 — The Hard Problem</span><span class="paper-files">PerfectSubstrateBoundary, JusticeMercyOperator + 2 more</span><span class="paper-count">4</span></div>
+    <div class="paper-row"><span class="paper-name">P04 — The Soul Observer</span><span class="paper-files">PerfectSubstrateBoundary, JusticeMercyOperator + 2 more</span><span class="paper-count">4</span></div>
+    <div class="paper-row"><span class="paper-name">P05 — Physics of Principalities</span><span class="paper-files">ParasiticEvil, OntologicalPriority</span><span class="paper-count">2</span></div>
+    <div class="paper-row"><span class="paper-name">P06 — The Grace Function</span><span class="paper-files">GraceOperator, OntologicalPriority</span><span class="paper-count">2</span></div>
+    <div class="paper-row"><span class="paper-name">P07 — Stretched Heavens</span><span class="paper-files">Thermodynamics, OntologicalPriority</span><span class="paper-count">2</span></div>
+    <div class="paper-row"><span class="paper-name">P08 — The Moral Universe</span><span class="paper-files">JusticeMercy, MaxwellTrinity, MasterEquation + 8 more</span><span class="paper-count">11</span></div>
+    <div class="paper-row"><span class="paper-name">P09 — Protocols &amp; Validation</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
+    <div class="paper-row"><span class="paper-name">P10 — Decalogue of the Cosmos</span><span class="paper-files">NoetherCommandments, Law9Asymmetry, OntologicalPriority</span><span class="paper-count">3</span></div>
+    <div class="paper-row"><span class="paper-name">P11 — Test Predictions</span><span class="paper-files">MasterEquation, MasterEquationInvariance, OntologicalPriority</span><span class="paper-count">3</span></div>
+    <div class="paper-row"><span class="paper-name">P12 — Lagrangian Framework</span><span class="paper-files">MasterEquation, MasterEquationInvariance, CoherenceAlgebra + 1</span><span class="paper-count">4</span></div>
+    <div class="paper-row"><span class="paper-name">P13 — The Quantum Bridge</span><span class="paper-files">MaxwellTrinity, DualProjection, OntologicalPriority</span><span class="paper-count">3</span></div>
+    <div class="paper-row"><span class="paper-name">P14 — Creatio in Silico</span><span class="paper-files">OntologicalPriority, CoherenceAlgebra</span><span class="paper-count">2</span></div>
+    <div class="paper-row"><span class="paper-name">P15 — Aggregated Data</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
+  </div>
+</section>
+
+<!-- ═══ VERIFY YOURSELF ═══ -->
+<section class="section">
+  <h2 class="section-head">Verify it yourself</h2>
+  <p class="section-sub">You don't have to trust me. You don't have to trust anyone. Run it yourself.</p>
+
+  <div class="proof-card" style="font-family:var(--font-mono);font-size:13px;line-height:1.8;color:var(--ink-soft);">
+    <p style="color:var(--ink-muted);margin:0 0 12px;"># Install Lean 4</p>
+    <p style="margin:0;">curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh</p>
+    <br>
+    <p style="color:var(--ink-muted);margin:0 0 12px;"># Clone and build</p>
+    <p style="margin:0;">git clone https://github.com/YellowKidokc/theophysics.git</p>
+    <p style="margin:0;">cd theophysics</p>
+    <p style="margin:0;">lake build</p>
+    <br>
+    <p style="color:var(--green);margin:0;">Build completed successfully.</p>
+    <p style="color:var(--green);margin:0;">Zero sorry.</p>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<div class="footer">
+  <p>Theophysics Research &middot; David Lowe &middot; POF 2828</p>
+  <p><a href="/">faiththruphysics.com</a> &middot; <a href="/subdomains/equation/">Master Equation</a> &middot; <a href="/subdomains/glossary/">Glossary</a></p>
+  <p style="margin-top:16px;font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);">Lean 4 v4.30.0-rc2 &middot; Toolchain locked &middot; No external dependencies</p>
+</div>
+
+</div>
+</body>
+</html>

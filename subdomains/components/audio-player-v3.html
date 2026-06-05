@@ -1,0 +1,198 @@
+<!-- ════════════════════════════════════════════════════════════════
+     AUDIO PLAYER v3 — Pill Player with Speed Control + Scroll Button
+     Drop this after </header> and before <div class="prose-body">.
+     Update data-url attributes on each .tp-pill to point to audio files.
+     ════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Player Block ── */
+.tp-player-v3{width:100%;max-width:720px;margin:0 auto 2.5rem;}
+.tp-player-v3 .tp-row{display:flex;align-items:center;gap:.6rem;padding:.65rem .9rem;border-radius:.5rem;margin-bottom:.5rem;}
+.tp-player-v3 .tp-main{background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.2);}
+.tp-player-v3 .tp-main .tp-dot{width:7px;height:7px;border-radius:50%;background:#d4af37;box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-player-v3 .tp-main .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:#d4af37;white-space:nowrap;min-width:62px;}
+.tp-player-v3 .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-player-v3 .tp-play:hover{box-shadow:0 0 12px currentColor;transform:scale(1.05);}
+.tp-player-v3 .tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-player-v3 .tp-track:hover{height:6px;}
+.tp-player-v3 .tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-player-v3 .tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-player-v3 .tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-player-v3 .tp-mute:hover{color:#e0e0e0;}
+
+/* Speed selector */
+.tp-player-v3 .tp-speed{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#888;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.3rem;padding:.25rem .4rem;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.tp-player-v3 .tp-speed:hover{border-color:rgba(212,175,55,.3);color:#d4af37;}
+.tp-player-v3 .tp-speed:focus{outline:none;}
+
+/* Pill row */
+.tp-player-v3 .tp-pills{display:flex;gap:.4rem;flex-wrap:wrap;}
+.tp-player-v3 .tp-pill{display:flex;align-items:center;gap:.35rem;padding:.4rem .6rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:.4rem;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:#666;transition:all .2s;flex-shrink:0;}
+.tp-player-v3 .tp-pill:hover{background:rgba(255,255,255,.06);}
+.tp-player-v3 .tp-pill.active{color:var(--pc);border-color:var(--pc);background:rgba(255,255,255,.02);}
+.tp-player-v3 .tp-pill .tp-pdot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;transition:opacity .2s;}
+.tp-player-v3 .tp-pill.active .tp-pdot{opacity:1;}
+.tp-player-v3 .tp-pill[data-src="read"]{--pc:#d4af37;}
+.tp-player-v3 .tp-pill[data-src="deep"]{--pc:#4a9eff;}
+.tp-player-v3 .tp-pill[data-src="debate"]{--pc:#a855f7;}
+.tp-player-v3 .tp-pill[data-src="critique"]{--pc:#2dd4bf;}
+.tp-player-v3 .tp-pill.unavailable{opacity:.25;cursor:default;pointer-events:none;}
+
+/* Empty state */
+.tp-player-v3 .tp-empty{display:none;align-items:center;justify-content:center;padding:.85rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:#555;opacity:.5;font-style:italic;}
+.tp-player-v3 .tp-empty.visible{display:flex;}
+
+/* ── Scroll-to-top Play/Pause Button ── */
+#tpScrollPlay{position:fixed;top:1rem;right:1rem;z-index:9999;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(212,175,55,.5);background:rgba(10,10,10,.9);backdrop-filter:blur(8px);color:#d4af37;font-size:.85rem;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .25s ease;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+#tpScrollPlay:hover{border-color:#d4af37;box-shadow:0 0 16px rgba(212,175,55,.2);transform:scale(1.08);}
+#tpScrollPlay.visible{display:flex;}
+#tpScrollPlay.playing{animation:tpPulse 2s ease-in-out infinite;}
+@keyframes tpPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.2);}50%{box-shadow:0 0 0 6px rgba(212,175,55,.05);}}
+
+@media(max-width:560px){
+  .tp-player-v3 .tp-row{padding:.55rem .7rem;}
+  .tp-player-v3 .tp-label{min-width:50px;font-size:.5rem;}
+  .tp-player-v3 .tp-pill{padding:.35rem .5rem;font-size:.45rem;}
+  #tpScrollPlay{width:40px;height:40px;top:.75rem;right:.75rem;}
+}
+</style>
+
+<!-- Scroll Play/Pause Button -->
+<button id="tpScrollPlay" onclick="tpScrollToggle()" title="Play / Pause"><i class="fas fa-play" id="tpScrollIcon"></i></button>
+
+<!-- Player -->
+<div class="tp-player-v3" id="tpPlayerV3">
+  <div class="tp-pills">
+    <button class="tp-pill active" data-src="read" data-url=""><span class="tp-pdot"></span>Read Aloud</button>
+    <button class="tp-pill" data-src="deep" data-url=""><span class="tp-pdot"></span>Deep Dive</button>
+    <button class="tp-pill" data-src="debate" data-url=""><span class="tp-pdot"></span>Debate</button>
+    <button class="tp-pill" data-src="critique" data-url=""><span class="tp-pdot"></span>Critique</button>
+  </div>
+  <div class="tp-row tp-main" id="tpMainRow">
+    <div class="tp-dot"></div>
+    <span class="tp-label" id="tpActiveLabel">Read Aloud</span>
+    <button class="tp-play" id="tpMainPlay" onclick="tpMainToggle()" style="border-color:#d4af37;color:#d4af37;"><i class="fas fa-play" id="tpMainPlayIcon"></i></button>
+    <div class="tp-track" id="tpMainTrack" onclick="tpMainSeek(event)"><div class="tp-fill" id="tpMainFill" style="background:linear-gradient(90deg,#d4af37,#e8c84a);"></div></div>
+    <span class="tp-time" id="tpMainTime">0:00 / 0:00</span>
+    <button class="tp-mute" id="tpMainMute" onclick="tpMainMute()"><i class="fas fa-volume-up" id="tpMainMuteIcon"></i></button>
+    <select class="tp-speed" id="tpMainSpeed" onchange="tpMainSetSpeed(this.value)" title="Playback speed">
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1.0x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="2">2.0x</option>
+    </select>
+  </div>
+  <div class="tp-empty" id="tpEmpty"><i class="fas fa-clock" style="margin-right:.5rem;"></i>Audio coming soon</div>
+</div>
+
+<script>
+(function(){
+  var audio = new Audio();
+  var currentPill = null;
+  var isPlaying = false;
+  var playerBlock = document.getElementById('tpPlayerV3');
+  var scrollBtn = document.getElementById('tpScrollPlay');
+  var scrollIcon = document.getElementById('tpScrollIcon');
+
+  function fmt(t){if(!t||!isFinite(t))return'0:00';var m=Math.floor(t/60),s=Math.floor(t%60);return m+':'+(s<10?'0':'')+s;}
+
+  function updateScrollBtn(){
+    if(!scrollBtn)return;
+    if(!playerBlock)return;
+    var rect = playerBlock.getBoundingClientRect();
+    var outOfView = rect.bottom < 0 || rect.top > window.innerHeight;
+    if(outOfView && currentPill && currentPill.dataset.url){
+      scrollBtn.classList.add('visible');
+      scrollBtn.classList.toggle('playing', isPlaying);
+      scrollIcon.className = 'fas fa-' + (isPlaying ? 'pause' : 'play');
+    }else{
+      scrollBtn.classList.remove('visible');
+    }
+  }
+
+  function selectPill(btn){
+    document.querySelectorAll('#tpPlayerV3 .tp-pill').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentPill = btn;
+    var url = btn.dataset.url || '';
+    var empty = document.getElementById('tpEmpty');
+    var row = document.getElementById('tpMainRow');
+    var label = document.getElementById('tpActiveLabel');
+    var playBtn = document.getElementById('tpMainPlay');
+    var fill = document.getElementById('tpMainFill');
+    var pc = getComputedStyle(btn).getPropertyValue('--pc').trim() || '#d4af37';
+    if(label)label.textContent = btn.textContent.trim();
+    if(playBtn){playBtn.style.borderColor = pc; playBtn.style.color = pc;}
+    if(fill)fill.style.background = pc === '#d4af37' ? 'linear-gradient(90deg,#d4af37,#e8c84a)' : pc;
+    if(!url){
+      if(row)row.style.display='none';
+      if(empty){empty.style.display='flex';empty.classList.add('visible');}
+      audio.pause();isPlaying=false;updatePlayIcon();
+    }else{
+      if(row)row.style.display='flex';
+      if(empty){empty.style.display='none';empty.classList.remove('visible');}
+      if(audio.src!==url){audio.src=url;audio.load();}
+    }
+    updateScrollBtn();
+  }
+
+  document.querySelectorAll('#tpPlayerV3 .tp-pill').forEach(function(btn){
+    btn.addEventListener('click',function(){selectPill(btn);});
+  });
+
+  window.tpMainToggle=function(){
+    if(!currentPill||!(currentPill.dataset.url||''))return;
+    if(isPlaying){audio.pause();}else{audio.play();}
+    isPlaying=!isPlaying;updatePlayIcon();updateScrollBtn();
+  };
+
+  window.tpScrollToggle=function(){
+    tpMainToggle();
+  };
+
+  function updatePlayIcon(){
+    var icon=document.getElementById('tpMainPlayIcon');
+    var btn=document.getElementById('tpMainPlay');
+    if(icon)icon.className='fas fa-'+(isPlaying?'pause':'play');
+    if(btn)btn.classList.toggle('playing',isPlaying);
+  }
+
+  window.tpMainSeek=function(e){
+    var track=document.getElementById('tpMainTrack');
+    if(!track||!audio.duration)return;
+    var rect=track.getBoundingClientRect();
+    var pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+    audio.currentTime=pct*audio.duration;
+  };
+
+  window.tpMainMute=function(){
+    audio.muted=!audio.muted;
+    var icon=document.getElementById('tpMainMuteIcon');
+    if(icon)icon.className='fas fa-volume-'+(audio.muted?'mute':'up');
+  };
+
+  window.tpMainSetSpeed=function(v){
+    audio.playbackRate = parseFloat(v);
+  };
+
+  audio.addEventListener('timeupdate',function(){
+    var fill=document.getElementById('tpMainFill');
+    var time=document.getElementById('tpMainTime');
+    if(fill&&audio.duration)fill.style.width=(audio.currentTime/audio.duration*100)+'%';
+    if(time)time.textContent=fmt(audio.currentTime)+' / '+fmt(audio.duration);
+    updateScrollBtn();
+  });
+
+  audio.addEventListener('ended',function(){isPlaying=false;updatePlayIcon();updateScrollBtn();});
+  audio.addEventListener('play',function(){isPlaying=true;updatePlayIcon();updateScrollBtn();});
+  audio.addEventListener('pause',function(){isPlaying=false;updatePlayIcon();updateScrollBtn();});
+
+  window.addEventListener('scroll',updateScrollBtn,{passive:true});
+  setInterval(updateScrollBtn,500);
+
+  // Auto-select first available pill
+  var firstAvail=document.querySelector('#tpPlayerV3 .tp-pill[data-url]:not([data-url=""])');
+  if(firstAvail)selectPill(firstAvail);
+  else selectPill(document.querySelector('#tpPlayerV3 .tp-pill'));
+})();
+</script>

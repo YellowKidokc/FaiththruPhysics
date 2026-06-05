@@ -1,0 +1,133 @@
+<!-- ════════════════════════════════════════════════════════════════
+     AUDIO DOCK — Reusable Pill Player Component
+     Drop this inside any article page. Update data-url attributes.
+     ════════════════════════════════════════════════════════════════ -->
+<style>
+.audio-dock{width:100%;max-width:540px;margin:1rem auto;background:var(--surface2,#111);border:1px solid var(--border,#222);border-radius:.5rem;overflow:hidden;transition:border-color .3s ease;font-family:'Inter',sans-serif;}
+.audio-dock:hover{border-color:rgba(212,175,55,.25);}
+.dock-pills{display:flex;gap:0;border-bottom:1px solid var(--border,#222);}
+.dock-pill{flex:1;display:flex;align-items:center;justify-content:center;gap:.35rem;padding:.4rem .4rem;background:transparent;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted,#666);transition:all .25s ease;position:relative;}
+.dock-pill::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;border-radius:1px;background:transparent;transition:all .25s ease;}
+.dock-pill:hover{color:var(--text-dim,#999);background:rgba(255,255,255,.03);}
+.dock-pill[data-src="deep"]{--pill-c:#4a9eff;}
+.dock-pill[data-src="read"]{--pill-c:#d4af37;}
+.dock-pill[data-src="debate"]{--pill-c:#a78bfa;}
+.dock-pill[data-src="critique"]{--pill-c:#2dd4bf;}
+.dock-pill[data-src="tts"]{--pill-c:#22c55e;}
+.dock-pill.active{color:var(--pill-c);background:rgba(255,255,255,.02);}
+.dock-pill.active::after{background:var(--pill-c);}
+.dock-pill .pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;transition:opacity .25s;}
+.dock-pill.active .pill-dot{opacity:1;}
+.dock-pill.unavailable{opacity:.3;cursor:default;pointer-events:none;}
+.dock-body{display:flex;align-items:center;gap:.5rem;padding:.45rem .7rem;}
+.dock-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--gold,#d4af37);background:transparent;color:var(--gold,#d4af37);font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s ease;}
+.dock-play:hover{background:rgba(212,175,55,.1);transform:scale(1.05);}
+.dock-play.playing{animation:pulse-dock 2s ease-in-out infinite;}
+@keyframes pulse-dock{0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.2);}50%{box-shadow:0 0 0 4px rgba(212,175,55,.05);}}
+.dock-track-wrap{flex:1;display:flex;flex-direction:column;gap:.25rem;min-width:0;}
+.dock-track{width:100%;height:4px;background:#222;border-radius:2px;cursor:pointer;overflow:hidden;position:relative;}
+.dock-fill{height:100%;width:0%;border-radius:2px;background:var(--gold,#d4af37);transition:width .15s linear,background .3s;}
+.dock-times{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--text-muted,#555);}
+.dock-body.hidden{display:none;}
+.dock-empty{display:none;align-items:center;justify-content:center;padding:.85rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted,#555);opacity:.5;font-style:italic;}
+.dock-empty.visible{display:flex;}
+</style>
+
+<div class="audio-dock" id="audioDock">
+  <div class="dock-pills">
+    <button class="dock-pill active" data-src="deep" data-url=""><span class="pill-dot"></span>Deep Dive</button>
+    <button class="dock-pill" data-src="read" data-url=""><span class="pill-dot"></span>Read Aloud</button>
+    <button class="dock-pill" data-src="debate" data-url=""><span class="pill-dot"></span>Debate</button>
+    <button class="dock-pill" data-src="critique" data-url=""><span class="pill-dot"></span>Critique</button>
+  </div>
+  <div class="dock-body" id="dockBody">
+    <button class="dock-play" id="dockPlay" onclick="dockToggle()"><i class="fas fa-play" id="dockPlayIcon"></i></button>
+    <div class="dock-track-wrap">
+      <div class="dock-track" id="dockTrack" onclick="dockSeek(event)"><div class="dock-fill" id="dockFill"></div></div>
+      <div class="dock-times"><span id="dockCurrent">0:00</span><span id="dockDuration">0:00</span></div>
+    </div>
+    <button class="dock-play" id="dockVol" onclick="dockMute()" style="border-color:var(--text-muted);color:var(--text-muted);width:26px;height:26px;font-size:.55rem;"><i class="fas fa-volume-up" id="dockVolIcon"></i></button>
+  </div>
+  <div class="dock-empty" id="dockEmpty"><i class="fas fa-clock" style="margin-right:.5rem;"></i> Coming soon</div>
+</div>
+
+<script>
+(function(){
+  let audio = new Audio();
+  let currentPill = null;
+  let isPlaying = false;
+
+  function fmt(t){
+    if(!t||!isFinite(t))return'0:00';
+    var m=Math.floor(t/60),s=Math.floor(t%60);
+    return m+':'+(s<10?'0':'')+s;
+  }
+
+  function selectPill(btn){
+    document.querySelectorAll('.dock-pill').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    currentPill = btn;
+    var url = btn.dataset.url;
+    var empty = document.getElementById('dockEmpty');
+    var body = document.getElementById('dockBody');
+    if(!url){
+      body.classList.add('hidden');
+      empty.classList.add('visible');
+      audio.pause(); isPlaying=false; updatePlayBtn();
+    }else{
+      body.classList.remove('hidden');
+      empty.classList.remove('visible');
+      if(audio.src!==url){audio.src=url;audio.load();}
+    }
+    // Update fill color to match pill
+    var fill=document.getElementById('dockFill');
+    if(fill&&btn.style.getPropertyValue('--pill-c')){fill.style.background=btn.style.getPropertyValue('--pill-c');}
+  }
+
+  document.querySelectorAll('.dock-pill').forEach(function(btn){
+    btn.addEventListener('click',function(){selectPill(btn);});
+  });
+
+  window.dockToggle=function(){
+    if(!currentPill||!currentPill.dataset.url)return;
+    if(isPlaying){audio.pause();}else{audio.play();}
+    isPlaying=!isPlaying; updatePlayBtn();
+  };
+
+  function updatePlayBtn(){
+    var icon=document.getElementById('dockPlayIcon');
+    var btn=document.getElementById('dockPlay');
+    if(icon)icon.className='fas fa-'+(isPlaying?'pause':'play');
+    if(btn)btn.classList.toggle('playing',isPlaying);
+  }
+
+  window.dockSeek=function(e){
+    var track=document.getElementById('dockTrack');
+    if(!track||!audio.duration)return;
+    var rect=track.getBoundingClientRect();
+    var pct=(e.clientX-rect.left)/rect.width;
+    audio.currentTime=pct*audio.duration;
+  };
+
+  window.dockMute=function(){
+    audio.muted=!audio.muted;
+    var icon=document.getElementById('dockVolIcon');
+    if(icon)icon.className='fas fa-volume-'+(audio.muted?'mute':'up');
+  };
+
+  audio.addEventListener('timeupdate',function(){
+    var fill=document.getElementById('dockFill');
+    var cur=document.getElementById('dockCurrent');
+    var dur=document.getElementById('dockDuration');
+    if(fill&&audio.duration)fill.style.width=(audio.currentTime/audio.duration*100)+'%';
+    if(cur)cur.textContent=fmt(audio.currentTime);
+    if(dur)dur.textContent=fmt(audio.duration);
+  });
+  audio.addEventListener('ended',function(){isPlaying=false;updatePlayBtn();});
+
+  // Auto-select first available pill on load
+  var firstAvailable=document.querySelector('.dock-pill[data-url]:not([data-url=""])');
+  if(firstAvailable)selectPill(firstAvailable);
+  else selectPill(document.querySelector('.dock-pill'));
+})();
+</script>

@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Master Equation — Physics and Faith as One Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0c;
+  --bg-elevated: #111114;
+  --bg-card: #16161a;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --gold: #d4af37;
+  --gold-dim: rgba(212,175,55,0.12);
+  --gold-glow: rgba(212,175,55,0.3);
+  --text: #f5f5f5;
+  --text-muted: #9ca3af;
+  --text-dim: #6b7280;
+  --green: #22c55e;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --cyan: #06b6d4;
+  --pink: #ec4899;
+  --teal: #14b8a6;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--gold); color: var(--bg); }
+
+/* Typography */
+h1, h2, h3 { font-family: 'Crimson Pro', serif; font-weight: 600; }
+
+h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.1; }
+h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.2; }
+h3 { font-size: clamp(1.3rem, 2.5vw, 1.6rem); line-height: 1.3; }
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+.serif { font-family: 'Crimson Pro', serif; }
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10,10,12,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.header-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.header-nav a {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.header-nav a:hover {
+  color: var(--text);
+  background: var(--bg-card);
+}
+
+/* Hero Section */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 32px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(212,175,55,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-glow);
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.hero h1 {
+  max-width: 900px;
+  margin-bottom: 24px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-subtitle {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-style: italic;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin-bottom: 48px;
+}
+
+.equation-display {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 40px 48px;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.equation-display::before {
+  content: 'THE MASTER EQUATION';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--bg);
+  background: var(--gold);
+  padding: 4px 14px;
+  font-weight: 600;
+}
+
+.equation-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+
+.equation-note {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-top: 16px;
+  font-style: italic;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* Section Styles */
+.section {
+  padding: 100px 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.section-title {
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  font-size: 18px;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Cards */
+.card-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  transition: all 0.3s;
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.card-accent {
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+.card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.card-body {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* Law Cards */
+.law-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 16px;
+  transition: all 0.3s;
+}
+
+.law-card:hover {
+  border-color: var(--border-strong);
+}
+
+.law-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.law-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.law-physics {
+  font-family: 'Crimson Pro', serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.law-arrow {
+  color: var(--text-dim);
+}
+
+.law-spiritual {
+  font-family: 'Crimson Pro', serif;
+  font-size: 20px;
+  font-style: italic;
+  color: var(--gold);
+}
+
+.law-equation {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+/* Quote Blocks */
+.quote-block {
+  background: var(--gold-dim);
+  border-left: 4px solid var(--gold);
+  padding: 32px 36px;
+  margin: 48px 0;
+  border-radius: 0 12px 12px 0;
+}
+
+.quote-block p {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.quote-block .attribution {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 16px;
+  letter-spacing: 0.05em;
+}
+
+/* Info Boxes */
+.info-box {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin: 32px 0;
+}
+
+.info-box-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin: 48px 0;
+}
+
+.stat-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* Two Column */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 768px) {
+  .two-column { grid-template-columns: 1fr; }
+  .law-card { grid-template-columns: 1fr; }
+  .law-number { font-size: 24px; }
+}
+
+/* Table */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin: 32px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th {
+  background: var(--bg-elevated);
+  padding: 16px;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-elevated); }
+
+/* Color accents */
+.accent-green { color: var(--green); }
+.accent-blue { color: var(--blue); }
+.accent-purple { color: var(--purple); }
+.accent-red { color: var(--red); }
+.accent-amber { color: var(--amber); }
+.accent-cyan { color: var(--cyan); }
+.accent-pink { color: var(--pink); }
+.accent-teal { color: var(--teal); }
+.accent-orange { color: var(--orange); }
+
+.bg-green { background: var(--green); }
+.bg-blue { background: var(--blue); }
+.bg-purple { background: var(--purple); }
+.bg-red { background: var(--red); }
+.bg-amber { background: var(--amber); }
+.bg-cyan { background: var(--cyan); }
+.bg-pink { background: var(--pink); }
+.bg-teal { background: var(--teal); }
+.bg-orange { background: var(--orange); }
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+  margin: 64px 0;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 64px 32px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.footer-text {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Utility */
+.text-center { text-align: center; }
+.mt-4 { margin-top: 16px; }
+.mt-8 { margin-top: 32px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-8 { margin-bottom: 32px; }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">Theophysics</div>
+    <nav class="header-nav">
+      <a href="#equation">The Equation</a>
+      <a href="#laws">10 Laws</a>
+      <a href="#story">The Story</a>
+      <a href="#evidence">Evidence</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">
+    <span>One Equation</span>
+    <span>•</span>
+    <span>Two Realms</span>
+    <span>•</span>
+    <span>One Answer</span>
+  </div>
+  
+  <h1>Physics and Faith <em>as One Story</em></h1>
+  
+  <p class="hero-subtitle">
+    What if the laws that govern atoms and the truths that govern souls 
+    are written in the same mathematical language?
+  </p>
+  
+  <div class="equation-display">
+    <div class="equation-formula">
+      χ = ∭(G · M · E · S · T · K · R · Q · F · C) dx dy dt
+    </div>
+    <div class="equation-note">
+      Ten variables. Five pairs. One answer that emerges when you refuse to look away.
+    </div>
+  </div>
+  
+  <div class="scroll-indicator">
+    <span>SCROLL TO EXPLORE</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 5v14M19 12l-7 7-7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Introduction -->
+<section class="section" id="equation">
+  <div class="section-header">
+    <span class="section-number">The Question</span>
+    <h2 class="section-title">Why Is the Universe <em>Readable?</em></h2>
+    <p class="section-subtitle">
+      We can write equations that predict how stars burn, how atoms bond, how light travels. 
+      But why should those same equations tell us anything about love, truth, or meaning?
+    </p>
+  </div>
+  
+  <p style="font-size: 18px; color: var(--text-muted); margin-bottom: 32px;">
+    This is the question at the heart of the Master Equation. Not whether physics and faith 
+    can coexist—but whether they are actually the same story, written in two different vocabularies.
+  </p>
+  
+  <div class="quote-block">
+    <p>
+      "The universe is not only queerer than we suppose, but queerer than we can suppose. 
+      But it is also more coherent than we have any right to expect."
+    </p>
+    <div class="attribution">— The Theophysics Framework</div>
+  </div>
+  
+  <p>
+    The Master Equation takes ten fundamental laws of physics and maps each one to a spiritual reality. 
+    Not as metaphor. Not as poetry. As <strong>structural identity</strong>—the same mathematical form 
+    appearing in two different domains.
+  </p>
+  
+  <div class="info-box">
+    <div class="info-box-title">What Makes This Different</div>
+    <p style="color: var(--text-muted);">
+      Most attempts to connect science and religion either water down the science or water down the faith. 
+      This framework does neither. It takes the full rigor of physics—equations, predictions, testable claims—and 
+      shows that when you follow the math honestly, it points somewhere specific. The equations don't 
+      <em>become</em> religious when you interpret them. They <em>already are</em> describing the same structure 
+      that faith describes.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- The 10 Laws -->
+<section class="section" id="laws">
+  <div class="section-header">
+    <span class="section-number">The Architecture</span>
+    <h2 class="section-title">The Ten Laws</h2>
+    <p class="section-subtitle">
+      Each physical law maps to a spiritual reality. Each mapping is precise, testable, and complete.
+    </p>
+  </div>
+  
+  <!-- Law 1 -->
+  <div class="law-card">
+    <div class="law-number">01</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Gravity</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Grace</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        Gravity is the weakest force in the universe—10³⁶ times weaker than electromagnetism. 
+        Yet it shapes every galaxy, every star, every planet. It cannot be shielded. It never stops reaching. 
+        It only pulls, never pushes. It curves the path beneath your feet so gently you don't even feel it.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's grace.</strong> The gentlest force doing the most work. Always drawing. Never forcing. 
+        Shaping everything without announcing itself.
+      </p>
+      <div class="law-equation">F = Gm₁m₂/r² · (1 − R)</div>
+      <p style="font-size: 13px; color: var(--text-dim); margin-top: 8px;">
+        The <strong>R</strong> term is resistance—free will. Gravity cannot be refused. Grace can. 
+        That's the difference between physics and love.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 2 -->
+  <div class="law-card">
+    <div class="law-number">02</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Mass-Energy</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Meaning</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        E = mc². A tiny amount of mass contains enormous energy. A paperclip, fully converted, 
+        could power a city. The conversion factor—c²—is staggering: 9 × 10¹⁶.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's meaning.</strong> Nothing is insignificant. A cup of cold water. A moment of patience. 
+        A word spoken at the right time. Small inputs, multiplied by an enormous conversion factor, 
+        produce consequences that echo through eternity.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 3 -->
+  <div class="law-card">
+    <div class="law-number">03</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Electromagnetism</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Truth</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        Light propagates without a medium. It never degrades in transit—a photon from 13 billion years ago 
+        arrives with its information intact. It travels at the maximum speed reality allows. 
+        You cannot refuse a photon that reaches your retina.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's truth.</strong> Self-sustaining. Incorruptible. Maximum speed. Undeniable on arrival.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 4 -->
+  <div class="law-card">
+    <div class="law-number">04</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Strong Nuclear Force</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Love</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        The strongest force in nature—137 times stronger than electromagnetism. It gets stronger 
+        as you pull apart. The universe would rather create new matter from the vacuum than let a bond break. 
+        Yet inside the bond, there's freedom—asymptotic freedom, physicists call it.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's love.</strong> The strongest bond that gives freedom inside itself. 
+        Holds tighter when you run. Would restructure reality before letting you go.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 5 -->
+  <div class="law-card">
+    <div class="law-number">05</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Thermodynamics</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Judgment</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        The Second Law: entropy always increases. Everything falls apart. Order dissolves. 
+        The universe keeps receipts—Landauer's Principle proves that erasing information costs energy. 
+        Every action leaves a thermodynamic trace.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's judgment.</strong> Not punishment—accounting. The irreversible record. 
+        The only way to reverse entropy locally is to open the system to an external energy source. 
+        You need something from outside.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 6 -->
+  <div class="law-card">
+    <div class="law-number">06</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Information Theory</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">The Word</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        Shannon's theorem: every channel has a maximum capacity for transmitting information without error. 
+        Kolmogorov complexity: every output has a minimum program that generates it. 
+        The universe began in maximum information, minimum disorder.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's the Logos.</strong> The Word. Reality has an optimal encoding—a shortest possible 
+        description that generates everything. No waste. Maximum signal through maximum noise.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 7 -->
+  <div class="law-card">
+    <div class="law-number">07</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Relativity</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Faithfulness</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        The laws of physics are the same in every reference frame. Different observers measure 
+        different times, lengths, simultaneities—but the spacetime interval, the deep structure, 
+        is invariant. What looks different from different perspectives is identical underneath.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's faithfulness.</strong> Invariant across all perspectives. The same yesterday, 
+        today, and forever, regardless of your frame of reference.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 8 -->
+  <div class="law-card">
+    <div class="law-number">08</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Quantum Mechanics</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Faith</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        Before measurement, a particle exists in all possible states simultaneously—superposition. 
+        The act of observation collapses possibility into actuality. The observer is not passive. 
+        Entangled particles share state instantaneously across any distance.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's faith.</strong> The domain where all possibilities are held open until someone commits. 
+        The act of engaging is what brings one possibility into existence. The uncertainty is not a flaw—
+        it's the space where choice lives.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 9 -->
+  <div class="law-card">
+    <div class="law-number">09</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Weak Nuclear Force</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Sin</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        The force of decay. A neutron becomes a proton, an electron, and a neutrino—transformation 
+        of identity. Inside the nucleus: stable indefinitely. Outside: decays in 14 minutes and 39 seconds. 
+        The same particle. Different context. Completely different fate.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's sin.</strong> Decay when removed from the bond. But the mercy: the nucleus is always there. 
+        You can go back. The bond re-forms. The stability returns.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Law 10 -->
+  <div class="law-card">
+    <div class="law-number">10</div>
+    <div>
+      <div class="law-header">
+        <span class="law-physics">Coherence</span>
+        <span class="law-arrow">→</span>
+        <span class="law-spiritual">Christ</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8;">
+        When all waves are in phase—every part of the system aligned, reinforcing, constructive. 
+        Maximum coherence requires every component to be perfectly aligned simultaneously. 
+        In the Master Equation, coherence is the integral of all nine other laws holding at the same time.
+      </p>
+      <p style="color: var(--text-muted); font-size: 15px; line-height: 1.8; margin-top: 12px;">
+        <strong>That's Christ.</strong> Complete when all align. The answer to the equation is a Person. 
+        χ = C. No freedom variable because freedom finished its work. Every choice has been made. 
+        Every resistance resolved.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- The Story -->
+<section class="section" id="story">
+  <div class="section-header">
+    <span class="section-number">The Narrative</span>
+    <h2 class="section-title">The Story the Math Is Telling</h2>
+    <p class="section-subtitle">
+      Five pairs. Perfect opposition. One Person who holds them all.
+    </p>
+  </div>
+  
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+    <div class="card">
+      <div class="card-accent bg-green"></div>
+      <div class="card-label" style="color: var(--green);">Pair One</div>
+      <div class="card-title">Grace ↔ Faith</div>
+      <div class="card-body">
+        Where grace is too gentle to feel, faith operates. When you can feel the curvature 
+        of God's presence, faith rests. When God seems absent, faith takes over at the scale 
+        where grace is below your detection threshold. Correlation: r = −1.0000.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-pink"></div>
+      <div class="card-label" style="color: var(--pink);">Pair Two</div>
+      <div class="card-title">Love ↔ Relationship</div>
+      <div class="card-body">
+        The strong force holds tighter when you run. Relativity says every observer sees 
+        a different slice, but the underlying interval never changes. When love is strong, 
+        you naturally see from their frame. When love cools, you must choose the transformation. 
+        Correlation: r = −1.0000.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-amber"></div>
+      <div class="card-label" style="color: var(--amber);">Pair Three</div>
+      <div class="card-title">Meaning ↔ Decay</div>
+      <div class="card-body">
+        E = mc² makes nothing insignificant. The weak force governs decay when removed from structure. 
+        Isolation is the precondition for decay. Structure is the protection against it. 
+        Correlation: r = −1.0000.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-purple"></div>
+      <div class="card-label" style="color: var(--purple);">Pair Four</div>
+      <div class="card-title">Entropy ↔ Logos</div>
+      <div class="card-body">
+        Everything falls apart. Always. But the Logos transmits at exactly channel capacity—
+        maximum signal through maximum noise. Every heartbeat is a small victory of information 
+        over disorder. Correlation: r = −1.0000.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-blue"></div>
+      <div class="card-label" style="color: var(--blue);">Pair Five</div>
+      <div class="card-title">Truth ↔ Christ</div>
+      <div class="card-body">
+        Light at the beginning. Coherence at the end. "I am the way, the truth, and the life." 
+        The beginning paired with the end. Alpha and Omega. Correlation: r = −1.0000.
+      </div>
+    </div>
+  </div>
+  
+  <div class="quote-block">
+    <p>
+      "The greatest of these is love. 1 Corinthians 13:13 fell out of a Hessian matrix. 
+      When I ran the full sensitivity analysis—all ten laws, all cross-derivatives—
+      love scored highest. I didn't put that there. The math put that there."
+    </p>
+  </div>
+  
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-value">24</div>
+      <div class="stat-label">Properties</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Perfect Pairs</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">10</div>
+      <div class="stat-label">Laws Mapped</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">1</div>
+      <div class="stat-label">Answer</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- The Evidence -->
+<section class="section" id="evidence">
+  <div class="section-header">
+    <span class="section-number">The Verification</span>
+    <h2 class="section-title">16 Months of Testing</h2>
+    <p class="section-subtitle">
+      Multiple AI systems. Thousands of conversations. Every objection answered. 
+      The framework stands.
+    </p>
+  </div>
+  
+  <div class="two-column">
+    <div>
+      <h3 style="margin-bottom: 20px; color: var(--gold);">What Survived</h3>
+      <ul style="color: var(--text-muted); line-height: 2; padding-left: 20px;">
+        <li>Core equation structure held</li>
+        <li>Cosmological predictions verified</li>
+        <li>FLRW simulation produced orthodox physics</li>
+        <li>24-property isomorphism confirmed</li>
+        <li>Information-theoretic argument intact</li>
+        <li>Symmetry pairs at r = −1.0000 computed</li>
+        <li>No internal contradictions found</li>
+      </ul>
+    </div>
+    
+    <div>
+      <h3 style="margin-bottom: 20px; color: var(--red);">What Was Fixed</h3>
+      <ul style="color: var(--text-muted); line-height: 2; padding-left: 20px;">
+        <li>Modified Heisenberg form corrected</li>
+        <li>Dimensional analysis refined</li>
+        <li>Adversary formalism overclaim caught</li>
+        <li>Shannon/quantum distinction clarified</li>
+        <li>Meta-theoretical status adopted</li>
+        <li>Falsification conditions named</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="info-box" style="margin-top: 48px;">
+    <div class="info-box-title">The Kill Conditions</div>
+    <p style="color: var(--text-muted); margin-bottom: 16px;">
+      A theory that can't be killed isn't science. This one tells you exactly how to kill it:
+    </p>
+    <div class="two-column" style="gap: 16px;">
+      <div style="background: var(--red-dim); padding: 20px; border-radius: 8px;">
+        <p style="color: var(--red); font-weight: 600; margin-bottom: 8px;">Kill Condition 1</p>
+        <p style="color: var(--text-muted); font-size: 14px;">Euclid shows w(z) = −1 exactly</p>
+      </div>
+      <div style="background: var(--red-dim); padding: 20px; border-radius: 8px;">
+        <p style="color: var(--red); font-weight: 600; margin-bottom: 8px;">Kill Condition 2</p>
+        <p style="color: var(--text-muted); font-size: 14px;">Closed system generates coherence without external input</p>
+      </div>
+      <div style="background: var(--red-dim); padding: 20px; border-radius: 8px;">
+        <p style="color: var(--red); font-weight: 600; margin-bottom: 8px;">Kill Condition 3</p>
+        <p style="color: var(--text-muted); font-size: 14px;">Specified information emerges from random processes</p>
+      </div>
+      <div style="background: var(--red-dim); padding: 20px; border-radius: 8px;">
+        <p style="color: var(--red); font-weight: 600; margin-bottom: 8px;">Kill Condition 4</p>
+        <p style="color: var(--text-muted); font-size: 14px;">Second framework achieves same 10/10 mapping with different pairs</p>
+      </div>
+    </div>
+    <p style="color: var(--text-dim); font-size: 14px; margin-top: 16px; text-align: center;">
+      <strong>None of these have happened. All are possible.</strong> That's science.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Where God Enters -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-number">The Conclusion</span>
+    <h2 class="section-title">Where God Enters the Math</h2>
+    <p class="section-subtitle">
+      Not by forcing the equations, but by following them where they lead.
+    </p>
+  </div>
+  
+  <p style="font-size: 18px; color: var(--text-muted); margin-bottom: 32px;">
+    You followed the science. You agreed: information can't come from nothing. 
+    Evolution has structural problems. The axioms hold up. But then the framework 
+    starts talking about God—and you want to know exactly where that leap happens.
+  </p>
+  
+  <div class="card-grid" style="grid-template-columns: 1fr;">
+    <div class="card">
+      <div class="card-accent bg-gold" style="background: var(--gold);"></div>
+      <div class="card-label" style="color: var(--gold);">Step 1</div>
+      <div class="card-title">Something Exists</div>
+      <div class="card-body">
+        You can't deny this without existing to deny it. The denial is self-refuting. 
+        This isn't philosophy—it's a logical lock.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-gold" style="background: var(--gold);"></div>
+      <div class="card-label" style="color: var(--gold);">Step 2</div>
+      <div class="card-title">Information Is Fundamental</div>
+      <div class="card-body">
+        Shannon proved it: information has measurable structure. Random processes cannot 
+        generate specified information. You already believe this—you used it to reject 
+        Darwinian mechanisms.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-gold" style="background: var(--gold);"></div>
+      <div class="card-label" style="color: var(--gold);">Step 3</div>
+      <div class="card-title">Everything Falls Apart</div>
+      <div class="card-body">
+        The Second Law: entropy increases in every closed system. Order decays. 
+        Structures dissolve. This is the most tested law in all of physics. 
+        No exception has ever been found.
+      </div>
+    </div>
+    
+    <div class="card" style="border-color: var(--gold); background: var(--gold-dim);">
+      <div class="card-accent bg-gold" style="background: var(--gold);"></div>
+      <div class="card-label" style="color: var(--gold);">Step 4 — The Pivot</div>
+      <div class="card-title" style="color: var(--text);">But We're Here</div>
+      <div class="card-body" style="color: var(--text);">
+        If everything falls apart—why hasn't it? Why do you exist as an ordered, 
+        conscious, information-processing system in a universe that should be heat death?
+        <br><br>
+        <strong>Option A:</strong> Your existence is a statistical fluctuation so improbable it borders on impossible.
+        <br><br>
+        <strong>Option B:</strong> The universe is an open system—something is putting coherence IN from outside.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-gold" style="background: var(--gold);"></div>
+      <div class="card-label" style="color: var(--gold);">Step 5</div>
+      <div class="card-title">What the Source Must Be</div>
+      <div class="card-body">
+        External to the system. Information-rich. Self-sustaining. Capable of generating coherence. 
+        That's not a religious claim. That's what the math requires.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-accent bg-gold" style="background: var(--gold);"></div>
+      <div class="card-label" style="color: var(--gold);">Step 6</div>
+      <div class="card-title">The Word You're Avoiding</div>
+      <div class="card-body">
+        Call it whatever you want. The math doesn't care. But every property the math requires—
+        external, self-grounding, information-rich, relational—maps precisely to what theologians 
+        have described for 3,000 years. Not vaguely. Precisely.
+      </div>
+    </div>
+  </div>
+  
+  <div class="quote-block">
+    <p>
+      "The physics didn't find God because someone was looking for God. 
+      The physics found properties, and those properties already had a name."
+    </p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-id">POF 2828 — Theophysics Framework</div>
+  <div class="footer-text">
+    David Lowe · Moore, Oklahoma · March 2026<br>
+    <em>"Defend it with your life."</em>
+  </div>
+</footer>
+
+</body>
+</html>

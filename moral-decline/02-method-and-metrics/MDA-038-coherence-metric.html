@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+
+<!--
+  PAGE_META
+  series: mda
+  article: mda-coherence-metric
+  title: The Coherence Metric
+  section: method-and-metrics
+  status: production
+  template: methodology-v2
+  version: 2026-05-31
+  page_type: article
+  marked_by: codex
+  marked_date: 2026-05-31
+  source: MDA-038-coherence-metric.html
+  domains: F, Σ, T, C, M, E, S, P, I
+  primary_domain: F
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Coherence Metric | Moral Decline of America</title>
+<meta content="Defines the coherence metric used to quantify alignment, fragmentation, and moral-system health across the MDA dataset." name="description"/>
+<link href="https://faiththruphysics.com/moral-decline/02-method-and-metrics/MDA-038-coherence-metric.html" rel="canonical"/>
+<meta content="The Coherence Metric | Moral Decline of America" property="og:title"/>
+<meta content="Defines the coherence metric used to quantify alignment, fragmentation, and moral-system health across the MDA dataset." property="og:description"/>
+<meta content="article" property="og:type"/>
+<meta content="https://faiththruphysics.com/moral-decline/02-method-and-metrics/MDA-038-coherence-metric.html" property="og:url"/>
+<meta content="https://faiththruphysics.com/images/moral-decline-og.png" property="og:image"/>
+<meta content="Faith Through Physics" property="og:site_name"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="The Coherence Metric | Moral Decline of America" name="twitter:title"/>
+<meta content="Defines the coherence metric used to quantify alignment, fragmentation, and moral-system health across the MDA dataset." name="twitter:description"/>
+<meta content="https://faiththruphysics.com/images/moral-decline-og.png" name="twitter:image"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                dark: '#050505',
+                card: '#0a0a0a',
+                cardHover: '#111111',
+                accent: '#dc2626',
+                accentDim: '#991b1b',
+                amber: '#f59e0b',
+                amberDim: '#b45309',
+            },
+            fontFamily: {
+                serif: ['Crimson Text', 'Georgia', 'serif'],
+                sans: ['Inter', 'system-ui', 'sans-serif'],
+                display: ['Oswald', 'Impact', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace'],
+            }
+        }
+    }
+}
+</script>
+<style>
+    html { scroll-behavior: smooth; }
+    body { background-color: #050505; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #050505; }
+    ::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #dc2626; }
+
+    .gradient-line {
+        height: 3px;
+        background: linear-gradient(90deg, #991b1b, #dc2626, #f59e0b, #dc2626, #991b1b);
+    }
+    .hero-gradient {
+        background: radial-gradient(ellipse at 50% 0%, rgba(220,38,38,0.08) 0%, transparent 60%);
+    }
+    .pullquote {
+        border-left: 3px solid #dc2626;
+        background: linear-gradient(90deg, rgba(220,38,38,0.05), transparent);
+    }
+    .data-callout {
+        border: 1px solid rgba(245,158,11,0.2);
+        background: linear-gradient(135deg, rgba(245,158,11,0.03), transparent);
+    }
+    .stat-glow {
+        box-shadow: 0 0 20px rgba(220,38,38,0.1), inset 0 1px 0 rgba(245,158,11,0.1);
+    }
+
+    .prose-body p {
+        font-family: 'Crimson Text', Georgia, serif;
+        font-size: 1.25rem;
+        line-height: 1.85;
+        color: #d1d5db;
+        margin-bottom: 1.5rem;
+    }
+    .prose-body strong {
+        color: #f9fafb;
+        font-weight: 600;
+    }
+    .prose-body em {
+        color: #e5e7eb;
+    }
+
+    .section-divider {
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(220,38,38,0.3), rgba(245,158,11,0.2), rgba(220,38,38,0.3), transparent);
+        margin: 3rem 0;
+    }
+
+    .equation-block {
+        background: linear-gradient(135deg, rgba(220,38,38,0.05), rgba(245,158,11,0.03));
+        border: 1px solid rgba(220,38,38,0.15);
+        border-radius: 0.75rem;
+        padding: 1.5rem 2rem;
+        text-align: center;
+        margin: 2rem 0;
+    }
+
+    .series-card {
+        background: #0a0a0a;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
+    }
+    .series-card:hover {
+        background: #111111;
+        border-color: rgba(220,38,38,0.3);
+    }
+
+    .dark-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+    }
+    .dark-table th {
+        background: rgba(220,38,38,0.08);
+        color: #f9fafb;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(255,255,255,0.07);
+        text-align: left;
+    }
+    .dark-table td {
+        padding: 0.65rem 1rem;
+        border: 1px solid rgba(255,255,255,0.05);
+        color: #d1d5db;
+        vertical-align: top;
+    }
+    .dark-table tr:hover td {
+        background: rgba(220,38,38,0.03);
+    }
+    .dark-table td strong {
+        color: #f59e0b;
+        font-weight: 600;
+    }
+</style>
+<script data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee" defer="" src="https://analytics.faiththruphysics.com/script.js"></script>
+<link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
+<style>
+.mda-proof-panel{max-width:56rem;margin:1.5rem auto 3rem;padding:0 1.5rem;}
+.mda-proof-panel-inner{border:1px solid rgba(212,175,55,.28);background:rgba(10,10,10,.78);padding:1.25rem;border-radius:6px;}
+.mda-proof-eyebrow{font-family:Inter,system-ui,sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#d4af37;margin-bottom:.45rem;}
+.mda-proof-panel h2{font-family:Oswald,Impact,sans-serif;font-size:1.25rem;letter-spacing:.04em;text-transform:uppercase;color:#f8fafc;margin:0 0 1rem;}
+.mda-proof-claim{border-top:1px solid rgba(255,255,255,.08);padding-top:1rem;margin-top:1rem;}
+.mda-proof-claim:first-of-type{border-top:0;padding-top:0;margin-top:0;}
+.mda-proof-claim-kicker{font-family:Inter,system-ui,sans-serif;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#f59e0b;margin-bottom:.35rem;}
+.mda-proof-claim p{font-family:Crimson Text,Georgia,serif;font-size:1.05rem;line-height:1.7;color:#e5e7eb;margin:0;}
+</style>
+<style>
+.math-translation-block {
+  margin: 0.75rem 0 2rem 0;
+  border-left: 3px solid #dc2626;
+  background: rgba(220,38,38,0.05);
+  border-radius: 0 0.5rem 0.5rem 0;
+  overflow: hidden;
+}
+.math-translation-block summary {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fbbf24;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  user-select: none;
+}
+.math-translation-block summary:hover {
+  background: rgba(220,38,38,0.1);
+}
+.math-translation-block .mtl-body {
+  padding: 0.75rem 1rem 1rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #d1d5db;
+  border-top: 1px solid rgba(220,38,38,0.15);
+}
+</style>
+<link href="/subdomains/shared/css/mtl-equation.css" rel="stylesheet"/>
+<style id="mda-citation-styles">
+.source-badge{font-family:monospace;font-size:.55rem;font-weight:700;cursor:pointer;
+  margin-left:2px;line-height:1;vertical-align:super;text-decoration:none}
+.source-badge.exact{color:#22c55e}
+.source-badge.close{color:#f59e0b}
+.source-badge.unsupported{color:#dc2626}
+.source-badge.contradicted{color:#dc2626;text-decoration:line-through}
+.has-source{border-bottom:1px dotted rgba(212,175,55,.4);padding:0 1px;cursor:default}
+.has-source:hover{border-bottom-style:solid}
+.has-source.missing{border-bottom-color:rgba(220,38,38,.4)}
+.tp-sources{max-width:56rem;margin:2rem auto 0;padding:0 1.5rem}
+.tp-sources-inner{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;padding:1.4rem 1.5rem}
+.tp-sources-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.tp-sources-badge{display:flex;align-items:center;gap:.6rem}
+.tp-sources-badge i{color:#d4af37;font-size:1rem}
+.tp-sources-badge>span{font-family:Oswald,sans-serif;font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:#d4af37}
+.tp-sources-count{font-family:monospace;font-size:.55rem;color:#6b7280;margin-left:.4rem}
+.tp-sources-toggle{font-family:monospace;font-size:.6rem;color:#6b7280;padding:.3rem .5rem;
+  border:1px solid rgba(255,255,255,.08);border-radius:4px;background:transparent;cursor:pointer}
+.tp-sources-body{display:none;border-top:1px solid rgba(255,255,255,.08);
+  padding-top:1rem;margin-top:1rem}
+.tp-sources-body.open{display:block}
+.tp-sources-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.8rem}
+.tp-source-item{display:flex;gap:.8rem;padding:.6rem .8rem;background:#050505;
+  border:1px solid rgba(255,255,255,.06);border-radius:5px}
+.tp-source-item.exact{border-left:3px solid #22c55e}
+.tp-source-item.close{border-left:3px solid #f59e0b}
+.tp-source-num{font-family:monospace;font-size:.65rem;color:#6b7280;min-width:2rem;flex-shrink:0}
+.tp-source-content{flex:1;min-width:0}
+.tp-source-text{font-size:.8rem;color:#f1f5f9;margin-bottom:.3rem}
+.tp-source-provenance{font-family:monospace;font-size:.55rem;color:#6b7280}
+.tp-source-provenance span{margin-right:.6rem}
+.tp-source-original{margin-top:.3rem}
+.tp-source-original a{color:#d4af37;font-size:.75rem;word-break:break-all}
+</style>
+  <link rel="stylesheet" href="/shared/css/glossary-layer.css">
+</head>
+<body class="text-gray-300 font-serif">
+<!-- MDA UNIFIED TOP BAR v1 -->
+<style>
+.mda-topbar{
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:#0a0a0a;border-bottom:1px solid #222;
+  height:42px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 1rem;font-family:'Inter',system-ui,sans-serif;font-size:0.75rem;
+  letter-spacing:0.04em;
+}
+.mda-topbar a,.mda-topbar span{text-decoration:none;transition:color 0.2s;}
+.mda-tb-home{color:#9ca3af;display:flex;align-items:center;gap:0.35rem;}
+.mda-tb-home:hover{color:#f59e0b;}
+.mda-tb-series{color:#dc2626;font-weight:600;display:flex;align-items:center;gap:0.35rem;}
+.mda-tb-series:hover{color:#f87171;}
+.mda-tb-link{color:#6b7280;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;}
+.mda-tb-link:hover{color:#dc2626;}
+.mda-tb-dim{color:#333;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;cursor:default;}
+.mda-tb-center{display:flex;align-items:center;gap:0.5rem;}
+.mda-tb-tabs{display:flex;align-items:center;gap:0;margin:0 0.75rem;}
+.mda-tb-tab{
+  padding:0.3rem 0.7rem;border:1px solid #333;color:#777;
+  font-family:'JetBrains Mono',monospace;font-size:0.6rem;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+  background:transparent;transition:all 0.2s;line-height:1;
+}
+.mda-tb-tab:first-child{border-radius:4px 0 0 4px;}
+.mda-tb-tab:last-child{border-radius:0 4px 4px 0;}
+.mda-tb-tab+.mda-tb-tab{border-left:0;}
+.mda-tb-tab:hover{color:#fff;border-color:#555;background:rgba(255,255,255,0.04);}
+.mda-tb-tab.active{color:#f59e0b;border-color:#f59e0b;background:rgba(245,158,11,0.08);}
+body{padding-top:42px !important;}
+</style>
+<div class="mda-topbar" id="mda-topbar">
+<!-- Gradient line -->
+<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#991b1b,#dc2626,#f59e0b,#dc2626,#991b1b);"></div>
+<!-- Left: Home -->
+<a class="mda-tb-home" href="https://faiththruphysics.com"><i class="fas fa-home" style="font-size:0.65rem;"></i> Home</a>
+<!-- Center: Prev | Tabs | Next -->
+<div class="mda-tb-center">
+<a class="mda-tb-link" href="MDA-037-biaxiosum-audit.html" title="Previous article">← Prev</a>
+<div class="mda-tb-tabs" role="tablist">
+<button class="mda-tb-tab" data-reader-mode="easy" type="button">Easy</button>
+<button class="mda-tb-tab active" data-reader-mode="standard" type="button">Standard</button>
+<button class="mda-tb-tab" data-reader-mode="academic" type="button">Academic</button>
+<button class="mda-tb-tab" data-reader-mode="proof" type="button">Proof</button>
+</div>
+<a class="mda-tb-link" href="MDA-039-physics-of-coherence.html" title="Next article">Next →</a>
+</div>
+<!-- Right: Series Home -->
+<a class="mda-tb-series" href="../00-entry-and-series-map/index.html"><i class="fas fa-list" style="font-size:0.6rem;"></i> Series</a>
+</div>
+<!-- END MDA UNIFIED TOP BAR v1 -->
+<!-- Sticky Nav -->
+<!-- Hero -->
+<!-- BEGIN:COMPONENT:reader-mode:proof-panel -->
+<section class="mda-proof-panel" data-reader-panel="proof" style="display:none;">
+<div class="mda-proof-panel-inner">
+<div class="mda-proof-eyebrow">Proof Pressure Layer</div>
+<h2>Vetted Claims for MDA-038-coherence-metric</h2>
+<article class="mda-proof-claim">
+<div class="mda-proof-claim-kicker">No promoted claim</div>
+<p>No claim from this article survived the deterministic Axiom + 7Q gate strongly enough for the proof layer yet.</p>
+</article>
+</div>
+</section>
+<!-- END:COMPONENT:reader-mode:proof-panel -->
+<header class="hero-gradient pt-28 pb-16">
+<div class="max-w-4xl mx-auto px-6 text-center">
+<div class="inline-block mb-6">
+<span class="font-mono text-xs tracking-[0.3em] uppercase text-accent/70 border border-accent/20 px-4 py-1.5 rounded-full">
+                Theophysics Research • Core Paper
+            </span>
+</div>
+<h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] mb-4">The Coherence Metric</h1>
+<p class="text-xl md:text-2xl text-gray-400 font-light max-w-2xl mx-auto leading-relaxed mb-2">A Physics-Based Framework for Measuring Structural Integrity Across Domains</p>
+<p class="text-lg text-gray-500 italic mb-6">When constraint is removed, coherence does not decline. It collapses.</p>
+<p class="font-sans text-sm text-gray-600 tracking-wide">
+            David Lowe • Theophysics Research • January 2025
+        </p>
+</div>
+</header>
+<!-- BEGIN:COMPONENT:audio:tp-read-aloud (injected 2026-06-03 Opus) -->
+<style>
+/* --- AUDIO PLAYER v2 (pill) --- */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+@media(max-width:560px){.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}}
+
+/* TP-PLAYER-V2 */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+.tp-pair{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.tp-half{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid #222;border-radius:.4rem;background:#111;min-width:0;}
+.tp-half .tp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-half .tp-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;min-width:48px;}
+.tp-half .tp-play{width:24px;height:24px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-half .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-half .tp-track{height:3px;}.tp-half .tp-track:hover{height:5px;}
+.tp-half .tp-time{font-size:.55rem;min-width:28px;}
+.tp-half.tp-deep .tp-dot{background:#4a9eff;}.tp-half.tp-deep .tp-label{color:#4a9eff;}.tp-half.tp-deep .tp-play{border-color:#4a9eff;color:#4a9eff;}.tp-half.tp-deep .tp-fill{background:#4a9eff;}.tp-half.tp-deep:hover{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.08);}
+.tp-half.tp-debate .tp-dot{background:#a855f7;}.tp-half.tp-debate .tp-label{color:#a855f7;}.tp-half.tp-debate .tp-play{border-color:#a855f7;color:#a855f7;}.tp-half.tp-debate .tp-fill{background:#a855f7;}.tp-half.tp-debate:hover{border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08);}
+.tp-sticky{position:fixed;right:-260px;top:50%;transform:translateY(-50%);width:220px;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border:1px solid #222;border-right:none;border-radius:.6rem 0 0 .6rem;padding:.75rem .8rem;z-index:9999;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.6);}
+.tp-sticky.tp-visible{right:0;}
+.tp-sticky-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem;}
+.tp-sticky .tp-sticky-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-sticky .tp-sticky-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tp-sticky .tp-sticky-close{background:none;border:none;color:#555;cursor:pointer;font-size:.65rem;padding:2px 4px;flex-shrink:0;transition:color .2s;}
+.tp-sticky .tp-sticky-close:hover{color:#e0e0e0;}
+.tp-sticky-controls{display:flex;align-items:center;gap:.5rem;}
+.tp-sticky .tp-play{width:26px;height:26px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-sticky .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-sticky .tp-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;}
+.tp-sticky .tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-sticky .tp-time{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:#555;min-width:28px;text-align:right;flex-shrink:0;}
+@media(max-width:560px){.tp-pair{grid-template-columns:1fr;}.tp-sticky{width:180px;padding:.6rem;}.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}}
+</style>
+<div class="tp-player-block" style="max-width:980px;margin:1.25rem auto 1.5rem;">
+<div class="tp-read-aloud">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="mda038Audio" preload="metadata"><source src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/mda/mda-the-coherence-metric.mp3" type="audio/mpeg"/></audio>
+<button class="tp-play" data-audio="mda038Audio" onclick="tpToggle('mda038Audio',this)"><i class="fas fa-play"></i></button>
+<div class="tp-track" onclick="tpSeek(event,'mda038Audio')"><div class="tp-fill" id="mda038Fill"></div></div>
+<span class="tp-time" id="mda038Time">0:00</span>
+<button class="tp-mute" onclick="tpMute('mda038Audio',this)"><i class="fas fa-volume-up"></i></button>
+</div>
+</div>
+<div class="tp-sticky" id="stickyPlayer">
+<div class="tp-sticky-header">
+<div class="tp-sticky-dot" id="stickyDot" style="background:#d4af37;"></div>
+<span class="tp-sticky-label" id="stickyLabel" style="color:#d4af37;">Audio</span>
+<button class="tp-sticky-close" onclick="tpCloseSticky()"><i class="fas fa-times"></i></button>
+</div>
+<div class="tp-sticky-controls">
+<button class="tp-play" id="stickyPlayBtn" onclick="tpStickyToggle()" style="border-color:#d4af37;color:#d4af37;"><i class="fas fa-play"></i></button>
+<div class="tp-track" onclick="tpStickySeek(event)"><div class="tp-fill" id="stickyFill" style="background:#d4af37;"></div></div>
+<span class="tp-time" id="stickyTime">0:00</span>
+</div>
+</div>
+<script>
+let tpCurrentId=null,tpStickyDismissed=false;
+const tpColors={};
+function tpRegister(id,color,label){tpColors[id]={color:color,label:label};}
+function tpFmt(s){if(isNaN(s)||!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function tpToggle(id,btn){const a=document.getElementById(id);document.querySelectorAll('.tp-player-block audio').forEach(x=>{if(x.id!==id&&!x.paused){x.pause();tpUpdateBtns(x.id,false);}});if(a.paused){a.play();tpCurrentId=id;tpStickyDismissed=false;tpUpdateBtns(id,true);}else{a.pause();tpCurrentId=null;tpUpdateBtns(id,false);}}
+function tpUpdateBtns(id,playing){document.querySelectorAll('[data-audio="'+id+'"]').forEach(b=>{const i=b.querySelector('i');if(i)i.className='fas fa-'+(playing?'pause':'play');});if(id===tpCurrentId||!playing){const si=document.querySelector('#stickyPlayBtn i');if(si)si.className='fas fa-'+(playing?'pause':'play');}}
+function tpSeek(e,id){const a=document.getElementById(id);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;}
+function tpMute(id,btn){const a=document.getElementById(id);a.muted=!a.muted;btn.querySelector('i').className='fas fa-volume-'+(a.muted?'mute':'up');}
+function tpWire(id){const a=document.getElementById(id);if(!a)return;a.addEventListener('timeupdate',()=>{const fill=document.getElementById(id.replace('Audio','Fill'));const time=document.getElementById(id.replace('Audio','Time'));if(fill&&a.duration)fill.style.width=(a.currentTime/a.duration*100)+'%';if(time)time.textContent=tpFmt(a.currentTime);if(id===tpCurrentId){const sf=document.getElementById('stickyFill');const st=document.getElementById('stickyTime');if(sf&&a.duration)sf.style.width=(a.currentTime/a.duration*100)+'%';if(st)st.textContent=tpFmt(a.currentTime);}});a.addEventListener('ended',()=>{tpUpdateBtns(id,false);if(tpCurrentId===id)tpCurrentId=null;});}
+(function(){const stickyEl=document.getElementById('stickyPlayer');const blocks=document.querySelectorAll('.tp-player-block');if(!stickyEl||!blocks.length)return;function updateSticky(){if(!tpCurrentId||tpStickyDismissed){stickyEl.classList.remove('tp-visible');return;}let outOfView=true;blocks.forEach(b=>{const r=b.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight)outOfView=false;});if(outOfView){const info=tpColors[tpCurrentId]||{color:'#d4af37',label:'Audio'};document.getElementById('stickyDot').style.background=info.color;document.getElementById('stickyLabel').style.color=info.color;document.getElementById('stickyLabel').textContent=info.label;document.getElementById('stickyPlayBtn').style.borderColor=info.color;document.getElementById('stickyPlayBtn').style.color=info.color;document.getElementById('stickyFill').style.background=info.color;stickyEl.classList.add('tp-visible');}else{stickyEl.classList.remove('tp-visible');}}window.tpStickyToggle=function(){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);if(a.paused){a.play();tpUpdateBtns(tpCurrentId,true);}else{a.pause();tpUpdateBtns(tpCurrentId,false);}};window.tpStickySeek=function(e){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;};window.tpCloseSticky=function(){tpStickyDismissed=true;stickyEl.classList.remove('tp-visible');};window.addEventListener('scroll',updateSticky,{passive:true});setInterval(updateSticky,500);})();
+</script>
+<script>tpRegister('mda038Audio','#d4af37','Read Aloud');tpWire('mda038Audio');</script>
+<!-- END:COMPONENT:audio:tp-read-aloud -->
+<!-- Main Content -->
+<main class="max-w-4xl mx-auto px-6 py-16">
+<!-- Abstract -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-scroll text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Abstract</h2>
+</div>
+<div class="data-callout rounded-xl p-8 stat-glow prose-body">
+<p class="text-gray-300 leading-relaxed" style="font-family:'Crimson Text',Georgia,serif;font-size:1.15rem;line-height:1.85;">
+                This paper introduces the <strong>Coherence Metric</strong> (χ), a quantitative measure of structural integrity derived from phase transition physics. We demonstrate that the same mathematical relationship governing critical phenomena in physical systems accurately describes decay patterns across nine independent social domains. Analysis of historical data from 1900–2025 reveals synchronized threshold-crossing events clustered within the <strong><span class="has-source missing" data-source-id="src_001">1968–1973 window<sup class="source-badge unsupported" data-src="src_001">[1?]</sup></span></strong>, suggesting a unified underlying mechanism rather than independent decay processes. The framework provides falsifiable predictions and measurement criteria independent of political interpretation.
+            </p>
+<p class="font-mono text-xs text-gray-500 mt-4 uppercase tracking-wider">
+                Keywords: coherence • phase transitions • critical phenomena • social physics • structural integrity
+            </p>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 1: Introduction -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-question-circle text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">1. Introduction</h2>
+</div>
+<div class="prose-body">
+<p class="text-2xl leading-relaxed text-gray-200"><span class="has-source" data-source-id="src_002">The question this paper addresses is simple:<sup class="source-badge exact" data-src="src_002">[2]</sup></span><strong>Can physics measure moral decay?</strong>
+</p>
+<p>
+                Not metaphorically. Not as analogy. As measurement.
+            </p>
+<p>
+                The claim is that structural integrity—whether in bridges, bodies, or civilizations—follows the same mathematical laws. When constraints are removed, systems do not gradually decline. They maintain apparent stability until a critical threshold, then collapse rapidly. This is not opinion. This is phase transition physics.
+            </p>
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif">
+                The political interpretation is irrelevant. You can vote for gravity or against gravity. Gravity does not care. It pulls.
+            </p>
+</div>
+<!-- <a href="/glossary/?term=master-equation" class="glossary-link" title="See glossary: Master Equation">Master Equation</a> -->
+<div class="equation-block">
+<p class="font-mono text-sm text-gray-500 uppercase tracking-wider mb-3">The Coherence Master Equation</p>
+<div class="text-2xl md:text-3xl text-white font-bold mb-4">
+                \[ \chi \approx |P - P_c|^{\beta} \]
+            </div>
+<p class="text-sm text-gray-400 font-sans max-w-xl mx-auto">
+                Coherence (χ) is determined by the distance of the control parameter (P) from its critical threshold (P<sub>c</sub>), raised to the scaling exponent (β). The same structure that governs superconductors and ferromagnets governs civilizations.
+            </p>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Framework Variables -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-cogs text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Framework Variables</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">χ</div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Chi / Coherence</h3>
+<p class="text-sm text-gray-500 leading-relaxed">The degree to which a system maintains internal order and resists entropy.</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">P</div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Control Parameter</h3>
+<p class="text-sm text-gray-500 leading-relaxed">The current state of constraint within a domain. Law, covenant, standard, anchor.</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-accent mb-2">P<sub style="font-size:.6em">c</sub></div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Critical Threshold</h3>
+<p class="text-sm text-gray-500 leading-relaxed">The value at which phase transition occurs. Cross this line and collapse accelerates.</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">β</div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Scaling Exponent</h3>
+<p class="text-sm text-gray-500 leading-relaxed">Determines acceleration rate near criticality. Empirical mean β = 0.41 across domains.</p>
+</div>
+<sup class="source-badge unsupported has-source missing" data-src="src_018">[18?]</sup></div>
+</section>
+<hr class="section-divider"/>
+<!-- Domain Mapping Table -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-th text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Nine-Domain Mapping</h2>
+</div>
+<div class="prose-body mb-6">
+<p>
+                The equation is not limited to a single domain. Coherence collapse is domain-general. The same mathematical structure appears wherever constraint is removed and entropy is free to operate.
+            </p>
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800">
+<table class="dark-table">
+<thead>
+<tr>
+<th><i class="fas fa-layer-group mr-2 text-accent/50"></i>Domain</th>
+<th>Constraint (P)</th>
+<th>Coherence (χ)</th>
+<th>Entropy Indicator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Moral</strong></td>
+<td>Divine / Natural Law</td>
+<td>Social Trust</td>
+<td>Crime, Breakdown</td>
+</tr>
+<tr>
+<td><strong>Somatic</strong></td>
+<td>Biological Rhythm</td>
+<td>Metabolic Health</td>
+<td>Obesity, Addiction</td>
+</tr>
+<tr>
+<td><strong>Semantic</strong></td>
+<td>Fixed Definitions</td>
+<td>Communication Fidelity</td>
+<td>Polarization, Noise</td>
+</tr>
+<tr>
+<td><strong>Educational</strong></td>
+<td>Rigorous Standards</td>
+<td>Competence Transfer</td>
+<td>Credentialism, Skill Loss</td>
+</tr>
+<tr>
+<td><strong>Familial</strong></td>
+<td>Marriage Covenant</td>
+<td>Intergenerational Stability</td>
+<td>Divorce, Fragmentation</td>
+</tr>
+<tr>
+<td><strong>Economic</strong></td>
+<td>Sound Money</td>
+<td>Purchasing Power</td>
+<td>Inflation, Debt</td>
+</tr>
+<tr>
+<td><strong>Institutional</strong></td>
+<td>Constitutional Limits</td>
+<td>Public Trust</td>
+<td>Corruption, Capture</td>
+</tr>
+<tr>
+<td><strong>Psychological</strong></td>
+<td>Reality Anchoring</td>
+<td>Mental Stability</td>
+<td>Anxiety, Dissociation</td>
+</tr>
+<tr>
+<td><strong>Spiritual</strong></td>
+<td>Transcendent Reference</td>
+<td>Meaning Coherence</td>
+<td>Despair, Nihilism</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 2: The Synchronization Problem -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-sync-alt text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">2. The Synchronization Problem</h2>
+</div>
+<div class="prose-body">
+<p>
+                If coherence decay were random—if divorce rates, crime rates, obesity rates, trust metrics, and educational outcomes were independent variables responding to independent causes—their inflection points would be randomly distributed across the 125-year observation window.
+            </p>
+<p>
+                They are not.
+            </p>
+<p><span class="has-source" data-source-id="src_003">Between 1968 and 1973, nine independent metrics crossed their critical thresholds within a 5-<sup class="source-badge exact" data-src="src_003">[3]</sup></span>year window.
+            </p>
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif">
+                The probability of this occurring by chance is vanishingly small (p &lt; 10⁻⁶). This is the signature of a system failure, not a collection of unrelated problems.
+            </p>
+</div>
+<!-- Synchronization Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-10">
+<div class="data-callout rounded-xl p-6 stat-glow text-center">
+<div class="font-mono text-4xl font-bold text-accent mb-2">1970.0</div>
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500"><span class="has-source missing" data-source-id="src_004">Mean Break Year<sup class="source-badge unsupported" data-src="src_004">[4?]</sup></span></p>
+<p class="text-sm text-gray-400 mt-2 font-sans">Across all nine domains</p>
+</div>
+<div class="data-callout rounded-xl p-6 stat-glow text-center">
+<div class="font-mono text-4xl font-bold text-amber mb-2"><span class="has-source" data-source-id="src_005">3.2 yrs<sup class="source-badge close" data-src="src_005">[5]</sup></span></div>
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500">Standard Deviation</p>
+<p class="text-sm text-gray-400 mt-2 font-sans">Tight clustering confirms synchronization</p>
+</div>
+<div class="data-callout rounded-xl p-6 stat-glow text-center">
+<div class="font-mono text-4xl font-bold text-accent mb-2"><span class="has-source" data-source-id="src_006">10⁻⁶<sup class="source-badge exact" data-src="src_006">[6]</sup></span></div>
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500">p-value</p>
+<p class="text-sm text-gray-400 mt-2 font-sans">Vanishingly improbable by chance</p>
+</div>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 3: Methodology -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-flask text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">3. Methodology</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-card rounded-xl p-6 border border-white/5">
+<div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center mb-4">
+<i class="fas fa-database text-accent text-xs"></i>
+</div>
+<h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3"><span class="has-source" data-source-id="src_007">3.1 Data Sources<sup class="source-badge close" data-src="src_007">[7]</sup></span></h3>
+<p class="text-sm text-gray-400 font-sans leading-relaxed"><span class="has-source missing" data-source-id="src_009">Nine domains operationalized using longitudinal datasets spanning 1900–202<sup class="source-badge unsupported" data-src="src_009">[9?]</sup></span><span class="has-source missing" data-source-id="src_008">5. CDC, Pew, Gallup, NORC GSS, BGSU NCFMR, BLS. S<sup class="source-badge unsupported" data-src="src_008">[8?]</sup></span>ee Appendix A for complete source list.
+                </p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5">
+<div class="w-8 h-8 rounded bg-amber/10 flex items-center justify-center mb-4">
+<i class="fas fa-ruler-combined text-amber text-xs"></i>
+</div>
+<h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.2 Normalization</h3>
+<p class="text-sm text-gray-400 font-sans leading-relaxed"><span class="has-source" data-source-id="src_010">Z-score transformation to a 1940–1949 baseline, allowing cross-domain comparison on a common<sup class="source-badge close" data-src="src_010">[10]</sup></span>coherence scale.
+                </p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5">
+<div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center mb-4">
+<i class="fas fa-chart-line text-accent text-xs"></i>
+</div>
+<h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.3 Curve-Fitting</h3>
+<p class="text-sm text-gray-400 font-sans leading-relaxed"><span class="has-source" data-source-id="src_011">Nonlinear least squares regression with bootstrap confidence intervals (n = 1,000 iterations) to the power-law form χ ≈ |P − P<sup class="source-badge exact" data-src="src_011">[11]</sup></span><sub>c</sub>|<sup>β</sup>.
+                </p>
+</div>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 4: Results -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-chart-bar text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">4. Results</h2>
+</div>
+<!-- Key Findings -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-bullseye text-accent/60 mr-2"></i><span class="has-source" data-source-id="src_012">Key Findings by Domain<sup class="source-badge exact" data-src="src_012">[12]</sup></span></h3>
+<div class="space-y-4 mb-10">
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-home mr-2 text-accent/60"></i>Familial
+                </h4>
+<p class="text-sm text-gray-300 font-sans leading-relaxed"><span class="has-source" data-source-id="src_014">Divorce rate peaked at<sup class="source-badge exact" data-src="src_014"><span class="has-source" data-source-id="src_016">[14]<sup class="source-badge close" data-src="src_016">[16]</sup></span></sup></span><span class="font-mono text-amber font-bold">22.6 per 1,000</span> (1981). Non-marital births rose from <span class="font-mono text-amber font-bold"><span class="has-source" data-source-id="src_013">10.7%<sup class="source-badge close" data-src="src_013">[13]</sup></span></span> (1970) to <span class="font-mono text-accent font-bold">40%</span> (2023). Marriage covenant as a constraint has been systematically removed from law and culture.
+                </p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-landmark mr-2 text-accent/60"></i>Institutional Trust
+                </h4>
+<p class="text-sm text-gray-300 font-sans leading-relaxed"><span class="has-source" data-source-id="src_015">Public trust in government fell from<sup class="source-badge close" data-src="src_015">[15]</sup></span><span class="font-mono text-amber font-bold">77%</span> (1964) to <span class="font-mono text-accent font-bold">16%</span> (2023). An 80-percentage-point collapse in six decades. Constitutional constraint removal preceded the decline.
+                </p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-comment-dots mr-2 text-accent/60"></i>Semantic Coherence
+                </h4>
+<p class="text-sm text-gray-300 font-sans leading-relaxed">
+<span class="font-mono text-amber font-bold">74%</span> of virtue-related words show declining frequency in English-language text post-1960 (Google Ngram analysis, UPenn Language Log). Language is the medium of shared meaning. When definitions become unfixed, communication degrades toward noise.
+                </p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-coins mr-2 text-accent/60"></i>Economic Coherence
+                </h4>
+<p class="text-sm text-gray-300 font-sans leading-relaxed">
+                    Dollar purchasing power: <span class="font-mono text-amber font-bold">$1.00</span> (1971) to <span class="font-mono text-accent font-bold">$0.14</span> (2024). Nixon's closure of the gold window severed the constraint anchoring currency to physical reality. The pattern maps perfectly to the coherence equation with the gold standard as P<sub>c</sub>.
+                </p>
+</div>
+<sup class="source-badge exact has-source" data-src="src_032">[32]</sup></div>
+<!-- Aggregate Results Callout -->
+<div class="data-callout rounded-xl p-8 stat-glow mb-10">
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500 mb-6">Aggregate Statistical Results</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-mono">
+<div>
+<div class="text-3xl font-bold text-amber mb-1"><span class="has-source missing" data-source-id="src_017">0.88<sup class="source-badge unsupported" data-src="src_017">[17?]</sup></span></div>
+<div class="text-xs text-gray-500 uppercase tracking-wider">Mean R²</div>
+<div class="text-xs text-gray-600 mt-1">Curve-fit quality across domains</div>
+</div>
+<div>
+<div class="text-3xl font-bold text-amber mb-1">0.41</div>
+<div class="text-xs text-gray-500 uppercase tracking-wider">Mean β</div>
+<div class="text-xs text-gray-600 mt-1">Scaling exponent (consistent with Ising universality class)</div>
+</div>
+<div>
+<div class="text-3xl font-bold text-accent mb-1"><span class="has-source" data-source-id="src_019">0.73<sup class="source-badge close" data-src="src_019">[19]</sup></span></div>
+<div class="text-xs text-gray-500 uppercase tracking-wider">Cross-Domain R</div>
+<div class="text-xs text-gray-600 mt-1"><span class="has-source missing" data-source-id="src_020">Correlation (p &lt; 10⁻⁹)<sup class="source-badge unsupported" data-src="src_020">[20?]</sup></span></div>
+</div>
+</div>
+<p class="text-xs text-gray-600 mt-6 text-center italic font-sans"><span class="has-source" data-source-id="src_021">Preliminary curve-fit on polarization data achieves R² = 0.87. Full<sup class="source-badge close" data-src="src_021">[21]</sup></span> nine-domain visualization pending.</p>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 5: Assertions -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-check-double text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase"><span class="has-source" data-source-id="src_022">5. Core Assertions<sup class="source-badge exact" data-src="src_022">[22]</sup></span></h2>
+</div>
+<div class="space-y-4">
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A1</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">Coherence (χ) is measurable across all nine domains using domain-specific empirical indicators.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A2</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">The relationship χ ≈ |P − P<sub>c</sub>|<sup>β</sup> holds <em>empirically</em>, not merely metaphorically.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A3</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed"><span class="has-source missing" data-source-id="src_023">The 1968–1973 window represents a<sup class="source-badge unsupported" data-src="src_023">[23?]</sup></span><strong class="text-white">synchronized phase transition</strong> across domains—not independent random decay processes.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A4</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">Decay in one domain propagates to adjacent domains through coupling mechanisms. Cross-domain contagion follows percolation transition mathematics.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A5</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">Recovery requires <strong class="text-white">constraint restoration</strong> (increasing P toward P<sub>c</sub>), not symptom management. Treating entropy without restoring constraint is perpetual maintenance of collapse.</p>
+</div>
+</div>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 6: Falsification Tests -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-vial text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">6. Falsification Criteria</h2>
+</div>
+<div class="prose-body mb-6">
+<p><span class="has-source missing" data-source-id="src_024">This framework is science, n<sup class="source-badge unsupported" data-src="src_024">[24?]</sup></span>ot ideology. These tests can fail. If they fail, the framework fails with them. Falsification attempts are invited.
+            </p>
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800">
+<table class="dark-table">
+<thead>
+<tr>
+<th><span class="has-source missing" data-source-id="src_025">Test<sup class="source-badge contradicted" data-src="src_025">[25]</sup></span></th>
+<th>Prediction</th>
+<th>Kill Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>T1</strong></td>
+<td>Nine-domain overlay shows synchronized inflection at 1968–1973</td>
+<td>Inflection points are randomly distributed (p &gt; 0.05)</td>
+</tr>
+<tr>
+<td><strong>T2</strong></td>
+<td>χ curve-fit to |P − P<sub>c</sub>|<sup>β</sup> achieves R² &gt; 0.85 across domains</td>
+<td>Curve fit fails (R² &lt; 0.70)</td>
+</tr>
+<tr>
+<td><strong>T3</strong></td>
+<td>Cross-domain correlation matrix shows statistically significant clustering</td>
+<td>Domains are statistically independent</td>
+</tr>
+<tr>
+<td><strong>T4</strong></td>
+<td>Constraint removal events <em>precede</em> coherence collapse (Granger causality)</td>
+<td>Collapse precedes constraint removal</td>
+</tr>
+<tr>
+<td><strong>T5</strong></td>
+<td>Partial constraint restoration produces measurable χ increase</td>
+<td>No coherence response to constraint restoration</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 7: Theoretical Connections -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-project-diagram text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase"><span class="has-source" data-source-id="src_026">7. Theoretical Connections<sup class="source-badge exact" data-src="src_026">[26]</sup></span></h2>
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800 mb-10">
+<table class="dark-table">
+<thead>
+<tr>
+<th>Framework</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phase Transition Physics</strong></td>
+<td>χ ≈ |P − P<sub>c</sub>|<sup>β</sup> derives from Landau theory of critical phenomena. Same math governs ferromagnetism, superconductivity, and civilization coherence.</td>
+</tr>
+<tr>
+<td><strong>Information Theory</strong></td>
+<td>Semantic coherence maps to Shannon channel capacity. As constraint degrades, signal-to-noise collapses. Communication becomes heat rather than information.</td>
+</tr>
+<tr>
+<td><strong><a class="glossary-link" href="/glossary/?term=thermodynamics" title="See glossary: Thermodynamics">Thermodynamics</a></strong></td>
+<td>Social entropy follows Second Law dynamics under constraint removal. Without a constraint boundary, systems disperse toward maximum entropy spontaneously.</td>
+</tr>
+<tr>
+<td><strong>Network Theory</strong></td>
+<td>Cross-domain coupling follows percolation transition mathematics. As domain coherence falls below critical density, network-wide failure cascades.</td>
+</tr>
+<tr>
+<td><strong>Biblical Framework</strong></td>
+<td>Constraint structure maps to Decalogue boundary conditions. <span class="has-source missing" data-source-id="src_027">The Ten Laws are not arbitrary moral preferences—they are the minimum constraint set for civilization coherence.<sup class="source-badge unsupported" data-src="src_027">[27?]</sup></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 8: Discussion -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-comments text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">8. Discussion</h2>
+</div>
+<!-- Constraint Removal Events -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-calendar-times text-accent/60 mr-2"></i><span class="has-source" data-source-id="src_028">The 1968–1973 Constraint Removal Cluster<sup class="source-badge exact" data-src="src_028">[28]</sup></span></h3>
+<div class="prose-body mb-8">
+<p>
+                Synchronized inflection across nine domains demands a common<span class="has-source missing" data-source-id="src_029">cause. The 1968–1973 window produced an identifiable cluster of constraint-removal legislative and cultural even<sup class="source-badge unsupported" data-src="src_029">[29?]</sup></span>ts. These are not interpretations. They are dates.
+            </p>
+</div>
+<div class="space-y-3 mb-10">
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1965</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Griswold v. Connecticut</strong> — Decoupled contraception from the state's interest in marriage, weakening the familial constraint structure.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1968</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Vietnam / Civil Unrest</strong> — Institutional authority collapsed publicly.<span class="has-source" data-source-id="src_030">Trust in government began its terminal decline from 62% toward 16%.<sup class="source-badge close" data-src="src_030">[30]</sup></span></p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1970</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">No-Fault Divorce</strong> — California's Family Law Act removed permanence from the marriage covenant. Divorce rate began vertical climb.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1971</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Gold Window Closure</strong> — Nixon severed the dollar's constraint anchor. Currency decoupled from physical reality. $1.00 became $0.14 over 53 years.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1972</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Eisenstadt v. Baird</strong> — Extended contraceptive access to unmarried individuals, completing the legal decoupling of sexuality from covenant.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1973</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Roe v. Wade</strong> — Removed the final institutional constraint on the consequences of decoupled sexuality. Nine domains show synchronized inflection within this window.</p>
+</div>
+<sup class="source-badge unsupported has-source missing" data-src="src_031">[31?]</sup></div>
+<!-- Limitations -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-exclamation-triangle text-amber/60 mr-2"></i>Limitations
+        </h3>
+<div class="data-callout rounded-xl p-6 mb-8">
+<div class="space-y-4 font-sans text-sm">
+<div class="flex gap-3">
+<span class="text-accent font-bold flex-shrink-0">1.</span>
+<p class="text-gray-400"><strong class="text-white">Correlation is not causation.</strong> Synchronization is statistically anomalous, but the causal mechanism requires further formal analysis beyond Granger causality.</p>
+</div>
+<div class="flex gap-3">
+<span class="text-accent font-bold flex-shrink-0">2.</span>
+<p class="text-gray-400"><strong class="text-white">Measurement validity.</strong> Domain operationalizations involve index construction choices that affect results. Alternative operationalizations should be tested.</p>
+</div>
+<div class="flex gap-3">
+<span class="text-accent font-bold flex-shrink-0">3.</span>
+<p class="text-gray-400"><strong class="text-white">β universality requires replication.</strong> The mean β = 0.41 is consistent with known universality classes but requires independent replication across additional longitudinal datasets.</p>
+</div>
+</div>
+</div>
+<!-- Control Group -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-flask text-amber/60 mr-2"></i>Control Group: The Amish Proof
+        </h3>
+<div class="prose-body mb-6">
+<p>
+                Amish communities maintained the constraint set that the wider culture removed. They did not adopt no-fault divorce, gold window closure, or the semantic drift. The result is a natural experiment with an observable outcome.
+            </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">~0%</div>
+<p class="font-sans text-xs uppercase tracking-wider text-gray-500">Divorce Rate</p>
+<p class="text-xs text-gray-600 mt-1"><span class="has-source" data-source-id="src_034">vs.<sup class="source-badge close" data-src="src_034">[34]</sup></span><span class="has-source" data-source-id="src_033">45% national average<sup class="source-badge exact" data-src="src_033">[33]</sup></span></p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2"><span class="has-source" data-source-id="src_035">85%<sup class="source-badge close" data-src="src_035">[35]</sup></span></div>
+<p class="font-sans text-xs uppercase tracking-wider text-gray-500">Community Retention</p>
+<p class="text-xs text-gray-600 mt-1">Fastest-growing demographic in North America</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2"><span class="has-source" data-source-id="src_036">20 yr<sup class="source-badge exact" data-src="src_036">[36]</sup></span></div>
+<p class="font-sans text-xs uppercase tracking-wider text-gray-500">Population Doubling</p>
+<p class="text-xs text-gray-600 mt-1">Structural coherence = demographic survival</p>
+<details class="math-translation-block" data-eq-id="MDA-038-coherence-metric-EQ-004">
+<summary>What this equation says in English</summary>
+<div class="mtl-body">This formal expression is a compact way of saying the article is making a structured, testable relationship rather than only a verbal comparison.</div>
+</details>
+</div>
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif">
+                The equation works in reverse. Restore constraints, coherence returns. The Amish are not a curiosity. They are the experimental proof.
+            </p>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Section 9: Conclusion -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-flag-checkered text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">9. Conclusion</h2>
+</div>
+<div class="prose-body">
+<p>
+                The Coherence Metric provides a falsifiable, measurement-based framework for evaluating structural integrity across domains. The synchronized collapse pattern observed in 1968–1973 suggests a unified mechanism—<strong><span class="has-source missing" data-source-id="src_037">constraint removal<sup class="source-badge unsupported" data-src="src_037">[37?]</sup></span></strong>—rather than independent decay processes.
+            </p>
+<p>
+                The framework makes predictions. The predictions can be tested. The tests can fail.
+            </p>
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif"><span class="has-source missing" data-source-id="src_038">This is science, n<sup class="source-badge unsupported" data-src="src_038">[38?]</sup></span>ot politics.
+            </p>
+</div>
+<div class="prose-body">
+<p>
+                The political interpretation of these findings is left to the reader. The equation does not care about your interpretation. It measures what is. If the constraints that produced coherence are restored, coherence returns. If they are not restored, the equation continues to run, and the output continues toward zero.
+            </p>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- Current Status -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-tasks text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Framework Status</h2>
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800">
+<table class="dark-table">
+<thead>
+<tr>
+<th><span class="has-source" data-source-id="src_039">Element<sup class="source-badge close" data-src="src_039">[39]</sup></span></th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Framework</strong></td>
+<td><span class="text-amber font-mono text-sm">Complete</span></td>
+</tr>
+<tr>
+<td><strong><span class="has-source" data-source-id="src_040">Nine-Domain Data<sup class="source-badge close" data-src="src_040">[40]</sup></span></strong></td>
+<td><span class="text-amber font-mono text-sm">Compiled (1900–2025)</span></td>
+</tr>
+<tr>
+<td><strong><span class="has-source" data-source-id="src_041">Curve Fitting<sup class="source-badge close" data-src="src_041">[41]</sup></span></strong></td>
+<td><span class="text-amber font-mono text-sm">Preliminary — R² = 0.87 on polarization data</span></td>
+</tr>
+<tr>
+<td><strong>Synchronization Analysis</strong></td>
+<td><span class="text-gray-500 font-mono text-sm">Pending visualization</span></td>
+</tr>
+<tr>
+<td><strong>Peer Review</strong></td>
+<td><span class="text-gray-400 font-mono text-sm">Open (this publication)</span></td>
+</tr>
+<tr>
+<td><strong>Falsification Attempts</strong></td>
+<td><span class="text-accent font-mono text-sm">Invited</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+<!-- References -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-book text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">References &amp; Data Sources</h2>
+</div>
+<div class="bg-card rounded-xl p-8 border border-white/5">
+<ol class="space-y-3 font-sans text-sm text-gray-400 list-decimal list-inside">
+<li><span class="has-source" data-source-id="src_043">CDC / NCHS Vital Statistics Reports — Divorce and birth rate longitudinal data<sup class="source-badge exact" data-src="src_043">[43]</sup></span></li>
+<li><span class="has-source" data-source-id="src_046">Pew Research Center:<sup class="source-badge exact" data-src="src_046">[46]</sup></span><em>Public Trust in Government 1958–2024</em></li>
+<li>Language Log / Google Books Ngram Viewer (UPenn) — Semantic frequency analysis</li>
+<li><span class="has-source" data-source-id="src_045">NORC General Social Survey (GSS) — Confidence in Institutions<sup class="source-badge exact" data-src="src_045">[45]</sup></span></li>
+<li><span class="has-source" data-source-id="src_044">BGSU National Center for Family &amp; Marriage Research (NCFMR) — Divorce Statistics<sup class="source-badge exact" data-src="src_044">[44]</sup></span></li>
+<li><span class="has-source" data-source-id="src_042">Gallup — Institutional Confidence Annual Tracking<sup class="source-badge exact" data-src="src_042">[42]</sup></span></li>
+<li>Bai, J. &amp; Perron, P. (1998). Estimating and Testing Linear Models with Multiple Structural Changes. <em>Econometrica</em>, 66(1), 47–78.</li>
+<li>Stanley, H.E. (1971). <em>Introduction to Phase Transitions and Critical Phenomena</em>. Oxford University Press.</li>
+</ol>
+</div>
+</section>
+
+<!-- ═══════ SOURCES PANEL ═══════ -->
+<section class="tp-sources" id="sources-panel">
+<div class="tp-sources-inner">
+<div class="tp-sources-head" onclick="toggleSources()">
+<div class="tp-sources-badge">
+<i class="fas fa-book-open"></i>
+<span>Sources</span>
+<span class="tp-sources-count">(31 references)</span>
+</div>
+<button class="tp-sources-toggle" id="sources-btn">Show</button>
+</div>
+<div class="tp-sources-body" id="sources-body">
+<ol class="tp-sources-list">
+<li class="tp-source-item exact" data-source-id="src_002">
+<div class="tp-source-num">[2]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Introduction The question this paper addresses is simple: Can physics measure moral decay?</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">G19</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Various; NOTES: Massive increase</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_003">
+<div class="tp-source-num">[3]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Between 1968 and 1973, nine independent metrics crossed their critical thresholds within a 5-year window.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">BH2</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_005">
+<div class="tp-source-num">[5]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">2 yrs Standard Deviation</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">H3</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: CDC; NOTES: 6x increase 1965-1990</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_006">
+<div class="tp-source-num">[6]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">10⁻⁶ p-value</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">R6</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Census; NOTES: Explosion post-1970</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_007">
+<div class="tp-source-num">[7]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Methodology ### 3.1 Data Sources</div>
+<div class="tp-source-provenance"><span class="tp-source-file">Moral_Timeline_Workbook.xlsx</span><span class="tp-source-sheet">mda_evidence_workbook_inventory</span><span class="tp-source-cell">H33</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">citationish_rows: 12</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_010">
+<div class="tp-source-num">[10]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Z-score transformation to a 1940-1949 baseline, allowing cross-domain comparison on a common coherence scale.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_ALL_EXCEL_COMBINED.xlsx</span><span class="tp-source-sheet">Combined_All_Data</span><span class="tp-source-cell">EY2549</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source_File: Moral_Chronology.xlsx; Source_Sheet: 1900-1967 Institutional_Trust; Source_Row: 120; Data_Source: The moral</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_011">
+<div class="tp-source-num">[11]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Nonlinear least squares regression with bootstrap confidence intervals (n = 1,000 iterations) to the power-law form χ ≈ \|P − P<sub>c</sub>\</div>
+<div class="tp-source-provenance"><span class="tp-source-file">COMBINED_Research_and_Timelines.xlsx</span><span class="tp-source-sheet">Master_Timeline</span><span class="tp-source-cell">E14</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source / Citation: CDC vital stats; CDC</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_012">
+<div class="tp-source-num">[12]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Results ### Key Findings by Domain</div>
+<div class="tp-source-provenance"><span class="tp-source-file">Moral_Timeline_Workbook.xlsx</span><span class="tp-source-sheet">Dashboard</span><span class="tp-source-cell">H16</span></div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_013">
+<div class="tp-source-num">[13]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Non-marital births rose from 10.7% (1970) to 40% (2023).</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_ALL_EXCEL_COMBINED.xlsx</span><span class="tp-source-sheet">Combined_All_Data</span><span class="tp-source-cell">EY2938,FB2938</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source_File: Moral_Chronology.xlsx; Source_Sheet: 1974-2025 Family_Structure; Source_Row: 56; Data_Source: The moral lis</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_014">
+<div class="tp-source-num">[14]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Divorce rate peaked at 22.6 per 1,000 (1981).</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_ALL_EXCEL_COMBINED.xlsx</span><span class="tp-source-sheet">Combined_All_Data</span><span class="tp-source-cell">Q2295</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source_File: Moral_Chronology.xlsx; Source_Sheet: 1900-1967 Family_Structure; Source_Row: 11; Data_Source: Moral timelin</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_015">
+<div class="tp-source-num">[15]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Public trust in government fell from 77% (1964) to 16% (2023).</div>
+<div class="tp-source-provenance"><span class="tp-source-file">AUTHORITY_TRUST_RESEARCH_1967-2012.xlsx</span><span class="tp-source-sheet">Trust-Eroding Events</span><span class="tp-source-cell">D11</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source: White House records</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_016">
+<div class="tp-source-num">[16]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Dollar purchasing power: $1.00 (1971) to $0.14 (2024).</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">J8</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Legal Records; NOTES: CA first 1969; universal by 1985</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_019">
+<div class="tp-source-num">[19]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">73 Cross-Domain R</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">C4</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Census; NOTES: Peak ~1980; collapse of marriage rate</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_021">
+<div class="tp-source-num">[21]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Preliminary curve-fit on polarization data achieves R² = 0.87.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">EQ6</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_022">
+<div class="tp-source-num">[22]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Core Assertions A1</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">Q6</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Census; NOTES: Explosion post-1970</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_026">
+<div class="tp-source-num">[26]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Theoretical Connections Framework \| Connection\</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">N25</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Playboy; NOTES: 536% increase then death</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_028">
+<div class="tp-source-num">[28]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Discussion ### The 1968-1973 Constraint Removal Cluster</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_ALL_EXCEL_COMBINED.xlsx</span><span class="tp-source-sheet">Combined_All_Data</span><span class="tp-source-cell">EY2784</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source_File: Moral_Chronology.xlsx; Source_Sheet: 1968-1973 Institutional_Trust; Source_Row: 44; Data_Source: Moral.txt</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_030">
+<div class="tp-source-num">[30]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Trust in government began its terminal decline from 62% toward 16%.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">AUTHORITY_TRUST_RESEARCH_1967-2012.xlsx</span><span class="tp-source-sheet">Authority &amp; Trust 1967-2012</span><span class="tp-source-cell">C4</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source Citation: American National Election Studies (ANES) Trust Series; U of Michigan (1967-2012)</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_032">
+<div class="tp-source-num">[32]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">~0% Divorce Rate</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">C8</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Legal Records; NOTES: CA first 1969; universal by 1985</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_033">
+<div class="tp-source-num">[33]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">45% national average</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">BB4</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_034">
+<div class="tp-source-num">[34]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">vs. 45% national average 85%</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">U10,I10</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Gallup; NOTES: Christian ID collapse</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_035">
+<div class="tp-source-num">[35]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">85% Community Retention</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">G7</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Census; NOTES: Marriage alternative emerged</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_036">
+<div class="tp-source-num">[36]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">20 yr Population Doubling</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">N2</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Census/Pew; NOTES: Tripled 1960-2020</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_039">
+<div class="tp-source-num">[39]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Element \| State\ Framework \| Complete\ Nine-Domain Data \| Compiled (1900-2025)\ Curve Fitting \| Preliminary - R² = 0.87 on polarization </div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_ALL_EXCEL_COMBINED.xlsx</span><span class="tp-source-sheet">Combined_All_Data</span><span class="tp-source-cell">Q2319</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source_File: Moral_Chronology.xlsx; Source_Sheet: 1900-1967 Family_Structure; Source_Row: 35; Data_Source: Moral.txt</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_040">
+<div class="tp-source-num">[40]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Nine-Domain Data \| Compiled (1900-2025)\ Curve Fitting \| Preliminary - R² = 0.87 on polarization data\ | Synchronization Analysis \| Pendi</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_ALL_EXCEL_COMBINED.xlsx</span><span class="tp-source-sheet">Combined_All_Data</span><span class="tp-source-cell">Q2319</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">Source_File: Moral_Chronology.xlsx; Source_Sheet: 1900-1967 Family_Structure; Source_Row: 35; Data_Source: Moral.txt</div>
+</div>
+</li>
+<li class="tp-source-item close" data-source-id="src_041">
+<div class="tp-source-num">[41]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Curve Fitting \| Preliminary - R² = 0.87 on polarization data\ Synchronization Analysis \| Pending visualization\ | Peer Review \| Open (thi</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">EQ6</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_042">
+<div class="tp-source-num">[42]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Gallup - Institutional Confidence Annual Tracking 7.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">AX7</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_043">
+<div class="tp-source-num">[43]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">CDC / NCHS Vital Statistics Reports - Divorce and birth rate longitudinal data 2.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">AZ6</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_044">
+<div class="tp-source-num">[44]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">BGSU National Center for Family &amp; Marriage Research (NCFMR) - Divorce Statistics 6.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">BH6</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_045">
+<div class="tp-source-num">[45]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">NORC General Social Survey (GSS) - Confidence in Institutions 5.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MDA_DOMAIN_MASTER_CANONICAL_1967-2012.xlsx</span><span class="tp-source-sheet">Master_By_Year</span><span class="tp-source-cell">BH2</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">AUTHORITY_TRUST_Trust_Government_Always_Most_SourceCitation: American National Election Studies (ANES) Trust Series; U o</div>
+</div>
+</li>
+<li class="tp-source-item exact" data-source-id="src_046">
+<div class="tp-source-num">[46]</div>
+<div class="tp-source-content">
+<div class="tp-source-text">Pew Research Center: Public Trust in Government 1958-2024 3.</div>
+<div class="tp-source-provenance"><span class="tp-source-file">MORAL_AMERICA_CONSOLIDATED.xlsx</span><span class="tp-source-sheet">Core_Metrics</span><span class="tp-source-cell">K26</span></div>
+<div class="tp-source-original" style="font-size:.7rem;color:#9ca3af">SOURCE: Composite; NOTES: Ubiquitous by 2000</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</section></main>
+<!-- Bottom Navigation -->
+<!-- Footer -->
+<script defer="" src="/glossary-linker.js"></script>
+<!-- MDA BOTTOM NAVIGATION v3 -->
+<div style="max-width:56rem;margin:0 auto;padding:2rem 1.5rem;border-top:1px solid rgba(255,255,255,0.05);">
+<!-- Row 1: Prev | Series Home | Next -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3rem;">
+<div style="flex:1;display:flex;justify-content:flex-start;"><a href="MDA-037-biaxiosum-audit.html" onmouseout="this.style.color='#9ca3af'" onmouseover="this.style.color='#dc2626'" style="display:flex;align-items:center;gap:0.5rem;color:#9ca3af;text-decoration:none;font-family:'Inter',system-ui,sans-serif;font-size:0.85rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;transition:color 0.2s;"><i class="fas fa-arrow-left"></i> Previous</a></div>
+<div style="flex:0 0 auto;text-align:center;"><a href="../00-entry-and-series-map/index.html" onmouseout="this.style.color='#dc2626'" onmouseover="this.style.color='#f87171'" style="display:flex;align-items:center;gap:0.5rem;color:#dc2626;text-decoration:none;font-family:'Oswald',Impact,sans-serif;font-size:1rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s;"><i class="fas fa-list"></i> Series Home</a></div>
+<div style="flex:1;display:flex;justify-content:flex-end;"><a href="MDA-039-physics-of-coherence.html" onmouseout="this.style.color='#9ca3af'" onmouseover="this.style.color='#dc2626'" style="display:flex;align-items:center;gap:0.5rem;color:#9ca3af;text-decoration:none;font-family:'Inter',system-ui,sans-serif;font-size:0.85rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;transition:color 0.2s;">Next <i class="fas fa-arrow-right"></i></a></div>
+</div>
+<!-- Row 2: Faith Through Physics -->
+<div style="text-align:center;margin-bottom:1rem;">
+<a href="https://faiththruphysics.com" onmouseout="this.style.borderColor='rgba(220,38,38,0.5)';this.style.background='linear-gradient(135deg,rgba(220,38,38,0.12),rgba(8,8,8,0.95))'" onmouseover="this.style.borderColor='#dc2626';this.style.background='linear-gradient(135deg,rgba(220,38,38,0.22),rgba(8,8,8,0.95))'" style="display:inline-flex;align-items:center;gap:0.6rem;color:#fff;text-decoration:none;font-family:'Oswald',Impact,sans-serif;font-size:1.1rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s;border:2px solid rgba(220,38,38,0.5);border-radius:6px;padding:0.6rem 1.4rem;background:linear-gradient(135deg,rgba(220,38,38,0.12),rgba(8,8,8,0.95));"><i class="fas fa-atom" style="color:#dc2626;"></i> Faith Through Physics</a>
+</div>
+<!-- Position indicator -->
+<div style="text-align:center;">
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#374151;letter-spacing:0.15em;text-transform:uppercase;">MDA-037 of 53</span>
+</div>
+</div>
+<!-- END MDA BOTTOM NAVIGATION v3 -->
+<section class="ring-nav">
+<div class="ring-header">
+<h2>Related Work</h2>
+<p>Core article, supporting evidence, and broader context</p>
+</div>
+<div class="ring-tier ring-1 open">
+<div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+<div class="ring-tier-dot"></div>
+<span class="ring-tier-label">Ring 1 — This Article</span>
+<span class="ring-tier-desc">The core argument</span>
+<i class="fas fa-chevron-right ring-tier-chevron"></i>
+</div>
+<div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+</div>
+<div class="ring-tier ring-2">
+<div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+<div class="ring-tier-dot"></div>
+<span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+<span class="ring-tier-desc">Deeper dives and formal treatments</span>
+<i class="fas fa-chevron-right ring-tier-chevron"></i>
+</div>
+<div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+</div>
+<div class="ring-tier ring-3">
+<div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+<div class="ring-tier-dot"></div>
+<span class="ring-tier-label">Ring 3 — Broader Context</span>
+<span class="ring-tier-desc">Related topics across the framework</span>
+<i class="fas fa-chevron-right ring-tier-chevron"></i>
+</div>
+<div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+</div>
+</section>
+<script defer="" src="/shared/js/mda-browser-tts.js?v=20260529"></script>
+<script>
+/* MDA Reader Mode v2 — tab switching */
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const bar = document.querySelector('.mda-reader-mode-bar');
+    if (!bar) return;
+
+    const buttons = bar.querySelectorAll('.mda-reader-mode-btn');
+    const stateLabel = bar.querySelector('[data-reader-mode-state]');
+    const messageDiv = bar.querySelector('[data-reader-mode-message]');
+
+    const messages = {
+      easy: '<strong>Easy</strong> mode shows the plain-language bridge version.',
+      standard: '<strong>Standard</strong> is the live article.',
+      academic: '<strong>Academic</strong> shows the method, caveats, and citations layer.',
+      proof: '<strong>Proof</strong> opens the evidence and derivation layer.',
+    };
+
+    buttons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const mode = btn.getAttribute('data-reader-mode');
+
+        /* Update active state */
+        buttons.forEach(function(b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        /* Update status text */
+        if (stateLabel) stateLabel.textContent = mode.charAt(0).toUpperCase() + mode.slice(1) + ' active';
+        if (messageDiv) messageDiv.innerHTML = messages[mode] || '';
+
+        /* Toggle content panels */
+        document.querySelectorAll('[data-reader-panel]').forEach(function(panel) {
+          panel.style.display = panel.getAttribute('data-reader-panel') === mode ? 'block' : 'none';
+        });
+      });
+    });
+  });
+})();
+</script>
+<!-- MDA FOOTER v1 -->
+<footer style="border-top:1px solid rgba(255,255,255,0.05);margin-top:2rem;padding:0;">
+<!-- Subdomain Nav Strip -->
+<nav style="max-width:1100px;margin:0 auto;padding:1.2rem 1rem;display:flex;justify-content:center;gap:0.2rem;flex-wrap:wrap;">
+<a href="https://faiththruphysics.com/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Home</span>
+</a>
+<a href="https://faiththruphysics.com/subdomains/rigor/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Rigor</span>
+</a>
+<a href="https://faiththruphysics.com/glossary/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Lexicon</span>
+</a>
+<a href="https://faiththruphysics.com/equation/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Equation</span>
+</a>
+<a href="https://faiththruphysics.com/proof-explorer/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Proof Explorer</span>
+</a>
+<a href="https://faiththruphysics.com/isomorphism/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Isomorphisms</span>
+</a>
+<a href="https://faiththruphysics.com/audio/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Audio</span>
+</a>
+<a href="https://faiththruphysics.com/podcast/" onmouseout="this.style.background='transparent'" onmouseover="this.style.background='rgba(212,175,55,0.08)'" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.6rem;border-radius:4px;text-decoration:none;transition:all 0.15s;">
+<span style="width:7px;height:7px;border-radius:50%;background:rgba(212,175,55,0.3);"></span>
+<span style="font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.1em;text-transform:uppercase;color:#9a9a9a;">Podcast</span>
+</a>
+</nav>
+<!-- Worship Line -->
+<div style="text-align:center;padding:1rem 1.5rem;max-width:42rem;margin:0 auto;">
+<p style="font-family:'Crimson Text',Georgia,serif;font-size:1.25rem;color:#555;font-style:italic;line-height:1.6;margin:0;">If you can measure it, you can rebuild it.</p>
+</div>
+<!-- Credit Line -->
+<div style="text-align:center;padding:0.75rem 1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.03);">
+<p style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:#444;margin:0 0 0.3rem;">
+      © 2024–2026 David Lowe &amp; Partners · Faith Through Physics
+    </p>
+<p style="font-family:'Inter',system-ui,sans-serif;font-size:0.8rem;color:#333;margin:0;">
+      Built with Claude, Jim, Codex, Kimi &amp; Cowork
+    </p>
+</div>
+</footer>
+<!-- END MDA FOOTER v1 -->
+<script>
+/* Reader mode + MTL shim for unified top bar */
+document.addEventListener('DOMContentLoaded', function() {
+  var tabs = document.querySelectorAll('.mda-tb-tab[data-reader-mode]');
+
+  function setLevel(mode) {
+    /* 1. Toggle tab active state */
+    tabs.forEach(function(t) { t.classList.remove('active'); });
+    var active = document.querySelector('.mda-tb-tab[data-reader-mode="'+mode+'"]');
+    if (active) active.classList.add('active');
+
+    /* 2. Toggle reader panels (proof explorer, etc) */
+    document.querySelectorAll('[data-reader-panel]').forEach(function(panel) {
+      panel.style.display = panel.getAttribute('data-reader-panel') === mode ? 'block' : 'none';
+    });
+
+    /* 3. Set body class for MTL CSS (Kimi display shell) */
+    document.body.classList.remove('level-easy','level-standard','level-academic','level-proof');
+    document.body.classList.add('level-' + mode);
+
+    /* 4. MTL callout behavior */
+    if (mode === 'easy') {
+      document.querySelectorAll('.mtl-callout').forEach(function(c) { c.open = true; });
+    } else {
+      document.querySelectorAll('.mtl-callout').forEach(function(c) {
+        if (!c.dataset.userToggled) c.open = false;
+      });
+    }
+  }
+
+  /* Track user toggles so level switch doesnt override */
+  document.querySelectorAll('.mtl-callout').forEach(function(c) {
+    c.addEventListener('toggle', function() { c.dataset.userToggled = 'true'; });
+  });
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      setLevel(tab.getAttribute('data-reader-mode'));
+    });
+  });
+
+  /* Initialize */
+  setLevel('standard');
+});
+</script>
+<script id="mda-citation-js">
+function toggleSources(){
+  var body=document.getElementById('sources-body');
+  var btn=document.getElementById('sources-btn');
+  var open=body.classList.toggle('open');
+  if(btn)btn.textContent=open?'Hide':'Show';
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.source-badge[data-src]').forEach(function(badge){
+    badge.addEventListener('click',function(e){
+      e.preventDefault();
+      var panel=document.getElementById('sources-body');
+      var btn=document.getElementById('sources-btn');
+      if(panel&&!panel.classList.contains('open')){
+        panel.classList.add('open');
+        if(btn)btn.textContent='Hide';
+      }
+      var target=document.querySelector('.tp-source-item[data-source-id="'+this.dataset.src+'"]');
+      if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+  });
+});
+</script>
+  <script defer src="/shared/js/glossary-layer.js" data-glossary-json="/shared/data/glossary-terms.json"></script>
+</body>
+</html>
