@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rigor — Theophysics Measurement Framework</title>
+<meta name="description" content="The formal measurement backbone of Theophysics: USPF signal persistence and MDA coherence diagnostics. Same math. Two domains."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root {
+  --bg:#080b0f; --bg2:#0d1117; --bg3:#111820; --border:#1e2d3d;
+  --amber:#f0a500; --amber2:#ffcc44; --red:#e05252; --green:#52c97a;
+  --blue:#4d9de0; --muted:#4a6278; --text:#c8d8e8; --text2:#8aa0b4;
+  --mono:'Share Tech Mono',monospace; --head:'Rajdhani',sans-serif; --body:'Crimson Pro',serif;
+  --crimson:#dc2626; --gold:#d4af37;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);pointer-events:none;z-index:9999;}
+
+/* Header */
+header{border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(240,165,0,0.04) 0%,transparent 100%);}
+.logo{font-family:var(--head);font-weight:700;font-size:22px;letter-spacing:6px;color:var(--amber);text-transform:uppercase;}
+.logo span{color:var(--text2);font-weight:300;font-size:13px;letter-spacing:2px;display:block;margin-top:2px;}
+.nav{display:flex;gap:2px;}
+.nav a{background:none;border:1px solid transparent;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:2px;padding:7px 16px;cursor:pointer;text-transform:uppercase;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;}
+.nav a:hover,.nav a.active{border-color:var(--amber);color:var(--amber);background:rgba(240,165,0,0.06);}
+
+/* Hero */
+.hero{position:relative;padding:5rem 2rem 3rem;text-align:center;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:900px;height:500px;background:radial-gradient(ellipse,rgba(240,165,0,0.04) 0%,transparent 65%);pointer-events:none;}
+.hero-inner{max-width:800px;margin:0 auto;position:relative;}
+.hero-tag{font-family:var(--mono);font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--amber);margin-bottom:1.2rem;}
+.hero-h1{font-family:var(--head);font-weight:600;font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;color:#fff;margin-bottom:1rem;letter-spacing:2px;text-transform:uppercase;}
+.hero-h1 em{font-family:var(--body);font-style:italic;color:var(--amber);font-weight:400;text-transform:none;letter-spacing:0;}
+.hero-sub{font-size:1.1rem;color:var(--text2);max-width:640px;margin:0 auto 2rem;line-height:1.6;}
+.hero-eq{font-family:var(--mono);font-size:.95rem;color:var(--amber);opacity:.7;margin-bottom:2.5rem;}
+
+/* Divider */
+.section-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Tool Cards */
+.tools-grid{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.tool-card{background:var(--bg2);border:1px solid var(--border);padding:32px;position:relative;overflow:hidden;transition:all .2s ease;display:flex;flex-direction:column;}
+.tool-card:hover{border-color:rgba(240,165,0,0.35);transform:translateY(-2px);}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--red),var(--blue),var(--green),var(--amber));}
+.tool-badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.tool-title{font-family:var(--head);font-size:1.4rem;font-weight:600;color:#fff;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.tool-desc{font-family:var(--body);font-size:1rem;color:var(--text2);line-height:1.6;margin-bottom:20px;flex:1;}
+.tool-meta{display:flex;gap:16px;margin-bottom:20px;font-family:var(--mono);font-size:11px;color:var(--muted);}
+.tool-meta span{display:flex;align-items:center;gap:4px;}
+.tool-btn{width:100%;background:var(--amber);color:var(--bg);border:none;font-family:var(--head);font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:14px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;}
+.tool-btn:hover{background:var(--amber2);}
+.tool-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.tool-btn.secondary:hover{border-color:var(--amber);color:var(--amber);background:rgba(240,165,0,0.04);}
+
+/* Framework Section */
+.framework{max-width:800px;margin:0 auto;padding:0 2rem 4rem;}
+.framework p{font-family:var(--body);font-size:1.05rem;color:var(--text2);line-height:1.7;margin-bottom:1rem;}
+.framework h2{font-family:var(--head);font-size:1.1rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin:2rem 0 1rem;}
+.framework .eq{font-family:var(--mono);font-size:14px;color:var(--amber2);background:var(--bg3);border:1px solid var(--border);padding:16px 20px;margin:16px 0;line-height:1.8;}
+
+/* Connection strip */
+.connection{background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2.5rem 2rem;}
+.connection-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;justify-content:center;}
+.connection-text{font-family:var(--body);font-size:1.1rem;color:var(--text2);text-align:center;max-width:500px;line-height:1.6;}
+.connection-text strong{color:var(--text);}
+.connection-links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;}
+footer p{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:1px;}
+footer a{color:var(--amber);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+@media(max-width:800px){
+  .tools-grid{grid-template-columns:1fr;}
+  header{flex-direction:column;gap:12px;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Rigor<span>Theophysics Measurement Framework</span></div>
+  <nav class="nav">
+    <a href="https://faiththruphysics.com" class="active"><i class="fas fa-home" style="font-size:.7rem;"></i> Home</a>
+    <a href="../index.html">Theophysics</a>
+    <a href="../../MDA%20final%20David/00-entry-and-series-map/index.html">MDA</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Measurement \u00b7 Verification \u00b7 Replication</div>
+    <h1 class="hero-h1">The Rigor Layer</h1>
+    <p class="hero-sub">Every claim in Theophysics and MDA is backed by a formal measurement framework. Not metaphor. Not analogy. The same mathematical structures that govern information theory, statistical mechanics, and signal processing — applied to coherence, morality, and civilizational health.</p>
+    <div class="hero-eq">L<sub>i</sub> = log( (C<sub>i</sub> + \u03b5) / (D<sub>i</sub> + \u03b5) ) &nbsp;&nbsp;&middot;&nbsp;&nbsp; \u03c7 = (1/N) \u03a3 w<sub>i</sub> \u00b7 L<sub>i</sub> &nbsp;&nbsp;&middot;&nbsp;&nbsp; dS/dt = \u03c3 \u2212 W/T</div>
+  </div>
+</section>
+
+<div class="section-label" style="max-width:1100px;margin:0 auto;padding:0 2rem;">Two Instruments</div>
+
+<section class="tools-grid">
+
+  <div class="tool-card">
+    <div class="tool-badge">Universal Signal Persistence Framework</div>
+    <h2 class="tool-title">Rigor Bible</h2>
+    <p class="tool-desc">Ten-law signal persistence calculator for textual and historical coherence. Measures how signals survive transmission across time, translation, and cultural disruption. Built on KL-divergence analogs and channel-capacity mathematics.</p>
+    <div class="tool-meta">
+      <span><i class="fas fa-calculator" style="color:var(--amber);"></i> Interactive</span>
+      <span><i class="fas fa-database" style="color:var(--blue);"></i> Historical DB</span>
+      <span><i class="fas fa-scroll" style="color:var(--green);"></i> Textual</span>
+    </div>
+    <a href="../Rigor%20Bible.html" class="tool-btn">Open USPF Calculator <i class="fas fa-arrow-right" style="font-size:.7rem;"></i></a>
+  </div>
+
+  <div class="tool-card">
+    <div class="tool-badge">Moral Decline of America</div>
+    <h2 class="tool-title">Rigor MDA</h2>
+    <p class="tool-desc">Nine-domain societal coherence diagnostic. Input constructive and destructive regime proxies for any society, any era. Computes \u03c7<sub>MDA</sub>, classifies civilizational health, and compares against the historical registry.</p>
+    <div class="tool-meta">
+      <span><i class="fas fa-calculator" style="color:var(--amber);"></i> Interactive</span>
+      <span><i class="fas fa-chart-line" style="color:var(--red);"></i> 9 Domains</span>
+      <span><i class="fas fa-globe" style="color:var(--green);"></i> Societal</span>
+    </div>
+    <a href="../Rigor%20MDA.html" class="tool-btn">Open MDA Diagnostic <i class="fas fa-arrow-right" style="font-size:.7rem;"></i></a>
+  </div>
+
+</section>
+
+<section class="connection">
+  <div class="connection-inner">
+    <div class="connection-text">
+      <strong>These tools power the MDA series.</strong> Every domain score, every historical comparison, and every threshold claim in <em>The Moral Decline of America</em> is derived from the same equations you can run yourself.
+    </div>
+    <div class="connection-links">
+      <a href="../../MDA%20final%20David/00-entry-and-series-map/index.html" class="tool-btn secondary"><i class="fas fa-list"></i> MDA Series</a>
+      <a href="../../MDA%20final%20David/02-method-and-metrics/MDA-007-nine-domains.html" class="tool-btn secondary"><i class="fas fa-cube"></i> Nine Domains</a>
+      <a href="../../MDA%20final%20David/02-method-and-metrics/MDA-038-coherence-metric.html" class="tool-btn secondary"><i class="fas fa-ruler"></i> Coherence Metric</a>
+    </div>
+  </div>
+</section>
+
+<section class="framework">
+  <div class="section-label">The Mathematics</div>
+  <p>The rigor layer is not an afterthought. It is the foundation. Every narrative claim in MDA \u2014 every drop in family stability, every collapse in shared meaning, every phase transition \u2014 is traceable to a proxy variable, a channel score, and an aggregate coherence computation.</p>
+
+  <h2>Channel Score</h2>
+  <div class="eq">L<sub>i</sub> = log( (C<sub>i</sub> + \u03b5) / (D<sub>i</sub> + \u03b5) )</div>
+  <p>Each channel (domain) receives a constructive signal C and a destructive signal D. The log-ratio measures which regime dominates. This is structurally identical to Kullback-Leibler divergence and Shannon channel capacity.</p>
+
+  <h2>Aggregate Coherence</h2>
+  <div class="eq">\u03c7 = (1/N) \u00b7 \u03a3 w<sub>i</sub> \u00b7 L<sub>i</sub></div>
+  <p>The aggregate coherence \u03c7 is the weighted mean of all channel scores. It is a single number that classifies civilizational health: above 0.35 is sustainable, below is precarious, negative is collapse.</p>
+
+  <h2>Dynamics</h2>
+  <div class="eq">dS<sub>m</sub>/dt = \u03c3 \u2212 W/T</div>
+  <p>The rate of change tracks whether coherence is accumulating (\u03c3 > W/T) or dissipating (\u03c3 < W/T). This is the same entropy-production formalism from stochastic thermodynamics.</p>
+
+  <div class="section-label" style="margin-top:2.5rem;">Access</div>
+  <p style="text-align:center;">Both calculators run entirely in your browser. No data leaves your machine. You can verify every number, change every input, and test the framework against your own assumptions.</p>
+  <div style="display:flex;gap:12px;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;">
+    <a href="../Rigor%20Bible.html" class="tool-btn" style="width:auto;padding:12px 24px;"><i class="fas fa-scroll"></i> USPF Calculator</a>
+    <a href="../Rigor%20MDA.html" class="tool-btn secondary" style="width:auto;padding:12px 24px;"><i class="fas fa-globe"></i> MDA Diagnostic</a>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2024\u20132026 David Lowe &amp; Partners &middot; <a href="https://faiththruphysics.com">Faith Through Physics</a> &middot; <a href="../../MDA%20final%20David/00-entry-and-series-map/index.html">MDA Series</a></p>
+</footer>
+
+</body>
+</html>
