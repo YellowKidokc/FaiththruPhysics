@@ -1,10 +1,9 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import { env } from "../api/lib/env";
+import { drizzle, type DrizzleD1Database } from "drizzle-orm/d1";
 import * as schema from "./schema";
 
-const db = drizzle(env.databaseUrl, { mode: "planetscale", schema });
+export type SeedDb = DrizzleD1Database<typeof schema>;
 
-async function seed() {
+export async function seedDatabase(db: SeedDb) {
   console.log("Seeding OpenIntel with Shroud of Turin case...");
 
   // ── CASE ──
@@ -18,7 +17,7 @@ async function seed() {
     ocsScore: null,
     verdict: null,
     notes: "Universal truth-finding protocol proof-of-concept. Fakery Matrix F1-F10 yields functionally zero compound probability for forgery. Population Density Test yields zero required forger population.",
-  }).$returningId();
+  }).returning({ id: schema.cases.id });
 
   const caseId = caseRow.id;
   console.log(`Created case: ${caseId}`);
@@ -245,5 +244,3 @@ async function seed() {
   console.log("Entities: 15");
   console.log("Contradictions: 4");
 }
-
-seed().catch(console.error);

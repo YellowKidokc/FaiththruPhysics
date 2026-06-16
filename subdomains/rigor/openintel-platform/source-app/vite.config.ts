@@ -1,4 +1,3 @@
-import devServer from "@hono/vite-dev-server"
 import path from "path"
 const __dirname = import.meta.dirname
 import react from "@vitejs/plugin-react"
@@ -11,7 +10,6 @@ export default defineConfig({
   // subdirectory (e.g. /subdomains/rigor/openintel-platform/).
   base: "./",
   plugins: [
-    devServer({ entry: "api/boot.ts", exclude: [/^\/(?!api\/).*$/] }),
     inspectAttr(), react()],
   server: {
     port: 3000,

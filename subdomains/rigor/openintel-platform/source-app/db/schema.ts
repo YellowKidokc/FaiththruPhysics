@@ -1,219 +1,209 @@
 import {
-  mysqlTable,
-  mysqlEnum,
-  serial,
-  varchar,
+  sqliteTable,
+  integer,
   text,
-  timestamp,
-  decimal,
-  bigint,
-  int,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/sqlite-core";
 
 // ───────────────────────────────────────────
 // Layer 1 — Case Management
 // ───────────────────────────────────────────
 
-export const cases = mysqlTable("cases", {
-  id: serial("id").primaryKey(),
-  caseId: varchar("case_id", { length: 50 }).notNull().unique(),
-  canonicalTitle: varchar("canonical_title", { length: 255 }).notNull(),
-  caseType: mysqlEnum("case_type", ["PHENOMENON", "CONSPIRACY", "EVENT", "PERSON", "ORGANIZATION", "TOPIC"]).default("PHENOMENON").notNull(),
-  category: varchar("category", { length: 100 }),
+export const cases = sqliteTable("cases", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: text("case_id").notNull().unique(),
+  canonicalTitle: text("canonical_title").notNull(),
+  caseType: text("case_type").notNull().default("PHENOMENON"),
+  category: text("category"),
   aliases: text("aliases"),
-  status: mysqlEnum("status", ["DRAFT", "ACTIVE", "REVIEWING", "COMPLETED", "ARCHIVED"]).default("DRAFT").notNull(),
+  status: text("status").notNull().default("DRAFT"),
   oneSentenceVerdict: text("one_sentence_verdict"),
-  ocsScore: decimal("ocs_score", { precision: 5, scale: 2 }),
-  verdict: mysqlEnum("verdict", ["PROVEN", "PARTIALLY_PROVEN", "DISPUTED", "UNPROVEN", "DEBUNKED", "INSUFFICIENT_EVIDENCE"]),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
+  ocsScore: text("ocs_score"),
+  verdict: text("verdict"),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).defaultNow().notNull().$onUpdate(() => new Date()),
   notes: text("notes"),
 });
 
-export const caseRuns = mysqlTable("case_runs", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  intent: mysqlEnum("intent", ["define_it", "aggregate_sources", "rip_site", "find_outgoing_links", "find_best_evidence", "build_timeline", "build_entity_map", "run_protocol"]).default("run_protocol").notNull(),
-  sourceScope: mysqlEnum("source_scope", ["wikipedia_only", "trusted_hubs", "web_wide", "domain_specific", "archives_gov_legal", "mixed"]).default("trusted_hubs").notNull(),
-  depth: mysqlEnum("depth", ["top_10", "top_25", "top_50", "one_hop", "two_hops", "deep_crawl"]).default("top_50").notNull(),
-  outputType: mysqlEnum("output_type", ["link_list", "source_inventory", "ripped_pages", "entities", "timeline_events", "workbook", "notebook", "package_json"]).default("workbook").notNull(),
-  orgMode: mysqlEnum("org_mode", ["by_case", "by_source_type", "by_date", "by_entity", "by_confidence", "by_domain"]).default("by_domain").notNull(),
+export const caseRuns = sqliteTable("case_runs", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  intent: text("intent").notNull().default("run_protocol"),
+  sourceScope: text("source_scope").notNull().default("trusted_hubs"),
+  depth: text("depth").notNull().default("top_50"),
+  outputType: text("output_type").notNull().default("workbook"),
+  orgMode: text("org_mode").notNull().default("by_domain"),
   configJson: text("config_json"),
-  startedAt: timestamp("started_at").defaultNow().notNull(),
-  completedAt: timestamp("completed_at"),
-  status: mysqlEnum("status", ["PENDING", "RUNNING", "COMPLETED", "FAILED"]).default("PENDING").notNull(),
+  startedAt: integer("started_at", { mode: "timestamp" }).defaultNow().notNull(),
+  completedAt: integer("completed_at", { mode: "timestamp" }),
+  status: text("status").notNull().default("PENDING"),
 });
 
 // ───────────────────────────────────────────
 // Layer 2 — Evidence Catalog
 // ───────────────────────────────────────────
 
-export const evidenceItems = mysqlTable("evidence_items", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  domain: mysqlEnum("domain", [
-    "MATERIAL_SCIENCE", "HEMATOLOGY", "PATHOLOGY", "BOTANICAL_GEOLOGICAL",
-    "IMAGING_PHYSICS", "HISTORICAL_PROVENANCE", "DATING", "ART_HISTORICAL",
-    "TESTIMONIAL", "DOCUMENTARY", "FORENSIC", "DIGITAL", "STATISTICAL", "OTHER"
-  ]).notNull(),
-  evidenceName: varchar("evidence_name", { length: 255 }).notNull(),
-  tier: mysqlEnum("tier", ["T1", "T2", "T3", "T4", "T5"]).notNull(),
+export const evidenceItems = sqliteTable("evidence_items", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  domain: text("domain").notNull(),
+  evidenceName: text("evidence_name").notNull(),
+  tier: text("tier").notNull(),
   tierDescription: text("tier_description"),
-  source: varchar("source", { length: 500 }),
+  source: text("source"),
   sourceChainOfCustody: text("source_chain_of_custody"),
   whatItProves: text("what_it_proves"),
   weaknesses: text("weaknesses"),
-  fabricationCost: mysqlEnum("fabrication_cost", ["EXTREME", "HIGH", "MODERATE", "LOW", "ZERO", "IMPOSSIBLE"]),
+  fabricationCost: text("fabrication_cost"),
   fabricationCostDescription: text("fabrication_cost_description"),
   counterArguments: text("counter_arguments"),
-  isDiscriminating: varchar("is_discriminating", { length: 10 }).default("true"),
-  independenceVerified: varchar("independence_verified", { length: 10 }).default("true"),
-  yearDiscovered: int("year_discovered"),
+  isDiscriminating: text("is_discriminating").default("true"),
+  independenceVerified: text("independence_verified").default("true"),
+  yearDiscovered: integer("year_discovered", { mode: "number" }),
   notes: text("notes"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 3 — Timeline
 // ───────────────────────────────────────────
 
-export const timelineEvents = mysqlTable("timeline_events", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  eventDate: varchar("event_date", { length: 50 }),
-  datePrecision: mysqlEnum("date_precision", ["DAY", "MONTH", "YEAR", "DECADE", "CENTURY"]).default("YEAR").notNull(),
+export const timelineEvents = sqliteTable("timeline_events", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  eventDate: text("event_date"),
+  datePrecision: text("date_precision").notNull().default("YEAR"),
   eventDescription: text("event_description").notNull(),
-  source: varchar("source", { length: 500 }),
-  verificationStatus: mysqlEnum("verification_status", ["CONFIRMED", "PROBABLE", "DISPUTED", "UNVERIFIED", "DEBUNKED"]).default("CONFIRMED").notNull(),
-  tier: mysqlEnum("tier", ["T1", "T2", "T3", "T4", "T5"]).default("T2").notNull(),
+  source: text("source"),
+  verificationStatus: text("verification_status").notNull().default("CONFIRMED"),
+  tier: text("tier").notNull().default("T2"),
   entitiesInvolved: text("entities_involved"),
   notes: text("notes"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 4 — Fakery Matrix (Forced Inversion)
 // ───────────────────────────────────────────
 
-export const fakeryMatrixItems = mysqlTable("fakery_matrix_items", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  constraintId: varchar("constraint_id", { length: 10 }).notNull(),
-  constraintName: varchar("constraint_name", { length: 255 }).notNull(),
+export const fakeryMatrixItems = sqliteTable("fakery_matrix_items", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  constraintId: text("constraint_id").notNull(),
+  constraintName: text("constraint_name").notNull(),
   description: text("description").notNull(),
-  fabricationCost: mysqlEnum("fabrication_cost", ["EXTREME", "HIGH", "MODERATE", "LOW", "ZERO", "IMPOSSIBLE"]).notNull(),
+  fabricationCost: text("fabrication_cost").notNull(),
   fabricationCostDescription: text("fabrication_cost_description"),
-  possibilityScore: decimal("possibility_score", { precision: 10, scale: 9 }).default("1.0").notNull(),
+  possibilityScore: text("possibility_score").notNull().default("1.0"),
   possibilityJustification: text("possibility_justification"),
-  rating: mysqlEnum("rating", ["EXTREME", "HIGH", "MODERATE", "LOW", "ZERO", "IMPOSSIBLE"]).default("EXTREME").notNull(),
-  sortOrder: int("sort_order").default(0).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  rating: text("rating").notNull().default("EXTREME"),
+  sortOrder: integer("sort_order", { mode: "number" }).default(0).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 5 — Population Density Test
 // ───────────────────────────────────────────
 
-export const populationDensityItems = mysqlTable("population_density_items", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  direction: mysqlEnum("direction", ["FORGERY", "CONSPIRACY", "AUTHENTICITY", "OTHER"]).notNull(),
-  capability: varchar("capability", { length: 255 }).notNull(),
-  locationRequired: varchar("location_required", { length: 255 }),
-  eraRequired: varchar("era_required", { length: 255 }),
-  densityScore: decimal("density_score", { precision: 10, scale: 9 }).default("0.0").notNull(),
-  confidence: mysqlEnum("confidence", ["HIGH", "MEDIUM", "LOW"]).default("HIGH").notNull(),
+export const populationDensityItems = sqliteTable("population_density_items", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  direction: text("direction").notNull(),
+  capability: text("capability").notNull(),
+  locationRequired: text("location_required"),
+  eraRequired: text("era_required"),
+  densityScore: text("density_score").notNull().default("0.0"),
+  confidence: text("confidence").notNull().default("HIGH"),
   justification: text("justification"),
-  populationEstimate: varchar("population_estimate", { length: 100 }),
-  sortOrder: int("sort_order").default(0).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  populationEstimate: text("population_estimate"),
+  sortOrder: integer("sort_order", { mode: "number" }).default(0).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 6 — Soft Signals (14 signals)
 // ───────────────────────────────────────────
 
-export const softSignals = mysqlTable("soft_signals", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  signalName: varchar("signal_name", { length: 100 }).notNull(),
-  signalKey: varchar("signal_key", { length: 50 }).notNull(),
+export const softSignals = sqliteTable("soft_signals", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  signalName: text("signal_name").notNull(),
+  signalKey: text("signal_key").notNull(),
   description: text("description"),
-  score: decimal("score", { precision: 4, scale: 2 }).default("0.0").notNull(),
-  maxScore: decimal("max_score", { precision: 4, scale: 2 }).default("10.0").notNull(),
+  score: text("score").notNull().default("0.0"),
+  maxScore: text("max_score").notNull().default("10.0"),
   justification: text("justification"),
   evidenceRefs: text("evidence_refs"),
-  sortOrder: int("sort_order").default(0).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  sortOrder: integer("sort_order", { mode: "number" }).default(0).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 7 — Protocol Steps
 // ───────────────────────────────────────────
 
-export const protocolSteps = mysqlTable("protocol_steps", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  stepNumber: int("step_number").notNull(),
-  stepName: varchar("step_name", { length: 100 }).notNull(),
-  stepKey: varchar("step_key", { length: 50 }).notNull(),
+export const protocolSteps = sqliteTable("protocol_steps", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  stepNumber: integer("step_number", { mode: "number" }).notNull(),
+  stepName: text("step_name").notNull(),
+  stepKey: text("step_key").notNull(),
   description: text("description"),
-  status: mysqlEnum("status", ["PENDING", "IN_PROGRESS", "COMPLETED", "SKIPPED", "BLOCKED"]).default("PENDING").notNull(),
+  status: text("status").notNull().default("PENDING"),
   findings: text("findings"),
   conclusion: text("conclusion"),
-  completedAt: timestamp("completed_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: integer("completed_at", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 8 — Entities
 // ───────────────────────────────────────────
 
-export const entities = mysqlTable("entities", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  entityName: varchar("entity_name", { length: 255 }).notNull(),
-  entityType: mysqlEnum("entity_type", ["PERSON", "ORGANIZATION", "INSTITUTION", "PLACE", "EVENT", "ARTIFACT"]).notNull(),
+export const entities = sqliteTable("entities", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  entityName: text("entity_name").notNull(),
+  entityType: text("entity_type").notNull(),
   aliases: text("aliases"),
   knownFacts: text("known_facts"),
   disputedClaims: text("disputed_claims"),
   connections: text("connections"),
-  tier: mysqlEnum("tier", ["T1", "T2", "T3", "T4", "T5"]).default("T2").notNull(),
+  tier: text("tier").notNull().default("T2"),
   notes: text("notes"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 9 — Contradictions
 // ───────────────────────────────────────────
 
-export const contradictions = mysqlTable("contradictions", {
-  id: serial("id").primaryKey(),
-  caseId: bigint("case_id", { mode: "number", unsigned: true }).notNull(),
-  contradictionType: mysqlEnum("contradiction_type", ["OFFICIAL_NARRATIVE", "INTERNAL", "SKEPTICAL", "EVIDENTIAL"]).notNull(),
+export const contradictions = sqliteTable("contradictions", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  caseId: integer("case_id", { mode: "number" }).notNull(),
+  contradictionType: text("contradiction_type").notNull(),
   description: text("description").notNull(),
   positionA: text("position_a"),
   positionB: text("position_b"),
-  severityScore: decimal("severity_score", { precision: 4, scale: 2 }).default("5.0").notNull(),
+  severityScore: text("severity_score").notNull().default("5.0"),
   resolution: text("resolution"),
   notes: text("notes"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────
 // Layer 10 — Users (from auth)
 // ───────────────────────────────────────────
 
-export const users = mysqlTable("users", {
-  id: serial("id").primaryKey(),
-  unionId: varchar("unionId", { length: 255 }).notNull().unique(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 320 }),
+export const users = sqliteTable("users", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  unionId: text("unionId").notNull().unique(),
+  name: text("name"),
+  email: text("email"),
   avatar: text("avatar"),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().notNull().$onUpdate(() => new Date()),
-  lastSignInAt: timestamp("lastSignInAt").defaultNow().notNull(),
+  role: text("role").notNull().default("user"),
+  createdAt: integer("createdAt", { mode: "timestamp" }).defaultNow().notNull(),
+  updatedAt: integer("updatedAt", { mode: "timestamp" }).defaultNow().notNull().$onUpdate(() => new Date()),
+  lastSignInAt: integer("lastSignInAt", { mode: "timestamp" }).defaultNow().notNull(),
 });
 
 // ───────────────────────────────────────────

@@ -24,8 +24,8 @@ export const scoringRouter = createRouter({
 
   computeFakeryCompound: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const items = await db.select().from(fakeryMatrixItems)
         .where(eq(fakeryMatrixItems.caseId, input.caseId))
         .orderBy(fakeryMatrixItems.sortOrder);
@@ -87,8 +87,8 @@ export const scoringRouter = createRouter({
 
   computePopDensityCompound: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const items = await db.select().from(populationDensityItems)
         .where(eq(populationDensityItems.caseId, input.caseId))
         .orderBy(populationDensityItems.sortOrder);
@@ -137,8 +137,8 @@ export const scoringRouter = createRouter({
 
   computeEvidenceStats: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const items = await db.select().from(evidenceItems)
         .where(eq(evidenceItems.caseId, input.caseId));
 
@@ -173,8 +173,8 @@ export const scoringRouter = createRouter({
 
   computeSoftSignalsAggregate: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const items = await db.select().from(softSignals)
         .where(eq(softSignals.caseId, input.caseId));
 
@@ -190,14 +190,14 @@ export const scoringRouter = createRouter({
       };
     }),
 
-  // ───────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
   // OCS (Overall Case Score)
-  // ───────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
 
   computeOCS: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
 
       // Get evidence stats
       const evidence = await db.select().from(evidenceItems)
@@ -239,11 +239,6 @@ export const scoringRouter = createRouter({
         : 0;
 
       // OCS formula: weighted blend
-      // E_qual (evidence quality) = 30%
-      // F_score (fakery impossibility) = 25%
-      // P_score (population density) = 20%
-      // S_score (soft signals) = 15%
-      // C_penalty (contradiction penalty) = 10%
       const ocs = (
         evidenceQuality * 0.30 +
         fakeryScore * 0.25 +
@@ -303,8 +298,8 @@ export const scoringRouter = createRouter({
 
   generateSqlExport: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const fullCase = await db.select().from(cases).where(eq(cases.id, input.caseId));
       if (!fullCase[0]) return { sql: "-- Case not found" };
 

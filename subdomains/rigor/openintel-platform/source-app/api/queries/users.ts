@@ -1,11 +1,10 @@
 import { eq } from "drizzle-orm";
 import * as schema from "@db/schema";
 import type { InsertUser } from "@db/schema";
-import { getDb } from "./connection";
-import { env } from "../lib/env";
+import { getDb, type DbEnv } from "./connection";
 
-export async function findUserByUnionId(unionId: string) {
-  const rows = await getDb()
+export async function findUserByUnionId(env: DbEnv, unionId: string) {
+  const rows = await getDb(env)
     .select()
     .from(schema.users)
     .where(eq(schema.users.unionId, unionId))
@@ -13,7 +12,7 @@ export async function findUserByUnionId(unionId: string) {
   return rows.at(0);
 }
 
-export async function upsertUser(data: InsertUser) {
+export async function upsertUser(env: DbEnv & { OWNER_UNION_ID?: string }, data: InsertUser) {
   const values = { ...data };
   const updateSet: Partial<InsertUser> = {
     lastSignInAt: new Date(),
@@ -23,14 +22,17 @@ export async function upsertUser(data: InsertUser) {
   if (
     values.role === undefined &&
     values.unionId &&
-    values.unionId === env.ownerUnionId
+    values.unionId === env.OWNER_UNION_ID
   ) {
     values.role = "admin";
     updateSet.role = "admin";
   }
 
-  await getDb()
+  await getDb(env)
     .insert(schema.users)
     .values(values)
-    .onDuplicateKeyUpdate({ set: updateSet });
+    .onConflictDoUpdate({
+      target: schema.users.unionId,
+      set: updateSet,
+    });
 }

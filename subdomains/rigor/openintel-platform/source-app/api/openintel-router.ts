@@ -28,8 +28,8 @@ export const openintelRouter = createRouter({
       aliases: z.string().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const [newCase] = await db.insert(cases).values({
         caseId: input.caseId,
         canonicalTitle: input.canonicalTitle,
@@ -37,27 +37,27 @@ export const openintelRouter = createRouter({
         category: input.category,
         aliases: input.aliases,
         notes: input.notes,
-      }).$returningId();
+      }).returning({ id: cases.id });
       return newCase;
     }),
 
-  caseList: publicQuery.query(async () => {
-    const db = getDb();
+  caseList: publicQuery.query(async ({ ctx }) => {
+    const db = getDb(ctx.env);
     return db.select().from(cases).orderBy(cases.createdAt);
   }),
 
   caseGetById: publicQuery
     .input(z.object({ id: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const results = await db.select().from(cases).where(eq(cases.id, input.id));
       return results[0] ?? null;
     }),
 
   caseGetByCaseId: publicQuery
     .input(z.object({ caseId: z.string() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const results = await db.select().from(cases).where(eq(cases.caseId, input.caseId));
       return results[0] ?? null;
     }),
@@ -72,8 +72,8 @@ export const openintelRouter = createRouter({
       verdict: z.enum(["PROVEN", "PARTIALLY_PROVEN", "DISPUTED", "UNPROVEN", "DEBUNKED", "INSUFFICIENT_EVIDENCE"]).optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const { id, ...data } = input;
       await db.update(cases).set(data).where(eq(cases.id, id));
       return { success: true };
@@ -106,16 +106,16 @@ export const openintelRouter = createRouter({
       yearDiscovered: z.number().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(evidenceItems).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(evidenceItems).values(input).returning({ id: evidenceItems.id });
       return item;
     }),
 
   evidenceListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(evidenceItems)
         .where(eq(evidenceItems.caseId, input.caseId))
         .orderBy(evidenceItems.domain, evidenceItems.tier);
@@ -123,8 +123,8 @@ export const openintelRouter = createRouter({
 
   evidenceDelete: publicQuery
     .input(z.object({ id: z.number() }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       await db.delete(evidenceItems).where(eq(evidenceItems.id, input.id));
       return { success: true };
     }),
@@ -145,16 +145,16 @@ export const openintelRouter = createRouter({
       entitiesInvolved: z.string().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(timelineEvents).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(timelineEvents).values(input).returning({ id: timelineEvents.id });
       return item;
     }),
 
   timelineListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(timelineEvents)
         .where(eq(timelineEvents.caseId, input.caseId))
         .orderBy(asc(timelineEvents.eventDate));
@@ -177,16 +177,16 @@ export const openintelRouter = createRouter({
       rating: z.enum(["EXTREME", "HIGH", "MODERATE", "LOW", "ZERO", "IMPOSSIBLE"]).default("EXTREME"),
       sortOrder: z.number().default(0),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(fakeryMatrixItems).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(fakeryMatrixItems).values(input).returning({ id: fakeryMatrixItems.id });
       return item;
     }),
 
   fakeryListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(fakeryMatrixItems)
         .where(eq(fakeryMatrixItems.caseId, input.caseId))
         .orderBy(asc(fakeryMatrixItems.sortOrder));
@@ -199,8 +199,8 @@ export const openintelRouter = createRouter({
       rating: z.enum(["EXTREME", "HIGH", "MODERATE", "LOW", "ZERO", "IMPOSSIBLE"]),
       possibilityJustification: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const { id, ...data } = input;
       await db.update(fakeryMatrixItems).set(data).where(eq(fakeryMatrixItems.id, id));
       return { success: true };
@@ -223,16 +223,16 @@ export const openintelRouter = createRouter({
       populationEstimate: z.string().optional(),
       sortOrder: z.number().default(0),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(populationDensityItems).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(populationDensityItems).values(input).returning({ id: populationDensityItems.id });
       return item;
     }),
 
   popDensityListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(populationDensityItems)
         .where(eq(populationDensityItems.caseId, input.caseId))
         .orderBy(asc(populationDensityItems.sortOrder));
@@ -245,8 +245,8 @@ export const openintelRouter = createRouter({
       confidence: z.enum(["HIGH", "MEDIUM", "LOW"]).optional(),
       justification: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const { id, ...data } = input;
       await db.update(populationDensityItems).set(data).where(eq(populationDensityItems.id, id));
       return { success: true };
@@ -268,16 +268,16 @@ export const openintelRouter = createRouter({
       evidenceRefs: z.string().optional(),
       sortOrder: z.number().default(0),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(softSignals).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(softSignals).values(input).returning({ id: softSignals.id });
       return item;
     }),
 
   signalListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(softSignals)
         .where(eq(softSignals.caseId, input.caseId))
         .orderBy(asc(softSignals.sortOrder));
@@ -290,8 +290,8 @@ export const openintelRouter = createRouter({
       justification: z.string().optional(),
       evidenceRefs: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const { id, ...data } = input;
       await db.update(softSignals).set(data).where(eq(softSignals.id, id));
       return { success: true };
@@ -312,16 +312,16 @@ export const openintelRouter = createRouter({
       findings: z.string().optional(),
       conclusion: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(protocolSteps).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(protocolSteps).values(input).returning({ id: protocolSteps.id });
       return item;
     }),
 
   stepListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(protocolSteps)
         .where(eq(protocolSteps.caseId, input.caseId))
         .orderBy(asc(protocolSteps.stepNumber));
@@ -334,8 +334,8 @@ export const openintelRouter = createRouter({
       findings: z.string().optional(),
       conclusion: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const { id, ...data } = input;
       await db.update(protocolSteps).set(data).where(eq(protocolSteps.id, id));
       return { success: true };
@@ -357,16 +357,16 @@ export const openintelRouter = createRouter({
       tier: z.enum(["T1", "T2", "T3", "T4", "T5"]).default("T2"),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(entities).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(entities).values(input).returning({ id: entities.id });
       return item;
     }),
 
   entityListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(entities)
         .where(eq(entities.caseId, input.caseId))
         .orderBy(entities.entityType, entities.entityName);
@@ -387,16 +387,16 @@ export const openintelRouter = createRouter({
       resolution: z.string().optional(),
       notes: z.string().optional(),
     }))
-    .mutation(async ({ input }) => {
-      const db = getDb();
-      const [item] = await db.insert(contradictions).values(input).$returningId();
+    .mutation(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
+      const [item] = await db.insert(contradictions).values(input).returning({ id: contradictions.id });
       return item;
     }),
 
   contradictionListByCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       return db.select().from(contradictions)
         .where(eq(contradictions.caseId, input.caseId))
         .orderBy(asc(contradictions.severityScore));
@@ -408,8 +408,8 @@ export const openintelRouter = createRouter({
 
   getFullCase: publicQuery
     .input(z.object({ caseId: z.number() }))
-    .query(async ({ input }) => {
-      const db = getDb();
+    .query(async ({ input, ctx }) => {
+      const db = getDb(ctx.env);
       const [caseData] = await db.select().from(cases).where(eq(cases.id, input.caseId));
       if (!caseData) return null;
 

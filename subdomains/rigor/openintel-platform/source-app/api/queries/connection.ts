@@ -1,18 +1,13 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import { env } from "../lib/env";
+import { drizzle } from "drizzle-orm/d1";
 import * as schema from "@db/schema";
 import * as relations from "@db/relations";
 
 const fullSchema = { ...schema, ...relations };
 
-let instance: ReturnType<typeof drizzle<typeof fullSchema>>;
+export type DbEnv = {
+  DB: D1Database;
+};
 
-export function getDb() {
-  if (!instance) {
-    instance = drizzle(env.databaseUrl, {
-      mode: "planetscale",
-      schema: fullSchema,
-    });
-  }
-  return instance;
+export function getDb(env: DbEnv) {
+  return drizzle(env.DB, { schema: fullSchema });
 }

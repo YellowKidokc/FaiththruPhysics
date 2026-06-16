@@ -1,10 +1,11 @@
 import * as jose from "jose";
-import { env } from "../lib/env";
+import type { Env } from "../lib/env";
 import type { SessionPayload } from "./types";
 
 const JWT_ALG = "HS256";
 
 export async function signSessionToken(
+  env: Env,
   payload: SessionPayload,
 ): Promise<string> {
   const secret = new TextEncoder().encode(env.appSecret);
@@ -16,6 +17,7 @@ export async function signSessionToken(
 }
 
 export async function verifySessionToken(
+  env: Env,
   token: string,
 ): Promise<SessionPayload | null> {
   if (!token) {

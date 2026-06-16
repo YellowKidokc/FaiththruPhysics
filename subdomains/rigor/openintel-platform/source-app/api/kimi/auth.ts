@@ -1,17 +1,17 @@
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
-import * as jose from "jose";
 import * as cookie from "cookie";
-import { env } from "../lib/env";
-import { getSessionCookieOptions } from "../lib/cookies";
 import { Session } from "@contracts/constants";
 import { Errors } from "@contracts/errors";
+import { getSessionCookieOptions } from "../lib/cookies";
+import { findUserByUnionId, upsertUser } from "../queries/users";
+import type { Env } from "../lib/env";
 import { signSessionToken, verifySessionToken } from "./session";
 import { users as kimiUsers } from "./platform";
-import { findUserByUnionId, upsertUser } from "../queries/users";
 import type { TokenResponse } from "./types";
 
 async function exchangeAuthCode(
+  env: Env,
   code: string,
   redirectUri: string,
 ): Promise<TokenResponse> {
@@ -37,14 +37,13 @@ async function exchangeAuthCode(
   return resp.json() as Promise<TokenResponse>;
 }
 
-const jwks = jose.createRemoteJWKSet(
-  new URL(`${env.kimiAuthUrl}/api/.well-known/jwks.json`),
-);
-
 async function verifyAccessToken(
+  env: Env,
   accessToken: string,
 ): Promise<{ userId: string; clientId: string }> {
-  const { payload } = await jose.jwtVerify(accessToken, jwks);
+  const { createRemoteJWKSet, jwtVerify } = await import("jose");
+  const jwks = createRemoteJWKSet(new URL(`${env.kimiAuthUrl}/api/.well-known/jwks.json`));
+  const { payload } = await jwtVerify(accessToken, jwks);
   const userId = payload.user_id as string;
   const clientId = payload.client_id as string;
   if (!userId) {
@@ -53,25 +52,25 @@ async function verifyAccessToken(
   return { userId, clientId };
 }
 
-export async function authenticateRequest(headers: Headers) {
+export async function authenticateRequest(env: Env, headers: Headers) {
   const cookies = cookie.parse(headers.get("cookie") || "");
   const token = cookies[Session.cookieName];
   if (!token) {
     console.warn("[auth] No session cookie found in request.");
     throw Errors.forbidden("Invalid authentication token.");
   }
-  const claim = await verifySessionToken(token);
+  const claim = await verifySessionToken(env, token);
   if (!claim) {
     throw Errors.forbidden("Invalid authentication token.");
   }
-  const user = await findUserByUnionId(claim.unionId);
+  const user = await findUserByUnionId(env, claim.unionId);
   if (!user) {
     throw Errors.forbidden("User not found. Please re-login.");
   }
   return user;
 }
 
-export function createOAuthCallbackHandler() {
+export function createOAuthCallbackHandler(env: Env) {
   return async (c: Context) => {
     const code = c.req.query("code");
     const state = c.req.query("state");
@@ -94,21 +93,21 @@ export function createOAuthCallbackHandler() {
 
     try {
       const redirectUri = atob(state);
-      const tokenResp = await exchangeAuthCode(code, redirectUri);
-      const { userId } = await verifyAccessToken(tokenResp.access_token);
-      const userProfile = await kimiUsers.getProfile(tokenResp.access_token);
+      const tokenResp = await exchangeAuthCode(env, code, redirectUri);
+      const { userId } = await verifyAccessToken(env, tokenResp.access_token);
+      const userProfile = await kimiUsers.getProfile(env, tokenResp.access_token);
       if (!userProfile) {
         throw new Error("Failed to fetch user profile from Kimi Open");
       }
 
-      await upsertUser({
+      await upsertUser(env, {
         unionId: userId,
         name: userProfile.name,
         avatar: userProfile.avatar_url,
         lastSignInAt: new Date(),
       });
 
-      const token = await signSessionToken({
+      const token = await signSessionToken(env, {
         unionId: userId,
         clientId: env.appId,
       });
