@@ -30,14 +30,19 @@
   };
 
   const SUBDOMAINS = [
-    { label: 'Home', href: 'https://faiththruphysics.com' },
-    { label: 'Rigor', href: 'https://faiththruphysics.com/subdomains/rigor/' },
-    { label: 'Lexicon', href: 'https://faiththruphysics.com/glossary/' },
-    { label: 'Equation', href: 'https://faiththruphysics.com/equation/' },
-    { label: 'Proof Explorer', href: 'https://faiththruphysics.com/proof-explorer/' },
-    { label: 'Isomorphisms', href: 'https://faiththruphysics.com/isomorphism/' },
-    { label: 'Audio', href: 'https://faiththruphysics.com/audio/' },
-    { label: 'Podcast', href: 'https://faiththruphysics.com/podcast/' },
+    { label: 'Home', href: '/' },
+    { label: 'Rigor', href: '/rigor/' },
+    { label: 'Lexicon', href: '/glossary/' },
+    { label: 'Equation', href: '/equation/' },
+    { label: 'Master Equation', href: '/master-equation/' },
+    { label: 'Proof Explorer', href: '/proof-explorer/' },
+    { label: 'Isomorphism', href: '/isomorphism/' },
+    { label: 'GTQ', href: '/genesis-to-quantum/' },
+    { label: 'MDA', href: '/mda/' },
+    { label: 'Moral Decline', href: '/moral-decline/' },
+    { label: 'Media', href: '/media/' },
+    { label: 'Audio', href: '/audio/' },
+    { label: 'Podcast', href: '/podcast/' },
   ];
 
   const LAYERS = [
@@ -140,7 +145,7 @@
     bar.className = 'ftp-topbar';
 
     // Left: Home
-    const homeLink = `<a href="https://faiththruphysics.com" class="ftp-tb-home">${homeIcon}<span>Home</span></a>`;
+    const homeLink = `<a href="/" class="ftp-tb-home">${homeIcon}<span>Home</span></a>`;
 
     // Center: Nav + Tabs
     const prevClass = cfg.prevHref ? 'ftp-tb-nav active' : 'ftp-tb-nav';

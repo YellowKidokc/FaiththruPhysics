@@ -10,11 +10,16 @@
 
   const subdomains = [
     {label:"Home", href:"/"},
-    {label:"Rigor", href:"/subdomains/rigor/"},
+    {label:"Rigor", href:"/rigor/"},
     {label:"Lexicon", href:"/glossary/"},
     {label:"Equation", href:"/equation/"},
     {label:"Proof Explorer", href:"/proof-explorer/"},
     {label:"Isomorphisms", href:"/isomorphism/"},
+    {label:"Master Equation", href:"/master-equation/"},
+    {label:"GTQ", href:"/genesis-to-quantum/"},
+    {label:"MDA", href:"/mda/"},
+    {label:"Moral Decline", href:"/moral-decline/"},
+    {label:"Media", href:"/media/"},
     {label:"Audio", href:"/audio/"},
     {label:"Podcast", href:"/podcast/"}
   ];
