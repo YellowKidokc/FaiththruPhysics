@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>07 · The Verdict — The Convergence Series</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+:root {
+  --surface: #0a0a0a;
+  --surface-light: #141414;
+  --surface-mid: #1a1a1a;
+  --border: #2a2a2a;
+  --border-hover: #3a3a3a;
+  --text-primary: #e0e0e0;
+  --text-body: #c4c4c4;
+  --text-secondary: #888;
+  --text-dim: #555;
+  --highlight: #d4af37;
+  --highlight-bright: #e8c547;
+  --highlight-dim: rgba(212,175,55,0.08);
+  --red: #ef4444;
+  --teal: #2dd4bf;
+  --blue: #4a9eff;
+  --purple: #a855f7;
+  --green: #22c55e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(212,175,55,0.25);
+  color: #fff;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE HEADER
+   ══════════════════════════════════════ */
+.article-header {
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 2rem 2.5rem;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.series-tag {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+
+.chapter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.article-title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.article-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.author-line {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.author-line a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.author-line a:hover { color: var(--highlight); }
+
+
+/* ══════════════════════════════════════
+   FACTS CARD
+   ══════════════════════════════════════ */
+.facts-card {
+  max-width: 780px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.facts-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.facts-toggle:hover { background: var(--surface-light); }
+
+.facts-toggle-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.facts-toggle-arrow {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+}
+
+.facts-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.facts-body.open { max-height: 800px; }
+
+.facts-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--highlight);
+  opacity: 0.5;
+}
+
+.facts-content {
+  padding: 1rem 1.5rem;
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.facts-content em { color: var(--highlight); font-style: italic; }
+
+
+/* ══════════════════════════════════════
+   PROSE — the reading experience
+   ══════════════════════════════════════ */
+.prose {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.prose p {
+  font-size: 1.08rem;
+  color: var(--text-body);
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
+}
+
+.prose p strong { color: #e0e0e0; }
+.prose p em { color: var(--highlight); font-style: italic; }
+
+/* Section breaks — the horizontal rules */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* Pull quotes */
+.prose blockquote {
+  border-left: 2px solid var(--highlight);
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Crimson Text', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--highlight);
+  line-height: 1.55;
+}
+
+/* Drop cap for first paragraph after an hr */
+.drop-cap::first-letter {
+  font-family: 'Crimson Text', serif;
+  font-size: 3.8rem;
+  float: left;
+  line-height: 0.8;
+  padding: 0.35rem 0.5rem 0 0;
+  color: var(--highlight);
+  font-weight: 700;
+}
+
+/* Landing sentences — short, punchy, after builds */
+.prose .land {
+  font-size: 1.15rem;
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+
+/* ══════════════════════════════════════
+   SCORECARD TABLE
+   ══════════════════════════════════════ */
+.scorecard {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0 2.5rem;
+  font-size: 0.92rem;
+}
+
+.scorecard thead th {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 0.75rem 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+
+.scorecard thead th:nth-child(3),
+.scorecard thead th:nth-child(4) {
+  text-align: center;
+  width: 80px;
+}
+
+.scorecard tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+
+.scorecard tbody tr:hover {
+  background: var(--surface-light);
+}
+
+.scorecard tbody td {
+  padding: 0.85rem 0.75rem;
+  vertical-align: top;
+}
+
+.scorecard .phenomenon {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.scorecard .explanation {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+
+.scorecard .score-cell {
+  text-align: center;
+  vertical-align: middle;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.scorecard .score-nat {
+  color: var(--text-dim);
+}
+
+.scorecard .score-the {
+  color: var(--highlight);
+}
+
+.scorecard tfoot td {
+  padding: 1rem 0.75rem;
+  border-top: 2px solid var(--border);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.scorecard tfoot .score-cell {
+  font-size: 1.3rem;
+}
+
+/* weakness row highlight */
+.scorecard tbody tr.weakness-row {
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.scorecard tbody tr.weakness-row .score-the {
+  color: var(--red);
+}
+
+
+/* ══════════════════════════════════════
+   KILL CONDITIONS
+   ══════════════════════════════════════ */
+.kill-conditions {
+  margin: 2rem 0 2.5rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: kill;
+}
+
+.kill-conditions li {
+  counter-increment: kill;
+  position: relative;
+  padding: 1rem 1rem 1rem 3.5rem;
+  margin-bottom: 0.5rem;
+  background: rgba(239, 68, 68, 0.04);
+  border-left: 3px solid var(--red);
+  border-radius: 0 0.3rem 0.3rem 0;
+  font-size: 0.95rem;
+  color: var(--text-body);
+  line-height: 1.7;
+}
+
+.kill-conditions li::before {
+  content: counter(kill);
+  position: absolute;
+  left: 0.85rem;
+  top: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--red);
+  opacity: 0.7;
+}
+
+.kill-conditions li strong {
+  color: #e0e0e0;
+}
+
+.kill-conditions li em {
+  color: var(--highlight);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   AUDIO PLAYERS — bottom of article
+   ══════════════════════════════════════ */
+.listen-section {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2.5rem;
+}
+
+.listen-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.player-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  transition: border-color 0.2s;
+}
+
+.player-row:hover { border-color: var(--border-hover); }
+
+.player-type {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.player-type.tts { color: var(--highlight); }
+.player-type.deep { color: var(--blue); }
+.player-type.debate { color: var(--purple); }
+
+.player-row audio {
+  width: 100%;
+  height: 36px;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE NAV — prev / next
+   ══════════════════════════════════════ */
+.article-nav {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-link:hover { color: var(--highlight); }
+
+.nav-link .nav-title {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.footer-sig {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--highlight);
+}
+
+.footer-colophon {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .article-header { padding: 2rem 1.5rem; }
+  .prose { padding: 2rem 1.5rem 4rem; }
+  .listen-section { padding: 0 1.5rem 3rem; padding-top: 2rem; }
+  .article-nav { padding: 0 1.5rem 2rem; padding-top: 1.5rem; }
+  footer { padding: 1.5rem; }
+  .player-row { grid-template-columns: 80px 1fr; }
+  .prose p { font-size: 1rem; }
+  .scorecard { font-size: 0.82rem; }
+  .scorecard thead th:nth-child(3),
+  .scorecard thead th:nth-child(4) { width: 55px; }
+  .kill-conditions li { padding-left: 3rem; font-size: 0.88rem; }
+}
+/* Chapter Image */
+.chapter-image { max-width: 780px; margin: 2rem auto; padding: 0 2rem; }
+.chapter-image img { width: 100%; height: auto; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; }
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════ -->
+<header class="article-header">
+  <div class="header-meta">
+    <span class="series-tag">The Convergence Series</span>
+    <span class="chapter-num">Chapter 07 of 07</span>
+  </div>
+  <h1 class="article-title">The Verdict</h1>
+  <p class="article-subtitle">The scorecard. The honest weakness. The kill conditions. Run it yourself.</p>
+  <div class="author-line">
+    Written by David Lowe with Claude · <a href="https://faiththruphysics.com">faiththruphysics.com</a> · 2026
+  </div>
+</header>
+<div class="chapter-image"><img src="images/slide_13.webp" alt="It's a person. And the math doesn't flinch."></div>
+
+
+<!-- ═══════════════════════════════════════
+     FACTS CARD
+     ═══════════════════════════════════════ -->
+<div class="facts-card">
+  <div class="facts-toggle" onclick="toggleFacts()">
+    <span class="facts-toggle-label"><i class="fas fa-list-check"></i> FACTS — What This Chapter Establishes</span>
+    <span class="facts-toggle-arrow"><i class="fas fa-chevron-down"></i></span>
+  </div>
+  <div class="facts-body" id="factsBody">
+    <div class="facts-row">
+      <div class="facts-letter"><span>F</span></div>
+      <div class="facts-content">Ten phenomena scored 1–5 for explanatory power across both worldviews: <em>Theism 39, Naturalism 21</em> — a clear margin with the weakness on the board.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>A</span></div>
+      <div class="facts-content">Theism's <em>weakest score is suffering</em> (2/5) — the free will defense is structurally coherent but existentially insufficient for gratuitous evil. This is stated openly, not hidden.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>C</span></div>
+      <div class="facts-content">Five specific <em>kill conditions</em> are posted publicly — retrodiction of biblical predictions, working abiogenesis model, materialist solution to hard problem of consciousness, full evolutionary account of moral qualia, breaking the 24-property convergence.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>T</span></div>
+      <div class="facts-content">The scoring methodology is <em>transparent and reproducible</em> — every line item is visible, every score can be challenged, the analysis can be re-run with different weights.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>S</span></div>
+      <div class="facts-content">Penrose entropy (10<sup>10<sup>123</sup></sup>), Wigner (1960), G&ouml;del (1931), Damasio somatic markers, Yale Baby Lab, Shannon entropy, fine-tuning literature, abiogenesis research status.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     THE ARTICLE
+     ═══════════════════════════════════════ -->
+<article class="prose">
+
+<p class="drop-cap">We set the rules in Chapter One. Level playing field. Both systems circular. Both standing on unprovable axioms. No free shots.</p>
+
+<p>Then we ran the evidence. Both directions. Bible to science — fifteen predictions with an average lead of 2,800 years. Science to God — ten structural gaps that naturalism cannot close without invoking the unfalsifiable. The math points at a Mathematician. The paradigm graveyard shows convergence, not accumulation. Every human carries a judgment layer they didn't install. And evil can't come first — only good creates reality.</p>
+
+<p class="land">Now we score it.</p>
+
+<p>I'm going to lay this out as plainly as I can. Ten phenomena. Each one scored 1 through 5 for explanatory power — how well does each worldview account for what we actually observe? Not how well it preaches. Not how well it sounds in a debate room. How well it explains the data.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════════
+     SCORECARD TABLE
+     ═══════════════════════════════════════ -->
+<table class="scorecard">
+  <thead>
+    <tr>
+      <th colspan="2">Phenomenon</th>
+      <th>Nat.</th>
+      <th>Theism</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Fine-Tuning of Physical Constants</div>
+        <div class="explanation">Constants calibrated to a precision that breaks every probability model. Naturalism appeals to brute fact or unfalsifiable multiverse. Theism: intentional design for a life-permitting universe.</div>
+      </td>
+      <td class="score-cell score-nat">2</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Origin of the Universe</div>
+        <div class="explanation">The Big Bang demands a cause. Naturalism describes the expansion but goes silent on the singularity. Theism: creation ex nihilo by a self-existent first cause outside spacetime.</div>
+      </td>
+      <td class="score-cell score-nat">2</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Biological Information</div>
+        <div class="explanation">3.2 billion base pairs of error-correcting code. Natural selection explains adaptation, not origin. No working model for functional information from chemistry alone.</div>
+      </td>
+      <td class="score-cell score-nat">2</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Hard Problem of Consciousness</div>
+        <div class="explanation">Neural correlates mapped, but why subjective experience exists at all remains unexplained. Theism: consciousness reflects a conscious Creator.</div>
+      </td>
+      <td class="score-cell score-nat">1</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Effectiveness of Mathematics</div>
+        <div class="explanation">Wigner's puzzle. Why does abstract math describe physical reality? Theism: the Author of the mind and the Author of matter are the same. Cleanest resolution available.</div>
+      </td>
+      <td class="score-cell score-nat">2</td>
+      <td class="score-cell score-the">5</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Universal Moral Intuition</div>
+        <div class="explanation">Same moral foundations across every culture and era. Naturalism explains cooperation, not guilt, not pre-verbal moral evaluation, not self-sacrifice with no reproductive payoff.</div>
+      </td>
+      <td class="score-cell score-nat">3</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+    <tr class="weakness-row">
+      <td colspan="2">
+        <div class="phenomenon">Evil and Suffering</div>
+        <div class="explanation">Naturalism: no evil, only natural outcomes — logically tight, existentially empty. Theism: free will defense — structurally coherent but does not explain the magnitude.</div>
+      </td>
+      <td class="score-cell score-nat">4</td>
+      <td class="score-cell score-the">2</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Abiogenesis</div>
+        <div class="explanation">No demonstrated mechanism. The gap between the most complex chemistry and simplest self-replicating life remains uncrossed in any lab.</div>
+      </td>
+      <td class="score-cell score-nat">2</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Nature of Free Will</div>
+        <div class="explanation">Naturalism treats agency as illusion — then uses agency to argue against it. Theism: real agency as prerequisite for moral responsibility and genuine relationship.</div>
+      </td>
+      <td class="score-cell score-nat">2</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="phenomenon">Low-Entropy Initial Conditions</div>
+        <div class="explanation">Penrose's number: 1 in 10<sup>10<sup>123</sup></sup>. Naturalism quantifies the improbability and offers no mechanism. Theism: order from intentional engineering.</div>
+      </td>
+      <td class="score-cell score-nat">1</td>
+      <td class="score-cell score-the">4</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2"><strong>Total</strong></td>
+      <td class="score-cell score-nat">21</td>
+      <td class="score-cell score-the">39</td>
+    </tr>
+  </tfoot>
+</table>
+
+<div class="chapter-image"><img src="images/slide_10.webp" alt="Two ways to respond — lower the standard, or accept the gap and ask a different question"></div>
+
+<p class="land">Not a blowout. Not a shutout. A clear margin with an honest weakness on the board.</p>
+
+<p>And here's the part that matters more than the numbers: the scoring methodology is transparent. You can look at every line item. You can disagree with any score. You can re-run the analysis with your own weights. If you think naturalism deserves a 4 on consciousness, make the case. If you think theism deserves a 1 on suffering, I'd listen. The scorecard is open. The data is on the table.</p>
+
+<p>But the direction is clear. Across ten phenomena — chosen for their difficulty, not their friendliness to either side — theism explains more of what we observe with fewer assumptions than naturalism. Not because the deck is stacked. Because the data points that way.</p>
+
+<hr/>
+
+<p class="drop-cap">Here's what I owe you. The honest weakness, stated without evasion.</p>
+
+<p>The problem of suffering is real. It's not a debating point. It's a child in a hospital. It's a tsunami. It's the kind of evil that makes the free will defense sound like a philosophy seminar when what you needed was someone to hold you while you screamed.</p>
+
+<p>Theism scores 2 out of 5 on this. I put that number there myself. The structural answer — that free will requires the genuine possibility of harm, and that a world without suffering is a world without real agency — is logically coherent. But logical coherence is cold comfort to the person standing in the wreckage. And the <em>magnitude</em> of suffering — the sheer volume of it, the gratuitous cruelty of it, the suffering that hits people who did nothing to deserve it — is not fully resolved by any theodicy I've ever read.</p>
+
+<p>I don't have a clean answer for this. I have a framework that accounts for <em>why</em> evil exists (<em>privatio boni</em> — it's the absence of due good, not a created substance). I have a structural explanation for <em>how</em> evil entered (free will operating in a genuine moral space). And I have a conviction — not a proof — that the full picture includes dimensions I can't see from here.</p>
+
+<p class="land">But I won't pretend the answer is complete. It's not. And any apologetic that glosses over this is lying to you.</p>
+
+<hr/>
+
+<p class="drop-cap">Now the kill conditions. What would make me stop?</p>
+
+<p>These are the specific findings that would destroy this series. Not weaken it. Destroy it. If any of these are demonstrated, the argument falls and I'll say so publicly.</p>
+
+<ol class="kill-conditions">
+  <li><strong>Retrodiction.</strong> Demonstrate that the Bible-to-science predictions are retrodictions — that the texts were written or modified <em>after</em> the scientific discoveries they appear to predict. If the Dead Sea Scrolls or other manuscript evidence shows the relevant passages were inserted after the fact, the predictive power argument collapses.</li>
+  <li><strong>Abiogenesis.</strong> Produce a working model of abiogenesis — functional, self-replicating information arising from chemistry alone with no intelligent input. Not a theoretical framework. A demonstration. If information can arise from non-information without design, the "information requires a source" argument dies.</li>
+  <li><strong>Consciousness.</strong> Solve the hard problem of consciousness within a purely materialist framework. Not correlates. Not a model that maps brain activity to reported experience. An actual explanation of <em>why</em> subjective experience exists at all. If consciousness is fully explained by physics, the "consciousness as reflection of a conscious Creator" argument loses its ground.</li>
+  <li><strong>Moral firmware.</strong> Show that the moral evaluation hardware in humans is fully accounted for by evolutionary survival advantage — including the qualia of guilt, the pre-verbal moral evaluation in infants, and self-sacrificial behavior with no reproductive payoff. If the firmware is fully explained by natural selection, the judgment layer argument weakens to analogy.</li>
+  <li><strong>Convergence break.</strong> Find a single property among the 24 shared properties of mathematics, morality, and God that genuinely belongs to only one domain and not the others. If the convergence is broken by even one legitimate counterexample, the structural identity claim fails.</li>
+</ol>
+
+<p class="land">Five kill conditions. Named. Specific. Testable. Posted in public.</p>
+
+<p>I don't know of anyone else doing this. Most apologetics doesn't name its failure modes. Most apologetics doesn't score its own weakness. Most apologetics doesn't post the exact conditions under which it would retract.</p>
+
+<p>We do. Because if this is true, it can survive the test. And if it can't survive the test, I want to know.</p>
+
+<hr/>
+
+<p class="drop-cap">So here's where we land.</p>
+
+<p>We set the rules fair. Both systems on equal footing. No one gets the high ground for free.</p>
+
+<p>We ran the evidence both ways. The Bible predicted science with a 2,800-year head start. Science points back through ten gaps it can't close.</p>
+
+<p>We asked why math works. The answer that explains the most with the least is: the Author of the mind and the Author of matter are the same.</p>
+
+<p>We walked through the paradigm graveyard and saw that science converges — not toward a destination it chose, but toward a structure it's discovering.</p>
+
+<p>We found a judgment layer running in every human being. Firmware. Pre-installed. Universal. Predicted by a text written two thousand years before the neuroscience confirmed it.</p>
+
+<p>We proved that evil can't come first. The substrate is good. The noise came second.</p>
+
+<p>And we scored the whole thing. 39 to 21. With the weakness named and the kill conditions posted.</p>
+
+<p>I started this series with a dare: let's use science to hold God accountable. We did. And God held up. Not perfectly — the suffering question is real and I didn't pretend it's not. But when you run the evidence honestly, in both directions, with nothing hidden and the failure modes on the table — the signal is clear.</p>
+
+<p class="land">The universe was made from truth. The truth has a signature. And the signature matches.</p>
+
+<div class="chapter-image"><img src="images/slide_12.webp" alt="The answer cannot be constructed — not a system, a policy, a philosophy, or a religion"></div>
+
+<hr/>
+
+<p>Fifteen predictions. Fifteen gaps. Thirty-five convergence points. One direction.</p>
+
+<p class="land">Run it yourself.</p>
+
+<div class="chapter-image"><img src="images/slide_14.webp" alt="The Equation That Solved Evil — The Convergence Series"></div>
+
+</article>
+
+
+<!-- ═══════════════════════════════════════
+     AUDIO PLAYERS
+     ═══════════════════════════════════════ -->
+<div class="listen-section">
+  <div class="listen-label">Listen</div>
+  <div class="player-stack">
+
+    <div class="player-row">
+      <span class="player-type tts"><i class="fas fa-volume-up"></i> Read</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_07_tts.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type deep"><i class="fas fa-microscope"></i> Deep Dive</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_07_deep.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type debate"><i class="fas fa-comments"></i> Debate</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_07_debate.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ARTICLE NAV
+     ═══════════════════════════════════════ -->
+<nav class="article-nav">
+  <a href="cns-06-the-priority-of-goodness.html" class="nav-link">
+    <i class="fas fa-arrow-left"></i> Prev: <span class="nav-title">The Priority of Goodness</span>
+  </a>
+  <a href="Convergence Seriesv2.html" class="nav-link">
+    Next: <span class="nav-title">Series Index</span> <i class="fas fa-arrow-right"></i>
+  </a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer>
+  <span class="footer-sig">Plant the flag. — POF 2828</span>
+  <span class="footer-colophon">Written by David Lowe with Claude · Theophysics Research Initiative · 2026</span>
+</footer>
+
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════ -->
+<script>
+function toggleFacts() {
+  const body = document.getElementById('factsBody');
+  const arrow = document.querySelector('.facts-toggle-arrow i');
+  body.classList.toggle('open');
+  arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+}
+</script>
+
+</body>
+</html>

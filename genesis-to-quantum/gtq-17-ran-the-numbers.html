@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="paper-slug" content="GTQ-07A">
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  GTQ-17 — We Actually Ran the Numbers (Deep Dive)              -->
+<!--  Parent: GTQ-16 The Photon Isn't Watching You Back             -->
+<!--  Tier 2 Deep Dive · Accent: Blue (#4a9eff) for status pill     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<title>GTQ-17 We Actually Ran the Numbers — Genesis to Quantum</title>
+<meta name="description" content="Sixteen empirical tests of the Theophysics Master Equation against biblical and historical data. Eight confirmed, one failed. Reported with seed, code, and falsification criteria."/>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+:root{
+  --primary:#1a1a1a;--accent:#2c2c2c;--text-primary:#e0e0e0;--text-secondary:#a0a0a0;
+  --highlight:#d4af37;--highlight-bright:#f5d060;--highlight-dim:#a08520;
+  --border:#333333;--surface:#0a0a0a;--surface-light:#1a1a1a;--surface-hover:#2a2a2a;
+  --red:#ef4444;--blue:#4a9eff;--teal:#2dd4bf;--purple:#a855f7;--green:#22c55e;
+}
+*{box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--text-primary);line-height:1.65;margin:0;padding:0;overflow-x:hidden;}
+.serif{font-family:'Crimson Text',serif;}.display{font-family:'Oswald',sans-serif;}.mono{font-family:'JetBrains Mono',monospace;}
+.sidebar{position:fixed;top:0;left:0;width:300px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:100;overflow-y:auto;transform:translateX(-100%);transition:transform .3s ease;padding:1.5rem 1rem;}
+.sidebar.open{transform:translateX(0);}
+.sidebar-toggle{position:fixed;top:1rem;left:1rem;z-index:101;background:var(--surface-light);border:1px solid var(--border);color:var(--highlight);width:40px;height:40px;border-radius:.375rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s ease;}
+.sidebar-toggle:hover{border-color:var(--highlight);background:var(--surface-hover);}
+.sidebar-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:99;}
+.sidebar-overlay.show{display:block;}
+.sidebar .series-title{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--highlight);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+.sidebar a{display:block;padding:.45rem .75rem;color:var(--text-secondary);text-decoration:none;font-size:.8rem;border-radius:.3rem;transition:all .15s ease;line-height:1.4;}
+.sidebar a:hover{color:var(--text-primary);background:var(--surface-hover);}
+.sidebar a.current{color:var(--highlight);background:rgba(212,175,55,.1);font-weight:600;}
+.sidebar .nav-section{padding:.5rem .75rem .25rem;font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary);opacity:.6;margin-top:.5rem;}
+.sidebar a.main-article{font-weight:500;color:var(--text-primary);}
+.sidebar a.deep-dive{padding-left:1.25rem;font-size:.78rem;opacity:.85;}
+.sidebar a.deep-dive::before{content:"└ ";color:var(--border);}
+.progress-track{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:90;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--highlight),var(--highlight-bright));transition:width 0.1s ease;border-radius:0 2px 2px 0;}
+.hero-grid{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:auto auto;gap:1.25rem;min-height:420px;margin-bottom:2.5rem;}
+.hero-main{grid-column:1/2;grid-row:1/3;position:relative;overflow:hidden;border-radius:.75rem;background:linear-gradient(135deg,var(--surface-light) 0%,var(--accent,#2c2c2c) 100%);border:1px solid var(--border);min-height:420px;}
+.hero-main img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35;}
+.hero-main .overlay{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:2.5rem;background:linear-gradient(0deg,rgba(10,10,10,.85) 0%,rgba(10,10,10,0) 60%);}
+.hero-side{background:var(--surface-light);border:1px solid var(--border);border-radius:.75rem;padding:1.5rem;transition:border-color .25s ease;}
+.hero-side:hover{border-color:var(--blue);}
+.hero-side h3{font-family:'Crimson Text',serif;font-size:1.05rem;font-weight:600;color:#fff;margin:0 0 .65rem;}
+.hero-side p{font-size:.875rem;color:var(--text-secondary);margin:0;}
+.hero-side .label{display:block;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:.4rem;font-weight:700;}
+@media(max-width:1024px){.hero-grid{grid-template-columns:1fr;}.hero-main{grid-column:1;grid-row:1;min-height:300px;}.hero-main .overlay{padding:1.5rem;}}
+.meta-row{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;font-size:.8125rem;color:var(--text-secondary);margin-bottom:1rem;}
+.meta-row i{color:var(--highlight);margin-right:.4rem;}
+.status-pill{padding:.25rem .65rem;background:rgba(212,175,55,.12);color:var(--highlight);border-radius:.25rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.domain-tag{display:inline-block;padding:.2rem .65rem;border-radius:999px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.tag-physics{background:rgba(74,158,255,.15);color:#4a9eff;}
+.tag-theology{background:rgba(212,175,55,.15);color:#d4af37;}
+.tag-quantum{background:rgba(201,64,64,.15);color:var(--red);}
+.tag-bridge{background:rgba(45,212,191,.15);color:#2dd4bf;}
+.tab-shell{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.tab-nav{display:flex;gap:.125rem;overflow-x:auto;scrollbar-width:none;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{padding:.85rem 1.1rem;background:transparent;border:none;color:var(--text-secondary);font-size:.825rem;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .2s ease;border-bottom:2px solid transparent;margin-bottom:-1px;letter-spacing:.02em;}
+.tab-btn:hover{color:var(--text-primary);background:var(--surface-light);}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--surface-light);}
+.tab-btn i{margin-right:.4rem;}
+.tab-content{display:none;animation:fadeIn .3s ease;}
+.tab-content.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.main-layout{max-width:1100px;margin:0 auto;padding:0 1.5rem;display:grid;grid-template-columns:1fr 280px;gap:3rem;}
+@media(max-width:1024px){.main-layout{grid-template-columns:1fr;}}
+.story{max-width:900px;margin:0 auto;}
+.story.wide{max-width:100%;}
+.story h2{font-family:'Oswald',sans-serif;font-size:1.6rem;font-weight:600;color:#fff;margin:3rem 0 1.25rem;letter-spacing:.03em;text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:.5rem;}
+.story h3{font-family:'Crimson Text',serif;font-size:1.3rem;font-weight:600;color:#fff;margin:2rem 0 .75rem;}
+.story h4{font-family:'Crimson Text',serif;font-size:1.1rem;font-weight:600;color:var(--highlight);margin:1.5rem 0 .5rem;}
+.story p{font-size:1.0625rem;color:#cfcfcf;margin:0 0 1.25rem;line-height:1.75;}
+.story p strong{color:#fff;}
+.story p em{color:var(--highlight);font-style:italic;}
+.story li{color:#cfcfcf;margin-bottom:.5rem;line-height:1.65;}
+.story li strong{color:#fff;}
+.story ul,.story ol{margin:0 0 1.25rem 1.5rem;}
+.story a{color:var(--blue);text-decoration:none;border-bottom:1px dotted rgba(74,158,255,.4);transition:all .2s ease;}
+.story a:hover{color:#7ab7ff;border-bottom-color:var(--blue);}
+.story blockquote{border-left:4px solid var(--highlight);background:rgba(212,175,55,.05);padding:1rem 1.5rem;margin:1.5rem 0;border-radius:0 .5rem .5rem 0;font-family:'Crimson Text',serif;font-size:1.05rem;font-style:italic;color:#cfcfcf;}
+.story blockquote p{margin:0;font-size:1.05rem;}
+.drop-cap::first-letter{font-family:'Crimson Text',serif;font-size:4.5rem;float:left;line-height:.85;padding:.4rem .6rem 0 0;color:var(--blue);font-weight:600;}
+.exec-summary{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:.5rem;padding:1.5rem;margin:2rem 0;}
+.exec-summary-label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:.75rem;}
+.exec-summary p{font-size:1rem;color:#e0e0e0;margin:0;line-height:1.7;}
+.exec-summary p strong{color:#fff;}
+.insight{border-left:4px solid var(--blue);background:rgba(74,158,255,.08);padding:1.25rem 1.5rem;margin:2rem 0;border-radius:0 .5rem .5rem 0;}
+.insight .label{font-family:'Crimson Text',serif;font-style:italic;color:var(--blue);font-size:.85rem;letter-spacing:.05em;display:block;margin-bottom:.4rem;}
+.insight p{margin:0;color:#fff;font-size:1.05rem;}
+.axiom-box{background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.25);border-left:4px solid var(--highlight);padding:1rem 1.5rem;margin:1.5rem 0;border-radius:0 .5rem .5rem 0;font-family:'JetBrains Mono',monospace;font-size:.95rem;color:var(--highlight);}
+.law-box{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-left:4px solid var(--blue);padding:1rem 1.5rem;margin:1.5rem 0;border-radius:0 .5rem .5rem 0;}
+.law-box .law-label{font-family:'Oswald',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:.35rem;}
+.law-box p{margin:0;color:#cfcfcf;font-size:.95rem;}
+.eq-block{background:var(--surface-light);border:1px solid var(--border);border-radius:.5rem;padding:1.5rem;margin:1.5rem 0;text-align:center;overflow-x:auto;}
+.eq-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;text-align:left;}
+.data-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.875rem;border:1px solid var(--border);border-radius:.5rem;overflow:hidden;}
+.data-table thead{background:var(--surface-light);text-transform:uppercase;font-size:.7rem;letter-spacing:.06em;color:var(--blue);}
+.data-table th,.data-table td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+.data-table tr:last-child td{border-bottom:none;}
+.kill-sidebar{position:sticky;top:120px;height:fit-content;}
+.kill-sidebar-title{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+.kill-card{background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.2);border-radius:.5rem;padding:1rem;margin-bottom:.75rem;}
+.kill-card.suggestive{background:rgba(212,175,55,.04);border-color:rgba(212,175,55,.2);}
+.kill-card.destructive{background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.2);}
+.kill-label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem;}
+.kill-card .kill-label{color:var(--green);}
+.kill-card.suggestive .kill-label{color:var(--highlight);}
+.kill-card.destructive .kill-label{color:var(--red);}
+.kill-card p{margin:.25rem 0 0;color:#cfcfcf;font-size:.85rem;line-height:1.5;}
+.kill-card .kill-detail{font-size:.75rem;color:var(--text-secondary);margin-top:.35rem;}
+.blackboard-section{background:var(--surface-light);border:2px solid var(--border);border-radius:.75rem;padding:2rem;margin:3rem 0;position:relative;}
+.blackboard-label{position:absolute;top:-12px;left:1.5rem;background:var(--surface);padding:0 .75rem;font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);border:1px solid var(--border);border-radius:.25rem;}
+.bottom-nav{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.5rem 0;margin:3rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.bottom-nav a{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;background:var(--surface-light);border:1px solid var(--border);border-radius:.375rem;color:var(--text-secondary);text-decoration:none;font-size:.85rem;transition:all .2s ease;}
+.bottom-nav a:hover{border-color:var(--blue);color:var(--text-primary);background:rgba(74,158,255,.05);}
+.bottom-nav a.primary{border-color:var(--blue);color:var(--blue);}
+.bottom-nav a.primary:hover{background:rgba(74,158,255,.1);}
+.bottom-nav .nav-center{font-size:.8rem;color:var(--text-secondary);text-align:center;}
+.site-footer{text-align:center;padding:3rem 1.5rem;color:var(--text-secondary);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem;}
+.site-footer .eq{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--blue);opacity:.6;margin-bottom:.5rem;}
+@media(max-width:1024px){.kill-sidebar{display:none;}.main-layout{grid-template-columns:1fr;padding:0 1rem;}.story{max-width:100%;}}
+@media(max-width:640px){.tab-btn{padding:.65rem .8rem;font-size:.75rem;}.story h2{font-size:1.3rem;}.bottom-nav{flex-direction:column;align-items:stretch;}.bottom-nav a{justify-content:center;}}
+</style>
+</head>
+
+<body>
+
+<div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+
+<button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle series navigation">
+  <i class="fas fa-bars"></i>
+</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="series-title"><i class="fas fa-atom" style="margin-right:.4rem;"></i> Genesis to Quantum</div>
+  <a href="../index.html"><i class="fas fa-home" style="width:1.2rem;"></i> Series Home</a>
+
+  <div class="nav-section">Main Articles</div>
+  <a href="gtq-01-measurement-collapsed-reality.html" class="main-article">01 The Measurement That Collapsed Reality</a>
+  <a href="gtq-03-first-quantum-state.html" class="main-article">03 The First Quantum State</a>
+  <a href="gtq-04-free-will-two-frames.html" class="main-article">04 Free Will in Two Frames</a>
+  <a href="gtq-08-day-time-began.html" class="main-article">08 The Day Time Began</a>
+  <a href="gtq-11-substrate-fractured.html" class="main-article">11 The Substrate Fractured</a>
+  <a href="gtq-15-reality-needs-three.html" class="main-article">15 Why Reality Needs Three</a>
+  <a href="gtq-16-photon-isnt-watching.html" class="main-article">16 The Photon Isn't Watching You Back</a>
+  <a href="gtq-18-eraser-and-cross.html" class="main-article">18 The Eraser and the Cross</a>
+  <a href="gtq-22-same-god-both-testaments.html" class="main-article">22 The Same God in Both Testaments</a>
+  <a href="gtq-25-counter-move.html" class="main-article">25 The Counter-Move</a>
+
+  <div class="nav-section">Deep Dives</div>
+  <a href="gtq-02-collapse-threshold.html" class="deep-dive">02 The Collapse Threshold</a>
+  <a href="gtq-05-macarthur-and-the-equation.html" class="deep-dive">05 MacArthur and the Equation</a>
+  <a href="gtq-06-three-pathways.html" class="deep-dive">06 The Three Pathways</a>
+  <a href="gtq-07-why-god-drowned-everybody.html" class="deep-dive">07 Why Did God Drown Everybody?</a>
+  <a href="gtq-09-decoherence-curve.html" class="deep-dive">09 The Decoherence Curve</a>
+  <a href="gtq-10-how-lies-kill.html" class="deep-dive">10 How Lies Kill</a>
+  <a href="gtq-12-trinity-mechanism.html" class="deep-dive">12 The Trinity Mechanism</a>
+  <a href="gtq-13-trinity-timeline.html" class="deep-dive">13 The Trinity Timeline</a>
+  <a href="gtq-14-physics-broken-in-two.html" class="deep-dive">14 Why Physics Is Broken in Two</a>
+  <a href="gtq-17-ran-the-numbers.html" class="deep-dive current">17 We Actually Ran the Numbers</a>
+  <a href="gtq-19-temporal-trap.html" class="deep-dive">19 The Temporal Trap</a>
+  <a href="gtq-20-how-god-restores.html" class="deep-dive">20 How God Restores</a>
+  <a href="gtq-21-science-behind-restoration.html" class="deep-dive">21 The Science Behind the Restoration</a>
+  <a href="gtq-23-regime-dependent-theology.html" class="deep-dive">23 Regime-Dependent Theology</a>
+  <a href="gtq-24-societies-die-same-way.html" class="deep-dive">24 Societies Die the Same Way People Do</a>
+  <a href="gtq-26-pattern-is-the-signal.html" class="deep-dive">26 Why the Pattern Is the Signal</a>
+</nav>
+
+<div class="container mx-auto px-6 pt-8" style="padding-left:4.5rem;">
+  <div class="hero-grid">
+    <div class="hero-main">
+      <div class="overlay">
+        <div class="meta-row" style="margin-bottom:.5rem;">
+          <span><i class="fas fa-atom"></i>Article 17 &middot; Genesis to Quantum</span>
+          <span class="status-pill" style="background:rgba(74,158,255,.12);color:#4a9eff;">Deep Dive</span>
+        </div>
+        <h1 class="serif text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
+          We Actually Ran the Numbers
+        </h1>
+        <p class="text-lg md:text-xl text-gray-200 font-light">
+          Sixteen empirical tests of the Theophysics Master Equation. Eight confirmed, one failed, seven designed and awaiting external data. Reported with seed, code, and falsification criteria.
+        </p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <span class="domain-tag tag-physics">Empirical</span>
+          <span class="domain-tag tag-bridge">Computational</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-side">
+      <span class="label">Executive Summary</span>
+      <h3>$P(t)$ is empirically visible</h3>
+      <p>The preparation function $P(t)$ &mdash; humanity's growing capacity to receive revelation &mdash; was proposed on theoretical grounds. Then it was tested against linguistic complexity in 30 biblical books across five metrics. All five significant at $p < 10^{-10}$. Composite S-curve fit $R^2 = 0.90$. The strongest single result: sin complexity tracks $P(t)$ at Spearman $\rho = 0.988$.</p>
+    </div>
+    <div class="hero-side">
+      <span class="label">Key Kill Condition</span>
+      <h3>Comparative texts must show flat or different topology</h3>
+      <p><strong>Kill if:</strong> the same five-metric analysis applied to the Quran, Vedas, or Pali Canon reveals a monotonic $P(t)$ S-curve identical to the Bible's. The framework predicts the Bible's signature is unique. If another religious corpus matches it, the signal is not unique to the Bible and the strongest claim collapses.</p>
+    </div>
+  </div>
+</div>
+
+<div class="tab-shell">
+  <div class="container mx-auto px-6" style="padding-left:4.5rem;">
+    <nav class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('summary')"><i class="fas fa-compress-alt"></i>Executive Summary</button>
+      <button class="tab-btn" onclick="switchTab('paper')"><i class="fas fa-scroll"></i>The Paper</button>
+      <button class="tab-btn" onclick="switchTab('rigor')"><i class="fas fa-crosshairs"></i>Rigor &amp; Kill Conditions</button>
+      <button class="tab-btn" onclick="switchTab('blackboard')"><i class="fas fa-chalkboard"></i>Blackboard</button>
+    </nav>
+  </div>
+</div>
+
+<main class="main-layout py-10">
+
+  <div>
+
+    <!-- ───── TAB: EXECUTIVE SUMMARY ───── -->
+    <section id="summary" class="tab-content active">
+      <article class="story wide">
+        <div class="exec-summary" style="margin-top:1rem;">
+          <div class="exec-summary-label"><i class="fas fa-bolt" style="margin-right:.4rem;"></i>Executive Summary</div>
+          <p>We present 16 independent empirical tests of the Theophysics Master Equation $\chi = \iiint(G \cdot M \cdot E \cdot S \cdot T \cdot K \cdot R \cdot Q \cdot F \cdot C)\, dx\, dy\, dt$ and its derived coherence equation against biblical and historical data. <strong>Nine tests completed; eight confirmed at statistical significance; one failed.</strong> Strongest results: sin complexity tracking $P(t)$ at Spearman $\rho = 0.988$ ($p = 2.16 \times 10^{-9}$); biblical lifespan thermodynamic decay at $R^2 = 0.888$; $P(t)$ linguistic complexity across 30 books with all five metrics $p < 10^{-10}$ and composite S-curve $R^2 = 0.90$; constraint satisfaction model showing the biblical pattern uniquely optimal under three non-negotiable constraints. Random seed 2828. All code, parameters, and results documented for independent reproduction.</p>
+        </div>
+
+        <h2 class="serif text-3xl font-bold text-white mb-4 mt-8">What This Article Claims</h2>
+        <ul class="story" style="margin-left:0;list-style:none;">
+          <li style="margin-bottom:1rem;padding-left:1.5rem;position:relative;">
+            <span style="position:absolute;left:0;color:var(--blue);">1.</span>
+            <strong>$P(t)$ is empirical, not assumed.</strong> &mdash; The preparation function was proposed on theoretical grounds (the coherence equation requires it for dimensional consistency) and then found to match the data across five independent linguistic metrics, all $p < 10^{-10}$.
+          </li>
+          <li style="margin-bottom:1rem;padding-left:1.5rem;position:relative;">
+            <span style="position:absolute;left:0;color:var(--blue);">2.</span>
+            <strong>Adversary sophistication co-evolves with target capacity.</strong> &mdash; Sin complexity across the biblical timeline tracks $P(t)$ at $\rho = 0.988$. The strongest single result in the test suite. Simple attacks at low $P(t)$, sophisticated attacks at high $P(t)$.
+          </li>
+          <li style="margin-bottom:1rem;padding-left:1.5rem;position:relative;">
+            <span style="position:absolute;left:0;color:var(--blue);">3.</span>
+            <strong>The biblical pattern is uniquely optimal under three constraints.</strong> &mdash; Free will preserved, grace always available, justice real. Six strategies tested. The biblical pattern is the only one that satisfies all three constraints while outperforming alternatives. There is no "better God" inside the constraint space.
+          </li>
+          <li style="margin-bottom:1rem;padding-left:1.5rem;position:relative;">
+            <span style="position:absolute;left:0;color:var(--blue);">4.</span>
+            <strong>One test failed, reported without modification.</strong> &mdash; Grace Response Time (Test 4) returned $p = 0.91$ on the simple linear hypothesis. The hypothesis is not supported by the data. The relationship may be non-linear or confounded; we do not retroactively reframe.
+          </li>
+        </ul>
+
+        <h2 class="serif text-3xl font-bold text-white mb-4 mt-8">Why It Matters</h2>
+        <p>Either the framework is testable or it is philosophy. We treat it as testable. The pattern that characterizes genuine prediction is: the model specifies what should be true <em>before</em> the data is examined. $P(t)$ does that. The constraint satisfaction model does that. The Test 4 failure does that &mdash; the model said something specific, the data said no, we reported the no.</p>
+
+        <h2 class="serif text-3xl font-bold text-white mb-4 mt-8">How to Falsify</h2>
+        <p>Run the same five-metric $P(t)$ analysis on the Quran, Vedas, and Pali Canon. The framework predicts: Quran flat, Vedas non-monotonic, Bible monotonic S-curve. If another text shows the same monotonic S-curve, the signal is not unique. Independent NLP replication on the Hebrew/Greek corpus would confirm or undermine Tests 3, 5, 6, 15.</p>
+      </article>
+    </section>
+
+    <!-- ───── TAB: THE PAPER ───── -->
+    <section id="paper" class="tab-content">
+      <article class="story wide">
+
+        <div class="exec-summary">
+          <div class="exec-summary-label"><i class="fas fa-bolt" style="margin-right:.4rem;"></i>A Note Before We Begin</div>
+          <p>In <a href="gtq-16-photon-isnt-watching.html">The Photon Isn't Watching You Back</a> we made empirical claims about consciousness and the Master Equation. This deep dive carries those claims into the test suite: 16 independent tests of the framework's predictions against biblical and historical data. Nine completed, seven designed. The hard parts are reported with the easy parts &mdash; including the test that failed.</p>
+        </div>
+
+        <h2>The Problem</h2>
+
+        <p class="drop-cap">The Theophysics framework proposes that physical and spiritual reality are dual projections of a single informational substrate described by the Master Equation. <strong>This claim is either testable or it is philosophy.</strong> We treat it as testable.</p>
+
+        <p>The framework generates specific, quantitative predictions about patterns that should be observable in biblical and historical data if the model is correct. These predictions are falsifiable: if the data contradicts the predictions, the model requires revision or rejection.</p>
+
+        <div class="axiom-box">
+          $\frac{dC}{dt} = O_{eff} \cdot G(t) \cdot (1-C) - S \cdot C$
+        </div>
+
+        <p>Where $C \in [0,1]$ is coherence with the Logos source; $O_{eff} = O_{raw} \times P(t)$ is effective openness (free will multiplied by preparation level); $G(t) \geq 0$ is grace as external negentropic input; $S > 0$ is entropy/sin as decay pressure.</p>
+
+        <p>The preparation function $P(t)$ is the central innovation tested in this paper. It models the claim that God's revelation was progressive &mdash; calibrated to the species' growing capacity to understand it. If this claim is correct, $P(t)$ should be empirically visible in the biblical text itself as a monotonic increase in linguistic complexity, abstraction level, and conceptual density across the biblical timeline.</p>
+
+        <h2>Three Hard Constraints</h2>
+
+        <p>The framework identifies three non-negotiable constraints governing any coherent divine strategy:</p>
+
+        <ol>
+          <li><strong>Free Will (O):</strong> Must be genuine, never overridden or effectively drowned</li>
+          <li><strong>Grace (G):</strong> Must be always available ($G > 0$ for all $t$)</li>
+          <li><strong>Justice (S&middot;C):</strong> Consequences must be structural and real ($S > 0$)</li>
+        </ol>
+
+        <p>The constraint satisfaction model (Test C below) demonstrates that these three constraints, taken together, produce a unique optimal strategy matching the biblical pattern.</p>
+
+        <h2>Methods</h2>
+
+        <p>All computational analyses use Python 3 with NumPy, SciPy, and Matplotlib. Random seed 2828 throughout. Statistical significance assessed at $\alpha = 0.05$ with both Pearson $r$ and Spearman $\rho$ reported. S-curve fits use the logistic function $f(x) = L / (1 + e^{-k(x - x_0)}) + b$ optimized via Levenberg-Marquardt.</p>
+
+        <p>We adopt the inverse validation approach: rather than asserting the framework and seeking confirmation, we derive specific quantitative predictions and test them against data that exists independently of the framework. Where tests fail, we report the failure without modification. Where external data is required, we specify the protocol and falsification criteria so others can execute the test.</p>
+
+        <h2>Completed Tests &mdash; Strongest Results</h2>
+
+        <h3>Test 6: Sin Complexity Curve ($\rho = 0.988$)</h3>
+
+        <p><strong>Hypothesis:</strong> Adversary sophistication increases across the biblical timeline, matching $P(t)$ &mdash; as the target grows more capable, the adversary must upgrade its strategy.</p>
+
+        <p>Twelve distinct sin patterns from pre-flood violence through Pharisaism, scored for complexity (1&ndash;10) and prerequisite concepts. Pearson $R^2 = 0.913$ ($p = 1.26 \times 10^{-6}$). <strong>Spearman $\rho = 0.988$ ($p = 2.16 \times 10^{-9}$).</strong> Trajectory: from raw violence (complexity 1, prerequisites 0) &rarr; systemic oppression (3, 2) &rarr; structural hypocrisy (6, 5) &rarr; weaponizing God's own system against God incarnate (9, 8). Near-perfect rank correlation. The strongest single result in the test suite.</p>
+
+        <div class="insight">
+          <span class="label">&mdash; Why this matters</span>
+          <p>If $P(t)$ were a contrived parameter, adversary strategies would not co-evolve with it across an independent dataset. They do, at $\rho = 0.988$.</p>
+        </div>
+
+        <h3>Test 3: $P(t)$ Linguistic Complexity</h3>
+
+        <p>30 biblical books scored on five independent metrics: Command Complexity, Abstraction Level, Moral Vocabulary, Principle vs. Rule, Internal Focus.</p>
+
+        <table class="data-table">
+          <thead><tr><th>Metric</th><th>$R^2$</th><th>$p$-value</th></tr></thead>
+          <tbody>
+            <tr><td>M1: Command Complexity</td><td class="mono">0.799</td><td class="mono">$2.90 \times 10^{-11}$</td></tr>
+            <tr><td>M2: Abstraction Level</td><td class="mono">0.782</td><td class="mono">$9.12 \times 10^{-11}$</td></tr>
+            <tr><td>M3: Moral Vocabulary</td><td class="mono">0.800</td><td class="mono">$2.65 \times 10^{-11}$</td></tr>
+            <tr><td>M4: Principle vs. Rule</td><td class="mono">0.779</td><td class="mono">$1.14 \times 10^{-10}$</td></tr>
+            <tr><td>M5: Internal Focus</td><td class="mono">0.797</td><td class="mono">$3.29 \times 10^{-11}$</td></tr>
+            <tr><td><strong>Composite $P(t)$</strong></td><td class="mono"><strong>0.835</strong></td><td class="mono"><strong>$1.81 \times 10^{-12}$</strong></td></tr>
+          </tbody>
+        </table>
+
+        <p>S-curve fit: $R^2 = 0.9008$. Inflection point at 1089 BCE (wisdom literature transition). Era progression is monotonic from Torah (1400 BCE, $P=0.260$) through Epistles (64 CE, $P=0.920$). Model-to-empirical correlation $r = 0.817$.</p>
+
+        <p><strong>Verdict:</strong> All five metrics confirm $P(t)$. The preparation function is an empirical observation, not a model assumption.</p>
+
+        <h3>Test C: Constraint Satisfaction Model</h3>
+
+        <p>Six "God strategies" tested via ODE integration of the coherence equation:</p>
+
+        <table class="data-table">
+          <thead><tr><th>Strategy</th><th>$C_{final}$</th><th>Grace Efficiency</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Dictator (O forced to 1)</td><td class="mono">0.9434</td><td class="mono">5.67%</td><td style="color:var(--red);">DISQUALIFIED (O violated)</td></tr>
+            <tr><td>Instant Fix ($G=5$ from $t=0$)</td><td class="mono">0.8839</td><td class="mono">3.86%</td><td style="color:var(--red);">DISQUALIFIED (O drowned)</td></tr>
+            <tr><td><strong>Biblical (progressive G + Cross + Spirit)</strong></td><td class="mono"><strong>0.7705</strong></td><td class="mono"><strong>11.43%</strong></td><td style="color:var(--green);"><strong>WINNER</strong></td></tr>
+            <tr><td>Progressive (no Cross)</td><td class="mono">0.6035</td><td class="mono">14.22%</td><td>Valid</td></tr>
+            <tr><td>Constant Low ($G=0.2$)</td><td class="mono">0.2334</td><td class="mono">15.46%</td><td>Valid</td></tr>
+            <tr><td>Absent ($G=0$)</td><td class="mono">0.0000</td><td class="mono">0.00%</td><td style="color:var(--red);">DISQUALIFIED (G violated)</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Key finding:</strong> the "Instant Fix" strategy (the "better God" proposal) deploys 5,280 units of grace when $P(t) < 0.30$ &mdash; calculus to five-year-olds. Grace efficiency 3.86% versus the biblical pattern's 11.43%. The Instant Fix effectively drowns free will: $G/S > 10$ for 100% of the pre-incarnation period.</p>
+
+        <div class="law-box">
+          <div class="law-label">Constraint Proof</div>
+          <p>No alternative strategy satisfies all three constraints (free will, grace, justice) while outperforming the biblical pattern. The "better God" does not exist within the constraint space.</p>
+        </div>
+
+        <h3>Test 1: Lifespan Thermodynamic Decay ($R^2 = 0.888$)</h3>
+
+        <p>Genesis genealogies from Adam (930 years) through Moses (120 years) fit a thermodynamic decay curve $\frac{dL}{dt} = -S \cdot L$ at $R^2 = 0.888$. The decay rate is consistent with the $S \cdot C$ term operating on biological systems post-fall. <a href="gtq-09-decoherence-curve.html">The Decoherence Curve</a> develops this in detail.</p>
+
+        <h2>Other Confirmed Tests</h2>
+
+        <ul>
+          <li><strong>Test 2 &mdash; Civilization Thermodynamic Mapping:</strong> Nations with higher coherence persist longer; rapid decoherence (syncretism, institutional corruption) accelerates collapse consistent with $\frac{dC}{dt} = -S \cdot C$. Directionally confirmed.</li>
+          <li><strong>Test 5 &mdash; Prophecy Precision Growth:</strong> 15 messianic prophecies from Genesis 3:15 (~1400 BCE) to Zechariah 11:12 (~520 BCE). Pearson $R^2 = 0.673$ ($p = 1.79 \times 10^{-4}$); Spearman $\rho = 0.764$ ($p = 9.12 \times 10^{-4}$). Confirmed.</li>
+          <li><strong>Test 7 &mdash; Community Coherence Scaling:</strong> Global distributed community structure (no central institutional control) only emerges at $P > 0.90$ post-Pentecost. Pattern confirmed qualitatively.</li>
+          <li><strong>Test 8 &mdash; Revelation Density S-Curve:</strong> Cumulative theological concepts across 10 biblical periods follow an S-curve with $R^2 = 0.956$. Peak density at apostolic period (18 new concepts), asymptotic plateau in Johannine writings. Confirmed.</li>
+          <li><strong>Test 15 &mdash; Bible Coherence Anomaly:</strong> 12 cross-century thematic pairs (e.g., Genesis 22 &harr; Romans 8:32, separated by 2,400 years). Mean coherence 9.4/10. Coherence does NOT degrade with distance ($r = 0.280$, $p = 0.377$ for coherence vs. time gap). Anomalous for any multi-author collection.</li>
+        </ul>
+
+        <h2>The Failed Test</h2>
+
+        <p><strong>Test 4 &mdash; Grace Response Time:</strong> Hypothesis was that post-intervention stability duration increases with $P(t)$ &mdash; higher preparation should correlate with longer periods before next rebellion. Data: 10 major divine intervention events from the Flood through Pentecost.</p>
+
+        <p>Result: Spearman $\rho = -0.042$, $p = 0.91$. <strong>NOT SIGNIFICANT.</strong></p>
+
+        <p>The data is noisy and the sample is small ($N = 9$ after excluding the Sinai outlier). Early periods (Flood, Abraham) show remarkably long stability at low $P(t)$, while the monarchy period shows shorter cycles at moderate $P(t)$. The simple linear hypothesis does not hold. We report this without modification. The hypothesis as stated is not supported by the data. The relationship may be non-linear or confounded by other variables (intervention type, population size, geopolitical context).</p>
+
+        <div class="insight">
+          <span class="label">&mdash; This is the test that protects the others</span>
+          <p>Eight passed. One failed. The failure is reported without retroactive reframing. That is what falsifiable empirical work looks like.</p>
+        </div>
+
+        <h2>Designed Tests Awaiting External Data</h2>
+
+        <p>Seven tests have specified protocols and falsification criteria but require datasets not available in the current analysis:</p>
+
+        <table class="data-table">
+          <thead><tr><th>ID</th><th>Test</th><th>Data Needed</th><th>Falsification</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">T9</td><td>Comparative $P(t)$</td><td>Quran, Vedas, Pali Canon corpora</td><td>If another text shows same monotonic S-curve</td></tr>
+            <tr><td class="mono">T10</td><td>Moral outcome bimodality</td><td>World Values Survey, GSS</td><td>If distribution is Gaussian, not bimodal</td></tr>
+            <tr><td class="mono">T11</td><td>Covenant longevity</td><td>Adventist Health Studies</td><td>If residual longevity is zero after lifestyle controls</td></tr>
+            <tr><td class="mono">T12</td><td>Conversion phase transition</td><td>HRV/cortisol/EEG during conversions</td><td>If markers change gradually, no discontinuity</td></tr>
+            <tr><td class="mono">T13</td><td>Prayer Zeno scaling</td><td>RNG deviation by collective $\Phi$</td><td>If effect size doesn't scale with $\Phi$</td></tr>
+            <tr><td class="mono">T14</td><td>Apostasy entropy</td><td>Deconversion outcome data</td><td>If apostates match never-believers exactly</td></tr>
+          </tbody>
+        </table>
+
+        <p>The highest-priority next build is Test 9 &mdash; Comparative $P(t)$ on other religious texts. If confirmed, it would transition the evidence from "consistent with the model" to "uniquely predicted by the model."</p>
+
+        <h2>What The Tests Show Collectively</h2>
+
+        <p>The eight confirmed tests, taken together, paint a specific picture:</p>
+
+        <ol>
+          <li><strong>The biblical text carries a measurable preparation signature</strong> &mdash; complexity, abstraction, and conceptual density increase monotonically across the timeline (Tests 3, 8)</li>
+          <li><strong>The adversary's strategy co-evolves with human capacity</strong> &mdash; simple attacks at low $P(t)$, sophisticated attacks at high $P(t)$ (Test 6)</li>
+          <li><strong>Prophetic revelation follows the same $P(t)$ curve</strong> &mdash; vague early, precise late (Test 5)</li>
+          <li><strong>The constraint model demonstrates strategic optimality</strong> &mdash; the biblical pattern is not one option among many but the uniquely best option under binding constraints (Test C)</li>
+          <li><strong>Biological data follows framework entropy predictions</strong> &mdash; lifespan decay and civilization dynamics match $S \cdot C$ dynamics (Tests 1, 2)</li>
+          <li><strong>Thematic coherence is anomalous</strong> &mdash; coherence across 40+ authors and 1,500+ years does not degrade with distance (Test 15)</li>
+        </ol>
+
+        <h2>Limitations</h2>
+
+        <p><strong>Scorer bias:</strong> Tests 3, 5, 6, and 15 use curated expert assessment rather than automated NLP. Scores are transparent and verifiable, but a critic could argue scorer bias. Automated NLP analysis on the Hebrew/Greek corpus would strengthen these results and is the recommended next step.</p>
+
+        <p><strong>Small sample sizes:</strong> Tests 4, 5, and 7 operate on $N = 10$&ndash;$15$. Non-parametric statistics are robust to small $N$, but larger datasets would strengthen confidence intervals.</p>
+
+        <p><strong>Circularity risk:</strong> There is an inherent risk when testing a biblical framework against biblical data. We mitigate by (a) specifying predictions before examining data, (b) using standard statistical methods, (c) reporting failures, (d) designing external validation tests (Tests 9&ndash;14) that do not rely on biblical data.</p>
+
+        <h2>Conclusion</h2>
+
+        <p>Sixteen tests. Nine completed. Eight confirmed. One failed.</p>
+
+        <p>The framework's predictions are not universally correct (Test 4 fails), but they are predominantly confirmed across multiple independent dimensions &mdash; linguistic, historical, structural, mathematical, and thermodynamic. The preparation function $P(t)$ emerges as an empirical discovery, not merely a model parameter. The constraint satisfaction model demonstrates strategic uniqueness. The sin complexity correlation ($\rho = 0.988$) is the strongest single result.</p>
+
+        <p>The seven designed tests &mdash; particularly the comparative $P(t)$ analysis on non-biblical texts &mdash; represent the next frontier. If the Bible's preparation curve proves unique among major religious texts, the evidence transitions from "consistent with the model" to "uniquely predicted by the model."</p>
+
+        <p style="margin-top:2rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text-secondary);">
+          <strong style="color:var(--blue);">Random seed:</strong> 2828<br>
+          <strong style="color:var(--blue);">Python version:</strong> 3.12+<br>
+          <strong style="color:var(--blue);">Dependencies:</strong> NumPy, SciPy, Matplotlib<br>
+          <strong style="color:var(--blue);">Status:</strong> 9 of 16 tests completed; 8 confirmed; 1 failed; 7 designed
+        </p>
+
+        <blockquote>
+          <p>The Disclaimer. We are finite minds reasoning about infinite God. Every model is projection of higher-dimensional reality onto lower-dimensional surface we can comprehend. We do not claim to have captured God in equations. We claim that when we look at His creation honestly &mdash; with the tools of physics and the revelation of Scripture &mdash; the same structure appears in both. Where our model limits what God can be, the limitation is ours, not His. We offer this work as worship, not as containment.</p>
+        </blockquote>
+
+        <h3>Related Articles</h3>
+        <ul>
+          <li><a href="gtq-16-photon-isnt-watching.html">The Photon Isn't Watching You Back</a> &mdash; parent article: the empirical case that consciousness is in the equations</li>
+          <li><a href="gtq-09-decoherence-curve.html">The Decoherence Curve</a> &mdash; Test 1 ($R^2 = 0.888$) developed in narrative form</li>
+          <li><a href="gtq-15-reality-needs-three.html">Why Reality Needs Three</a> &mdash; the Born Rule decomposition the framework rests on</li>
+        </ul>
+
+      </article>
+    </section>
+
+    <!-- ───── TAB: RIGOR & KILL CONDITIONS ───── -->
+    <section id="rigor" class="tab-content">
+      <article class="story wide" style="margin-top:1rem;">
+        <h2 class="serif text-3xl font-bold text-white mb-2">Rigor &amp; Kill Conditions</h2>
+        <p class="text-[#a0a0a0] mb-6">This article is itself a falsification audit. The kill conditions below specify what would invalidate its conclusions.</p>
+
+        <div class="kill-card">
+          <div class="kill-label">Load-Bearing &mdash; We'd Bet On This</div>
+          <p><strong>Kill if:</strong> the comparative $P(t)$ analysis (Test 9) on the Quran, Vedas, or Pali Canon shows the same monotonic S-curve as the Bible. The framework predicts the Bible's preparation signature is unique. If another text matches it, the strongest claim collapses to "common pattern across major religious texts."</p>
+          <div class="kill-detail">Status: Pending external data &middot; Last checked: 2026-05-05</div>
+        </div>
+
+        <div class="kill-card">
+          <div class="kill-label">Load-Bearing</div>
+          <p><strong>Kill if:</strong> automated NLP replication on the Hebrew/Greek corpus contradicts the curated-scorer results in Tests 3, 5, 6, or 15. The current results would downgrade from "empirical pattern" to "scorer artifact."</p>
+          <div class="kill-detail">Status: Recommended next step &middot; Confidence: HIGH that pattern holds, but bias is unaudited</div>
+        </div>
+
+        <div class="kill-card suggestive">
+          <div class="kill-label">Suggestive &mdash; Needs More Work</div>
+          <p><strong>Kill if:</strong> sensitivity analysis of the constraint satisfaction model (Test C) across parameter ranges shows the rank ordering of strategies is unstable. The current model uses specific values ($S = 0.3$, $O_{raw} = 0.5$, etc.) not independently measured. If small parameter changes flip the winner, the constraint proof weakens.</p>
+          <div class="kill-detail">Status: Initial indications: stable &middot; Confidence: MEDIUM</div>
+        </div>
+
+        <div class="kill-card destructive">
+          <div class="kill-label">Destructive Test</div>
+          <p><strong>Kill if:</strong> Test 9 confirms uniqueness <em>and</em> Test 10 (bimodality), Test 11 (covenant longevity), and Test 14 (apostasy entropy) all return null on rigorous external datasets. The framework would survive Test 9 alone but cannot survive convergent failure across the external-validation suite.</p>
+          <div class="kill-detail">Status: Open &middot; Severity: FRAMEWORK-LEVEL</div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ───── TAB: BLACKBOARD ───── -->
+    <section id="blackboard" class="tab-content">
+      <article class="story wide" style="margin-top:1rem;">
+        <h2 class="serif text-3xl font-bold text-white mb-4">Blackboard</h2>
+        <p class="text-[#a0a0a0] mb-6">The coherence equation, the preparation function, and the test registry.</p>
+
+        <div class="blackboard-section">
+          <div class="blackboard-label"><i class="fas fa-chalkboard" style="margin-right:.3rem;"></i>The Coherence Equation</div>
+          <div class="eq-block" style="margin:0;background:transparent;border:none;padding:1.5rem 0;">
+            <div class="eq-label">Derived from the Master Equation</div>
+            $$\frac{dC}{dt} = O_{eff} \cdot G(t) \cdot (1-C) - S \cdot C$$
+            <p style="text-align:left;margin-top:1rem;color:var(--text-secondary);font-size:.9rem;">$C \in [0,1]$: coherence with Logos source. $O_{eff} = O_{raw} \times P(t)$: free will multiplied by preparation. $G(t) \geq 0$: grace as negentropic input. $S > 0$: entropy/sin as decay pressure. $(1-C)$: room for growth.</p>
+          </div>
+        </div>
+
+        <div class="blackboard-section">
+          <div class="blackboard-label"><i class="fas fa-chart-line" style="margin-right:.3rem;"></i>The Preparation Function</div>
+          <div class="eq-block" style="margin:0;background:transparent;border:none;padding:1.5rem 0;">
+            <div class="eq-label">Empirical S-curve fit (Test 3)</div>
+            $$P(t) = \frac{L}{1 + e^{-k(t - t_0)}} + b, \qquad R^2 = 0.9008$$
+            <p style="text-align:left;margin-top:1rem;color:var(--text-secondary);font-size:.9rem;">Inflection point at 1089 BCE (wisdom literature transition). Era progression monotonic from Torah ($P = 0.260$) through Epistles ($P = 0.920$). Composite metric significant at $p = 1.81 \times 10^{-12}$.</p>
+          </div>
+        </div>
+
+        <div class="law-box">
+          <div class="law-label">The Strongest Single Result</div>
+          <p>Sin complexity tracks $P(t)$ at Spearman $\rho = 0.988$ ($p = 2.16 \times 10^{-9}$). Adversary sophistication co-evolves with target capacity. This is the kind of correlation that does not arise from a contrived parameter.</p>
+        </div>
+      </article>
+    </section>
+
+  </div>
+
+  <aside class="kill-sidebar">
+    <div class="kill-sidebar-title"><i class="fas fa-skull-crossbones" style="margin-right:.4rem;"></i>Kill Conditions</div>
+
+    <div class="kill-card">
+      <div class="kill-label">Load-Bearing</div>
+      <p><strong>Kill if:</strong> Quran, Vedas, or Pali Canon show the same monotonic $P(t)$ S-curve as the Bible.</p>
+    </div>
+
+    <div class="kill-card suggestive">
+      <div class="kill-label">Suggestive</div>
+      <p><strong>Kill if:</strong> automated NLP replication contradicts the curated scorer results.</p>
+    </div>
+
+    <div class="kill-card destructive">
+      <div class="kill-label">Destructive</div>
+      <p><strong>Kill if:</strong> external-validation suite (Tests 10, 11, 14) returns convergent null.</p>
+    </div>
+
+    <div style="margin-top:1.5rem;padding:1rem;background:var(--surface-light);border:1px solid var(--border);border-radius:.5rem;">
+      <div style="font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:.5rem;">Article Stats</div>
+      <div style="font-size:.8rem;color:var(--text-secondary);line-height:1.8;">
+        <div><i class="fas fa-clock" style="width:1rem;color:var(--blue);"></i> 14 min read</div>
+        <div><i class="fas fa-layer-group" style="width:1rem;color:var(--blue);"></i> Tier 2 &mdash; Deep Dive</div>
+        <div><i class="fas fa-crosshairs" style="width:1rem;color:var(--blue);"></i> 4 kill conditions</div>
+        <div><i class="fas fa-flask" style="width:1rem;color:var(--blue);"></i> 16 tests &middot; 9 done &middot; 8 confirmed</div>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<div class="container mx-auto px-6" style="padding-left:4.5rem;">
+  <div class="bottom-nav">
+    <a href="gtq-16-photon-isnt-watching.html"><i class="fas fa-arrow-left"></i>Previous: The Photon Isn't Watching You Back</a>
+    <div class="nav-center">Article 17 of 26 &middot; Deep Dive</div>
+    <a href="gtq-18-eraser-and-cross.html" class="primary">Next: The Eraser and the Cross<i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div style="text-align:center;margin-bottom:2rem;">
+    <a href="gtq-16-photon-isnt-watching.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.2);border-radius:.375rem;color:var(--blue);text-decoration:none;font-size:.8rem;">
+      <i class="fas fa-forward"></i>Return to main thread: The Photon Isn't Watching You Back
+    </a>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="eq">&chi; = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p>David Lowe &middot; Genesis to Quantum &middot; Part 17 of 26</p>
+  <p class="serif" style="font-style:italic;color:var(--text-secondary);margin-top:.5rem;">&ldquo;But while he was still a long way off, his father saw him.&rdquo;</p>
+</footer>
+
+<script>
+function toggleSidebar(){
+  var sb=document.getElementById('sidebar');
+  var ov=document.getElementById('sidebarOverlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+  document.body.style.overflow=sb.classList.contains('open')?'hidden':'';
+}
+window.addEventListener('scroll',function(){
+  var st=window.scrollY||document.documentElement.scrollTop;
+  var dh=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+  var pct=dh>0?(st/dh)*100:0;
+  document.getElementById('progressBar').style.width=pct+'%';
+});
+function switchTab(tabId){
+  document.querySelectorAll('.tab-content').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(el){el.classList.remove('active');});
+  document.getElementById(tabId).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    var sb=document.getElementById('sidebar');
+    if(sb&&sb.classList.contains('open')) toggleSidebar();
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>05 · The Judgment Layer — The Convergence Series</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+:root {
+  --surface: #0a0a0a;
+  --surface-light: #141414;
+  --surface-mid: #1a1a1a;
+  --border: #2a2a2a;
+  --border-hover: #3a3a3a;
+  --text-primary: #e0e0e0;
+  --text-body: #c4c4c4;
+  --text-secondary: #888;
+  --text-dim: #555;
+  --highlight: #d4af37;
+  --highlight-bright: #e8c547;
+  --highlight-dim: rgba(212,175,55,0.08);
+  --red: #ef4444;
+  --teal: #2dd4bf;
+  --blue: #4a9eff;
+  --purple: #a855f7;
+  --green: #22c55e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(212,175,55,0.25);
+  color: #fff;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE HEADER
+   ══════════════════════════════════════ */
+.article-header {
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 2rem 2.5rem;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.series-tag {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+
+.chapter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.article-title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.article-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.author-line {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.author-line a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.author-line a:hover { color: var(--highlight); }
+
+
+/* ══════════════════════════════════════
+   FACTS CARD
+   ══════════════════════════════════════ */
+.facts-card {
+  max-width: 780px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.facts-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.facts-toggle:hover { background: var(--surface-light); }
+
+.facts-toggle-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.facts-toggle-arrow {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+}
+
+.facts-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.facts-body.open { max-height: 800px; }
+
+.facts-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--highlight);
+  opacity: 0.5;
+}
+
+.facts-content {
+  padding: 1rem 1.5rem;
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.facts-content em { color: var(--highlight); font-style: italic; }
+
+
+/* ══════════════════════════════════════
+   PROSE — the reading experience
+   ══════════════════════════════════════ */
+.prose {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.prose p {
+  font-size: 1.08rem;
+  color: var(--text-body);
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
+}
+
+.prose p strong { color: #e0e0e0; }
+.prose p em { color: var(--highlight); font-style: italic; }
+
+/* Section breaks — the horizontal rules */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* Pull quotes */
+.prose blockquote {
+  border-left: 2px solid var(--highlight);
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Crimson Text', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--highlight);
+  line-height: 1.55;
+}
+
+/* Drop cap for first paragraph after an hr */
+.drop-cap::first-letter {
+  font-family: 'Crimson Text', serif;
+  font-size: 3.8rem;
+  float: left;
+  line-height: 0.8;
+  padding: 0.35rem 0.5rem 0 0;
+  color: var(--highlight);
+  font-weight: 700;
+}
+
+/* Landing sentences — short, punchy, after builds */
+.prose .land {
+  font-size: 1.15rem;
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+
+/* ══════════════════════════════════════
+   AUDIO PLAYERS — bottom of article
+   ══════════════════════════════════════ */
+.listen-section {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2.5rem;
+}
+
+.listen-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.player-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  transition: border-color 0.2s;
+}
+
+.player-row:hover { border-color: var(--border-hover); }
+
+.player-type {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.player-type.tts { color: var(--highlight); }
+.player-type.deep { color: var(--blue); }
+.player-type.debate { color: var(--purple); }
+
+.player-row audio {
+  width: 100%;
+  height: 36px;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE NAV — prev / next
+   ══════════════════════════════════════ */
+.article-nav {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-link:hover { color: var(--highlight); }
+
+.nav-link .nav-title {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.footer-sig {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--highlight);
+}
+
+.footer-colophon {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .article-header { padding: 2rem 1.5rem; }
+  .prose { padding: 2rem 1.5rem 4rem; }
+  .listen-section { padding: 0 1.5rem 3rem; padding-top: 2rem; }
+  .article-nav { padding: 0 1.5rem 2rem; padding-top: 1.5rem; }
+  footer { padding: 1.5rem; }
+  .player-row { grid-template-columns: 80px 1fr; }
+  .prose p { font-size: 1rem; }
+}
+/* Chapter Image */
+.chapter-image { max-width: 780px; margin: 2rem auto; padding: 0 2rem; }
+.chapter-image img { width: 100%; height: auto; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; }
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════ -->
+<header class="article-header">
+  <div class="header-meta">
+    <span class="series-tag">The Convergence Series</span>
+    <span class="chapter-num">Chapter 05 of 07</span>
+  </div>
+  <h1 class="article-title">The Judgment Layer</h1>
+  <p class="article-subtitle">Every human runs a moral evaluator they didn't build, can't uninstall, and can't override. That's not culture. That's firmware.</p>
+  <div class="author-line">
+    Written by David Lowe with Claude · <a href="https://faiththruphysics.com">faiththruphysics.com</a> · 2026
+  </div>
+</header>
+<div class="chapter-image"><img src="images/slide_05.webp" alt="Fourteen Unifiers of the Human Baseline — empirical, measured, sourced"></div>
+
+
+<!-- ═══════════════════════════════════════
+     FACTS CARD
+     ═══════════════════════════════════════ -->
+<div class="facts-card">
+  <div class="facts-toggle" onclick="toggleFacts()">
+    <span class="facts-toggle-label"><i class="fas fa-list-check"></i> FACTS — What This Chapter Establishes</span>
+    <span class="facts-toggle-arrow"><i class="fas fa-chevron-down"></i></span>
+  </div>
+  <div class="facts-body" id="factsBody">
+    <div class="facts-row">
+      <div class="facts-letter"><span>F</span></div>
+      <div class="facts-content">Neuroscience confirms that moral evaluation is <em>hardware-level</em> — damage to the ventromedial prefrontal cortex leaves moral knowledge intact but disconnects the felt weight, producing catastrophic decision-making (Damasio's somatic markers).</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>A</span></div>
+      <div class="facts-content">Pre-verbal infants at six months old make <em>moral evaluations before language or culture</em> — consistently preferring helpers over harmers in controlled experiments (Yale Baby Lab).</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>C</span></div>
+      <div class="facts-content">Cross-cultural anthropology confirms <em>universal moral foundations</em> across every culture, era, and continent — care, fairness, loyalty, authority, purity — independent of contact or influence.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>T</span></div>
+      <div class="facts-content">Romans 2:15 describes <em>"the law written on their hearts, their conscience bearing witness"</em> — pre-installed moral firmware — two thousand years before Damasio, the Yale Baby Lab, and cross-cultural anthropology confirmed it.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>S</span></div>
+      <div class="facts-content">Damasio (1990s), Yale Infant Cognition Center, cross-cultural moral psychology, Romans 2:15, evolutionary ethics literature.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     THE ARTICLE
+     ═══════════════════════════════════════ -->
+<article class="prose">
+
+<p class="drop-cap">You walk into a room and you know something is wrong.</p>
+
+<p>Nobody told you. Nobody gave you a signal. You didn't run an analysis. You walked through a door and your body said <em>wrong</em> before your brain could form a sentence about it. Your shoulders tightened. Your breathing changed. Something in you measured the room and returned a verdict — and you didn't ask it to.</p>
+
+<p>That's not instinct. Instinct tells you to duck when something flies at your head. This is different. This is a moral evaluation that happened below the level of conscious thought, faster than language, and with a confidence that you couldn't override even if you wanted to.</p>
+
+<p class="land">You are running a judgment layer. Right now. Continuously. And you didn't install it.</p>
+
+<hr/>
+
+<p class="drop-cap">Let me show you how deep this goes.</p>
+
+<p>In the 1990s, a neuroscientist named Antonio Damasio studied patients with damage to a specific brain region — the ventromedial prefrontal cortex. These patients were fascinating. Their intelligence was intact. Their memory was intact. They could describe moral rules perfectly — murder is wrong, stealing is wrong, lying is wrong. They knew the rules. They could articulate them, debate them, apply them to hypothetical scenarios with flawless logic.</p>
+
+<p>But they couldn't <em>feel</em> them.</p>
+
+<p>When confronted with a moral violation — real or hypothetical — the normal emotional response was absent. The gut-level "that's wrong" signal didn't fire. And what happened next is the part that should stop you: these patients made catastrophic life decisions. They lied without discomfort. They manipulated without guilt. They destroyed relationships with no felt consequence. Not because they didn't know better — they did. But the knowing wasn't connected to anything. The signal was disconnected from the speaker.</p>
+
+<p>Damasio called these "somatic markers" — bodily signals that tag decisions with emotional weight before conscious reasoning kicks in. The moral evaluation happens in the body first and reaches the mind second. It's not an opinion. It's a measurement. And when you knock out the hardware that runs it, the person still knows the rules but can't follow them.</p>
+
+<p class="land">That's a hardware/software distinction. The capacity to <em>know</em> what's right is software — you can learn it, articulate it, teach it. The capacity to <em>feel</em> that something is wrong is hardware. It comes pre-installed. And when the hardware is damaged, the software alone is not enough.</p>
+
+<hr/>
+
+<p class="drop-cap">Now go younger. Way younger.</p>
+
+<p>Developmental psychologists at Yale's Infant Cognition Center — the Baby Lab — have been running experiments on pre-verbal infants for years. Babies. Six months old. Before language. Before culture. Before anyone has taught them a single rule.</p>
+
+<p>Here's what they found. Show a baby a puppet show. One puppet helps another puppet up a hill. A different puppet pushes the climber back down. Then offer the baby both puppets. The baby reaches for the helper. Consistently. Across cultures, across demographics, across every variable they've tested.</p>
+
+<p>Six-month-old humans — who can't speak, can't reason abstractly, haven't been to Sunday school or read a philosophy textbook — are making moral evaluations. They prefer the helper. They avoid the harmer. They are sorting agents into categories based on moral behavior before they can say the word "moral."</p>
+
+<p class="land">That's not learned. You can't learn something before you have the cognitive architecture to learn with. That's not cultural. These babies haven't absorbed any culture yet — they can barely focus their eyes. That's pre-installed. That's firmware.</p>
+
+<p>And it gets more specific. Older infants — around twelve to fifteen months — don't just prefer helpers. They expect <em>fairness</em>. Show them an unequal distribution of resources and they register surprise. They stare longer at unfair outcomes than fair ones, which is how developmental psychologists measure expectation violation in pre-verbal subjects. These tiny humans expect the world to be fair before anyone has told them it should be.</p>
+
+<hr/>
+
+<p class="drop-cap">Now zoom out to the species level.</p>
+
+<p>Anthropologists have spent decades cataloguing moral systems across every culture they can find — isolated tribes, modern cities, ancient civilizations, hunter-gatherers, agricultural societies, industrialized nations. The surface rules vary enormously. What you can eat, who you can marry, how you greet a stranger — all of that is cultural. It changes from place to place and century to century.</p>
+
+<p>But underneath the surface rules, a small set of moral foundations shows up everywhere. Care for the vulnerable. Fairness in exchange. Loyalty to the group. Respect for authority. A concept of purity or sanctity. And a sense — however articulated — that certain things are simply <em>wrong</em> regardless of who does them or what the local rules say.</p>
+
+<p>Not similar. Universal. Every culture. Every era. Every continent. Isolated groups with no contact with each other develop the same moral architecture independently.</p>
+
+<p>The naturalist explanation for this is evolutionary. Morality is adaptive behavior — cooperating groups outperform selfish ones, so natural selection wired us for moral intuition because it improved survival odds. And that explanation works for the social layer. It makes sense that cooperation would be selected for. It makes sense that fairness would stabilize groups. It makes sense that care for offspring would propagate genes.</p>
+
+<p>But here's where it breaks down. The evolutionary explanation accounts for moral <em>behavior</em> but not moral <em>experience</em>. It explains why we cooperate — survival — but not why we feel <em>guilty</em> when we don't. It explains why cheating is punished — group stability — but not why we experience an internal violation when we cheat even if no one will ever find out. It explains why we evolved to help each other — reproductive advantage — but not why a soldier throws himself on a grenade to save strangers he met three weeks ago.</p>
+
+<p class="land">The experience is the problem. The qualia of moral judgment — the felt wrongness, the guilt, the discomfort, the sense of violation — is not explained by survival advantage. A robot programmed to cooperate would cooperate without feeling anything. Evolution needed cooperation, not conscience. The conscience is extra. And "extra" demands an explanation.</p>
+
+<hr/>
+
+<p class="drop-cap">Stay with me. This is the one worth sitting with.</p>
+
+<p>We've got three data streams now. Neuroscience says the moral evaluator is hardware — damage it and the person can articulate morality but can't follow it. Developmental psychology says it's pre-installed — infants judge before they learn. Anthropology says it's universal — every culture, every era, same foundations.</p>
+
+<p class="land">Hardware. Pre-installed. Universal.</p>
+
+<div class="chapter-image"><img src="images/slide_07.webp" alt="The problem with a 90% moral standard — who decides the margin?"></div>
+
+<p>That's not a learned behavior. That's not a cultural product. That's not an emergent property of social dynamics. That's architecture. Someone designed the observer with a measurement apparatus already inside it.</p>
+
+<p>And here's the thread that closes the circuit.</p>
+
+<p>Two thousand years ago, a man named Paul wrote a letter to a church in Rome. He had never met most of them. He was writing to explain how God's moral standard applies to people who have never read the Torah — people who don't have the written law. And he made a claim that, when you read it now, sounds like he's describing the neuroscience.</p>
+
+<blockquote>"They show that the work of the law is written on their hearts, their conscience bearing witness, and their conflicting thoughts accusing or else defending them."</blockquote>
+
+<p>Romans 2:15.</p>
+
+<p>Written on their hearts. Not taught. Not acquired. Written. Pre-installed. The conscience — bearing witness. Running a continuous evaluation. And their conflicting thoughts — accusing or defending. The internal courtroom that every human operates, awake or asleep, wanted or not.</p>
+
+<p>Paul described the judgment layer. He described it as hardware. He described it as universal. He described it as a moral measurement apparatus that operates independently of whether the person has received external instruction. And he did it two thousand years before Damasio mapped the ventromedial prefrontal cortex, before the Yale Baby Lab showed that six-month-olds prefer helpers over harmers, and before cross-cultural anthropology confirmed the same moral foundations on every continent.</p>
+
+<p class="land">That's the same pattern we saw in Chapter Two. The text predicts the science. The gap is two millennia.</p>
+
+<hr/>
+
+<p class="drop-cap">Here's what this means for the argument.</p>
+
+<p>If every human being comes equipped with a moral evaluator they didn't choose, can't uninstall, and can't override even when they want to — then accountability isn't what most people think it is.</p>
+
+<p>Accountability isn't God watching you from the outside and keeping a list. That's the cartoon version. What the data suggests is something deeper and more unsettling.</p>
+
+<p class="land">God wrote the measurement apparatus into the observer.</p>
+
+<p>You're not being judged by someone else. You're being judged by the equipment you came with. The verdict is being generated inside you, in real time, every moment of every day. You feel it when you lie and no one catches you. You feel it when you do the right thing and no one notices. You feel it when you look away from something you should have confronted.</p>
+
+<p>That's not culture. That's not upbringing. That's not social conditioning. That's the law written on your heart, your conscience bearing witness.</p>
+
+<p>And the fact that you can't turn it off — the fact that damaged hardware still leaves the rules intact even when the felt weight disappears — tells you something about the Architect. He didn't give you a suggestion. He gave you a measuring instrument. And instruments don't care whether you like the reading.</p>
+
+<hr/>
+
+<p class="drop-cap">So now we have five data points in the series.</p>
+
+<p>The playing field is level — both systems stand on unprovable axioms. The evidence runs both directions — fifteen predictions forward, ten gaps backward. Math works because the Author of logic and the Author of reality are the same. Science converges rather than accumulates — and the convergence points toward a coherent structure behind the models. And every human being carries a moral measurement apparatus they didn't install.</p>
+
+<p>One question remains before the verdict, and it's the simplest one. The one a child could ask.</p>
+
+<p class="land">Is the thing at the bottom of reality good — or isn't it?</p>
+
+</article>
+
+
+<!-- ═══════════════════════════════════════
+     AUDIO PLAYERS
+     ═══════════════════════════════════════ -->
+<div class="listen-section">
+  <div class="listen-label">Listen</div>
+  <div class="player-stack">
+
+    <div class="player-row">
+      <span class="player-type tts"><i class="fas fa-volume-up"></i> Read</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_05_tts.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type deep"><i class="fas fa-microscope"></i> Deep Dive</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_05_deep.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type debate"><i class="fas fa-comments"></i> Debate</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_05_debate.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ARTICLE NAV
+     ═══════════════════════════════════════ -->
+<nav class="article-nav">
+  <a href="cns-04-the-paradigm-graveyard.html" class="nav-link">
+    <i class="fas fa-arrow-left"></i> Prev: <span class="nav-title">The Paradigm Graveyard</span>
+  </a>
+  <a href="cns-06-the-priority-of-goodness.html" class="nav-link">
+    Next: <span class="nav-title">The Priority of Goodness</span> <i class="fas fa-arrow-right"></i>
+  </a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer>
+  <span class="footer-sig">Plant the flag. — POF 2828</span>
+  <span class="footer-colophon">Written by David Lowe with Claude · Theophysics Research Initiative · 2026</span>
+</footer>
+
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════ -->
+<script>
+function toggleFacts() {
+  const body = document.getElementById('factsBody');
+  const arrow = document.querySelector('.facts-toggle-arrow i');
+  body.classList.toggle('open');
+  arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+}
+</script>
+
+</body>
+</html>

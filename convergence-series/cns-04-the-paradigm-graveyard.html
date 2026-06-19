@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>04 · The Paradigm Graveyard — The Convergence Series</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+:root {
+  --surface: #0a0a0a;
+  --surface-light: #141414;
+  --surface-mid: #1a1a1a;
+  --border: #2a2a2a;
+  --border-hover: #3a3a3a;
+  --text-primary: #e0e0e0;
+  --text-body: #c4c4c4;
+  --text-secondary: #888;
+  --text-dim: #555;
+  --highlight: #d4af37;
+  --highlight-bright: #e8c547;
+  --highlight-dim: rgba(212,175,55,0.08);
+  --red: #ef4444;
+  --teal: #2dd4bf;
+  --blue: #4a9eff;
+  --purple: #a855f7;
+  --green: #22c55e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(212,175,55,0.25);
+  color: #fff;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE HEADER
+   ══════════════════════════════════════ */
+.article-header {
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 2rem 2.5rem;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.series-tag {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+
+.chapter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.article-title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.article-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.author-line {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.author-line a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.author-line a:hover { color: var(--highlight); }
+
+
+/* ══════════════════════════════════════
+   FACTS CARD
+   ══════════════════════════════════════ */
+.facts-card {
+  max-width: 780px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.facts-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.facts-toggle:hover { background: var(--surface-light); }
+
+.facts-toggle-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.facts-toggle-arrow {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+}
+
+.facts-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.facts-body.open { max-height: 800px; }
+
+.facts-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--highlight);
+  opacity: 0.5;
+}
+
+.facts-content {
+  padding: 1rem 1.5rem;
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.facts-content em { color: var(--highlight); font-style: italic; }
+
+
+/* ══════════════════════════════════════
+   PROSE — the reading experience
+   ══════════════════════════════════════ */
+.prose {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.prose p {
+  font-size: 1.08rem;
+  color: var(--text-body);
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
+}
+
+.prose p strong { color: #e0e0e0; }
+.prose p em { color: var(--highlight); font-style: italic; }
+
+/* Section breaks — the horizontal rules */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* Pull quotes */
+.prose blockquote {
+  border-left: 2px solid var(--highlight);
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Crimson Text', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--highlight);
+  line-height: 1.55;
+}
+
+/* Drop cap for first paragraph after an hr */
+.drop-cap::first-letter {
+  font-family: 'Crimson Text', serif;
+  font-size: 3.8rem;
+  float: left;
+  line-height: 0.8;
+  padding: 0.35rem 0.5rem 0 0;
+  color: var(--highlight);
+  font-weight: 700;
+}
+
+/* Landing sentences — short, punchy, after builds */
+.prose .land {
+  font-size: 1.15rem;
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+
+/* ══════════════════════════════════════
+   AUDIO PLAYERS — bottom of article
+   ══════════════════════════════════════ */
+.listen-section {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2.5rem;
+}
+
+.listen-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.player-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  transition: border-color 0.2s;
+}
+
+.player-row:hover { border-color: var(--border-hover); }
+
+.player-type {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.player-type.tts { color: var(--highlight); }
+.player-type.deep { color: var(--blue); }
+.player-type.debate { color: var(--purple); }
+
+.player-row audio {
+  width: 100%;
+  height: 36px;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE NAV — prev / next
+   ══════════════════════════════════════ */
+.article-nav {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-link:hover { color: var(--highlight); }
+
+.nav-link .nav-title {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.footer-sig {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--highlight);
+}
+
+.footer-colophon {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .article-header { padding: 2rem 1.5rem; }
+  .prose { padding: 2rem 1.5rem 4rem; }
+  .listen-section { padding: 0 1.5rem 3rem; padding-top: 2rem; }
+  .article-nav { padding: 0 1.5rem 2rem; padding-top: 1.5rem; }
+  footer { padding: 1.5rem; }
+  .player-row { grid-template-columns: 80px 1fr; }
+  .prose p { font-size: 1rem; }
+}
+/* Chapter Image */
+.chapter-image { max-width: 780px; margin: 2rem auto; padding: 0 2rem; }
+.chapter-image img { width: 100%; height: auto; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; }
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════ -->
+<header class="article-header">
+  <div class="header-meta">
+    <span class="series-tag">The Convergence Series</span>
+    <span class="chapter-num">Chapter 04 of 07</span>
+  </div>
+  <h1 class="article-title">The Paradigm Graveyard</h1>
+  <p class="article-subtitle">Thirteen paradigm-level replacements in five hundred years. Science doesn't accumulate truth — it converges toward a structure it's discovering.</p>
+  <div class="author-line">
+    Written by David Lowe with Claude · <a href="https://faiththruphysics.com">faiththruphysics.com</a> · 2026
+  </div>
+</header>
+<div class="chapter-image"><img src="images/slide_02.webp" alt="Entropy is the default in a closed system — add the right energy and everything changes"></div>
+
+
+<!-- ═══════════════════════════════════════
+     FACTS CARD
+     ═══════════════════════════════════════ -->
+<div class="facts-card">
+  <div class="facts-toggle" onclick="toggleFacts()">
+    <span class="facts-toggle-label"><i class="fas fa-list-check"></i> FACTS — What This Chapter Establishes</span>
+    <span class="facts-toggle-arrow"><i class="fas fa-chevron-down"></i></span>
+  </div>
+  <div class="facts-body" id="factsBody">
+    <div class="facts-row">
+      <div class="facts-letter"><span>F</span></div>
+      <div class="facts-content">The last 500 years contain <em>thirteen paradigm-level replacements</em> — not refinements but wholesale demolitions of what the previous generation called settled truth.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>A</span></div>
+      <div class="facts-content">The "pessimistic meta-induction" — since every successful theory of the past was eventually proven wrong, we have <em>no inductive grounds</em> to believe our current models are the final truth.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>C</span></div>
+      <div class="facts-content">Science's relationship to truth is <em>negative rather than positive</em> — it produces models that have not yet been shown to be false, not proven descriptions of reality. Popper, Kuhn, Bohr, Feynman, and Hawking all confirmed this.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>T</span></div>
+      <div class="facts-content">The convergence pattern — each replacement is <em>more accurate, more unifying, more elegant</em> — is itself evidence that reality is coherent enough to be approached by rational minds. That's exactly what you'd expect if someone rational built it.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>S</span></div>
+      <div class="facts-content">Copernicus (1543), Lavoisier (1783), Pasteur (1880), Michelson-Morley (1887), Einstein (1919), Big Bang (1964), Plate Tectonics (1965), Standard Model (1974), Kuhn's Structure of Scientific Revolutions, Popper's Logic of Scientific Discovery, Laudan's pessimistic meta-induction.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     THE ARTICLE
+     ═══════════════════════════════════════ -->
+<article class="prose">
+
+<p class="drop-cap">If math works because God is real — if the Author of logic and the Author of reality are the same person — then why does science keep getting it wrong?</p>
+
+<p>Good question. And the answer isn't what you think.</p>
+
+<p>Science doesn't keep getting it wrong. Science keeps <em>replacing its best understanding with a better one</em>. That's not failure. That's the update mechanism working exactly as designed. But it means something that most people never stop to consider.</p>
+
+<p class="land">Every model science has ever produced is temporary.</p>
+
+<p>Not "might be temporary." Is. By definition. A theory is scientific precisely because it <em>can</em> be proven wrong. Karl Popper made this the centerline: if your theory can't be falsified, it's not science. And if it can be falsified, then it's always one experiment away from being replaced.</p>
+
+<p>That's not a weakness. It's the most honest thing about the method. But it means you can never — structurally, logically, definitionally — claim that a scientific theory is the final truth. The moment you do, you've stopped doing science and started doing something else.</p>
+
+<hr/>
+
+<p class="drop-cap">Here's what that looks like over five hundred years.</p>
+
+<p>In 1543, Copernicus removed the earth from the center of the universe. For over a thousand years, the Ptolemaic system had worked — it predicted planetary positions, it matched observations, it was "settled science." And then it was wrong. Not slightly wrong. <em>Architecturally wrong.</em> The entire cosmic structure had to be rebuilt.</p>
+
+<p>In 1687, Newton replaced Aristotle. For two thousand years, Aristotelian mechanics was the operating system of physics. Objects moved because of their "nature." Stones fell because they sought their natural place. Newton replaced the whole thing with three laws and a gravitational constant. Objects move because forces act on them. The old system didn't get refined. It got deleted.</p>
+
+<p>In 1783, Lavoisier killed phlogiston. For decades, chemists believed combustion released an invisible substance called phlogiston. Lavoisier proved that combustion <em>consumes</em> oxygen. Phlogiston didn't get corrected. It was erased from reality. A thing that "existed" turned out to have never existed at all.</p>
+
+<p>In 1880, Pasteur killed miasma. For centuries, doctors believed disease spread through "bad air." Pasteur demonstrated that microorganisms — invisible, living things too small to see — were the actual cause. Surgeons who refused to wash their hands were killing their patients. The old model didn't need updating. It needed burying.</p>
+
+<p>In 1887, Michelson and Morley killed the luminiferous aether. Light was supposed to travel through a medium — the aether — the way sound travels through air. The experiment proved the aether doesn't exist. There's nothing there. Light just travels.</p>
+
+<p>In 1905, quantum mechanics replaced classical physics at the small scale. Determinism — the clockwork universe — gave way to probability. The electron doesn't have a position until you measure it. Reality at the fundamental level is not what anyone expected.</p>
+
+<p>In 1919, Einstein replaced Newton. Gravity isn't a force. It's the curvature of spacetime. The conceptual framework that ruled physics for 232 years — absolute space, absolute time, forces acting at a distance — was wrong.</p>
+
+<p>In 1964, the Big Bang replaced the Steady State. The universe isn't eternal. It had a beginning. The Cosmic Microwave Background confirmed it. A universe with a start time looks different from one that's always been there — and ours has a start time.</p>
+
+<p>In 1965, plate tectonics replaced fixed continents. The ground under your feet is moving. The continents are floating on magma. Mountains are collision debris. This was considered fringe geology until the mid-1960s.</p>
+
+<p>In 1974, the Standard Model replaced earlier particle theories. Quarks, gluons, the whole zoo of subatomic structure — none of it existed in the old models. The "fundamental" particles of the 1950s turned out to be composites.</p>
+
+<p class="land">Thirteen paradigm-level replacements in five hundred years. Not refinements. Replacements. Wholesale demolitions of what the previous generation called settled truth.</p>
+
+<hr/>
+
+<p class="drop-cap">And here's the thing that nobody says out loud.</p>
+
+<p>If every successful theory of the past was eventually proven wrong — phlogiston, aether, miasma, Ptolemaic orbits, Newtonian absolutes, fixed continents, steady-state cosmology — then what exactly gives you confidence that our current theories are the final ones?</p>
+
+<p>A philosopher of science named Larry Laudan called this the "pessimistic meta-induction." The pattern of the last five hundred years is clear: <em>successful theories get replaced</em>. That's what they do. So inductively — using science's own method of reasoning from past patterns to future expectations — we should expect our current models to be replaced too.</p>
+
+<p>That doesn't mean current science is useless. GPS works. Vaccines work. Semiconductors work. The models are extraordinarily effective at prediction and technology. But "this model makes accurate predictions" is not the same statement as "this model is the final truth about reality." Those are two completely different claims, and science can only deliver the first one.</p>
+
+<p>Niels Bohr — the architect of quantum mechanics — said it directly: <em>what we observe is not nature itself, but nature exposed to our method of questioning.</em> We're not seeing reality. We're seeing reality's answer to the specific question we asked. Ask a different question, get a different answer. And the question keeps changing.</p>
+
+<p>Richard Feynman said science is the belief in the ignorance of experts. If it disagrees with experiment, it's wrong — no matter how beautiful the theory, no matter how smart the person who proposed it.</p>
+
+<p>Stephen Hawking went further. He championed "model-dependent realism" — the idea that because our brains interpret sensory input by building mental models, there is no theory-independent concept of reality at all. Truth, in Hawking's framework, is an illusion. All we have are models that predict correctly within their range.</p>
+
+<p class="land">These aren't fringe positions. These are the people who built the theories. And they're telling you: what we produce are models. Useful, powerful, extraordinary models. But models. Not final truth.</p>
+
+<hr/>
+
+<p class="drop-cap">Now here's where it connects.</p>
+
+<p>Remember the ten presuppositions from Chapter One? The unprovable assumptions science has to accept before it can take its first measurement? Here's what the paradigm graveyard tells us about them.</p>
+
+<p>Science assumes the uniformity of nature — that the laws of physics will be the same tomorrow. It can't prove this. It uses induction to justify induction, which is circular. But it works. Why?</p>
+
+<p>Science assumes the world is orderly and knowable. It can't prove this either. There's no experiment that demonstrates reality is rational rather than chaotic. But the math keeps working. Why?</p>
+
+<p>Science assumes that human cognitive faculties are truth-gatherers — that the brain evolved not just for survival but for accuracy about the nature of reality. This is actually a problem for the naturalist, because evolution selects for survival, not truth. A false belief that keeps you alive is evolutionarily superior to a true belief that gets you killed. So why should we trust our brains to do physics?</p>
+
+<p class="land">Every one of these presuppositions is an act of faith. And every one of them makes sense — immediately, obviously, naturally — if there's a rational mind behind reality who designed the knower to match the known.</p>
+
+<p>The theist doesn't need to explain why science works. The theist predicted that it would. A rational God creating a rational universe populated by rational beings designed to perceive it — that's exactly the world where math describes matter, where experiments replicate, where the laws hold from Tuesday to Wednesday.</p>
+
+<p>The naturalist has to explain all of that without a designer. And the best explanations on offer — "it just is," "the anthropic principle," "we got lucky" — are not explanations. They're deferrals.</p>
+
+<hr/>
+
+<p class="drop-cap">So here's what the paradigm graveyard actually tells us.</p>
+
+<p>Science revises because finite minds can't see the whole picture from inside. Every paradigm shift is a moment where we realize the room is bigger than we thought. The model was a map, and the map didn't cover the territory we just stumbled into. So we draw a bigger map.</p>
+
+<p class="land">That's not failure. That's convergence.</p>
+
+<p>Each replacement gets closer to something. The models aren't random — they're converging on a structure. Newton was closer than Aristotle. Einstein was closer than Newton. The direction is consistent even though the models keep breaking.</p>
+
+<p>And if you ask "converging toward what?" — the answer writes itself. Converging toward the actual architecture. The real structure underneath. The thing the models have been approximating with increasing precision for five hundred years.</p>
+
+<p>The paradigm graveyard is not evidence against truth. It's evidence that truth exists and we're getting closer to it — from the inside, with limited tools, one broken map at a time. And the fact that the convergence keeps working — that each replacement is <em>more accurate, more unifying, more elegant</em> — is itself a data point. It means reality is coherent enough to be approached. Structured enough to reward inquiry. Rational enough to be partially grasped by rational minds.</p>
+
+<p class="land">That's exactly what you'd expect if someone rational built it.</p>
+
+<hr/>
+
+<p class="drop-cap">But there's something else running underneath all of this. Something science can describe but can't explain. Something every human being does every single day without being taught, without choosing to, without the ability to stop.</p>
+
+<p>You're judging. Right now. Constantly. And you didn't install the software that's doing it.</p>
+
+</article>
+
+
+<!-- ═══════════════════════════════════════
+     AUDIO PLAYERS
+     ═══════════════════════════════════════ -->
+<div class="listen-section">
+  <div class="listen-label">Listen</div>
+  <div class="player-stack">
+
+    <div class="player-row">
+      <span class="player-type tts"><i class="fas fa-volume-up"></i> Read</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_04_tts.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type deep"><i class="fas fa-microscope"></i> Deep Dive</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_04_deep.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type debate"><i class="fas fa-comments"></i> Debate</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_04_debate.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ARTICLE NAV
+     ═══════════════════════════════════════ -->
+<nav class="article-nav">
+  <a href="cns-03-why-math-works.html" class="nav-link">
+    <i class="fas fa-arrow-left"></i> Prev: <span class="nav-title">Why Math Works</span>
+  </a>
+  <a href="cns-05-the-judgment-layer.html" class="nav-link">
+    Next: <span class="nav-title">The Judgment Layer</span> <i class="fas fa-arrow-right"></i>
+  </a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer>
+  <span class="footer-sig">Plant the flag. — POF 2828</span>
+  <span class="footer-colophon">Written by David Lowe with Claude · Theophysics Research Initiative · 2026</span>
+</footer>
+
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════ -->
+<script>
+function toggleFacts() {
+  const body = document.getElementById('factsBody');
+  const arrow = document.querySelector('.facts-toggle-arrow i');
+  body.classList.toggle('open');
+  arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+}
+</script>
+
+</body>
+</html>

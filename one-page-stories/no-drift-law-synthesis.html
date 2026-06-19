@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>No-Drift Law Synthesis — Theophysics Master Equation</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+:root{
+  --surface:#0a0a0a;
+  --surface-light:#141414;
+  --surface-card:#1a1a1a;
+  --border:#2a2a2a;
+  --border-hover:#3a3a3a;
+  --text-primary:#e8e8e8;
+  --text-secondary:#909090;
+  --text-dim:#606060;
+  --gold:#d4af37;
+  --gold-bright:#f4d03f;
+  --gold-dim:rgba(212,175,55,.08);
+  --blue:#4a9eff;
+  --blue-dim:rgba(74,158,255,.12);
+  --teal:#2dd4bf;
+  --teal-dim:rgba(45,212,191,.12);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,.10);
+  --purple:#a855f7;
+  --purple-dim:rgba(168,85,247,.12);
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--text-primary);line-height:1.65;overflow-x:hidden;}
+.serif{font-family:'Crimson Text',serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+/* Progress bar */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--blue));z-index:200;transition:width .15s ease;}
+
+/* Sticky TOC sidebar */
+.toc-sidebar{
+  position:fixed;top:80px;left:0;width:260px;height:calc(100vh - 80px);
+  background:var(--surface-light);border-right:1px solid var(--border);
+  overflow-y:auto;z-index:50;padding:1.5rem 1rem;
+  transform:translateX(-100%);transition:transform .3s ease;
+}
+.toc-sidebar.open{transform:translateX(0);}
+.toc-toggle{
+  position:fixed;top:80px;left:0;z-index:60;
+  width:44px;height:44px;border:1px solid var(--border);border-left:none;
+  background:var(--surface-card);color:var(--gold);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:0 .5rem .5rem 0;transition:left .3s ease;
+  font-size:1rem;
+}
+.toc-toggle.shifted{left:260px;}
+.toc-sidebar a{
+  display:block;padding:.4rem .6rem;margin:.15rem 0;border-radius:.35rem;
+  font-size:.78rem;color:var(--text-secondary);text-decoration:none;
+  transition:all .2s ease;line-height:1.4;
+}
+.toc-sidebar a:hover,.toc-sidebar a.active{color:var(--gold);background:var(--gold-dim);}
+.toc-sidebar a.law-link{padding-left:1.4rem;font-size:.72rem;}
+.toc-sidebar .toc-title{
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);
+}
+
+/* Top nav bar */
+.top-nav{
+  position:fixed;top:3px;left:0;right:0;z-index:100;
+  background:rgba(10,10,10,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:.6rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.top-nav .nav-links{display:flex;gap:.25rem;flex-wrap:wrap;}
+.top-nav .nav-links a{
+  font-size:.7rem;color:var(--text-dim);text-decoration:none;
+  padding:.3rem .6rem;border-radius:.3rem;transition:all .2s;
+  font-family:'JetBrains Mono',monospace;
+}
+.top-nav .nav-links a:hover{color:var(--gold);background:var(--gold-dim);}
+
+/* Law card */
+.law-card{
+  background:var(--surface-card);border:1px solid var(--border);
+  border-radius:1rem;overflow:hidden;transition:all .35s ease;
+  scroll-margin-top:90px;
+}
+.law-card:hover{border-color:var(--border-hover);box-shadow:0 0 50px rgba(212,175,55,.04);}
+.law-header{
+  padding:2rem 2.5rem;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.law-number{
+  font-family:'JetBrains Mono',monospace;font-size:3.5rem;font-weight:700;
+  position:absolute;top:1rem;right:2rem;
+  color:rgba(212,175,55,.08);line-height:1;
+}
+.law-physicist{
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem;
+}
+.law-title{font-family:'Crimson Text',serif;font-size:1.6rem;font-weight:600;color:#fff;}
+.law-subtitle{font-size:.9rem;color:var(--text-secondary);margin-top:.35rem;}
+
+/* Regime sections */
+.regime-constructive{
+  padding:1.75rem 2.5rem;
+  background:rgba(212,175,55,.03);
+  border-left:4px solid var(--gold);
+  border-bottom:1px solid var(--border);
+}
+.regime-destructive{
+  padding:1.75rem 2.5rem;
+  background:rgba(239,68,68,.03);
+  border-left:4px solid var(--red);
+  border-bottom:1px solid var(--border);
+}
+.regime-label{
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem;display:block;
+}
+.regime-constructive .regime-label{color:var(--gold);}
+.regime-destructive .regime-label{color:var(--red);}
+
+/* Equation block */
+.eq{
+  background:var(--surface-light);border:1px solid var(--border);
+  border-left:3px solid var(--gold);padding:1rem 1.5rem;margin:1rem 0;
+  border-radius:0 .4rem .4rem 0;font-family:'JetBrains Mono',monospace;
+  font-size:.88rem;color:#fff;text-align:center;overflow-x:auto;
+}
+
+/* Free Will / Shannon / Scripture sub-sections */
+.law-subsection{
+  padding:1.25rem 2.5rem;border-bottom:1px solid var(--border);
+}
+.law-subsection:last-child{border-bottom:none;}
+.sub-label{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem;display:block;
+}
+.sub-freewill .sub-label{color:var(--purple);}
+.sub-shannon .sub-label{color:var(--blue);}
+.sub-scripture .sub-label{color:var(--teal);}
+
+/* Insight callout */
+.insight{
+  border-left:4px solid var(--gold);background:var(--gold-dim);
+  padding:1.25rem 1.5rem;margin:1.5rem 0;border-radius:0 .5rem .5rem 0;
+}
+.insight p{color:#fff;font-size:1.05rem;margin:0;}
+.insight .tag{color:var(--gold);font-family:'Crimson Text',serif;font-style:italic;font-size:.85rem;display:block;margin-bottom:.35rem;}
+
+/* One-directional badge */
+.badge-onedir{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.3rem .8rem;border-radius:999px;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.badge-onedir-down{background:var(--red-dim);color:var(--red);}
+.badge-onedir-up{background:var(--gold-dim);color:var(--gold);}
+
+/* Tags */
+.tag-logic{display:inline-block;padding:.2rem .65rem;border-radius:999px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;background:var(--gold-dim);color:var(--gold);}
+.tag-physics{display:inline-block;padding:.2rem .65rem;border-radius:999px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;background:var(--blue-dim);color:var(--blue);}
+.tag-scripture{display:inline-block;padding:.2rem .65rem;border-radius:999px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;background:var(--teal-dim);color:var(--teal);}
+.tag-bridge{display:inline-block;padding:.2rem .65rem;border-radius:999px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;background:var(--purple-dim);color:var(--purple);}
+
+/* Tier table */
+.tier-table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:.75rem;border:1px solid var(--border);}
+.tier-table th{background:var(--surface-card);color:var(--gold);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:.85rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+.tier-table td{padding:.85rem 1rem;border-bottom:1px solid var(--border);font-size:.9rem;color:var(--text-primary);}
+.tier-table tr:last-child td{border-bottom:none;}
+.tier-table tr:hover td{background:rgba(212,175,55,.04);}
+
+/* Step cards (salvation algorithm) */
+.step-card{
+  background:var(--surface-card);border:1px solid var(--border);
+  border-radius:1rem;overflow:hidden;transition:all .35s ease;
+}
+.step-card:hover{border-color:var(--gold);box-shadow:0 0 40px rgba(212,175,55,.08);transform:translateY(-2px);}
+.step-number{
+  position:absolute;top:-1px;left:-1px;width:56px;height:56px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:700;
+  color:var(--surface);background:var(--gold);border-radius:1rem 0 1rem 0;z-index:2;
+}
+.step-header{padding:2rem 2rem 1.5rem 5rem;border-bottom:1px solid var(--border);}
+.step-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.step-logic{padding:2rem;border-right:1px solid var(--border);}
+.step-physics{padding:2rem;background:rgba(74,158,255,.03);}
+.step-logic .label,.step-physics .label{display:block;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:.75rem;}
+.step-logic .label{color:var(--gold);}
+.step-physics .label{color:var(--blue);}
+
+/* Sequence cards */
+.seq-card{
+  background:var(--surface-card);border:1px solid var(--border);
+  border-radius:.75rem;padding:1.5rem;transition:border-color .25s ease;
+}
+.seq-card:hover{border-color:var(--blue);}
+.seq-letter{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:.5rem;
+  background:var(--blue-dim);color:var(--blue);
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.9rem;
+  margin-bottom:.75rem;
+}
+
+/* Convergence */
+.convergence-box{
+  background:linear-gradient(135deg,rgba(212,175,55,.06) 0%,rgba(74,158,255,.04) 50%,rgba(45,212,191,.06) 100%);
+  border:1px solid var(--border);border-radius:1rem;padding:3rem;text-align:center;
+}
+.convergence-paths{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin:2rem 0;}
+.convergence-path{padding:1.5rem;border-radius:.75rem;border:1px solid var(--border);background:var(--surface-card);}
+
+/* Drop cap */
+.drop-cap::first-letter{
+  font-family:'Crimson Text',serif;font-size:4.5rem;float:left;
+  line-height:.82;padding:.3rem .55rem 0 0;color:var(--gold);font-weight:600;
+}
+
+/* Open question cards */
+.oq-card{
+  background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;
+  padding:1.5rem;transition:border-color .25s;
+}
+.oq-card:hover{border-color:var(--purple);}
+.oq-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--purple-dim);color:var(--purple);
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.75rem;
+  margin-bottom:.75rem;
+}
+
+footer{border-top:1px solid var(--border);margin-top:5rem;padding:2.5rem 0;text-align:center;}
+
+@media(max-width:768px){
+  .step-body{grid-template-columns:1fr;}
+  .step-logic{border-right:none;border-bottom:1px solid var(--border);}
+  .step-header{padding:1.5rem 1.5rem 1rem 4.5rem;}
+  .step-logic,.step-physics{padding:1.5rem;}
+  .convergence-paths{grid-template-columns:1fr;}
+  .law-header{padding:1.5rem;}
+  .regime-constructive,.regime-destructive,.law-subsection{padding:1.25rem 1.5rem;}
+  .law-number{font-size:2.5rem;right:1rem;}
+  .top-nav .nav-links{display:none;}
+  .toc-sidebar{width:240px;}
+}
+
+/* Scrollbar styling */
+.toc-sidebar::-webkit-scrollbar{width:4px;}
+.toc-sidebar::-webkit-scrollbar-track{background:transparent;}
+.toc-sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ═══ AUDIO PLAYER v2 (pill) ═══ */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+@media(max-width:560px){.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}}
+
+</style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/one-page-stories/no-drift-law-synthesis.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/one-page-stories/images/Cosmic_Source_Code_Theophysics conv 0.webp"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+<body>
+<nav class="tp-ribbon" style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:2px solid #d4af3733;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <a href="/index.html" style="color:#999;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
+    <span style="color:#333;">|</span>
+    <span style="color:#d4af37;font-weight:500;">One-Page Stories</span>
+  </div>
+</nav>
+
+
+<div class="progress-bar" id="progress" style="width:0%"></div>
+
+<!-- ══════════ TOP NAV ══════════ -->
+<nav class="top-nav">
+  <div style="display:flex;align-items:center;gap:.75rem;">
+    <span class="mono text-xs font-bold" style="color:var(--gold);">NDLS</span>
+    <span class="text-xs" style="color:var(--text-dim);">No-Drift Law Synthesis</span>
+  </div>
+  <div class="nav-links">
+    <a href="#architecture">Architecture</a>
+    <a href="#hierarchy">Hierarchy</a>
+    <a href="#laws">10 Laws</a>
+    <a href="#law1">L1</a><a href="#law2">L2</a><a href="#law3">L3</a><a href="#law4">L4</a><a href="#law5">L5</a>
+    <a href="#law6">L6</a><a href="#law7">L7</a><a href="#law8">L8</a><a href="#law9">L9</a><a href="#law10">L10</a>
+    <a href="#salvation-algo">Algorithm</a>
+    <a href="#salvation-seq">Sequence</a>
+    <a href="#convergence">Convergence</a>
+    <a href="#open-questions">Open Qs</a>
+  </div>
+</nav>
+
+<!-- ═══ AUDIO PLAYER v2 ═══ -->
+<div class="tp-player-block" id="nodriftlawsynthesisplayerBlock">
+  <div class="tp-read-aloud">
+    <span class="tp-dot"></span>
+    <span class="tp-label">Listen</span>
+    <audio id="nodriftlawsynthesisAudio" preload="metadata">
+      <source src="https://r2.faiththruphysics.com/audio/No_Drift_Law_Synthesis.mp3" type="audio/mpeg">
+    </audio>
+    <button class="tp-play" data-audio="nodriftlawsynthesisAudio" onclick="tpToggle('nodriftlawsynthesisAudio',this)">
+      <i class="fas fa-play"></i>
+    </button>
+    <div class="tp-track" onclick="tpSeek(event,'nodriftlawsynthesisAudio')">
+      <div class="tp-fill"></div>
+    </div>
+    <span class="tp-time">0:00</span>
+    <button class="tp-mute" onclick="tpMute('nodriftlawsynthesisAudio',this)">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+</div>
+<!-- ══════════ TOC SIDEBAR ══════════ -->
+<button class="toc-toggle" id="tocToggle" title="Table of Contents">
+  <i class="fas fa-bars"></i>
+</button>
+<aside class="toc-sidebar" id="tocSidebar">
+  <div class="toc-title">Table of Contents</div>
+  <a href="#architecture"><i class="fas fa-drafting-compass mr-1"></i> The Architecture</a>
+  <a href="#hierarchy"><i class="fas fa-layer-group mr-1"></i> Three-Tier Hierarchy</a>
+  <a href="#laws"><i class="fas fa-scroll mr-1"></i> The 10 Laws</a>
+  <a href="#law1" class="law-link">L1 &mdash; Newton-Einstein / Grace</a>
+  <a href="#law2" class="law-link">L2 &mdash; Einstein / Holy Spirit</a>
+  <a href="#law3" class="law-link">L3 &mdash; Maxwell / Truth</a>
+  <a href="#law4" class="law-link">L4 &mdash; Yukawa / Love</a>
+  <a href="#law5" class="law-link">L5 &mdash; Schr&ouml;dinger-Heisenberg / Faith</a>
+  <a href="#law6" class="law-link">L6 &mdash; Boltzmann-Clausius / Justice</a>
+  <a href="#law7" class="law-link">L7 &mdash; Fermi / Redemption</a>
+  <a href="#law8" class="law-link">L8 &mdash; Noether / Righteousness</a>
+  <a href="#law9" class="law-link">L9 &mdash; Zurek-Zeh / Adversary</a>
+  <a href="#law10" class="law-link">L10 &mdash; Coherence / Christ</a>
+  <a href="#salvation-algo"><i class="fas fa-link mr-1"></i> Salvation Algorithm</a>
+  <a href="#salvation-seq"><i class="fas fa-wave-square mr-1"></i> Salvation Sequence</a>
+  <a href="#convergence"><i class="fas fa-bullseye mr-1"></i> Convergence Data</a>
+  <a href="#open-questions"><i class="fas fa-question-circle mr-1"></i> Open Questions</a>
+</aside>
+
+<!-- ══════════ HERO ══════════ -->
+<header style="background:linear-gradient(180deg,rgba(212,175,55,.06) 0%,var(--surface) 100%);border-bottom:1px solid var(--border);padding-top:70px;">
+  <div class="max-w-5xl mx-auto px-6 py-12 md:py-20">
+    <div class="flex flex-wrap gap-2 mb-6">
+      <span class="tag-physics">Physics</span>
+      <span class="tag-logic">Theology</span>
+      <span class="tag-scripture">Scripture</span>
+      <span class="tag-bridge">Information Theory</span>
+    </div>
+
+    <h1 class="serif text-4xl md:text-6xl font-bold text-white mb-4 leading-tight" style="letter-spacing:-.02em;">
+      Theophysics Master Equation<br/>
+      <span style="color:var(--gold);">No-Drift Law Synthesis</span>
+    </h1>
+    <p class="serif text-xl md:text-2xl italic mb-6" style="color:var(--text-secondary);">
+      Give this to GPT and Gemini for final convergence pass
+    </p>
+
+    <div class="flex flex-wrap items-center gap-4 mt-8 text-sm" style="color:var(--text-dim);">
+      <span><i class="fas fa-user mr-1" style="color:var(--gold);"></i> David Lowe</span>
+      <span><i class="fas fa-fingerprint mr-1" style="color:var(--gold);"></i> POF 2828</span>
+      <span><i class="fas fa-robot mr-1" style="color:var(--blue);"></i> Claude (Opus)</span>
+      <span><i class="fas fa-calendar-alt mr-1" style="color:var(--gold);"></i> April 11, 2026</span>
+      <span style="padding:.25rem .65rem;background:var(--purple-dim);color:var(--purple);border-radius:.25rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Working Synthesis</span>
+    </div>
+
+    <div class="mt-6 text-xs" style="color:var(--text-dim);">
+      <i class="fas fa-folder-open mr-1"></i> Canonical Code Parent: <span class="mono" style="color:var(--text-secondary);">C:\Users\lowes\Desktop\Folders\MASTER_EQUATION\01_CODE</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ SECTION 1: ARCHITECTURE ══════════ -->
+<section id="architecture" class="max-w-5xl mx-auto px-6 py-16" style="scroll-margin-top:90px;">
+  <div class="text-center mb-12">
+    <p class="mono text-sm font-semibold tracking-widest uppercase mb-2" style="color:var(--gold);">Foundation</p>
+    <h2 class="serif text-3xl md:text-4xl font-bold text-white">The Architecture</h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Native Duality -->
+    <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;padding:2rem;transition:border-color .25s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;background:var(--gold-dim);margin-bottom:1rem;">
+        <i class="fas fa-yin-yang" style="color:var(--gold);font-size:1.1rem;"></i>
+      </div>
+      <h3 class="serif text-lg font-bold text-white mb-2">Native Duality</h3>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Every physical law contains BOTH its constructive and destructive spiritual expression inside the SAME equation. No separate inverse laws. The annihilator is native to the math &mdash; it emerges from pushing parameters to extremes, not from a different equation.
+      </p>
+    </div>
+
+    <!-- Free Will -->
+    <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;padding:2rem;transition:border-color .25s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;background:var(--purple-dim);margin-bottom:1rem;">
+        <i class="fas fa-hand-point-up" style="color:var(--purple);font-size:1.1rem;"></i>
+      </div>
+      <h3 class="serif text-lg font-bold text-white mb-2">W &mdash; The Free Will Variable</h3>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Free Will (W) is NOT a law. It is the ONE variable that differentiates spiritual equations from pure physics. In physics, mass has no choice. In spirit, the agent can resist or align. W runs through all 10 laws.
+      </p>
+    </div>
+
+    <!-- Shannon Layer -->
+    <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;padding:2rem;transition:border-color .25s;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;background:var(--blue-dim);margin-bottom:1rem;">
+        <i class="fas fa-signal" style="color:var(--blue);font-size:1.1rem;"></i>
+      </div>
+      <h3 class="serif text-lg font-bold text-white mb-2">Shannon Measurement Layer</h3>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Shannon Information Theory is the MEASUREMENT LAYER underneath all laws. It makes every law testable.
+      </p>
+      <div class="eq mt-3" style="font-size:.85rem;">R<sub>max</sub> = A &middot; log<sub>2</sub>(1 + T/D)</div>
+    </div>
+
+    <!-- Laws 9/10 Endpoints -->
+    <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;padding:2rem;transition:border-color .25s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;background:var(--teal-dim);margin-bottom:1rem;">
+        <i class="fas fa-arrows-alt-h" style="color:var(--teal);font-size:1.1rem;"></i>
+      </div>
+      <h3 class="serif text-lg font-bold text-white mb-2">Two Attractors</h3>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Laws 1&ndash;8 are INTERNALLY DUAL &mdash; each contains grace and corruption in the same equation.
+        Law 9 (Adversary) is ONE-DIRECTIONAL downward. Law 10 (Christ) is ONE-DIRECTIONAL upward.
+        They are the two endpoints &mdash; the two attractors everything else oscillates between.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 2: THREE-TIER HIERARCHY ══════════ -->
+<section id="hierarchy" class="max-w-4xl mx-auto px-6 py-16" style="scroll-margin-top:90px;">
+  <div class="text-center mb-8">
+    <p class="mono text-sm font-semibold tracking-widest uppercase mb-2" style="color:var(--teal);">Framework</p>
+    <h2 class="serif text-3xl font-bold text-white">The Three-Tier Moral Hierarchy</h2>
+  </div>
+
+  <table class="tier-table">
+    <thead>
+      <tr>
+        <th style="width:60px;">Tier</th>
+        <th>Entity</th>
+        <th>W Status</th>
+        <th>Moral Weight</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="mono font-bold text-center" style="color:var(--text-dim);">1</td>
+        <td class="font-semibold">Animals / Physics</td>
+        <td class="mono text-sm" style="color:var(--text-secondary);">W = N/A</td>
+        <td style="color:var(--text-dim);">None</td>
+        <td class="text-sm" style="color:var(--text-secondary);">No moral weight. The equation runs deterministically. A lion kills a gazelle &mdash; no trial. Beautiful but not moral.</td>
+      </tr>
+      <tr>
+        <td class="mono font-bold text-center" style="color:var(--gold);">2</td>
+        <td class="font-semibold">Humans</td>
+        <td class="mono text-sm" style="color:var(--gold);">W &isin; [0, &infin;)</td>
+        <td style="color:var(--gold);">Full</td>
+        <td class="text-sm" style="color:var(--text-secondary);">Moral weight exists. Every action is meaningful because it could have gone otherwise. Sin is possible. Love is possible. Both require W.</td>
+      </tr>
+      <tr>
+        <td class="mono font-bold text-center" style="color:var(--blue);">3</td>
+        <td class="font-semibold text-white">Christ</td>
+        <td class="mono text-sm" style="color:var(--blue);">W = 1 sustained</td>
+        <td style="color:var(--blue);">Perfect</td>
+        <td class="text-sm" style="color:var(--text-secondary);">The equation runs perfectly NOT because W was removed but because it was held at alignment through every test. That&rsquo;s what makes the sacrifice valid.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════ SECTION 3: THE 10 LAWS ══════════ -->
+<section id="laws" style="background:linear-gradient(180deg,var(--surface) 0%,rgba(212,175,55,.02) 50%,var(--surface) 100%);scroll-margin-top:90px;">
+  <div class="max-w-5xl mx-auto px-6 py-16">
+    <div class="text-center mb-16">
+      <p class="mono text-sm font-semibold tracking-widest uppercase mb-2" style="color:var(--gold);">Core Framework</p>
+      <h2 class="serif text-3xl md:text-4xl font-bold text-white">The 10 Laws &mdash; Named by Physicist</h2>
+      <p class="text-sm mt-3 max-w-2xl mx-auto" style="color:var(--text-secondary);">
+        Each law maps a physical equation to its spiritual expression. Laws 1&ndash;8 contain both constructive and destructive regimes inside the same equation. Laws 9 and 10 are one-directional endpoints.
+      </p>
+    </div>
+
+    <div class="space-y-10">
+
+      <!-- ═══ LAW 1 ═══ -->
+      <div class="law-card" id="law1">
+        <div class="law-header">
+          <div class="law-number">01</div>
+          <div class="law-physicist">Law 1 &mdash; Newton-Einstein</div>
+          <div class="law-title">Gravitation &rarr; Grace / Sin</div>
+          <div class="law-subtitle">Newton lives inside Einstein. Same force, two descriptions.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq">F = Gm<sub>1</sub>m<sub>2</sub>/r&sup2; &nbsp;(Newton) &nbsp;inside&nbsp; G<sub>&mu;&nu;</sub> = 8&pi;G/c&sup4; &middot; T<sub>&mu;&nu;</sub> &nbsp;(Einstein)</div>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Grace</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Low mass-energy density &rarr; gentle curvature &rarr; stable orbits &rarr; the geodesic bends your path home without force or coercion. You don&rsquo;t feel gravity pushing. You feel the path curving underneath you.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Sin</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Same equation, high density past Schwarzschild radius r<sub>s</sub> = 2GM/c&sup2; &rarr; singularity &rarr; event horizon &rarr; nothing escapes. The gentle guide becomes a trap. Grace&rsquo;s own math pushed past the critical threshold.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will Equation</span>
+          <div class="eq" style="border-left-color:var(--purple);">F<sub>spiritual</sub> = Gm<sub>1</sub>m<sub>2</sub>/r&sup2; &middot; (1&minus;W)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">W=0 identical to physics. W=1 grace fully resisted. W&gt;1 force reverses, active rebellion.</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">S/N = (G &middot; m<sub>source</sub>) / (r&sup2; &middot; W)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">Higher W &rarr; lower signal &rarr; reduced revelation capacity.</p>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">John 6:44 &mdash; &ldquo;No one can come to me unless the Father draws him.&rdquo;</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 2 ═══ -->
+      <div class="law-card" id="law2">
+        <div class="law-header">
+          <div class="law-number">02</div>
+          <div class="law-physicist">Law 2 &mdash; Einstein</div>
+          <div class="law-title">Mass-Energy E=mc&sup2; &rarr; Holy Spirit / Transformer</div>
+          <div class="law-subtitle">The Holy Spirit IS the transformer. Energy is never created or destroyed &mdash; only converted between forms.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq">E = mc&sup2;</div>
+        </div>
+
+        <div class="law-subsection" style="background:rgba(74,158,255,.03);">
+          <span class="sub-label" style="color:var(--blue);"><i class="fas fa-info-circle mr-1"></i> Framework</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Present before creation (Genesis 1:2, hovering over the waters). Never generated, never extinguished. Only changing form.
+          </p>
+          <p class="text-sm leading-relaxed mt-3" style="color:#cfcfcf;">
+            <strong style="color:var(--gold);">The dual substrate:</strong> Spirit (E) and Matter (m) are the SAME substance in two states. The conversion constant c&sup2; = speed of light = Christ (John 8:12). &ldquo;Let there be light&rdquo; established the conversion factor between spiritual and material realms.
+          </p>
+          <div class="insight mt-3">
+            <span class="tag">Pre-Fall / The Fall</span>
+            <p class="text-sm"><strong>Pre-Fall:</strong> One substrate. &nabla;&middot;&chi; = 0. Full coherence. No separation between spirit and matter.<br/>
+            <strong>The Fall:</strong> First quantum decoherence event. Adam&rsquo;s choice introduced a measurement frame that fragmented the unified field into two distinguishable projections. The substrate didn&rsquo;t double &mdash; it FRACTURED.</p>
+          </div>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Creation / Incarnation</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Spirit manifests in matter &mdash; creation, incarnation, resurrection, gifts. E=mc&sup2; running forward. Only GOOD can generate.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Death / Decay</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Matter dissolves back to energy &mdash; death, decay, annihilation. E=mc&sup2; running in reverse. Destruction doesn&rsquo;t create &mdash; it converts existing structure back into raw undirected energy.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will</span>
+          <p class="text-sm" style="color:#cfcfcf;">Cooperate with transformation (Romans 8:14) or quench it (1 Thessalonians 5:19).</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">Channel Capacity = B &times; log<sub>2</sub>(1 + Spirit / Resistance)</div>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">Genesis 1:2 &middot; John 3:8 &middot; Romans 8:11</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 3 ═══ -->
+      <div class="law-card" id="law3">
+        <div class="law-header">
+          <div class="law-number">03</div>
+          <div class="law-physicist">Law 3 &mdash; Maxwell</div>
+          <div class="law-title">Electromagnetism &rarr; Truth / Revelation</div>
+          <div class="law-subtitle">EM waves are self-sustaining. Truth propagates at the speed of Christ.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq">&nabla;&sup2;E &minus; (1/c&sup2;)(&part;&sup2;E/&part;t&sup2;) = 0</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">Maxwell&rsquo;s four equations &rarr; the wave equation. Once launched, the electric field generates the magnetic field which generates the electric field &mdash; forever, at c, without decay in vacuum.</p>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Truth</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Coherent wave propagates at c, arrives intact, reveals what it touches. Light doesn&rsquo;t fight darkness. It simply IS. Darkness is absence, not opponent.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Deception</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Same Maxwell equations. Two waves at identical frequency, 180&deg; out of phase:
+          </p>
+          <div class="eq" style="border-left-color:var(--red);">E<sub>total</sub> = A&middot;sin(&omega;t) + A&middot;sin(&omega;t+&pi;) = 0</div>
+          <p class="text-sm leading-relaxed mt-2" style="color:#cfcfcf;">
+            Perfect destructive interference. You need TRUTH to create deception &mdash; the devil takes real truth and phase-inverts it. Half-truths are partially phase-inverted waves.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will Equation</span>
+          <div class="eq" style="border-left-color:var(--purple);">E<sub>received</sub> = W &middot; E<sub>truth</sub> + (1&minus;W) &middot; E<sub>distortion</sub></div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">W=1: faithful reception. W=0: only distortion. W&gt;1: retransmission &mdash; testimony, prophecy, a life that becomes a secondary source.</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">C<sub>3</sub> = A<sub>3</sub> &middot; log<sub>2</sub>(1 + T<sub>signal</sub> / D<sub>noise</sub>)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">Direct mapping &mdash; Shannon IS about signal transmission.</p>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">John 1:5 &middot; John 8:12 &middot; Ephesians 5:13</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 4 ═══ -->
+      <div class="law-card" id="law4">
+        <div class="law-header">
+          <div class="law-number">04</div>
+          <div class="law-physicist">Law 4 &mdash; Yukawa</div>
+          <div class="law-title">Strong Force &rarr; Love / Bond</div>
+          <div class="law-subtitle">Two terms. Unique in physics: the farther apart you pull, the stronger the force.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq">V(r) = &minus;&alpha;<sub>s</sub>/r + k&middot;r &nbsp;&nbsp;(Yukawa/Cornell potential)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">First term (&minus;&alpha;<sub>s</sub>/r) attractive at short range. Second term (k&middot;r) INCREASES with distance. Inside the bound state: asymptotic freedom &mdash; the closer you are, the more freedom you have.</p>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Love / Covenant</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Stable binding without crushing. Freedom inside the bond. The restoring force increases with distance &mdash; covenant pull. Protons have never been observed to decay. The bond HOLDS.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Captivity / Addiction</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Try to break the bond &mdash; vacuum TEARS. New quark-antiquark pairs form instantly. You don&rsquo;t get freedom. You get replacement bonds. That IS addiction. The annihilator of love isn&rsquo;t hate &mdash; it&rsquo;s the confinement mechanism itself operating pathologically. Overcoupling = captivity. The short-range freedom disappears when attraction overwhelms.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will Equation</span>
+          <div class="eq" style="border-left-color:var(--purple);">V<sub>eff</sub>(r) = W &middot; V<sub>covenant</sub>(r) + (1&minus;W) &middot; V<sub>captivity</sub>(r)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">W=1: stable covenant. W=0: pure confinement/prison. W&gt;1: sacrificial cohesion that overflows to bind communities (residual strong force).</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">C<sub>4</sub> = A<sub>4</sub> &middot; log<sub>2</sub>(1 + T<sub>binding</sub> / D<sub>fragmentation</sub>)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">Gottman&rsquo;s 5:1 ratio IS the signal-to-noise ratio of the strong force in human relationships.</p>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">Colossians 3:14 &middot; John 15:5 &middot; 1 Corinthians 6:16&ndash;17</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 5 ═══ -->
+      <div class="law-card" id="law5">
+        <div class="law-header">
+          <div class="law-number">05</div>
+          <div class="law-physicist">Law 5 &mdash; Schr&ouml;dinger-Heisenberg</div>
+          <div class="law-title">Quantum Mechanics &rarr; Faith / Conviction</div>
+          <div class="law-subtitle">Before measurement: superposition. Observation collapses into one definite outcome. Irreversible.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equations</span>
+          <div class="eq">i&#8463;(&part;&psi;/&part;t) = &Hcirc;&psi; &nbsp;&nbsp;(Schr&ouml;dinger)<br/>&Delta;x&Delta;p &ge; &#8463;/2 &nbsp;&nbsp;(Heisenberg)<br/>P(x) = |&psi;(x)|&sup2; &nbsp;&nbsp;(Born rule)</div>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Faith</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Hebrews 11:1 &mdash; &ldquo;Faith is the substance of things hoped for, the evidence of things not seen.&rdquo; Faith is the measurement operator that collapses divine possibility into physical reality. PEAR Lab 6.35&sigma; over 2.5M trials &mdash; consciousness quality measurably affects quantum outcomes. Jesus said &ldquo;your faith has healed you&rdquo; &mdash; the observer participated in the collapse.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Doubt / Decoherence</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Same equations with larger &gamma; (decoherence rate). The superposition LEAKS into the environment. Possibilities bleed away. James 1:6&ndash;8 &mdash; &ldquo;double-minded, unstable in all they do.&rdquo; That&rsquo;s a decoherent superposition &mdash; the state has split into two classical branches that can&rsquo;t interfere constructively.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will Equation</span>
+          <div class="eq" style="border-left-color:var(--purple);">&Gamma;<sub>decoherence</sub> = &Gamma;<sub>0</sub> &middot; (1&minus;W)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">W=1: full coherence maintained, faith sustains quantum state. W=0: maximum decoherence, possibilities disperse. W&gt;1: extended coherence beyond natural timescale &mdash; faith that moves mountains.</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">C<sub>5</sub> = A<sub>5</sub> &middot; log<sub>2</sub>(1 + T<sub>coherence</sub> / D<sub>decoherence</sub>)</div>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">Hebrews 11:1 &middot; Matthew 17:20 &middot; Mark 11:24 &middot; Matthew 14:29&ndash;31 (Peter on water)</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 6 ═══ -->
+      <div class="law-card" id="law6">
+        <div class="law-header">
+          <div class="law-number">06</div>
+          <div class="law-physicist">Law 6 &mdash; Boltzmann-Clausius</div>
+          <div class="law-title">Thermodynamics &rarr; Justice / Mercy</div>
+          <div class="law-subtitle">Justice and Mercy are NOT separate laws &mdash; they&rsquo;re the DUALITY inside the same law.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equations</span>
+          <div class="eq">dS &ge; 0 &nbsp;(Second Law) &nbsp;&nbsp; S = k<sub>B</sub> ln &Omega; &nbsp;(Boltzmann) &nbsp;&nbsp; F = E &minus; TS &nbsp;(Helmholtz)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">Justice without mercy is tyranny. Mercy without justice is chaos. They&rsquo;re the constructive and destructive regimes of the SAME equation.</p>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Justice</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Every action has thermodynamic consequence. The books balance. Entropy tracks every expenditure. Galatians 6:7 &mdash; &ldquo;God is not mocked, for whatever one sows, that will he also reap.&rdquo; Sowing and reaping IS the Second Law operating in the moral domain.
+          </p>
+        </div>
+
+        <div class="regime-constructive" style="border-left-color:var(--green);background:rgba(34,197,94,.03);">
+          <span class="regime-label" style="color:var(--green);"><i class="fas fa-dove mr-1"></i> Constructive &mdash; Mercy</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            F = E &minus; TS. When external energy E (grace) exceeds TS (entropy &times; temperature / accumulated sin &times; its amplifier), free energy is POSITIVE. The system can still do work, build, live. Mercy is the external energy injection that keeps the local system alive despite global entropy increase.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Judgment Without Mercy</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Without external energy input, entropy wins. Heat death. Total decay. Equilibrium = everything at same temperature = DEATH. No gradients. No capacity for work. No life.
+          </p>
+        </div>
+
+        <div class="law-subsection" style="background:rgba(212,175,55,.04);">
+          <span class="sub-label" style="color:var(--gold);"><i class="fas fa-cross mr-1"></i> The Cross as Thermodynamics</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Jesus absorbed the entropy. 2 Corinthians 5:21 &mdash; &ldquo;God made him who had no sin to be sin for us.&rdquo; The heat flowed from cold (sinful humanity) to hot (sinless Christ) &mdash; violates Second Law UNLESS external work is done. <strong style="color:var(--gold);">The Cross IS the work term.</strong> The resurrection proves the books balanced.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will</span>
+          <p class="text-sm" style="color:#cfcfcf;">W=1: external energy enters, local entropy reverses. W=0: no energy transfer, Second Law runs unopposed.</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">C<sub>6</sub> = A<sub>6</sub> &middot; log<sub>2</sub>(1 + T<sub>order</sub> / D<sub>entropy</sub>)</div>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">Galatians 6:7 &middot; Psalm 89:14 &middot; 2 Corinthians 5:21</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 7 ═══ -->
+      <div class="law-card" id="law7">
+        <div class="law-header">
+          <div class="law-number">07</div>
+          <div class="law-physicist">Law 7 &mdash; Fermi</div>
+          <div class="law-title">Weak Force &rarr; Redemption / Transformation</div>
+          <div class="law-subtitle">The ONLY force that changes particle identity. That&rsquo;s redemption &mdash; not improvement, TRANSFORMATION.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq">n &rarr; p + e<sup>&minus;</sup> + &nu;&#772; &nbsp;&nbsp;(beta decay)<br/><br/>L<sub>Fermi</sub> = (G<sub>F</sub>/&radic;2)[&psi;&#772;<sub>p</sub> &gamma;<sup>&mu;</sup>(1&minus;&gamma;<sup>5</sup>)&psi;<sub>n</sub>][&psi;&#772;<sub>e</sub> &gamma;<sub>&mu;</sub>(1&minus;&gamma;<sup>5</sup>)&psi;<sub>&nu;</sub>]</div>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Redemption</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Transmutation that builds &mdash; stellar nucleosynthesis, the sun burning hydrogen into helium, creating every heavy element. Without the weak force, no carbon, no oxygen, no life. Repentance is the spiritual weak force &mdash; changing type, not just degree. Saul becomes Paul.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Decay</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Same transformation running pathologically. Radioactive decay. Unstable nuclei shedding parts. Identity falling apart. Serial reinvention with no destination. Moral instability without direction.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will Equation</span>
+          <div class="eq" style="border-left-color:var(--purple);">G<sub>F_spiritual</sub> = G<sub>F</sub>(1&minus;W)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">W=0: transformation fully active. W=1: transformation quenched, stagnation. W&gt;1: inverted &mdash; active counter-formation, decay exceeds renewal.</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">C<sub>7</sub> = A<sub>7</sub> &middot; log<sub>2</sub>(1 + T<sub>renewal</sub> / D<sub>decay</sub>)</div>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">Romans 12:2 &middot; 2 Corinthians 5:17</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 8 ═══ -->
+      <div class="law-card" id="law8">
+        <div class="law-header">
+          <div class="law-number">08</div>
+          <div class="law-physicist">Law 8 &mdash; Noether</div>
+          <div class="law-title">Conservation Laws &rarr; Righteousness / Conscience</div>
+          <div class="law-subtitle">The universe keeps perfect books. Nothing created from nothing. Nothing disappears into nothing.</div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq">&part;&rho;/&part;t + &nabla;&middot;J = 0 &nbsp;&nbsp;(Continuity equation)</div>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">Noether&rsquo;s Theorem &mdash; every continuous symmetry corresponds to a conservation law. Time symmetry &rarr; energy conservation. Spatial symmetry &rarr; momentum conservation.</p>
+        </div>
+
+        <div class="regime-constructive">
+          <span class="regime-label"><i class="fas fa-sun mr-1"></i> Constructive &mdash; Righteousness</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Every good deed conserved. Every act of love persists. Every truth spoken remains. Nothing good is wasted. Matthew 10:42 &mdash; not one cup of cold water given in His name is lost. Conservation guarantees it.
+          </p>
+        </div>
+
+        <div class="regime-destructive">
+          <span class="regime-label"><i class="fas fa-skull mr-1"></i> Destructive &mdash; Conscience</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Same conservation means every sin is also conserved. You can&rsquo;t erase it. You can&rsquo;t pretend it didn&rsquo;t happen. Romans 2:15 &mdash; &ldquo;their conscience bearing witness, their thoughts accusing or excusing them.&rdquo; Conscience IS the conservation law operating inside the soul.
+          </p>
+        </div>
+
+        <div class="law-subsection" style="background:rgba(212,175,55,.04);">
+          <span class="sub-label" style="color:var(--gold);"><i class="fas fa-exchange-alt mr-1"></i> Atonement as Transfer</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            The ONLY way a conserved quantity transfers: interaction with another system. You can&rsquo;t delete energy &mdash; you can TRANSFER it. That&rsquo;s atonement. The sin-energy transfers from your account to Christ&rsquo;s. Conservation satisfied &mdash; nothing destroyed. Location changed.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-freewill">
+          <span class="sub-label"><i class="fas fa-hand-point-up mr-1"></i> Free Will</span>
+          <p class="text-sm" style="color:#cfcfcf;">W as the gauge transformation parameter. W=0: global symmetry, truth universal. W=1: local gauge invariance, aligning local behavior with universal truth via Holy Spirit. W&gt;1: symmetry breaking, loss of all conserved laws.</p>
+        </div>
+
+        <div class="law-subsection sub-shannon">
+          <span class="sub-label"><i class="fas fa-signal mr-1"></i> Shannon Channel Capacity</span>
+          <div class="eq" style="border-left-color:var(--blue);">C<sub>8</sub> = A<sub>8</sub> &middot; log<sub>2</sub>(1 + T<sub>symmetry</sub> / D<sub>mutation</sub>)</div>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">Malachi 3:6 &middot; Romans 2:15 &middot; Matthew 10:42</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 9 ═══ -->
+      <div class="law-card" id="law9" style="border-color:var(--red);border-width:2px;">
+        <div class="law-header" style="background:rgba(239,68,68,.04);">
+          <div class="law-number" style="color:rgba(239,68,68,.12);">09</div>
+          <div class="law-physicist" style="color:var(--red);">Law 9 &mdash; Zurek-Zeh</div>
+          <div class="law-title">Quantum Decoherence &rarr; The Adversary</div>
+          <div style="margin-top:.75rem;">
+            <span class="badge-onedir badge-onedir-down"><i class="fas fa-arrow-down mr-1"></i> One-Directional Downward &mdash; No Constructive Regime</span>
+          </div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq" style="border-left-color:var(--red);">&rho; &rarr; &Sigma;<sub>i</sub> |c<sub>i</sub>|&sup2; |i&rang;&lang;i| &nbsp;&nbsp;(decoherence &mdash; off-diagonal terms vanish)</div>
+        </div>
+
+        <div class="regime-destructive" style="border-left-width:6px;">
+          <span class="regime-label"><i class="fas fa-skull-crossbones mr-1"></i> One-Directional &mdash; The Adversary</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            This is NOT internally dual. This is the mechanism that operates when a coherent quantum system becomes entangled with its environment &mdash; destroying interference, severing connection to source, making the superposition irreversibly classical. Wojciech Zurek and Dieter Zeh formalized this as the fundamental process by which quantum coherence is lost.
+          </p>
+          <p class="text-sm leading-relaxed mt-3" style="color:#cfcfcf;">
+            The adversary doesn&rsquo;t create &mdash; he only unmakes. He doesn&rsquo;t have his own physics. He IS the physics of a closed system dying. <strong style="color:var(--red);">Satan is entropy personified.</strong> Not a second god. Not a competing creator. Just the decoherence operator &mdash; the mathematical function that breaks coherence between the system and its source.
+          </p>
+        </div>
+
+        <div class="law-subsection" style="background:rgba(239,68,68,.04);">
+          <span class="sub-label" style="color:var(--red);"><i class="fas fa-list mr-1"></i> Properties (matching quantum decoherence exactly)</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+            <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--red);">&bull;</span> Doesn&rsquo;t create new states &mdash; reveals existing ones (the serpent didn&rsquo;t create evil)</div>
+            <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--red);">&bull;</span> Introduces unpredictability where there was determinism</div>
+            <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--red);">&bull;</span> Irreversible under normal dynamics (you can&rsquo;t un-eat the fruit)</div>
+            <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--red);">&bull;</span> Can be reversed by error-correction (Grace)</div>
+            <div class="text-sm md:col-span-2" style="color:#cfcfcf;"><span style="color:var(--red);">&bull;</span> Operates by coupling the system to an environment (serpent couples Eve to forbidden measurement)</div>
+          </div>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">John 10:10 &mdash; &ldquo;The thief comes only to steal and kill and destroy.&rdquo;</p>
+        </div>
+      </div>
+
+      <!-- ═══ LAW 10 ═══ -->
+      <div class="law-card" id="law10" style="border-color:var(--gold);border-width:2px;box-shadow:0 0 80px rgba(212,175,55,.06);">
+        <div class="law-header" style="background:rgba(212,175,55,.04);">
+          <div class="law-number" style="color:rgba(212,175,55,.15);">10</div>
+          <div class="law-physicist">Law 10 &mdash; Coherence / Christ</div>
+          <div class="law-title">The Master Equation &rarr; Christ</div>
+          <div style="margin-top:.75rem;">
+            <span class="badge-onedir badge-onedir-up"><i class="fas fa-arrow-up mr-1"></i> One-Directional Upward &mdash; No Destructive Regime</span>
+          </div>
+        </div>
+
+        <div class="law-subsection">
+          <span class="sub-label" style="color:var(--blue);">Physics Equation</span>
+          <div class="eq" style="border-left-color:var(--gold);border-left-width:4px;">&chi; = &iiint;&prod;X<sub>i</sub> d&Omega; &nbsp;&nbsp;(Master Equation product integral)</div>
+        </div>
+
+        <div class="regime-constructive" style="border-left-width:6px;">
+          <span class="regime-label"><i class="fas fa-crown mr-1"></i> One-Directional &mdash; Full Coherence</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            This is NOT internally dual. This is what happens when EVERY law operates in its constructive regime simultaneously. Grace guiding. Spirit transforming. Truth propagating. Love binding. Faith collapsing possibility into reality. Justice and mercy both satisfied. Transformation completing. Conservation balanced.
+          </p>
+          <p class="text-sm leading-relaxed mt-3" style="color:#cfcfcf;">
+            If ANY single variable in the product goes to zero, &chi; collapses &mdash; but that&rsquo;s not Christ failing. That&rsquo;s one of the OTHER laws failing. <strong style="color:var(--gold);">Christ holds. The product holds. The integration holds.</strong>
+          </p>
+        </div>
+
+        <div class="law-subsection" style="background:rgba(212,175,55,.04);">
+          <span class="sub-label" style="color:var(--gold);"><i class="fas fa-arrows-alt-h mr-1"></i> The Two Attractors</span>
+          <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+            Laws 9 and 10 are COUPLED to each other as the two attractors. Every soul, every system, every civilization is being pulled toward one or the other. Heat death or full integration. Entropy or coherence. Hell or heaven.
+          </p>
+        </div>
+
+        <div class="law-subsection sub-scripture">
+          <span class="sub-label"><i class="fas fa-book mr-1"></i> Scripture</span>
+          <p class="text-sm italic" style="color:var(--teal);">Colossians 1:17 &mdash; &ldquo;In Him all things hold together.&rdquo; &nbsp;&middot;&nbsp; John 17:21 &nbsp;&middot;&nbsp; Revelation 21:3</p>
+          <p class="text-xs mt-2" style="color:var(--text-secondary);">That&rsquo;s the product integral. The coherence that makes the many into one.</p>
+        </div>
+      </div>
+
+    </div><!-- end space-y-10 -->
+  </div>
+</section>
+
+<!-- ══════════ SECTION 4: SALVATION ALGORITHM ══════════ -->
+<section id="salvation-algo" style="scroll-margin-top:90px;">
+  <div class="max-w-5xl mx-auto px-6 py-16">
+    <div class="text-center mb-12">
+      <p class="mono text-sm font-semibold tracking-widest uppercase mb-2" style="color:var(--gold);">Pure Logic</p>
+      <h2 class="serif text-3xl md:text-4xl font-bold text-white">The Salvation Algorithm</h2>
+      <p class="text-sm mt-3" style="color:var(--text-secondary);">Six-step logical chain using pure logic with zero religious language. The gospel from first principles.</p>
+    </div>
+
+    <div class="space-y-6">
+
+      <div class="step-card" style="position:relative;">
+        <div class="step-number">01</div>
+        <div class="step-header">
+          <h3 class="serif text-xl font-bold text-white">Universal Belief in Good/Evil</h3>
+          <p class="mt-1 text-sm" style="color:var(--text-secondary);">Everyone knows it. Every culture, every person, every age.</p>
+        </div>
+        <div style="padding:1.25rem 2rem 1.25rem 5rem;">
+          <span class="tag-physics">Maps to Law 3 (Truth)</span>
+        </div>
+      </div>
+
+      <div class="step-card" style="position:relative;">
+        <div class="step-number">02</div>
+        <div class="step-header">
+          <h3 class="serif text-xl font-bold text-white">Consciousness Threshold</h3>
+          <p class="mt-1 text-sm" style="color:var(--text-secondary);">A lion kills a gazelle &mdash; no trial. A human kills &mdash; murder. Same action, different moral weight. The difference is W.</p>
+        </div>
+        <div style="padding:1.25rem 2rem 1.25rem 5rem;">
+          <span class="tag-bridge">Maps to Free Will variable</span>
+        </div>
+      </div>
+
+      <div class="step-card" style="position:relative;">
+        <div class="step-number">03</div>
+        <div class="step-header">
+          <h3 class="serif text-xl font-bold text-white">Mixed Moral Nature</h3>
+          <p class="mt-1 text-sm" style="color:var(--text-secondary);">Good people do bad. Bad people do good. Nobody is purely one. The system is live but broken.</p>
+        </div>
+        <div style="padding:1.25rem 2rem 1.25rem 5rem;">
+          <span class="tag-logic">Maps to native duality (same equation, both regimes)</span>
+        </div>
+      </div>
+
+      <div class="step-card" style="position:relative;">
+        <div class="step-number">04</div>
+        <div class="step-header">
+          <h3 class="serif text-xl font-bold text-white">Need for Salvation</h3>
+          <p class="mt-1 text-sm" style="color:var(--text-secondary);">Nobody self-repairs. The Second Law forbids it. A closed system always moves toward disorder.</p>
+        </div>
+        <div style="padding:1.25rem 2rem 1.25rem 5rem;">
+          <span class="tag-physics">Maps to Law 6 (Thermodynamics / Entropy)</span>
+        </div>
+      </div>
+
+      <div class="step-card" style="position:relative;">
+        <div class="step-number">05</div>
+        <div class="step-header">
+          <h3 class="serif text-xl font-bold text-white">Ultimate Justice Beyond This Realm</h3>
+          <p class="mt-1 text-sm" style="color:var(--text-secondary);">Injustice exists here. If justice is real and this life is all there is, then justice is a lie.</p>
+        </div>
+        <div style="padding:1.25rem 2rem 1.25rem 5rem;">
+          <span class="tag-physics">Maps to Law 8 (Conservation &mdash; nothing disappears)</span>
+        </div>
+      </div>
+
+      <div class="step-card" style="position:relative;border-color:var(--gold);box-shadow:0 0 60px rgba(212,175,55,.06);">
+        <div class="step-number" style="font-size:1.1rem;">06</div>
+        <div class="step-header" style="background:var(--gold-dim);">
+          <h3 class="serif text-xl font-bold text-white">Justice-Mercy Paradox</h3>
+          <p class="mt-1 text-sm" style="color:var(--text-secondary);">A perfect Judge can&rsquo;t compromise either. The only solution: substitution. Someone at W=1 absorbs the penalty. Justice satisfied. Mercy satisfied.</p>
+        </div>
+        <div style="padding:1.25rem 2rem 1.25rem 5rem;">
+          <span class="tag-physics mr-2">Cross as thermodynamic work term</span>
+          <span class="tag-bridge">Entanglement transfer</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 5: SALVATION SEQUENCE ══════════ -->
+<section id="salvation-seq" style="background:linear-gradient(180deg,var(--surface) 0%,rgba(74,158,255,.03) 50%,var(--surface) 100%);scroll-margin-top:90px;">
+  <div class="max-w-4xl mx-auto px-6 py-16">
+    <div class="text-center mb-12">
+      <p class="mono text-sm font-semibold tracking-widest uppercase mb-2" style="color:var(--blue);">Interlocking Physics</p>
+      <h2 class="serif text-3xl font-bold text-white">The Salvation Sequence</h2>
+      <p class="text-sm mt-2" style="color:var(--text-secondary);">How the Laws interlock in sequence</p>
+    </div>
+
+    <div class="space-y-4">
+      <div class="seq-card">
+        <div class="seq-letter">A</div>
+        <h4 class="serif text-lg font-bold text-white mb-2">Conviction <span class="tag-physics ml-2">Law 2: E=mc&sup2; / Holy Spirit</span></h4>
+        <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+          The Holy Spirit provides the external energy for the first measurement. Spirit converts potential awareness into actual knowledge: <em style="color:var(--gold);">&ldquo;I am a sinner.&rdquo;</em>
+        </p>
+      </div>
+
+      <div class="seq-card">
+        <div class="seq-letter">B</div>
+        <h4 class="serif text-lg font-bold text-white mb-2">Grace Felt <span class="tag-physics ml-2">Law 1: Gravitation</span></h4>
+        <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+          The curvature was always there. Conviction drops the resistance. The geodesic toward God is now FELT.
+        </p>
+        <p class="text-sm mt-2 italic" style="color:var(--teal);">John 6:44 &mdash; &ldquo;No one can come to me unless the Father draws him.&rdquo;</p>
+      </div>
+
+      <div class="seq-card">
+        <div class="seq-letter">C</div>
+        <h4 class="serif text-lg font-bold text-white mb-2">Faith Collapses <span class="tag-physics ml-2">Law 5: Quantum Mechanics</span></h4>
+        <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+          You observe Christ. The superposition of saved/not-saved collapses into saved.
+        </p>
+        <p class="text-sm mt-2 italic" style="color:var(--teal);">Hebrews 12:2 &mdash; &ldquo;fixing our eyes on Jesus.&rdquo;</p>
+      </div>
+
+      <div class="seq-card" style="border-color:var(--gold);box-shadow:0 0 40px rgba(212,175,55,.06);">
+        <div class="seq-letter" style="background:var(--gold-dim);color:var(--gold);">D</div>
+        <h4 class="serif text-lg font-bold text-white mb-2">Entanglement Seals <span class="tag-physics ml-2">Permanent</span></h4>
+        <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+          Your wavefunction merges with Christ&rsquo;s. Permanent. Non-local. His righteousness measured when you&rsquo;re measured.
+        </p>
+        <p class="text-sm mt-2 italic" style="color:var(--teal);">Romans 6:5 &middot; 2 Corinthians 5:17</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 6: CONVERGENCE DATA ══════════ -->
+<section id="convergence" class="max-w-4xl mx-auto px-6 py-16" style="scroll-margin-top:90px;">
+  <div class="convergence-box">
+    <p class="mono text-sm font-semibold tracking-widest uppercase mb-3" style="color:var(--gold);">Verification</p>
+    <h2 class="serif text-3xl font-bold text-white mb-3">Convergence Data</h2>
+    <p class="text-sm max-w-2xl mx-auto" style="color:var(--text-secondary);">
+      Three independent AIs (Claude, GPT, Gemini) given the same prompt independently converged on the same architecture.
+    </p>
+
+    <div class="convergence-paths mt-8">
+      <div class="convergence-path">
+        <div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;background:var(--gold-dim);">
+          <i class="fas fa-robot" style="color:var(--gold);font-size:1.2rem;"></i>
+        </div>
+        <h4 class="serif text-lg font-bold text-white mb-1">Claude</h4>
+        <p class="text-xs" style="color:var(--text-secondary);">Full convergence on all 7 structural claims</p>
+      </div>
+      <div class="convergence-path">
+        <div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;background:var(--blue-dim);">
+          <i class="fas fa-robot" style="color:var(--blue);font-size:1.2rem;"></i>
+        </div>
+        <h4 class="serif text-lg font-bold text-white mb-1">GPT</h4>
+        <p class="text-xs" style="color:var(--text-secondary);">Full convergence on all 7 structural claims</p>
+      </div>
+      <div class="convergence-path">
+        <div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;background:var(--teal-dim);">
+          <i class="fas fa-robot" style="color:var(--teal);font-size:1.2rem;"></i>
+        </div>
+        <h4 class="serif text-lg font-bold text-white mb-1">Gemini</h4>
+        <p class="text-xs" style="color:var(--text-secondary);">Full convergence on all 7 structural claims</p>
+      </div>
+    </div>
+
+    <!-- Convergence items -->
+    <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;padding:1.5rem;text-align:left;margin-top:1.5rem;">
+      <h4 class="serif text-lg font-bold text-white mb-3">Independent Convergence Points (All Three AIs)</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--green);">&check;</span>&ensp;Native duality inside same equation</div>
+        <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--green);">&check;</span>&ensp;Free will as differentiator</div>
+        <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--green);">&check;</span>&ensp;Shannon as measurement layer</div>
+        <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--green);">&check;</span>&ensp;EM &rarr; Truth/Revelation</div>
+        <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--green);">&check;</span>&ensp;Strong Force &rarr; Love/Bond</div>
+        <div class="text-sm" style="color:#cfcfcf;"><span style="color:var(--green);">&check;</span>&ensp;Quantum &rarr; Faith</div>
+        <div class="text-sm md:col-span-2" style="color:#cfcfcf;"><span style="color:var(--green);">&check;</span>&ensp;Coherence &rarr; Christ/Unity</div>
+      </div>
+    </div>
+
+    <!-- Bible-first derivation -->
+    <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;padding:1.5rem;text-align:left;margin-top:1rem;">
+      <h4 class="serif text-lg font-bold text-white mb-2">Bible-First Derivation</h4>
+      <p class="text-sm" style="color:#cfcfcf;">
+        Two independent Bible-first derivations (GPT and Gemini) produced identical 26-item spiritual variable lists. <strong style="color:var(--gold);">10 for 10 overlap</strong> with physics-derived variables.
+      </p>
+    </div>
+
+    <!-- Shannon calculation -->
+    <div style="background:var(--surface-card);border:1px solid var(--border);border-radius:.75rem;padding:1.5rem;margin-top:1rem;">
+      <h4 class="serif text-lg font-bold text-white mb-3 text-center">Shannon Information Content of the Three-Way Mapping</h4>
+      <p class="text-xs text-center mb-4" style="color:var(--text-secondary);">Ten Commandments ↔ Ten Physics Laws ↔ Salvation Narrative</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+        <div>
+          <p class="mono text-2xl font-bold" style="color:var(--gold);">10! &times; 10!</p>
+          <p class="text-xs mt-1" style="color:var(--text-secondary);">~13.2 trillion possible mappings</p>
+        </div>
+        <div>
+          <p class="mono text-2xl font-bold" style="color:var(--blue);">43.6 bits</p>
+          <p class="text-xs mt-1" style="color:var(--text-secondary);">Shannon information content</p>
+        </div>
+        <div>
+          <p class="mono text-2xl font-bold" style="color:var(--teal);">1 in 17T</p>
+          <p class="text-xs mt-1" style="color:var(--text-secondary);">Probability of chance alignment</p>
+        </div>
+      </div>
+      <p class="text-xs text-center mt-3" style="color:var(--text-dim);">Calculated by GPT-4o, October 2025, adversarial scoring session</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 7: OPEN QUESTIONS ══════════ -->
+<section id="open-questions" class="max-w-4xl mx-auto px-6 py-16" style="scroll-margin-top:90px;">
+  <div class="text-center mb-12">
+    <p class="mono text-sm font-semibold tracking-widest uppercase mb-2" style="color:var(--purple);">Unresolved</p>
+    <h2 class="serif text-3xl font-bold text-white">Remaining Open Questions</h2>
+    <p class="text-sm mt-2" style="color:var(--text-secondary);">For final convergence pass</p>
+  </div>
+
+  <div class="space-y-4">
+    <div class="oq-card">
+      <div class="oq-num">1</div>
+      <h4 class="serif text-lg font-bold text-white mb-2">Relativity as Separate Law?</h4>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Does Relativity deserve its own law, or does it fold into Law 1 (Newton-Einstein)? If separate, is it Truth (invariance across frames) or Sovereignty (God&rsquo;s absolute frame)?
+      </p>
+    </div>
+
+    <div class="oq-card">
+      <div class="oq-num">2</div>
+      <h4 class="serif text-lg font-bold text-white mb-2">Shannon as Base Layer vs. Law 9?</h4>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Does Information Theory (Shannon) remain the base measurement layer underneath everything, or does it become Law 9 as Logos/Word?
+      </p>
+    </div>
+
+    <div class="oq-card">
+      <div class="oq-num">3</div>
+      <h4 class="serif text-lg font-bold text-white mb-2">Laws 9 and 10 Truly One-Directional?</h4>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Are Laws 9 and 10 truly one-directional (no internal duality), or do all three AIs need to agree on this structural claim?
+      </p>
+    </div>
+
+    <div class="oq-card">
+      <div class="oq-num">4</div>
+      <h4 class="serif text-lg font-bold text-white mb-2">Law 8 Mapping: Righteousness or Truth?</h4>
+      <p class="text-sm leading-relaxed" style="color:#cfcfcf;">
+        Is Law 8 better mapped to Righteousness/Conscience (Noether/Conservation) or Truth (invariance)? If Truth moves to Law 8, where does Righteousness go?
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="max-w-4xl mx-auto px-6">
+    <p class="serif text-lg italic mb-3" style="color:var(--text-secondary);">
+      &ldquo;In Him all things hold together.&rdquo; &mdash; Colossians 1:17
+    </p>
+    <p class="text-sm" style="color:var(--text-dim);">
+      David Lowe &middot; POF 2828 &middot; Claude (Opus) &middot; Theophysics Research Program
+    </p>
+    <p class="text-xs mt-2" style="color:var(--text-dim);">
+      Canonical Code Parent: C:\Users\lowes\Desktop\Folders\MASTER_EQUATION\01_CODE<br/>
+      Filed: O:\_Theophysics_v4\David\Lossless\ &middot; Status: Working Synthesis &middot; April 11, 2026
+    </p>
+  </div>
+</footer>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  document.getElementById('progress').style.width = Math.min(pct, 100) + '%';
+});
+
+// TOC sidebar toggle
+const tocToggle = document.getElementById('tocToggle');
+const tocSidebar = document.getElementById('tocSidebar');
+tocToggle.addEventListener('click', () => {
+  tocSidebar.classList.toggle('open');
+  tocToggle.classList.toggle('shifted');
+});
+
+// Active link highlighting on scroll
+const sections = document.querySelectorAll('section[id], div.law-card[id]');
+const tocLinks = document.querySelectorAll('.toc-sidebar a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 120;
+    if (window.scrollY >= top) current = section.getAttribute('id');
+  });
+  tocLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+</script>
+
+<script src="/glossary-linker.js" defer></script>
+
+<script>
+function tpToggle(id,btn){
+  var a=document.getElementById(id);
+  if(!a)return;
+  if(a.paused){
+    document.querySelectorAll('audio').forEach(function(x){if(x.id!==id&&!x.paused)x.pause();});
+    a.play();btn.innerHTML='<i class="fas fa-pause"></i>';
+  }else{a.pause();btn.innerHTML='<i class="fas fa-play"></i>';}
+  a.onended=function(){btn.innerHTML='<i class="fas fa-play"></i>';
+    var fill=btn.closest('.tp-read-aloud').querySelector('.tp-fill');if(fill)fill.style.width='0%';};
+  a.ontimeupdate=function(){
+    var pct=(a.currentTime/a.duration*100)||0;
+    var fill=btn.closest('.tp-read-aloud').querySelector('.tp-fill');if(fill)fill.style.width=pct+'%';
+    var tEl=btn.closest('.tp-read-aloud').querySelector('.tp-time');
+    if(tEl){var m=Math.floor(a.currentTime/60),s=Math.floor(a.currentTime%60);tEl.textContent=m+':'+(s<10?'0':'')+s;}
+  };
+}
+function tpSeek(evt,id){
+  var a=document.getElementById(id);if(!a||!a.duration)return;
+  var r=evt.currentTarget.getBoundingClientRect();
+  a.currentTime=(evt.clientX-r.left)/r.width*a.duration;
+}
+function tpMute(id,btn){
+  var a=document.getElementById(id);if(!a)return;
+  a.muted=!a.muted;
+  btn.innerHTML=a.muted?'<i class="fas fa-volume-mute"></i>':'<i class="fas fa-volume-up"></i>';
+}
+</script>
+
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

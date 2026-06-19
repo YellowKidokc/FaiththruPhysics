@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP Pill-Strip Audio Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --bg:#050505;
+  --surface:#0a0a0a;
+  --surface2:#111;
+  --border:#222;
+  --border-hi:#333;
+  --text:#e5e3df;
+  --text-dim:#9a9a9a;
+  --text-muted:#5a5a5a;
+  --gold:#d4af37;
+  --blue:#4a9eff;
+  --purple:#a855f7;
+  --red:#dc2626;
+  --teal:#3bb39a;
+  --orange:#f59e0b;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.55;padding:2rem;-webkit-font-smoothing:antialiased}
+
+/* ── Pill Strip Player ── */
+.tp-pill-player{
+  max-width:760px;
+  margin:0 auto;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1rem 1.1rem 1.1rem;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+
+/* Pill strip */
+.tp-pill-strip{
+  display:flex;
+  gap:.5rem;
+  flex-wrap:wrap;
+  margin-bottom:.9rem;
+}
+.tp-pill{
+  appearance:none;
+  border:1px solid var(--border-hi);
+  background:var(--surface2);
+  color:var(--text-dim);
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  padding:.45rem .9rem;
+  border-radius:999px;
+  cursor:pointer;
+  transition:all .15s ease;
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+}
+.tp-pill:hover:not(.active){
+  border-color:var(--border-hi);
+  color:var(--text);
+  background:#181818;
+}
+.tp-pill.active{
+  color:#fff;
+  border-color:currentColor;
+  background:rgba(255,255,255,.08);
+  box-shadow:0 0 16px currentColor;
+}
+.tp-pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.7}
+
+/* Color variants */
+.tp-pill[data-mode="deep"]{--pill-color:var(--blue);}
+.tp-pill[data-mode="debate"]{--pill-color:var(--purple);}
+.tp-pill[data-mode="critique"]{--pill-color:var(--red);}
+.tp-pill[data-mode="tts"]{--pill-color:var(--teal);}
+.tp-pill[data-mode="web"]{--pill-color:var(--orange);}
+.tp-pill[data-mode="default"]{--pill-color:var(--gold);}
+
+.tp-pill.active[data-mode="deep"]{color:var(--blue);box-shadow:0 0 14px rgba(74,158,255,.25);}
+.tp-pill.active[data-mode="debate"]{color:var(--purple);box-shadow:0 0 14px rgba(168,85,247,.25);}
+.tp-pill.active[data-mode="critique"]{color:var(--red);box-shadow:0 0 14px rgba(220,38,38,.25);}
+.tp-pill.active[data-mode="tts"]{color:var(--teal);box-shadow:0 0 14px rgba(59,179,154,.25);}
+.tp-pill.active[data-mode="web"]{color:var(--orange);box-shadow:0 0 14px rgba(245,158,11,.25);}
+.tp-pill.active[data-mode="default"]{color:var(--gold);box-shadow:0 0 14px rgba(212,175,55,.25);}
+
+/* Now playing label */
+.tp-now-playing{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  font-family:var(--mono);
+  font-size:.6rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-bottom:.65rem;
+}
+.tp-now-playing .mode-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.tp-now-playing #tpNowPlayingLabel{color:var(--text);font-weight:500}
+
+/* Main controls row */
+.tp-controls{
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+  margin-bottom:.65rem;
+}
+.tp-btn{
+  appearance:none;
+  border:none;
+  background:transparent;
+  color:var(--text-dim);
+  cursor:pointer;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.85rem;
+  transition:all .15s ease;
+  flex-shrink:0;
+}
+.tp-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+.tp-btn.play{
+  width:42px;height:42px;
+  border:1.5px solid var(--gold);
+  color:var(--gold);
+  font-size:1rem;
+}
+.tp-btn.play:hover{background:rgba(212,175,55,.1);box-shadow:0 0 14px rgba(212,175,55,.2)}
+
+/* Progress track */
+.tp-progress-wrap{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:.25rem;
+  min-width:0;
+}
+.tp-track{
+  height:5px;
+  background:rgba(255,255,255,.06);
+  border-radius:3px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.tp-fill{
+  height:100%;
+  width:0%;
+  border-radius:3px;
+  background:linear-gradient(90deg,var(--gold),#e8c84a);
+  transition:width .1s linear;
+}
+.tp-track:hover .tp-fill{filter:brightness(1.15)}
+
+/* Time row */
+.tp-time-row{
+  display:flex;
+  justify-content:space-between;
+  font-family:var(--mono);
+  font-size:.58rem;
+  color:var(--text-muted);
+}
+
+/* Bottom toolbar */
+.tp-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  flex-wrap:wrap;
+  margin-top:.7rem;
+  padding-top:.7rem;
+  border-top:1px solid var(--border);
+}
+
+/* Speed control */
+.tp-speed-label{
+  font-family:var(--mono);
+  font-size:.55rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-right:.3rem;
+}
+.tp-speed-select{
+  appearance:none;
+  background:var(--surface2);
+  border:1px solid var(--border-hi);
+  border-radius:6px;
+  color:var(--text);
+  font-family:var(--mono);
+  font-size:.62rem;
+  padding:.35rem .6rem;
+  cursor:pointer;
+  min-width:64px;
+}
+.tp-speed-select:focus{outline:none;border-color:var(--gold)}
+
+/* Volume */
+.tp-volume-group{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+.tp-volume-slider{
+  -webkit-appearance:none;
+  appearance:none;
+  width:80px;
+  height:3px;
+  background:rgba(255,255,255,.1);
+  border-radius:2px;
+  cursor:pointer;
+}
+.tp-volume-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--gold);cursor:pointer;
+}
+.tp-volume-slider::-moz-range-thumb{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--gold);cursor:pointer;border:none;
+}
+
+/* Mobile */
+@media(max-width:560px){
+  .tp-pill-strip{gap:.4rem}
+  .tp-pill{font-size:.55rem;padding:.4rem .7rem}
+  .tp-volume-slider{width:60px}
+  .tp-time-row{font-size:.52rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TP PILL-STRIP PLAYER ── -->
+<div class="tp-pill-player" id="tpPillPlayer">
+
+  <!-- Pill strip: add/remove/edit pills here -->
+  <div class="tp-pill-strip" id="tpPillStrip">
+    <button class="tp-pill active" data-mode="deep" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-09-amish-proof-deep-dive.m4a" data-label="Deep Dive">
+      <span class="dot"></span>Deep Dive
+    </button>
+    <button class="tp-pill" data-mode="debate" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-09-amish-proof-debate.m4a" data-label="Debate">
+      <span class="dot"></span>Debate
+    </button>
+    <button class="tp-pill" data-mode="critique" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-09-amish-proof-critique.m4a" data-label="Critique">
+      <span class="dot"></span>Critique
+    </button>
+    <button class="tp-pill" data-mode="tts" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-09-amish-proof-tts.m4a" data-label="TTS">
+      <span class="dot"></span>TTS
+    </button>
+    <button class="tp-pill" data-mode="web" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-09-amish-proof-web.m4a" data-label="Web">
+      <span class="dot"></span>Web
+    </button>
+  </div>
+
+  <!-- Now playing -->
+  <div class="tp-now-playing">
+    <span class="mode-dot" id="tpModeDot" style="background:var(--blue)"></span>
+    <span>Now Playing:</span>
+    <span id="tpNowPlayingLabel">Deep Dive</span>
+  </div>
+
+  <!-- Controls + progress -->
+  <div class="tp-controls">
+    <button class="tp-btn play" id="tpPlayBtn"><i class="fas fa-play"></i></button>
+    <div class="tp-progress-wrap">
+      <div class="tp-track" id="tpTrack"><div class="tp-fill" id="tpFill"></div></div>
+      <div class="tp-time-row">
+        <span id="tpCurrentTime">0:00</span>
+        <span id="tpDuration">0:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom toolbar: speed + mute + volume -->
+  <div class="tp-toolbar">
+    <div>
+      <span class="tp-speed-label">Speed</span>
+      <select class="tp-speed-select" id="tpSpeedSelect">
+        <option value="0.5">0.5x</option>
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option>
+        <option value="1.75">1.75x</option>
+        <option value="2">2x</option>
+      </select>
+    </div>
+    <div class="tp-volume-group">
+      <button class="tp-btn" id="tpMuteBtn" style="width:28px;height:28px;font-size:.75rem"><i class="fas fa-volume-up"></i></button>
+      <input type="range" class="tp-volume-slider" id="tpVolumeSlider" min="0" max="1" step="0.05" value="1">
+    </div>
+  </div>
+
+  <!-- Hidden audio element -->
+  <audio id="tpAudio" preload="metadata"></audio>
+</div>
+
+<script>
+(function(){
+  const player   = document.getElementById('tpPillPlayer');
+  const audio    = document.getElementById('tpAudio');
+  const pills    = document.querySelectorAll('.tp-pill');
+  const playBtn  = document.getElementById('tpPlayBtn');
+  const track    = document.getElementById('tpTrack');
+  const fill     = document.getElementById('tpFill');
+  const curEl    = document.getElementById('tpCurrentTime');
+  const durEl    = document.getElementById('tpDuration');
+  const labelEl  = document.getElementById('tpNowPlayingLabel');
+  const dotEl    = document.getElementById('tpModeDot');
+  const speedSel = document.getElementById('tpSpeedSelect');
+  const muteBtn  = document.getElementById('tpMuteBtn');
+  const volSl    = document.getElementById('tpVolumeSlider');
+
+  // Color map for mode dot/fill
+  const colors = {
+    deep:     '#4a9eff',
+    debate:   '#a855f7',
+    critique: '#dc2626',
+    tts:      '#3bb39a',
+    web:      '#f59e0b',
+    default:  '#d4af37'
+  };
+
+  function formatTime(s){
+    if(isNaN(s) || !isFinite(s)) return '0:00';
+    const m = Math.floor(s/60);
+    const sec = Math.floor(s%60);
+    return m + ':' + (sec<10?'0':'') + sec;
+  }
+
+  function setActivePill(pill){
+    pills.forEach(p=>p.classList.remove('active'));
+    pill.classList.add('active');
+    const mode = pill.dataset.mode || 'default';
+    const color = colors[mode] || colors.default;
+    labelEl.textContent = pill.dataset.label || mode;
+    dotEl.style.background = color;
+    fill.style.background = `linear-gradient(90deg, ${color}, ${lighten(color, 20)})`;
+  }
+
+  function lighten(hex, percent){
+    // Simple hex lighten helper
+    const num = parseInt(hex.replace('#',''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.min(255, (num >> 16) + amt);
+    const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+    const B = Math.min(255, (num & 0x0000FF) + amt);
+    return '#' + (0x1000000 + R*0x10000 + G*0x100 + B).toString(16).slice(1);
+  }
+
+  function loadPill(pill, autoplay){
+    setActivePill(pill);
+    const wasPlaying = !audio.paused;
+    audio.pause();
+    audio.src = pill.dataset.src;
+    audio.load();
+    audio.playbackRate = parseFloat(speedSel.value);
+    if(autoplay || wasPlaying){
+      audio.play().catch(()=>{});
+    }
+    updatePlayBtn();
+  }
+
+  function updatePlayBtn(){
+    const icon = playBtn.querySelector('i');
+    icon.className = audio.paused ? 'fas fa-play' : 'fas fa-pause';
+  }
+
+  // Pill clicks
+  pills.forEach(pill=>{
+    pill.addEventListener('click', ()=> loadPill(pill, true) );
+  });
+
+  // Play/pause
+  playBtn.addEventListener('click', ()=>{
+    if(!audio.src && pills.length){
+      loadPill(pills[0], false);
+    }
+    if(audio.paused){
+      audio.play().catch(()=>{});
+    }else{
+      audio.pause();
+    }
+  });
+
+  // Progress updates
+  audio.addEventListener('timeupdate', ()=>{
+    if(audio.duration){
+      fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    }
+    curEl.textContent = formatTime(audio.currentTime);
+  });
+  audio.addEventListener('loadedmetadata', ()=>{
+    durEl.textContent = formatTime(audio.duration);
+  });
+  audio.addEventListener('ended', ()=>{
+    updatePlayBtn();
+    fill.style.width = '0%';
+  });
+  audio.addEventListener('play', updatePlayBtn);
+  audio.addEventListener('pause', updatePlayBtn);
+
+  // Seek
+  track.addEventListener('click', (e)=>{
+    if(!audio.duration) return;
+    const r = track.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    audio.currentTime = pct * audio.duration;
+  });
+
+  // Speed
+  speedSel.addEventListener('change', ()=>{
+    audio.playbackRate = parseFloat(speedSel.value);
+  });
+
+  // Mute
+  muteBtn.addEventListener('click', ()=>{
+    audio.muted = !audio.muted;
+    muteBtn.querySelector('i').className = 'fas fa-volume-' + (audio.muted ? 'mute' : 'up');
+  });
+
+  // Volume
+  volSl.addEventListener('input', ()=>{
+    audio.volume = parseFloat(volSl.value);
+    audio.muted = false;
+    muteBtn.querySelector('i').className = 'fas fa-volume-up';
+  });
+
+  // Initialize first pill source without playing
+  if(pills.length){
+    const first = document.querySelector('.tp-pill.active') || pills[0];
+    setActivePill(first);
+    audio.src = first.dataset.src;
+    audio.load();
+  }
+})();
+</script>
+
+</body>
+</html>

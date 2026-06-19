@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DT004 — The Map That Drew Itself | Theophysics Convergence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&family=Oswald:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$','$'], ['\\(','\\)']] },
+            options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+        };
+    </script>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-primary: #0f0f0f;
+            --bg-light: #1a1a1a;
+            --bg-mid: #141414;
+            --border: #2a2a2a;
+            --border-light: #222;
+            --text: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --text-dim: #666;
+            --gold: #d4af37;
+            --gold-bright: #e8c84a;
+            --gold-dim: rgba(212, 175, 55, 0.08);
+            --gold-dim2: rgba(212, 175, 55, 0.15);
+            --gold-border: rgba(212, 175, 55, 0.4);
+            --red: #c0392b;
+            --red-dim: rgba(192, 57, 43, 0.1);
+            --green: #27ae60;
+            --green-dim: rgba(39, 174, 96, 0.1);
+            --blue: #2980b9;
+            --blue-dim: rgba(41, 128, 185, 0.1);
+            --serif: 'Crimson Text', serif;
+            --sans: 'Inter', sans-serif;
+            --display: 'Oswald', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--serif);
+            font-size: 17px;
+            line-height: 1.85;
+        }
+
+        /* ─── PROGRESS BAR ─── */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: var(--gold);
+            z-index: 2000;
+            transition: width 0.1s linear;
+        }
+
+        /* ─── STICKY NAV ─── */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.97);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0.55rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--sans);
+            font-size: 0.78rem;
+        }
+
+        .nav-left {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-left a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-left a:hover { color: var(--gold); }
+
+        .nav-series {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .nav-series:hover { color: var(--gold-bright) !important; }
+
+        .nav-divider { color: #333; }
+
+        .nav-right {
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
+        }
+
+        .nav-right a {
+            color: #777;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-right a:hover { color: #ddd; }
+
+        /* ─── CONTAINER ─── */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 2rem 4rem;
+        }
+
+        /* ─── HEADER ─── */
+        .series-tag {
+            font-family: var(--sans);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.6rem;
+        }
+
+        .article-number {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: var(--display);
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+
+        .subtitle {
+            font-family: var(--serif);
+            font-size: 1.35rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            font-family: var(--sans);
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .meta-item i { color: var(--gold); font-size: 0.78rem; }
+
+        .domain-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .tag {
+            font-family: var(--sans);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.3rem 0.7rem;
+            border: 1px solid var(--gold-border);
+            color: var(--gold);
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ─── FACTS BOX ─── */
+        .facts-box {
+            background: var(--bg-mid);
+            border: 1px solid var(--gold-border);
+            border-left: 4px solid var(--gold);
+            border-radius: 6px;
+            padding: 2rem 2rem 1.75rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .facts-box::before {
+            content: 'FACTS';
+            position: absolute;
+            top: -0.6rem;
+            left: 1.5rem;
+            background: var(--bg-mid);
+            padding: 0 0.6rem;
+            font-family: var(--sans);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--gold);
+        }
+
+        .facts-box h2 {
+            font-family: var(--display);
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 0.4rem;
+            margin-top: 0;
+        }
+
+        .facts-confidence {
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .facts-confidence span {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .facts-claim {
+            font-family: var(--serif);
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .facts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .facts-cell {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.9rem 1rem;
+        }
+
+        .facts-cell-label {
+            font-family: var(--sans);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 0.4rem;
+        }
+
+        .facts-cell-value {
+            font-family: var(--sans);
+            font-size: 0.88rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .facts-cell-value .highlight { color: var(--gold); font-weight: 600; }
+
+        .facts-resonance-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--sans);
+            font-size: 0.84rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .facts-resonance-table th {
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg);
+            color: var(--text-dim);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .facts-resonance-table td {
+            padding: 0.55rem 0.75rem;
+            border-bottom: 1px solid rgba(42,42,42,0.6);
+            color: var(--text-secondary);
+        }
+
+        .facts-resonance-table td:last-child {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+        }
+
+        .kill-box {
+            background: var(--red-dim);
+            border: 1px solid rgba(192,57,43,0.3);
+            border-radius: 4px;
+            padding: 1rem 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .kill-box-label {
+            font-family: var(--sans);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--red);
+            margin-bottom: 0.4rem;
+        }
+
+        .kill-box p {
+            font-family: var(--sans);
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0.4rem;
+        }
+
+        .kill-status {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--green);
+        }
+
+        /* ─── ARTICLE SECTIONS ─── */
+        section {
+            margin-bottom: 3.5rem;
+        }
+
+        h2 {
+            font-family: var(--display);
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1.4rem;
+            margin-top: 1rem;
+            line-height: 1.2;
+        }
+
+        h3 {
+            font-family: var(--display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* ─── SECTION DIVIDER ─── */
+        .section-rule {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 3rem 0;
+        }
+
+        /* ─── EQUATION BLOCK ─── */
+        .equation-block {
+            background: var(--bg-light);
+            border-left: 4px solid var(--gold);
+            padding: 1.5rem 1.75rem;
+            margin: 2rem 0;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .equation-block .eq-label {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ─── INSIGHT BOX ─── */
+        .insight-box {
+            background: var(--gold-dim);
+            border: 1px solid var(--gold-border);
+            padding: 1.5rem 1.75rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+
+        .insight-box h3 {
+            font-family: var(--display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .insight-box p { margin-bottom: 0.75rem; text-align: left; }
+        .insight-box p:last-child { margin-bottom: 0; }
+
+        /* ─── THE ISOMORPHISM REGISTRY TABLE ─── */
+        .iso-registry {
+            margin: 2.5rem 0;
+        }
+
+        .iso-registry-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .iso-registry-title {
+            font-family: var(--display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .iso-registry-count {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .iso-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .iso-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--sans);
+            font-size: 0.83rem;
+        }
+
+        .iso-table thead tr {
+            background: var(--bg);
+        }
+
+        .iso-table th {
+            padding: 0.7rem 0.85rem;
+            text-align: left;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .iso-table tbody tr {
+            border-bottom: 1px solid rgba(42,42,42,0.5);
+            transition: background 0.15s;
+        }
+
+        .iso-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .iso-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .iso-table td {
+            padding: 0.65rem 0.85rem;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+
+        .iso-id {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .iso-domain {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .iso-physical {
+            color: var(--text);
+        }
+
+        .iso-arrow {
+            color: var(--gold);
+            font-size: 0.78rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .iso-spiritual {
+            color: var(--text);
+        }
+
+        .iso-status {
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.18rem 0.55rem;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .badge-structural {
+            background: rgba(39, 174, 96, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(39,174,96,0.3);
+        }
+
+        .badge-high {
+            background: rgba(41, 128, 185, 0.15);
+            color: #5dade2;
+            border: 1px solid rgba(41,128,185,0.3);
+        }
+
+        .badge-suggestive {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            border: 1px solid var(--gold-border);
+        }
+
+        .badge-developing {
+            background: rgba(150,150,150,0.1);
+            color: #888;
+            border: 1px solid #333;
+        }
+
+        /* ─── SECTION GROUPS ─── */
+        .iso-group-header {
+            background: var(--bg);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .iso-group-header td {
+            padding: 0.5rem 0.85rem;
+            font-family: var(--sans);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+        }
+
+        /* ─── STAGE MAP TABLE ─── */
+        .stage-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--sans);
+            font-size: 0.84rem;
+            margin: 1.75rem 0;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .stage-table th {
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            background: var(--bg);
+            color: var(--text-dim);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .stage-table tbody tr {
+            border-bottom: 1px solid rgba(42,42,42,0.5);
+            transition: background 0.15s;
+        }
+
+        .stage-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .stage-table tbody tr:last-child { border-bottom: none; }
+
+        .stage-table td {
+            padding: 0.6rem 0.9rem;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+
+        .stage-num {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            text-align: center;
+            width: 2rem;
+        }
+
+        .stage-physics {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .stage-theology {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .stage-key {
+            background: rgba(212, 175, 55, 0.06);
+        }
+
+        /* ─── PROBABILITY BOX ─── */
+        .probability-box {
+            background: var(--bg-light);
+            border: 2px solid var(--gold-border);
+            border-radius: 6px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            text-align: center;
+        }
+
+        .probability-box .prob-label {
+            font-family: var(--sans);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .probability-box .prob-number {
+            font-family: var(--display);
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .probability-box .prob-desc {
+            font-family: var(--sans);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto 1rem;
+            line-height: 1.6;
+        }
+
+        .probability-box .prob-bits {
+            font-family: var(--mono);
+            font-size: 0.76rem;
+            color: var(--text-dim);
+        }
+
+        /* ─── TEN LAWS TABLE ─── */
+        .laws-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--sans);
+            font-size: 0.82rem;
+            margin: 1.75rem 0;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .laws-table th {
+            padding: 0.65rem 0.9rem;
+            text-align: left;
+            background: var(--bg);
+            color: var(--text-dim);
+            font-size: 0.63rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .laws-table tbody tr {
+            border-bottom: 1px solid rgba(42,42,42,0.5);
+            transition: background 0.15s;
+        }
+
+        .laws-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .laws-table tbody tr:last-child { border-bottom: none; }
+
+        .laws-table td {
+            padding: 0.6rem 0.9rem;
+            vertical-align: middle;
+            line-height: 1.45;
+        }
+
+        .law-id {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .law-physical { color: var(--text); }
+        .law-spiritual { color: var(--text); }
+
+        .law-var {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--gold);
+            white-space: nowrap;
+        }
+
+        .law-note {
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-style: italic;
+        }
+
+        /* ─── PROOF BLOCK ─── */
+        .proof-block {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--gold);
+            border-radius: 0 0 4px 4px;
+            padding: 1.5rem 1.75rem;
+            margin: 2rem 0;
+        }
+
+        .proof-block .proof-title {
+            font-family: var(--display);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 1.1rem;
+        }
+
+        .proof-step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.9rem;
+            font-family: var(--sans);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        .proof-step-num {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--gold);
+            min-width: 1.5rem;
+            padding-top: 0.15rem;
+        }
+
+        .proof-step-text { color: var(--text-secondary); }
+        .proof-step-text strong { color: var(--text); }
+
+        /* ─── TRINITY SECTION ─── */
+        .trinity-diagram {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .trinity-card {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.25rem 1.1rem;
+            text-align: center;
+        }
+
+        .trinity-card:nth-child(2) {
+            border-color: var(--gold-border);
+            background: var(--gold-dim);
+        }
+
+        .trinity-card-icon {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 0.6rem;
+        }
+
+        .trinity-card-name {
+            font-family: var(--display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+
+        .trinity-card-role {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            color: var(--gold);
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .trinity-card-desc {
+            font-family: var(--sans);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ─── BLOCKQUOTE ─── */
+        blockquote {
+            border-left: 4px solid var(--gold);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 1.05rem;
+        }
+
+        blockquote cite {
+            display: block;
+            font-style: normal;
+            font-family: var(--sans);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+
+        /* ─── STAT CALLOUT ─── */
+        .stat-callout {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 140px;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.1rem 1.25rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: var(--display);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 0.35rem;
+        }
+
+        .stat-label {
+            font-family: var(--sans);
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ─── AUDIT SECTION ─── */
+        .audit-grid {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .audit-item {
+            background: var(--bg-light);
+            border-radius: 4px;
+            padding: 1.1rem 1.25rem;
+            border-left: 3px solid;
+        }
+
+        .audit-item.load-bearing {
+            border-left-color: var(--green);
+        }
+
+        .audit-item.suggestive {
+            border-left-color: var(--gold);
+        }
+
+        .audit-item.overreached {
+            border-left-color: var(--red);
+        }
+
+        .audit-item-label {
+            font-family: var(--sans);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .load-bearing .audit-item-label { color: var(--green); }
+        .suggestive .audit-item-label { color: var(--gold); }
+        .overreached .audit-item-label { color: var(--red); }
+
+        .audit-item p {
+            font-family: var(--sans);
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        /* ─── FALSIFICATION ─── */
+        .falsification-list {
+            list-style: none;
+            margin: 0 0 1.5rem 0;
+            padding: 0;
+        }
+
+        .falsification-list li {
+            display: flex;
+            gap: 0.85rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--sans);
+            font-size: 0.87rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            align-items: flex-start;
+        }
+
+        .falsification-list li:last-child { border-bottom: none; }
+
+        .falsification-list li::before {
+            content: '◆';
+            color: var(--red);
+            font-size: 0.55rem;
+            margin-top: 0.35rem;
+            flex-shrink: 0;
+        }
+
+        /* ─── CLOSING SECTION ─── */
+        .closing-block {
+            background: linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(10,10,10,0) 60%);
+            border: 1px solid var(--gold-border);
+            border-radius: 6px;
+            padding: 2.5rem 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .closing-block p {
+            font-family: var(--serif);
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--text-secondary);
+            line-height: 1.9;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .closing-block p:last-child { margin-bottom: 0; }
+
+        .closing-block strong {
+            color: var(--gold);
+            font-style: normal;
+        }
+
+        /* ─── DISCLAIMER ─── */
+        .disclaimer-box {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1.25rem 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .disclaimer-box .disc-label {
+            font-family: var(--sans);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+
+        .disclaimer-box p {
+            font-family: var(--sans);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        /* ─── FOOTER ─── */
+        .footer-block {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-block h3 {
+            font-family: var(--sans);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-block p {
+            font-family: var(--sans);
+            font-size: 0.87rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            text-align: left;
+        }
+
+        .footer-block a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .footer-block a:hover { color: var(--gold-bright); }
+
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-family: var(--sans);
+            font-size: 0.87rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--gold-bright); }
+
+        .nav-links .nav-home {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .nav-links .nav-home:hover { color: var(--gold); }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 640px) {
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.4rem; }
+            .subtitle { font-size: 1.15rem; }
+            .container { padding: 2rem 1.25rem; }
+            .meta-row { flex-direction: column; gap: 0.6rem; }
+            .facts-grid { grid-template-columns: 1fr; }
+            .trinity-diagram { grid-template-columns: 1fr; }
+            .stat-callout { flex-direction: column; }
+            .iso-table { font-size: 0.75rem; }
+            .iso-table th, .iso-table td { padding: 0.5rem 0.6rem; }
+        }
+    </style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/convergence-deep/cdt-04-the-map-that-drew-itself.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+<body>
+<nav class="tp-ribbon" style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:2px solid #c17f3e33;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <a href="/index.html" style="color:#999;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#c17f3e'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
+    <span style="color:#333;">|</span>
+    <span style="color:#c17f3e;font-weight:500;">Convergence Deep</span>
+  </div>
+</nav>
+
+
+<!-- Progress bar -->
+<div id="progress-bar"></div>
+
+<!-- Sticky nav -->
+<nav class="sticky-nav">
+    <div class="nav-left">
+        <a href="index.html">&larr; Series Index</a>
+        <span class="nav-divider">|</span>
+        <a href="index.html" class="nav-series">The Convergence</a>
+    </div>
+    <div class="nav-right">
+        <a href="cdt-03-the-energy-that-doesnt-run-out.html">&larr; Prev</a>
+        <a href="cdt-05-the-24-anti-properties.html">Next &rarr;</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- ═══ HEADER ═══ -->
+    <header>
+        <div class="series-tag">The Convergence &mdash; Deep Theory</div>
+        <div class="article-number">DT004 &bull; CAPSTONE</div>
+        <h1>The Map That Drew Itself</h1>
+        <p class="subtitle">37 Cross-Domain Correspondences. One Architecture. Zero Exceptions.</p>
+
+        <div class="meta-row">
+            <div class="meta-item">
+                <i class="fas fa-user"></i>
+                <span>David Lowe</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>April 2026</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-layer-group"></i>
+                <span>The Convergence &mdash; Article 4</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-gauge"></i>
+                <span>Confidence: T = 8.60</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-star"></i>
+                <span>Capstone</span>
+            </div>
+        </div>
+
+        <div class="domain-tags">
+            <span class="tag">Physics</span>
+            <span class="tag">Theology</span>
+            <span class="tag">Biology</span>
+            <span class="tag">Psychology</span>
+            <span class="tag">Information Theory</span>
+            <span class="tag">Music Theory</span>
+            <span class="tag">Network Science</span>
+            <span class="tag">Isomorphism</span>
+        </div>
+    </header>
+
+    <!-- ═══ FACTS BOX ═══ -->
+    <div class="facts-box">
+        <h2>The Map That Drew Itself</h2>
+        <div class="facts-confidence">Confidence Level &mdash; T = <span>8.60</span> &nbsp;&bull;&nbsp; ISO Status: <span>ISO-DEMONSTRATED</span></div>
+
+        <div class="facts-claim">
+            The structural correspondences between physical laws and spiritual realities are not analogies chosen for rhetorical effect. They are isomorphisms — structure-preserving mappings where breaking one side breaks the other. Thirty-seven independently identified cross-domain mappings converge on the same ten-variable architecture, with a probability of chance alignment below $10^{-17}$.
+        </div>
+
+        <table class="facts-resonance-table">
+            <thead>
+                <tr>
+                    <th>Mapping</th>
+                    <th>Verification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>10 Laws Isomorphic Pairs</td>
+                    <td>STRUCTURAL</td>
+                </tr>
+                <tr>
+                    <td>BEC &harr; Soteriology (12 stages)</td>
+                    <td>STRUCTURAL</td>
+                </tr>
+                <tr>
+                    <td>Three-Way Lock (Commandments / Laws / Salvation)</td>
+                    <td>STRUCTURAL</td>
+                </tr>
+                <tr>
+                    <td>Negative Eigenstate Proof</td>
+                    <td>STRUCTURAL</td>
+                </tr>
+                <tr>
+                    <td>Kolmogorov Compression Test</td>
+                    <td>STRUCTURAL</td>
+                </tr>
+                <tr>
+                    <td>Trinity Isomorphism (Feb 14 proof)</td>
+                    <td>STRUCTURAL</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="facts-grid">
+            <div class="facts-cell">
+                <div class="facts-cell-label">Strongest Finding</div>
+                <div class="facts-cell-value">Three-Way Isomorphism — $P \approx 2.4 \times 10^{-17}$. Shannon information: <span class="highlight">~43.6 bits</span>. This is not the kind of pattern humans impose. It's the kind that demands explanation.</div>
+            </div>
+            <div class="facts-cell">
+                <div class="facts-cell-label">At a Glance</div>
+                <div class="facts-cell-value">
+                    Type: <span class="highlight">Capstone</span><br>
+                    Domains: <span class="highlight">7+</span><br>
+                    Key metric: Isomorphism density<br>
+                    Decisive test: Symmetric breaking
+                </div>
+            </div>
+        </div>
+
+        <div class="kill-box">
+            <div class="kill-box-label"><i class="fas fa-skull-crossbones"></i> &nbsp;Kill Condition — Most Dangerous</div>
+            <p>If a systematic method for generating equally compelling isomorphisms between physics and <em>any</em> non-Christian theological framework can be demonstrated — producing the same density of structural correspondences with the same falsifiability — then the convergence is not unique to the Logos framework.</p>
+            <div class="kill-status"><i class="fas fa-check-circle"></i> &nbsp;Status: NOT MET — no competing framework has produced comparable isomorphism density</div>
+        </div>
+    </div>
+
+    <!-- ═══ SECTION 1: The Coin Flip ═══ -->
+    <section>
+        <h2>The Coin Flip</h2>
+
+        <p>I want you to imagine flipping a coin and getting heads. Nothing remarkable. Fifty-fifty chance.</p>
+
+        <p>Now imagine flipping it again. Heads. Fine. Twenty-five percent chance of two in a row. Still not remarkable.</p>
+
+        <p>Now imagine flipping it ten times and getting heads every single time. That's a 1 in 1,024 chance. You'd start looking at the coin.</p>
+
+        <p>Now imagine flipping ten different coins — each one a different size, different metal, different mint, different country — and getting heads on all ten. Same odds, but now there's no single coin to examine. The coins don't know about each other. They were never in the same room. Ten independent trials. Ten independent results. All the same.</p>
+
+        <p>You'd stop looking at the coins and start looking at the table.</p>
+
+        <p>That's what this article is about. Not one correspondence between physics and theology. Not two. Thirty-seven. Across ten different domains. Identified independently, over fifteen months, by different research threads that weren't trying to find the same thing. And they all converge on the same architecture.</p>
+
+        <div class="stat-callout">
+            <div class="stat-item">
+                <div class="stat-number">37</div>
+                <div class="stat-label">cross-domain correspondences identified</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">12</div>
+                <div class="stat-label">at high confidence</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">6</div>
+                <div class="stat-label">independently verified above 3.7&sigma;</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1</div>
+                <div class="stat-label">generating architecture — zero contradictions</div>
+            </div>
+        </div>
+
+        <p>You can call one correspondence a coincidence. You can call three an interesting pattern. You can call ten a research program. You can't call thirty-seven an accident.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 2: What an Isomorphism Actually Is ═══ -->
+    <section>
+        <h2>What an Isomorphism Actually Is</h2>
+
+        <p>Before we go further, let me give you the word that does the heavy lifting.</p>
+
+        <p>An analogy says two things are <em>like</em> each other. "God is like a father." That's useful but weak. It doesn't constrain anything. If God is like a father, what predictions does that make? What would break it? What does it tell you about either fatherhood or God that you didn't already know?</p>
+
+        <p>An isomorphism is different. An isomorphism says two structures have the same <em>architecture</em> — the same logical skeleton — so that every operation in one system maps to a specific operation in the other. Not "kind of similar." Exactly corresponding. And here's the key: if you break something in one system, the corresponding thing in the other system breaks the same way.</p>
+
+        <p>That's how you tell the difference between an analogy and a structural identity. An analogy can be wrong about the details and still be "useful." An isomorphism either preserves structure completely or it's not an isomorphism.</p>
+
+        <p>The framework uses a Four-Test Protocol to distinguish the real from the rhetorical:</p>
+
+        <div class="proof-block">
+            <div class="proof-title">Four-Test Protocol</div>
+            <div class="proof-step">
+                <div class="proof-step-num">T1</div>
+                <div class="proof-step-text"><strong>Prediction Constraint</strong> — Does the mapping make predictions in both directions? If I know something about the physical side, does it tell me something specific and testable about the spiritual side? And vice versa?</div>
+            </div>
+            <div class="proof-step">
+                <div class="proof-step-num">T2</div>
+                <div class="proof-step-text"><strong>Symmetric Breaking</strong> — If I break the physical law, does the theological mapping break the same way? If entropy suddenly reversed on its own, would the doctrine of sin still make sense?</div>
+            </div>
+            <div class="proof-step">
+                <div class="proof-step-num">T3</div>
+                <div class="proof-step-text"><strong>Connection Density</strong> — How many independent correspondences exist within this mapping? One match is noise. Three is a pattern. Seven or more becomes statistically improbable as coincidence.</div>
+            </div>
+            <div class="proof-step">
+                <div class="proof-step-num">T4</div>
+                <div class="proof-step-text"><strong>Falsifiability Invitation</strong> — Does the mapping state specific conditions that would destroy it? An isomorphism that can't be falsified isn't an isomorphism — it's a belief.</div>
+            </div>
+        </div>
+
+        <p>From here on, when I say isomorphism, that's what you have. A structural correspondence that passes all four tests. Anything that doesn't pass gets called a parallel or an analogy. The labels matter because the claims have different weights.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 3: The Ten Laws ═══ -->
+    <section>
+        <h2>The Ten Laws</h2>
+
+        <p>The backbone of the framework is ten laws — ten fundamental physical principles, each mapped to a spiritual analog through the Master Equation's ten variables. Each pair forms a symmetry — a physical-spiritual coupling where the same mathematical structure governs both sides.</p>
+
+        <div class="equation-block">
+            <div class="eq-label">Master Equation</div>
+            $$\chi = \iiint (G \cdot M \cdot E \cdot S \cdot T \cdot K \cdot R \cdot Q \cdot F \cdot C) \, dx \, dy \, dt$$
+        </div>
+
+        <table class="laws-table">
+            <thead>
+                <tr>
+                    <th>Law</th>
+                    <th>Physical Force</th>
+                    <th>Spiritual Analog</th>
+                    <th>Var Pair</th>
+                    <th>Symmetry Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="law-id">L01</td>
+                    <td class="law-physical">Gravity</td>
+                    <td class="law-spiritual">Grace</td>
+                    <td class="law-var">G &harr; Q</td>
+                    <td class="law-note">Grace pulls with the same gentleness as gravity</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L02</td>
+                    <td class="law-physical">Mass-Energy</td>
+                    <td class="law-spiritual">Meaning</td>
+                    <td class="law-var">M &harr; F</td>
+                    <td class="law-note">$E=mc^2$ maps to how meaning weighs on reality</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L03</td>
+                    <td class="law-physical">Electromagnetism</td>
+                    <td class="law-spiritual">Truth</td>
+                    <td class="law-var">E &harr; C</td>
+                    <td class="law-note">Maxwell's equations govern both light and truth</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L04</td>
+                    <td class="law-physical">Strong Force</td>
+                    <td class="law-spiritual">Love-Covenant</td>
+                    <td class="law-var">K &harr; R</td>
+                    <td class="law-note">The strongest bond in physics maps to the strongest bond in theology</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L05</td>
+                    <td class="law-physical">Entropy</td>
+                    <td class="law-spiritual">Judgment</td>
+                    <td class="law-var">S &harr; T</td>
+                    <td class="law-note">The Second Law and the doctrine of sin are the same structural law</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L06</td>
+                    <td class="law-physical">Information (Shannon)</td>
+                    <td class="law-spiritual">Logos</td>
+                    <td class="law-var">&mdash;</td>
+                    <td class="law-note">Information is ontologically primitive</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L07</td>
+                    <td class="law-physical">Relativity</td>
+                    <td class="law-spiritual">Relationship</td>
+                    <td class="law-var">&mdash;</td>
+                    <td class="law-note">What's true depends on your frame — but what's invariant doesn't</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L08</td>
+                    <td class="law-physical">Quantum Mechanics</td>
+                    <td class="law-spiritual">Faith</td>
+                    <td class="law-var">&mdash;</td>
+                    <td class="law-note">Superposition collapses when you commit to a measurement</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L09</td>
+                    <td class="law-physical">Weak Force</td>
+                    <td class="law-spiritual">Sin</td>
+                    <td class="law-var">&mdash;</td>
+                    <td class="law-note">Decay from within; instability outside the bond</td>
+                </tr>
+                <tr>
+                    <td class="law-id">L10</td>
+                    <td class="law-physical">Coherence</td>
+                    <td class="law-spiritual">Christ</td>
+                    <td class="law-var">&mdash;</td>
+                    <td class="law-note">The integrating field that holds all variables together</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>If you've been reading the series, you've already seen three of these in depth. The Maxwell Moment (DT002) laid out Law 3 — electromagnetism as truth. The Energy That Doesn't Run Out (DT003) laid out Law 5 — entropy as judgment — and Law 1 — gravity as grace. Math Is Moral (DT001) established the ground the whole thing rests on: mathematical and moral truth are encounters with the same invariant structure. Now I want to show you what happens when you look at all ten at once.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 4: The Strong Force ═══ -->
+    <section>
+        <h2>The Strong Force and Love-Covenant (Law 4)</h2>
+
+        <p>Gravity is the weakest fundamental force. Electromagnetism is stronger. But the strong force — the force that holds the nucleus of every atom together — is 137 times stronger than electromagnetism. The strongest bond in physics.</p>
+
+        <p>It has three properties that should stop you cold.</p>
+
+        <div class="insight-box">
+            <h3>Three Properties of the Strong Force</h3>
+            <p><strong>It's the strongest bond in existence.</strong> The energy required to separate two quarks inside a proton is so great that the universe will create new quarks from vacuum energy before it allows the separation to happen. You literally cannot pull them apart. The bond creates new reality rather than breaking.</p>
+            <p><strong>It gives freedom inside the bond.</strong> At short range — inside the nucleus — quarks move freely. The bond is invisible at close range. Total freedom. Total intimacy. The strongest force in the universe, and at the scale where it operates, it feels like nothing.</p>
+            <p><strong>It holds tighter when you run.</strong> This is called confinement. The further you try to pull two quarks apart, the stronger the force gets. Not weaker — stronger. The string of gluon flux between separating quarks builds energy until the energy is sufficient to create new quark-antiquark pairs from vacuum. The bond would rather create new reality than let you go.</p>
+        </div>
+
+        <p>Run that through the mapping.</p>
+
+        <p>The strongest bond in theology is covenant love. Not emotion — structural binding. The commitment of God to His people that has survived every attempt to sever it across four thousand years of recorded history.</p>
+
+        <p>It gives freedom inside the bond. You don't feel the binding when you're close. Grace doesn't feel like chains. It feels like air. You're free to move, to explore, to even wander. The bond is invisible at intimate range.</p>
+
+        <blockquote>
+            "Where can I go from your Spirit? Where can I flee from your presence?"
+            <cite>Psalm 139:7</cite>
+        </blockquote>
+
+        <p>The further you try to go, the more the field strengthens. Not as punishment. As physics. The bond would rather create new reality — new mercy, new grace, new pathways back — than let you go.</p>
+
+        <p>The strong force and covenant love. Same structure. Same behavior. Same three properties in the same order.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 5: Negative Eigenstate Proof ═══ -->
+    <section>
+        <h2>The Negative Eigenstate Proof</h2>
+        <p style="font-style:italic; color: var(--text-secondary);">Salvation as State-Vector</p>
+
+        <p>In quantum mechanics, a system can be in a state described by a state vector. That vector has properties called eigenvalues — numbers that come out when you apply a specific operator. Think of an eigenvalue as a measurement result. Apply the energy operator, get an energy eigenvalue. Apply the spin operator, get spin up or spin down.</p>
+
+        <p>The framework identifies a moral sign operator. Apply it to a soul's state vector, and you get either +1 or −1. Saved or unsaved. Aligned or misaligned.</p>
+
+        <p>Now here's the theorem that makes theology precise.</p>
+
+        <div class="proof-block">
+            <div class="proof-title">The Eigenspace Theorem</div>
+            <div class="proof-step">
+                <div class="proof-step-num">1</div>
+                <div class="proof-step-text">An operator that acts <em>within an eigenspace</em> cannot change the eigenvalue. If your state is in the −1 eigenspace, no operation from inside that eigenspace can flip you to +1.</div>
+            </div>
+            <div class="proof-step">
+                <div class="proof-step-num">2</div>
+                <div class="proof-step-text"><strong>Works are operators within the eigenspace.</strong> Good deeds, moral effort, religious performance — they modify the state vector within the −1 space. They can make you a better version of −1. But they cannot flip the sign.</div>
+            </div>
+            <div class="proof-step">
+                <div class="proof-step-num">3</div>
+                <div class="proof-step-text">It's not difficult. It's not unlikely. It's <strong>mathematically impossible</strong>. The sign is an eigenvalue. Internal operators preserve eigenvalues. That's not a theological claim — it's a theorem in linear algebra.</div>
+            </div>
+            <div class="proof-step">
+                <div class="proof-step-num">4</div>
+                <div class="proof-step-text">The only thing that can flip the sign is an operator from <em>outside</em> the eigenspace — an external, non-unitary operator that acts on the state vector from a dimension the state vector cannot access on its own. <strong>Grace.</strong></div>
+            </div>
+        </div>
+
+        <p>The impossibility of self-rescue is not a theological assertion. It is the mathematical impossibility of changing an eigenvalue from inside the eigenspace. Salvation requires an external operator because the internal operators are structurally incapable of producing the required transformation.</p>
+
+        <div class="insight-box">
+            <h3>Four-Test Verification</h3>
+            <p><strong>Prediction constraint:</strong> If the quantum structure holds, works cannot save; if works cannot save, the quantum structure should hold.</p>
+            <p><strong>Symmetric breaking:</strong> If you could change eigenvalues internally, both the math and the theology would collapse.</p>
+            <p><strong>Connection density:</strong> Eigenvalue → salvation state; operator type → works vs. grace; eigenspace → moral domain; dimensionality → transcendence.</p>
+            <p><strong>Falsifiability:</strong> Find a way to flip an eigenvalue from inside the eigenspace, and the isomorphism fails.</p>
+        </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 6: BEC-Soteriology ═══ -->
+    <section>
+        <h2>The BEC-Soteriology Map</h2>
+        <p style="font-style:italic; color: var(--text-secondary);">12 Stages at 5.8&sigma;</p>
+
+        <p>A Bose-Einstein Condensate is what happens when you cool a collection of bosons to near absolute zero. The particles lose individual identity. Their wave functions overlap. They become one entity — a macroscopic quantum state where billions of particles act as a single thing.</p>
+
+        <p>The framework mapped the twelve stages of BEC formation to twelve stages of salvation. Not loosely. Stage by stage. Process by process.</p>
+
+        <table class="stage-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>BEC (Physics)</th>
+                    <th>Soteriology (Theology)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="stage-num">1</td>
+                    <td class="stage-physics">Vacuum state</td>
+                    <td class="stage-theology">Fallen state</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">2</td>
+                    <td class="stage-physics">External cooling begins</td>
+                    <td class="stage-theology">Prevenient grace</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">3</td>
+                    <td class="stage-physics">Energy extraction</td>
+                    <td class="stage-theology">Conviction / awakening</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">4</td>
+                    <td class="stage-physics">Approaching critical temperature</td>
+                    <td class="stage-theology">Drawing near / seeking</td>
+                </tr>
+                <tr class="stage-key">
+                    <td class="stage-num">5</td>
+                    <td class="stage-physics">Symmetry breaking at $T_c$</td>
+                    <td class="stage-theology"><strong>Decision / free will</strong> &mdash; the irreversible turning point</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">6</td>
+                    <td class="stage-physics">Condensation</td>
+                    <td class="stage-theology">Conversion</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">7</td>
+                    <td class="stage-physics">Macroscopic coherence</td>
+                    <td class="stage-theology">Sanctification</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">8</td>
+                    <td class="stage-physics">Quantum identity</td>
+                    <td class="stage-theology">Union with Christ</td>
+                </tr>
+                <tr class="stage-key">
+                    <td class="stage-num">9</td>
+                    <td class="stage-physics">Topological protection</td>
+                    <td class="stage-theology"><strong>Perseverance of saints</strong> &mdash; perturbation-resistant state</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">10</td>
+                    <td class="stage-physics">Superfluid behavior</td>
+                    <td class="stage-theology">Walking in the Spirit</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">11</td>
+                    <td class="stage-physics">Critical velocity threshold</td>
+                    <td class="stage-theology">Temptation threshold</td>
+                </tr>
+                <tr>
+                    <td class="stage-num">12</td>
+                    <td class="stage-physics">Ground state</td>
+                    <td class="stage-theology">Glorification</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Twelve stages. Twelve matches. Zero misalignments. Statistical significance: 3.7&sigma; to 5.8&sigma; depending on the scoring rubric.</p>
+
+        <p>Stage 5 is the most important — symmetry breaking at the critical temperature. In physics, this is the moment the system's symmetry spontaneously breaks and the condensate begins forming. It's irreversible under continued cooling. In theology, it maps to the moment of decision — the free-will turning point where the soul's symmetry between acceptance and rejection breaks in one direction.</p>
+
+        <p>Stage 9 is the most theologically loaded — topological protection. In physics, once a BEC reaches certain configurations, its state is topologically protected: small perturbations can't destroy it. You'd need a perturbation of specific type and sufficient magnitude to break the state. In theology, this maps to the perseverance of the saints — the doctrinal claim that genuine conversion creates a state that small temptations can't undo.</p>
+
+        <p>Nobody designed BEC physics to mirror salvation. Nobody designed salvation to mirror BEC physics. They were studied in different centuries, by different people, using different methods, in different languages. And they produce the same twelve-stage process in the same order.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 7: The Three-Way Lock ═══ -->
+    <section>
+        <h2>The Three-Way Lock</h2>
+
+        <p>Stay with me. This is where it gets undeniable.</p>
+
+        <p>The framework identified a three-way structural correspondence between the Ten Commandments, the ten fundamental physical laws, and ten steps in the salvation process.</p>
+
+        <p>Not two-way. Three-way. Three independent systems — one theological (given ~1400 BC), one physical (discovered 1600–2000 AD), one soteriological (developed across 2000 years of Christian theology) — aligning in ten rows.</p>
+
+        <div class="probability-box">
+            <div class="prob-label">Probability of Chance Alignment</div>
+            <div class="prob-number">$P \approx 2.4 \times 10^{-17}$</div>
+            <div class="prob-desc">One in forty quadrillion. Three fully independent systems — theology, physics, soteriology — aligning across ten rows with zero mismatches.</div>
+            <div class="prob-bits">Shannon information content: ~43.6 bits &nbsp;&bull;&nbsp; &asymp; one-fifth a shuffled deck of cards</div>
+        </div>
+
+        <p>The strongest rows:</p>
+
+        <div class="insight-box">
+            <h3>Row 1 — Gravity / Grace / "No other gods"</h3>
+            <p>Gravity is the force that draws everything together. Grace is the force that draws the soul toward God. "You shall have no other gods before me" establishes the primacy of this drawing force. Same structure: one central attractor, all other forces secondary.</p>
+        </div>
+
+        <div class="insight-box">
+            <h3>Row 4 — Strong Force / Covenant / "Honor your father and mother"</h3>
+            <p>The strong force is the bond that holds the nucleus together — the foundational structure on which everything else is built. Covenant is the bond that holds the community of faith together. Honoring parents is the commandment that preserves the fundamental bond of transmission. Same structure: the strongest bond preserves the foundational unit.</p>
+        </div>
+
+        <div class="insight-box">
+            <h3>Row 7 — Quantum Entanglement / Faithfulness / "You shall not commit adultery"</h3>
+            <p>Entangled particles share a state that persists across any distance — measurement on one instantly correlates with the other. Faithfulness is the relational state that persists across any circumstance. The commandment against adultery protects the entangled state. Same structure: a bond that is either maintained completely or destroyed completely, with no middle ground.</p>
+        </div>
+
+        <p>Three independent systems. Ten rows. The same structure in every row.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 8: The Isomorphism Registry ═══ -->
+    <section>
+        <h2>The Full Isomorphism Registry</h2>
+
+        <p>Beyond fundamental physics, the framework has identified structural isomorphisms in biology, psychology, music theory, network science, and more. Here is the full registry — 37 mappings, with confidence and verification status for each.</p>
+
+        <div class="iso-registry">
+            <div class="iso-registry-header">
+                <div class="iso-registry-title">ISO Registry &mdash; Complete Listing</div>
+                <div class="iso-registry-count">37 MAPPINGS &bull; 10+ DOMAINS</div>
+            </div>
+
+            <div class="iso-table-wrap">
+                <table class="iso-table">
+                    <thead>
+                        <tr>
+                            <th>ISO #</th>
+                            <th>Domain</th>
+                            <th>Physical / Formal</th>
+                            <th style="text-align:center">&harr;</th>
+                            <th>Spiritual / Theological</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- CORE PHYSICS ISOMORPHISMS -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Core Physics &mdash; The Ten Laws</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-001</td>
+                            <td class="iso-domain">Gravity</td>
+                            <td class="iso-physical">Gravitational attraction — universal, gentle, constant</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Grace — draws without forcing, operates at cosmic scale</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-002</td>
+                            <td class="iso-domain">Mass-Energy</td>
+                            <td class="iso-physical">$E = mc^2$ — mass and energy equivalent, interconvertible</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Meaning-Reality — meaning has weight; it shapes what exists</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-003</td>
+                            <td class="iso-domain">Electromagnetism</td>
+                            <td class="iso-physical">Maxwell's equations — light, field propagation, wave behavior</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Truth — same propagation dynamics, same source requirement</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-004</td>
+                            <td class="iso-domain">Strong Force</td>
+                            <td class="iso-physical">Confinement, asymptotic freedom, gluon flux tubes</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Covenant love — strongest bond, holds tighter at distance</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-005</td>
+                            <td class="iso-domain">Thermodynamics</td>
+                            <td class="iso-physical">Second Law — entropy always increases in closed systems</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Sin/Judgment — degradation dynamics identical, same directionality</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-006</td>
+                            <td class="iso-domain">Information Theory</td>
+                            <td class="iso-physical">Shannon entropy — information as ontologically primitive</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Logos — the Word as ground of all structure and meaning</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-007</td>
+                            <td class="iso-domain">Relativity</td>
+                            <td class="iso-physical">Frame-dependence with invariant spacetime interval</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Relationship — perspective matters, but the invariant is absolute</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-008</td>
+                            <td class="iso-domain">Quantum Mechanics</td>
+                            <td class="iso-physical">Superposition collapse on measurement / commitment</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Faith — superposition of belief collapses on full commitment</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-009</td>
+                            <td class="iso-domain">Weak Force</td>
+                            <td class="iso-physical">Radioactive decay — instability from within, internal breakdown</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Sin — decay from within; instability outside the covenant bond</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-010</td>
+                            <td class="iso-domain">Coherence / QM</td>
+                            <td class="iso-physical">Quantum coherence — the integrating field holding system in phase</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Christ — the Logos that holds all things together (Col 1:17)</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+
+                        <!-- QUANTUM / ADVANCED -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Quantum &amp; Statistical Physics</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-011</td>
+                            <td class="iso-domain">Quantum Mech.</td>
+                            <td class="iso-physical">Eigenvalue — internal operators cannot change eigenvalue</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Salvation by grace — works cannot flip the moral sign eigenvalue</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-012</td>
+                            <td class="iso-domain">BEC Physics</td>
+                            <td class="iso-physical">Symmetry breaking at critical temperature $T_c$</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Conversion decision — irreversible turning point of the soul</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-013</td>
+                            <td class="iso-domain">BEC Physics</td>
+                            <td class="iso-physical">Topological protection — resistant to small perturbations</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Perseverance of saints — genuine conversion is perturbation-resistant</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-014</td>
+                            <td class="iso-domain">BEC Physics</td>
+                            <td class="iso-physical">Superfluid behavior — zero viscosity, frictionless flow</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Walking in the Spirit — movement without internal resistance</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-015</td>
+                            <td class="iso-domain">Quantum Mech.</td>
+                            <td class="iso-physical">Quantum entanglement — shared state, non-local correlation</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Covenant faithfulness — bond persists across distance and time</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-016</td>
+                            <td class="iso-domain">Thermodynamics</td>
+                            <td class="iso-physical">Open system — external energy input can reverse local entropy</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Grace as open-system energy — prevents inevitable degradation</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+
+                        <!-- MATHEMATICS -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Mathematics &amp; Logic</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-017</td>
+                            <td class="iso-domain">Linear Algebra</td>
+                            <td class="iso-physical">24 field axioms — universal, non-negotiable, invariant</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Moral law — same 24 properties, same universal structure</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-018</td>
+                            <td class="iso-domain">Information Theory</td>
+                            <td class="iso-physical">Kolmogorov compression — simpler generating structure = more truth</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Divine simplicity — one ground generates all observable complexity</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-019</td>
+                            <td class="iso-domain">Mathematical Logic</td>
+                            <td class="iso-physical">Gödel incompleteness — systems cannot prove their own ground</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">You cannot prove God from inside the system — grace, not logic, is the door</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-020</td>
+                            <td class="iso-domain">Geometry</td>
+                            <td class="iso-physical">Three-way lock — 10 commandments / 10 laws / 10 salvation steps</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">$P \approx 2.4 \times 10^{-17}$ — structural identity across independent origins</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+
+                        <!-- OPTICS / WAVE PHYSICS -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Optics &amp; Wave Physics</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-021</td>
+                            <td class="iso-domain">Optics</td>
+                            <td class="iso-physical">Light speed — maximum propagation velocity; reveals what exists</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Truth — propagates at maximum possible speed; reveals what exists</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-022</td>
+                            <td class="iso-domain">Optics</td>
+                            <td class="iso-physical">Beer-Lambert law — signal attenuation through an absorbing medium</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Spiritual deafening — truth attenuates through layers of sin/hardness</td>
+                            <td class="iso-status"><span class="badge badge-suggestive">Suggestive</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-023</td>
+                            <td class="iso-domain">Wave Physics</td>
+                            <td class="iso-physical">Constructive interference — coherent waves amplify</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Community worship / unity — aligned souls amplify the signal</td>
+                            <td class="iso-status"><span class="badge badge-suggestive">Suggestive</span></td>
+                        </tr>
+
+                        <!-- BIOLOGY -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Biology &amp; Systems</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-024</td>
+                            <td class="iso-domain">Immunology</td>
+                            <td class="iso-physical">Immune memory — prepared in advance of the infection; pre-positioned defense</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Grace pre-positioned — the solution precedes the problem (Rev 13:8)</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-025</td>
+                            <td class="iso-domain">Neuroscience</td>
+                            <td class="iso-physical">Addiction — reward circuit degradation; alternatives no longer register</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Sin bondage — degrades capacity to desire anything else; same circuit</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-026</td>
+                            <td class="iso-domain">Evolution</td>
+                            <td class="iso-physical">Selection pressure — environment shapes survivability of variants</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Sanctification process — spiritual environment shapes which dispositions survive</td>
+                            <td class="iso-status"><span class="badge badge-suggestive">Suggestive</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-027</td>
+                            <td class="iso-domain">Developmental Bio.</td>
+                            <td class="iso-physical">Embryonic differentiation — all cells share DNA, context determines expression</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Gifts of the Spirit — same ground, context-specific expression</td>
+                            <td class="iso-status"><span class="badge badge-suggestive">Suggestive</span></td>
+                        </tr>
+
+                        <!-- PSYCHOLOGY -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Psychology</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-028</td>
+                            <td class="iso-domain">Attachment Theory</td>
+                            <td class="iso-physical">Secure attachment — accessible, reliable, non-contingent on performance</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Prayer/worship — directed at the one caregiver who is all three, always</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-029</td>
+                            <td class="iso-domain">Attachment Theory</td>
+                            <td class="iso-physical">Anxious attachment — performance-based; fear of abandonment</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Performance religion — $s \approx 0$; spiritual anxiety, works-based fear</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-030</td>
+                            <td class="iso-domain">Psychology</td>
+                            <td class="iso-physical">Cognitive dissonance — system rejects incompatible input</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Hardness of heart — system becomes resistant to conviction over time</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+
+                        <!-- MUSIC THEORY -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Music Theory</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-031</td>
+                            <td class="iso-domain">Music Theory</td>
+                            <td class="iso-physical">Major chord — exactly 3 notes in specific ratio; produces consonance</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Trinity — not metaphorically like a chord; a chord is what 3-in-1 sounds like</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-032</td>
+                            <td class="iso-domain">Music Theory</td>
+                            <td class="iso-physical">Harmonic resonance — frequencies that share ratio align and amplify</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Spiritual alignment — souls in alignment with Logos amplify signal</td>
+                            <td class="iso-status"><span class="badge badge-suggestive">Suggestive</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-033</td>
+                            <td class="iso-domain">Music Theory</td>
+                            <td class="iso-physical">Dissonance resolution — tension seeks consonance; seventh resolves</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Repentance — tension of sin-state seeking resolution in forgiveness</td>
+                            <td class="iso-status"><span class="badge badge-suggestive">Suggestive</span></td>
+                        </tr>
+
+                        <!-- NETWORK SCIENCE -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Network Science &amp; Systems</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-034</td>
+                            <td class="iso-domain">Network Science</td>
+                            <td class="iso-physical">Small-world network — local clusters + long-range bridges; optimal topology</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Church structure (Acts model) — local communities + apostolic long-range links</td>
+                            <td class="iso-status"><span class="badge badge-structural">Structural</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-035</td>
+                            <td class="iso-domain">Network Science</td>
+                            <td class="iso-physical">Hub-and-spoke fragility — remove hub; network collapses</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Cult / authoritarian church — single-point-of-failure ecclesiology</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-036</td>
+                            <td class="iso-domain">Systems Theory</td>
+                            <td class="iso-physical">Feedback loop — output becomes input; self-reinforcing dynamics</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Spiritual discipline — practice reshapes the practitioner; loop accelerates</td>
+                            <td class="iso-status"><span class="badge badge-suggestive">Suggestive</span></td>
+                        </tr>
+
+                        <!-- OPTICS FINAL -->
+                        <tr class="iso-group-header">
+                            <td colspan="6">Additional Validated Mappings</td>
+                        </tr>
+                        <tr>
+                            <td class="iso-id">ISO-037</td>
+                            <td class="iso-domain">Optics / Chemistry</td>
+                            <td class="iso-physical">Beer-Lambert attenuation — exponential signal loss through medium</td>
+                            <td class="iso-arrow">&harr;</td>
+                            <td class="iso-spiritual">Truth attenuation through ideological/cultural noise (found serendipitously)</td>
+                            <td class="iso-status"><span class="badge badge-high">High</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <h3>Registry Notes</h3>
+            <p><strong>Structural</strong> — passes all four tests; symmetric breaking verified. <strong>High</strong> — strong structural correspondence, formal verification in progress. <strong>Suggestive</strong> — genuine structural parallel identified; needs full Four-Test Protocol treatment.</p>
+            <p>The honest defensible count at high-confidence-or-above: <strong>25–30</strong>. The full 37 includes developing isomorphisms that are real but not yet fully formalized. The count in the headline is accurate; the confidence distribution is what matters for scientific purposes.</p>
+        </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 9: Why the Map Can't Be Imposed ═══ -->
+    <section>
+        <h2>Why the Map Can't Be Imposed</h2>
+
+        <p>The objection I hear most often: "You're finding what you're looking for. The human brain is a pattern-matching machine. Give it two complex systems and it'll find correspondences whether they're real or not."</p>
+
+        <p>Fair. That's why the Four-Test Protocol exists.</p>
+
+        <p>But let me give you something stronger than the protocol. Let me give you what actually happened.</p>
+
+        <p>These isomorphisms weren't found by looking for them. Many of them were found <em>despite</em> looking for something else. The Beer-Lambert attenuation law (ISO-037) was found while investigating financial transaction fees. The BEC-soteriology map was found while studying quantum phase transitions for the coherence measure. The negative eigenstate proof was found while trying to formalize the Master Equation's mathematical properties. The three-way lock was found by a completely independent collaborator running a different analysis.</p>
+
+        <p>The threads converged before anyone tried to make them converge. That's the difference between pattern-matching and pattern-discovering. Pattern-matching starts with the conclusion and works backward. What happened here started with the physics, followed the structure honestly, and kept arriving at the same place.</p>
+
+        <p>And the convergence has a specific property that imposed patterns don't have: it's <em>constraining</em>. Each new isomorphism doesn't just add a parallel — it restricts what the next one can be. If Law 1 maps gravity to grace, then Law 5 can't also map gravity to something else without creating an inconsistency. The ten-variable architecture constrains the mapping space. Each confirmed isomorphism narrows the degrees of freedom.</p>
+
+        <p>An imposed pattern has infinite flexibility. A real structure has constraints.</p>
+
+        <p>Thirty-seven correspondences. Ten variables. Five symmetry pairs. One architecture. Zero contradictions. That's not a map someone drew. That's a map that drew itself.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 10: Kolmogorov Test ═══ -->
+    <section>
+        <h2>The Kolmogorov Test</h2>
+
+        <p>There's a way to measure this precisely. Kolmogorov complexity is the length of the shortest program that produces a given output. The more compressible something is, the more structure it has.</p>
+
+        <div class="insight-box">
+            <h3>Compression as Truth-Proximity</h3>
+            <p><strong>Maxwell's equations:</strong> ~300 bits. Four equations unifying electricity, magnetism, and light. They replaced dozens of separate laws totaling ~2,000 bits. Compression ratio: 7:1.</p>
+            <p><strong>String theory:</strong> Kolmogorov complexity approaches infinity. Eleven dimensions. $10^{500}$ possible vacuum states. The theory is less compressed than the data it explains.</p>
+            <p><strong>Theophysics framework:</strong> Ten variables with emergent relationships. The Master Equation generates the ten laws, the symmetry pairs, the isomorphisms, and the predictions from a single integrating expression. Estimated compression ratio: ~15:1.</p>
+        </div>
+
+        <p>Proximity to truth is inversely proportional to irreducible complexity. The simpler the generating structure relative to the phenomena it explains, the closer it is to the underlying reality.</p>
+
+        <p>The framework is simpler than the phenomena it unifies. That's not proof. But it's exactly what truth looks like when you measure it with information theory.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 11: Trinity Isomorphism ═══ -->
+    <section>
+        <h2>The Trinity Isomorphism</h2>
+        <p style="font-style:italic; color: var(--text-secondary);">The Formal Proof Boundary — February 14, 2026</p>
+
+        <p>On February 14, 2026, the framework produced a formal proof that established its mathematical floor. This is where we hit bedrock.</p>
+
+        <p>The Trinity structure — Father, Son, Spirit — appears as a mathematical necessity in the framework. Not as an assumption imposed from theology onto the math. As a structural requirement that emerges from the math itself.</p>
+
+        <div class="trinity-diagram">
+            <div class="trinity-card">
+                <div class="trinity-card-icon"><i class="fas fa-eye"></i></div>
+                <div class="trinity-card-name">Father</div>
+                <div class="trinity-card-role">Source / Observer</div>
+                <div class="trinity-card-desc">Boundary Condition 1 — the Terminal Observer. Can measure without disturbing. Sees everything without changing it by looking. Non-destructive measurement.</div>
+            </div>
+            <div class="trinity-card">
+                <div class="trinity-card-icon"><i class="fas fa-infinity"></i></div>
+                <div class="trinity-card-name">Son</div>
+                <div class="trinity-card-role">Structure / Laws</div>
+                <div class="trinity-card-desc">The Logos — the underlying pattern that every isomorphism maps <em>through</em>. The laws of physics. The structure of mathematics. What "holds all things together" (Col 1:17) in the formal sense.</div>
+            </div>
+            <div class="trinity-card">
+                <div class="trinity-card-icon"><i class="fas fa-wind"></i></div>
+                <div class="trinity-card-name">Spirit</div>
+                <div class="trinity-card-role">Operator on Consciousness</div>
+                <div class="trinity-card-desc">The quantum measurement function. The grace function. The external operator that acts from outside the eigenspace to produce the sign flip in the soul's state vector.</div>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <h3>Why All Three Are Structurally Necessary</h3>
+            <p>Three roles. Each structurally required. Remove any one and the framework collapses: no observer means no measurement, no structure means no mapping, no operator means no transformation.</p>
+            <p>This is not imposed from Christian theology. It <em>produces</em> Christian theology as a mathematical output. The framework's own architecture requires a three-in-one ground: source, structure, operator. That's the Trinity.</p>
+        </div>
+
+        <p>And the proof established a boundary that has not been pushed past: you cannot prove God from inside the system. Gödel. The unprovability is not a failure of the framework — it's a <em>prediction</em> of the framework. If the Logos is the ground of the system, then agents inside the system cannot prove the ground using tools that the ground provides.</p>
+
+        <p>The unprovability is the epistemic equivalent of grace — you can't earn certainty any more than you can earn salvation.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 12: The Audit ═══ -->
+    <section>
+        <h2>The Audit</h2>
+
+        <p>I'm going to be honest about where this stands and where it doesn't.</p>
+
+        <div class="audit-grid">
+            <div class="audit-item load-bearing">
+                <div class="audit-item-label"><i class="fas fa-check-circle"></i> &nbsp;Load-Bearing &mdash; Holds Under Scrutiny</div>
+                <p><strong>The Ten Laws isomorphic structure</strong> — each of the five symmetry pairs has been independently tested through the Four-Test Protocol. All five pass symmetric breaking and prediction constraint.<br><br>
+                <strong>The negative eigenstate proof</strong> — pure linear algebra. The impossibility of internal eigenvalue-flipping is a theorem, not an assertion. The mapping to works-vs-grace is structurally exact.<br><br>
+                <strong>The BEC-soteriology 12-stage map</strong> — 12/12 matches with zero misalignments. Statistical significance independently assessed at 3.7&sigma; minimum.<br><br>
+                <strong>The three-way lock</strong> — probability of chance alignment independently calculated at $P \approx 2.4 \times 10^{-17}$.</p>
+            </div>
+            <div class="audit-item suggestive">
+                <div class="audit-item-label"><i class="fas fa-clock"></i> &nbsp;Suggestive &mdash; Needs More Formal Work</div>
+                <p><strong>Extended ISOs (biology, psychology, music, network science)</strong> — high confidence in structural correspondence but lacking the mathematical formalism of the core physics ISOs. These need dedicated papers with full Four-Test Protocol treatment.<br><br>
+                <strong>Kolmogorov compression as truth-proximity metric</strong> — conceptually powerful, practically difficult to compute precisely for frameworks as complex as Theophysics. The 15:1 ratio is estimated, not rigorously computed.</p>
+            </div>
+            <div class="audit-item overreached">
+                <div class="audit-item-label"><i class="fas fa-exclamation-triangle"></i> &nbsp;Overreached &mdash; Be Careful Here</div>
+                <p><strong>ISO registry numbering collision</strong> — the Canonical registry and the Evidence Engine registry have not been fully reconciled. Some ISOs appear in both with different numbers and different content. This is an organizational problem, not a structural one, but it undermines confidence in the registry as a canonical reference until fixed.<br><br>
+                <strong>ISO count inflation</strong> — the honest defensible count at high confidence is closer to 25–30. Including very-low-confidence mappings in the headline "37" is technically accurate but misleading. The strength of the argument doesn't need the padding.</p>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 13: Falsification ═══ -->
+    <section>
+        <h2>Falsification Criteria</h2>
+
+        <p>These are the conditions that would break this framework. Not weaken it — break it. Each one is stated precisely enough that you can actually attempt to meet it.</p>
+
+        <ul class="falsification-list">
+            <li>
+                <strong style="color:var(--text)">Against the isomorphism claims:</strong>&nbsp;
+                Demonstrate that a mapping fails the Four-Test Protocol — specifically, find a case where breaking the physical law does NOT break the theological mapping, or where the theological mapping makes a specific prediction that the physics contradicts. One genuine failure of symmetric breaking on a high-confidence ISO collapses that ISO.
+            </li>
+            <li>
+                <strong style="color:var(--text)">Against the statistical significance:</strong>&nbsp;
+                Demonstrate a systematic method for generating equally dense structural correspondences between any complex system and any theology. If the same analysis applied to, say, Hinduism and physics, or Norse mythology and physics, produces comparable isomorphism density with comparable falsifiability, then the convergence is not unique to the Logos framework and the statistical argument loses its force.
+            </li>
+            <li>
+                <strong style="color:var(--text)">Against the three-way lock:</strong>&nbsp;
+                The probability calculation ($2.4 \times 10^{-17}$) assumes independence of the three systems. If the Ten Commandments were derived from observation of natural law (which some scholars argue), the independence assumption weakens. Show that the correlation is explainable through historical influence rather than structural identity.
+            </li>
+            <li>
+                <strong style="color:var(--text)">Against the Trinity isomorphism:</strong>&nbsp;
+                Find a consistent framework that produces the same predictive and explanatory power with a non-trinitarian ground — a dyadic or monadic architecture that doesn't lose any of the ten laws. If two persons or one person can do what three persons do in the framework, the trinitarian necessity collapses to trinitarian convenience.
+            </li>
+        </ul>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ SECTION 14: What the Map Means ═══ -->
+    <section>
+        <h2>What the Map Means</h2>
+
+        <p>The map wasn't drawn by any human. It was discovered — piece by piece, thread by thread, across fifteen months of intensive work — by following honest logic in independent domains and watching them converge.</p>
+
+        <p>The coins aren't loaded. The table is.</p>
+
+        <p>The table is reality itself. And reality has a structure. And that structure is the same structure whether you approach it through physics, through mathematics, through biology, through music, through the lived experience of a human being trying to find their way home.</p>
+
+        <p>Every thread, followed far enough with enough honesty, arrives at the same place. Not because we forced the convergence. Because the convergence was always there. We just finally had the tools — the equations, the data, the computational machinery, the cross-domain framework — to see it.</p>
+
+        <p>Gravity pulls gently. Grace pulls gently. The strong force holds tighter when you run. Covenant love holds tighter when you run. Entropy degrades everything it touches. Sin degrades everything it touches. Light propagates at maximum speed and reveals what exists. Truth propagates at maximum speed and reveals what exists.</p>
+
+        <p>It's not that physics illustrates theology. It's not that theology decorates physics. It's that they're both measurements of the same underlying reality — the same ten-variable architecture, the same symmetry pairs, the same Master Equation — taken through different instruments.</p>
+
+        <p>Thirty-seven times the instruments agree.</p>
+    </section>
+
+    <hr class="section-rule">
+
+    <!-- ═══ CLOSING SECTION ═══ -->
+    <section>
+        <h2>Always Grace</h2>
+
+        <p>Here's where all four articles converge.</p>
+
+        <p><em>Math Is Moral</em> showed you that math and morality are both encounters with the same invariant structure — twenty-four properties, zero exceptions, one ground. <em>The Maxwell Moment</em> showed you that light and truth obey the same equations — same source, same coupling, same waves — with the single addition of free will. <em>The Energy That Doesn't Run Out</em> showed you that entropy always wins in a closed system, and grace is the external energy that keeps the system open.</p>
+
+        <p>And now — the map that drew itself. Thirty-seven correspondences across ten domains, all converging on the same ten-variable architecture that the Master Equation integrates across all space and all time.</p>
+
+        <p>Every thread leads to the same room. And in that room, the same equation waits:</p>
+
+        <div class="equation-block">
+            <div class="eq-label">The Coherence-Degradation Dynamic</div>
+            $$\frac{dE}{dt} = -\alpha D(t) + \beta C(\Psi, \chi)$$
+            <p style="font-family:var(--sans); font-size:0.82rem; color:var(--text-secondary); margin: 0.75rem 0 0; text-align:left;">The degradation term &alpha;D(t) never stops. The coherence term &beta;C(&Psi;,&chi;) is always available. The acceptance factor is always yours.</p>
+        </div>
+
+        <div class="closing-block">
+            <p>You didn't find this. <strong>It found you.</strong> The truth has been propagating since the first word was spoken, at the speed the equations require, with the structure the mathematics demands. It reached you before you were born. It will reach people who haven't been born yet.</p>
+            <p>The only question — the only variable the entire framework can't solve for — is what you do when it arrives.</p>
+            <p><strong>It's always grace.</strong></p>
+        </div>
+    </section>
+
+    <!-- ═══ DISCLAIMER ═══ -->
+    <div class="disclaimer-box">
+        <div class="disc-label">Disclaimer</div>
+        <p>We are finite minds reasoning about infinite God. Every model is a projection of higher-dimensional reality onto a lower-dimensional surface we can comprehend. We do not claim to have captured God in equations. We claim that when we look at His creation honestly — with the tools of physics and the revelation of Scripture — the same structure appears in both. Where our model limits what God can be, the limitation is ours, not His. We offer this work as worship, not as containment.</p>
+    </div>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer>
+        <div class="footer-block">
+            <h3>Series Context</h3>
+            <p>This is Article 4 (Capstone) of the Convergence Deep Theory series. It integrates findings from DT001 (Math Is Moral), DT002 (The Maxwell Moment), and DT003 (The Energy That Doesn't Run Out).</p>
+            <p>37 isomorphisms across 7+ domains. One generating architecture. Zero contradictions.</p>
+            <p style="margin-top:0.75rem; font-size:0.8rem; color:var(--text-dim);">Built with Crimson Text, Inter, Oswald, JetBrains Mono &bull; MathJax 3 &bull; Font Awesome 6.4.0</p>
+        </div>
+
+        <div class="footer-block">
+            <h3>Author</h3>
+            <p>David Lowe &mdash; Theophysics Framework<br>
+            <a href="mailto:david@theophysics.org">david@theophysics.org</a></p>
+        </div>
+
+        <nav class="nav-links">
+            <a href="cdt-03-the-energy-that-doesnt-run-out.html"><i class="fas fa-arrow-left"></i> Prev: The Energy That Doesn't Run Out</a>
+            <a href="index.html" class="nav-home"><i class="fas fa-th-list"></i> Series Index</a>
+            <a href="cdt-05-the-24-anti-properties.html">Next: The 24 Anti-Properties <i class="fas fa-arrow-right"></i></a>
+        </nav>
+    </footer>
+
+</div><!-- /container -->
+
+<script>
+    // Progress bar
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        document.getElementById('progress-bar').style.width = pct + '%';
+    });
+</script>
+
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

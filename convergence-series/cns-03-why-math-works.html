@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>03 · Why Math Works — The Convergence Series</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+:root {
+  --surface: #0a0a0a;
+  --surface-light: #141414;
+  --surface-mid: #1a1a1a;
+  --border: #2a2a2a;
+  --border-hover: #3a3a3a;
+  --text-primary: #e0e0e0;
+  --text-body: #c4c4c4;
+  --text-secondary: #888;
+  --text-dim: #555;
+  --highlight: #d4af37;
+  --highlight-bright: #e8c547;
+  --highlight-dim: rgba(212,175,55,0.08);
+  --red: #ef4444;
+  --teal: #2dd4bf;
+  --blue: #4a9eff;
+  --purple: #a855f7;
+  --green: #22c55e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(212,175,55,0.25);
+  color: #fff;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE HEADER
+   ══════════════════════════════════════ */
+.article-header {
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 2rem 2.5rem;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.series-tag {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+
+.chapter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.article-title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.article-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.author-line {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.author-line a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.author-line a:hover { color: var(--highlight); }
+
+
+/* ══════════════════════════════════════
+   FACTS CARD
+   ══════════════════════════════════════ */
+.facts-card {
+  max-width: 780px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.facts-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.facts-toggle:hover { background: var(--surface-light); }
+
+.facts-toggle-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.facts-toggle-arrow {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+}
+
+.facts-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.facts-body.open { max-height: 800px; }
+
+.facts-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--highlight);
+  opacity: 0.5;
+}
+
+.facts-content {
+  padding: 1rem 1.5rem;
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.facts-content em { color: var(--highlight); font-style: italic; }
+
+
+/* ══════════════════════════════════════
+   PROSE — the reading experience
+   ══════════════════════════════════════ */
+.prose {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.prose p {
+  font-size: 1.08rem;
+  color: var(--text-body);
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
+}
+
+.prose p strong { color: #e0e0e0; }
+.prose p em { color: var(--highlight); font-style: italic; }
+
+/* Section breaks — the horizontal rules */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* Pull quotes */
+.prose blockquote {
+  border-left: 2px solid var(--highlight);
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Crimson Text', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--highlight);
+  line-height: 1.55;
+}
+
+/* Drop cap for first paragraph after an hr */
+.drop-cap::first-letter {
+  font-family: 'Crimson Text', serif;
+  font-size: 3.8rem;
+  float: left;
+  line-height: 0.8;
+  padding: 0.35rem 0.5rem 0 0;
+  color: var(--highlight);
+  font-weight: 700;
+}
+
+/* Landing sentences — short, punchy, after builds */
+.prose .land {
+  font-size: 1.15rem;
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+
+/* ══════════════════════════════════════
+   AUDIO PLAYERS — bottom of article
+   ══════════════════════════════════════ */
+.listen-section {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2.5rem;
+}
+
+.listen-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.player-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  transition: border-color 0.2s;
+}
+
+.player-row:hover { border-color: var(--border-hover); }
+
+.player-type {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.player-type.tts { color: var(--highlight); }
+.player-type.deep { color: var(--blue); }
+.player-type.debate { color: var(--purple); }
+
+.player-row audio {
+  width: 100%;
+  height: 36px;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE NAV — prev / next
+   ══════════════════════════════════════ */
+.article-nav {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-link:hover { color: var(--highlight); }
+
+.nav-link .nav-title {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.footer-sig {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--highlight);
+}
+
+.footer-colophon {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .article-header { padding: 2rem 1.5rem; }
+  .prose { padding: 2rem 1.5rem 4rem; }
+  .listen-section { padding: 0 1.5rem 3rem; padding-top: 2rem; }
+  .article-nav { padding: 0 1.5rem 2rem; padding-top: 1.5rem; }
+  footer { padding: 1.5rem; }
+  .player-row { grid-template-columns: 80px 1fr; }
+  .prose p { font-size: 1rem; }
+}
+/* Chapter Image */
+.chapter-image { max-width: 780px; margin: 2rem auto; padding: 0 2rem; }
+.chapter-image img { width: 100%; height: auto; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; }
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════ -->
+<header class="article-header">
+  <div class="header-meta">
+    <span class="series-tag">The Convergence Series</span>
+    <span class="chapter-num">Chapter 03 of 07</span>
+  </div>
+  <h1 class="article-title">Why Math Works</h1>
+  <p class="article-subtitle">The reason inside our heads matches the reason outside in the cosmos. Wigner called it a miracle. The founders of physics called it God.</p>
+  <div class="author-line">
+    Written by David Lowe with Claude · <a href="https://faiththruphysics.com">faiththruphysics.com</a> · 2026
+  </div>
+</header>
+<div class="chapter-image"><img src="images/slide_08.webp" alt="The math has no margin — physical blueprint vs moral ledger"></div>
+
+
+<!-- ═══════════════════════════════════════
+     FACTS CARD
+     ═══════════════════════════════════════ -->
+<div class="facts-card">
+  <div class="facts-toggle" onclick="toggleFacts()">
+    <span class="facts-toggle-label"><i class="fas fa-list-check"></i> FACTS — What This Chapter Establishes</span>
+    <span class="facts-toggle-arrow"><i class="fas fa-chevron-down"></i></span>
+  </div>
+  <div class="facts-body" id="factsBody">
+    <div class="facts-row">
+      <div class="facts-letter"><span>F</span></div>
+      <div class="facts-content">Abstract mathematical structures — developed for <em>purely theoretical reasons</em> with no reference to the physical world — repeatedly turn out to describe physical reality with absurd precision.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>A</span></div>
+      <div class="facts-content">Eight documented cases of <em>predictive mathematical excess</em> — conic sections (200 BC → Kepler 1609), Non-Euclidean geometry (1854 → Einstein 1915), Dirac equation (1928 → positron 1932), group theory (1830s → Standard Model), complex numbers (1545 → quantum mechanics).</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>C</span></div>
+      <div class="facts-content">Three possible explanations exist: math is <em>invented</em> (fails on predictive excess), math is <em>discovered</em> (fails on grounding), or math works because the <em>Author of logic and the Author of reality are the same</em> (explains both).</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>T</span></div>
+      <div class="facts-content">The founders of modern physics — Newton, Planck, Faraday, Maxwell, Polkinghorne — <em>explicitly stated in published work</em> that math works because God wrote both the book and the reader.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>S</span></div>
+      <div class="facts-content">Wigner (1960), Apollonius (200 BC), Riemann (1854), Dirac (1928), Galois (1832), Cardano (1545), Tegmark's Mathematical Universe Hypothesis.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     THE ARTICLE
+     ═══════════════════════════════════════ -->
+<article class="prose">
+
+<p class="drop-cap">In 1960, a physicist named Eugene Wigner wrote a paper with a title that has haunted science ever since.</p>
+
+<p>"The Unreasonable Effectiveness of Mathematics in the Natural Sciences."</p>
+
+<p>The word that matters is <em>unreasonable</em>. Not impressive. Not convenient. Unreasonable. Wigner was saying: this shouldn't work. And he couldn't explain why it does.</p>
+
+<p>Here's the problem. Mathematics is abstract. It's something humans do in their heads — or on paper, or on blackboards — with no direct reference to the physical world. Nobody goes outside to check if two plus two still equals four. Nobody runs an experiment to validate the Pythagorean theorem. Math operates in a domain that floats completely free of physical reality.</p>
+
+<p>And yet.</p>
+
+<p>When physicists take these abstract structures — equations nobody built for any practical purpose — and point them at the universe, the universe obeys them. Not approximately. Not loosely. With a precision so extreme it borders on the absurd.</p>
+
+<p class="land">That's the mystery Wigner identified. Not that math is useful. That math is <em>unreasonably</em> useful.</p>
+
+<p>That there's a correspondence between the logic inside human minds and the structure outside in the cosmos, and nobody has a good explanation for why.</p>
+
+<hr/>
+
+<p class="drop-cap">I want to show you what "unreasonable" actually looks like.</p>
+
+<p>In 200 BC, a Greek mathematician named Apollonius was studying conic sections — what happens when you slice a cone at different angles. Pure geometry. No practical application. No physics. Just a mathematician playing with shapes because shapes are interesting.</p>
+
+<p>Eighteen hundred years later, Johannes Kepler used those conic sections — specifically the ellipse — to describe the orbits of planets. The abstract curves Apollonius drew for fun turned out to be the literal paths the planets follow around the sun.</p>
+
+<p>In 1854, Bernhard Riemann developed a geometry of curved spaces. Not because he thought space was curved — Einstein hadn't been born yet. Riemann did it because the mathematics was interesting. Sixty-one years later, Einstein needed a framework for General Relativity, and Riemann's curved-space geometry was sitting there waiting for him. <em>The tool was built before the problem existed.</em></p>
+
+<p>In 1928, Paul Dirac was trying to write an equation for the electron that was consistent with both quantum mechanics and special relativity. He wanted the equation to be elegant — mathematically beautiful. When he solved it, the math produced something he wasn't looking for: negative energy states. Holes in the equations where particles with opposite charge should exist. Four years later, Carl Anderson discovered the positron — the first antimatter particle. Dirac's equation didn't just describe reality. It <em>predicted</em> a part of reality nobody had ever seen, because the math demanded it.</p>
+
+<p>In the 1830s, Evariste Galois developed group theory to solve polynomial equations. Pure algebra. He died at twenty in a duel and left his work in a letter written the night before. A century later, physicists used group theory to organize every known subatomic particle into families, predict missing particles, and then find them in accelerators exactly where the math said they'd be.</p>
+
+<p>Complex numbers — the square root of negative one, a concept that seemed like a mathematical trick when Cardano invented it in 1545 — turned out to be the foundation of quantum mechanics. Not a convenience. <em>The foundation.</em> The state space of every quantum system is built on complex numbers. Without the imaginary unit, quantum mechanics doesn't exist.</p>
+
+<p>Do you see what's happening here? Mathematicians invent structures for abstract reasons — beauty, curiosity, the internal logic of the symbols. And then, decades or centuries later, physicists discover that those structures describe the actual universe. Not metaphorically. Exactly.</p>
+
+<p>Richard Feynman said it this way: the final truth about a phenomenon lives in the mathematical description of it. As long as the math is right, the knowledge is complete.</p>
+
+<p>Paul Dirac said it differently: the rules the mathematician finds interesting are the same rules nature has chosen.</p>
+
+<p>Albert Einstein asked the question nobody can answer: <em>how can it be that mathematics — a product of human thought, independent of experience — is so perfectly adapted to the objects of reality?</em></p>
+
+<hr/>
+
+<p class="drop-cap">Stay with me. This is the one worth sitting with.</p>
+
+<p>There are exactly three possible explanations for why math works on reality. Three. Every philosopher, physicist, and mathematician who has engaged this question ends up in one of three camps.</p>
+
+<p>The first camp says math is <em>invented</em>. It's a human tool — like language, like logic, like a wrench. We built it to describe patterns we observe, so of course it describes patterns. There's no mystery. The map fits the territory because we drew the map by looking at the territory.</p>
+
+<p>The problem with this is the predictive excess. If math were just a description of what we've already observed, it wouldn't predict things we haven't observed yet. But it does. Consistently. Dirac's equation predicted antimatter. Maxwell's equations predicted radio waves twenty-three years before anyone detected them. Group theory predicted the Omega-minus baryon before it was found. A tool shaped by observation doesn't predict beyond observation. Something else is going on.</p>
+
+<p>The second camp says math is <em>discovered</em>. Mathematical objects exist in some abstract realm — independent of human minds, independent of the physical universe. Plato thought this. Penrose thinks this. Tegmark takes it all the way and says the universe doesn't just <em>follow</em> math — the universe <em>is</em> a mathematical structure, and we're patterns inside it looking out.</p>
+
+<p>This camp gets the predictive excess right. If mathematical truths exist independently and we're discovering them, then of course they can lead us to things we haven't seen yet — the structure was always there. But this camp has its own problem: where is this abstract realm? What sustains it? Why does it have the specific structures it has rather than others? "Math exists in an abstract Platonic realm" is a beautiful idea with no mechanism underneath it.</p>
+
+<p>The third camp says math works because <em>the Author of the universe is also the Author of logic</em>. The reason inside our heads matches the reason outside in the cosmos because both come from the same source. The mind that designed matter also designed the minds that perceive it. There's a pre-established harmony — and that harmony has a name.</p>
+
+<p>Newton said the solar system could only proceed from the counsel of an intelligent and powerful Being. Planck said behind every force there is a conscious and intelligent mind — the matrix of all things. Faraday said the chief aim of science is to discover the rational order imposed on reality by God. Maxwell said the laws of nature are not arbitrary decisions but essential parts of one universal system that reveals unsearchable Wisdom. Polkinghorne said the reason within and the reason without are linked by their common origin in the Rationality of the Creator.</p>
+
+<p class="land">These aren't apologists. These are the founders of modern physics.</p>
+
+<div class="chapter-image"><img src="images/slide_11.webp" alt="The energy that covers the gap — physics, information theory, and theology structurally converge"></div>
+
+<p>The people who built the equations that run the world. And they said — explicitly, in their own words, in their published work — that math works because God wrote both the book and the reader.</p>
+
+<hr/>
+
+<p class="drop-cap">Here's where the camps collapse into two.</p>
+
+<p>Camp one — math is invented — can't explain predictive excess. A human tool doesn't reach beyond human observation, but math does. Consistently. Across centuries. So camp one is incomplete.</p>
+
+<p>Camp two — math is discovered — explains the predictive excess but can't explain the Platonic realm. Where do mathematical objects live? What grounds them? "They just exist" is the same move as "the universe just happened." It's not an explanation. It's a placeholder.</p>
+
+<p>Camp three — the Common Origin — explains both. Math predicts because the same intelligence designed the structure and the perceiver. Mathematical objects aren't floating in an abstract realm — they're grounded in the mind of God. The reason math works is the same reason a blueprint matches a building: <em>they have the same architect.</em></p>
+
+<p>And here's the part that should stop you. Camp three isn't just the theological answer. It's the one that explains more of the data with fewer assumptions. It accounts for predictive excess <em>and</em> the ground of mathematical existence <em>and</em> the precision of physical law — all with one commitment: there is a rational mind behind reality.</p>
+
+<p class="land">The person who finds that answer uncomfortable needs to reckon with why every other answer is worse.</p>
+
+<hr/>
+
+<p class="drop-cap">I said at the end of the last chapter that this was the most beautiful move in the series. Here's why.</p>
+
+<p>The effectiveness of mathematics is not a problem for the theist. It's a prediction. If God is real — if a rational, creative, truthful mind authored reality — then <em>of course</em> abstract logic maps onto physical structure. <em>Of course</em> beauty in the equations corresponds to truth in the cosmos. <em>Of course</em> the mind can reach further than the eyes, because the mind and the cosmos are reading from the same page.</p>
+
+<p>Wigner called it a miracle we neither understand nor deserve.</p>
+
+<p class="land">I think he was closer than he knew.</p>
+
+<hr/>
+
+<p class="drop-cap">But here's the thread that opened while we were in the math. If current scientific models are models — not final truth — then how many times has science replaced its own best understanding of reality? And what does the pattern of those replacements tell us?</p>
+
+<p>Turns out science keeps a graveyard. And the headstones are fascinating.</p>
+
+</article>
+
+
+<!-- ═══════════════════════════════════════
+     AUDIO PLAYERS
+     ═══════════════════════════════════════ -->
+<div class="listen-section">
+  <div class="listen-label">Listen</div>
+  <div class="player-stack">
+
+    <div class="player-row">
+      <span class="player-type tts"><i class="fas fa-volume-up"></i> Read</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_03_tts.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type deep"><i class="fas fa-microscope"></i> Deep Dive</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_03_deep.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type debate"><i class="fas fa-comments"></i> Debate</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_03_debate.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ARTICLE NAV
+     ═══════════════════════════════════════ -->
+<nav class="article-nav">
+  <a href="cns-02-the-evidence.html" class="nav-link">
+    <i class="fas fa-arrow-left"></i> Prev: <span class="nav-title">The Evidence</span>
+  </a>
+  <a href="cns-04-the-paradigm-graveyard.html" class="nav-link">
+    Next: <span class="nav-title">The Paradigm Graveyard</span> <i class="fas fa-arrow-right"></i>
+  </a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer>
+  <span class="footer-sig">Plant the flag. — POF 2828</span>
+  <span class="footer-colophon">Written by David Lowe with Claude · Theophysics Research Initiative · 2026</span>
+</footer>
+
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════ -->
+<script>
+function toggleFacts() {
+  const body = document.getElementById('factsBody');
+  const arrow = document.querySelector('.facts-toggle-arrow i');
+  body.classList.toggle('open');
+  arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>02 · The Evidence — The Convergence Series</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+:root {
+  --surface: #0a0a0a;
+  --surface-light: #141414;
+  --surface-mid: #1a1a1a;
+  --border: #2a2a2a;
+  --border-hover: #3a3a3a;
+  --text-primary: #e0e0e0;
+  --text-body: #c4c4c4;
+  --text-secondary: #888;
+  --text-dim: #555;
+  --highlight: #d4af37;
+  --highlight-bright: #e8c547;
+  --highlight-dim: rgba(212,175,55,0.08);
+  --red: #ef4444;
+  --teal: #2dd4bf;
+  --blue: #4a9eff;
+  --purple: #a855f7;
+  --green: #22c55e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--text-primary);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(212,175,55,0.25);
+  color: #fff;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE HEADER
+   ══════════════════════════════════════ */
+.article-header {
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 2rem 2.5rem;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.series-tag {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+
+.chapter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.article-title {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+
+.article-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.author-line {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.author-line a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.author-line a:hover { color: var(--highlight); }
+
+
+/* ══════════════════════════════════════
+   FACTS CARD
+   ══════════════════════════════════════ */
+.facts-card {
+  max-width: 780px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.facts-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.facts-toggle:hover { background: var(--surface-light); }
+
+.facts-toggle-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.facts-toggle-arrow {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+}
+
+.facts-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.facts-body.open { max-height: 800px; }
+
+.facts-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.facts-letter span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--highlight);
+  opacity: 0.5;
+}
+
+.facts-content {
+  padding: 1rem 1.5rem;
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.facts-content em { color: var(--highlight); font-style: italic; }
+
+
+/* ══════════════════════════════════════
+   PROSE — the reading experience
+   ══════════════════════════════════════ */
+.prose {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+.prose p {
+  font-size: 1.08rem;
+  color: var(--text-body);
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
+}
+
+.prose p strong { color: #e0e0e0; }
+.prose p em { color: var(--highlight); font-style: italic; }
+
+/* Section breaks — the horizontal rules */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* Pull quotes */
+.prose blockquote {
+  border-left: 2px solid var(--highlight);
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Crimson Text', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--highlight);
+  line-height: 1.55;
+}
+
+/* Drop cap for first paragraph after an hr */
+.drop-cap::first-letter {
+  font-family: 'Crimson Text', serif;
+  font-size: 3.8rem;
+  float: left;
+  line-height: 0.8;
+  padding: 0.35rem 0.5rem 0 0;
+  color: var(--highlight);
+  font-weight: 700;
+}
+
+/* Landing sentences — short, punchy, after builds */
+.prose .land {
+  font-size: 1.15rem;
+  color: #e8e8e8;
+  font-weight: 500;
+}
+
+
+/* ══════════════════════════════════════
+   AUDIO PLAYERS — bottom of article
+   ══════════════════════════════════════ */
+.listen-section {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2.5rem;
+}
+
+.listen-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.player-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  transition: border-color 0.2s;
+}
+
+.player-row:hover { border-color: var(--border-hover); }
+
+.player-type {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.player-type.tts { color: var(--highlight); }
+.player-type.deep { color: var(--blue); }
+.player-type.debate { color: var(--purple); }
+
+.player-row audio {
+  width: 100%;
+  height: 36px;
+}
+
+
+/* ══════════════════════════════════════
+   ARTICLE NAV — prev / next
+   ══════════════════════════════════════ */
+.article-nav {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-link:hover { color: var(--highlight); }
+
+.nav-link .nav-title {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.footer-sig {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: var(--highlight);
+}
+
+.footer-colophon {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .article-header { padding: 2rem 1.5rem; }
+  .prose { padding: 2rem 1.5rem 4rem; }
+  .listen-section { padding: 0 1.5rem 3rem; padding-top: 2rem; }
+  .article-nav { padding: 0 1.5rem 2rem; padding-top: 1.5rem; }
+  footer { padding: 1.5rem; }
+  .player-row { grid-template-columns: 80px 1fr; }
+  .prose p { font-size: 1rem; }
+}
+/* Chapter Image */
+.chapter-image { max-width: 780px; margin: 2rem auto; padding: 0 2rem; }
+.chapter-image img { width: 100%; height: auto; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; }
+</style>
+</head>
+<body>
+
+
+<!-- ═══════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════ -->
+<header class="article-header">
+  <div class="header-meta">
+    <span class="series-tag">The Convergence Series</span>
+    <span class="chapter-num">Chapter 02 of 07</span>
+  </div>
+  <h1 class="article-title">The Evidence</h1>
+  <p class="article-subtitle">Fifteen predictions forward. Ten gaps backward. Twenty-five data points — all pointing the same direction.</p>
+  <div class="author-line">
+    Written by David Lowe with Claude · <a href="https://faiththruphysics.com">faiththruphysics.com</a> · 2026
+  </div>
+</header>
+<div class="chapter-image"><img src="images/slide_04.webp" alt="The Empirical Destination — cross-cultural data convergence"></div>
+
+
+<!-- ═══════════════════════════════════════
+     FACTS CARD
+     ═══════════════════════════════════════ -->
+<div class="facts-card">
+  <div class="facts-toggle" onclick="toggleFacts()">
+    <span class="facts-toggle-label"><i class="fas fa-list-check"></i> FACTS — What This Chapter Establishes</span>
+    <span class="facts-toggle-arrow"><i class="fas fa-chevron-down"></i></span>
+  </div>
+  <div class="facts-body" id="factsBody">
+    <div class="facts-row">
+      <div class="facts-letter"><span>F</span></div>
+      <div class="facts-content">The Hebrew and Christian Scriptures contain <em>fifteen specific, testable physical claims</em> written thousands of years before scientific tools existed to verify them — average predictive lead of 2,800 years.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>A</span></div>
+      <div class="facts-content">Ten structural gaps exist where empirical data creates demands that <em>naturalism cannot close</em> — fine-tuning, Gödel's incompleteness, hard problem of consciousness, unreasonable effectiveness of math, low-entropy initial conditions, information requiring a source.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>C</span></div>
+      <div class="facts-content">The Bible-to-science predictions are not vague poetry but <em>specific physical claims</em> — beginning of the universe (Genesis 1:1, confirmed 1929), expanding space (Isaiah 40:22, confirmed 1929), earth suspended in vacuum (Job 26:7, confirmed 1687), hydrological cycle (Ecclesiastes 1:7), life in the blood (Leviticus 17:11).</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>T</span></div>
+      <div class="facts-content">Twenty-five data points in both directions constitute a <em>signal, not coincidence</em> — the pattern demands explanation, not dismissal.</div>
+    </div>
+    <div class="facts-row">
+      <div class="facts-letter"><span>S</span></div>
+      <div class="facts-content">Hubble (1929), Gödel (1931), Wigner (1960), Penrose entropy calculations, Landauer's Principle (1961), Shannon Information Theory, PEAR/GCP studies.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     THE ARTICLE
+     ═══════════════════════════════════════ -->
+<article class="prose">
+
+<p class="drop-cap">The playing field is level. We established that. Neither side gets a free pass — science stands on faith in its axioms, theology stands on faith in its revelation, and both circles are structurally identical.</p>
+
+<p>So now we do the thing nobody does. We run the evidence in both directions.</p>
+
+<p>Not "here's why God is real." Not "here's why science disproves God." Both of those are one-directional arguments made by people who already picked a side. We're going to point the lens both ways — Bible at science, science at God — and see what the data actually says when you're not trying to protect a conclusion.</p>
+
+<hr/>
+
+<p class="drop-cap">Here's direction one. Bible to science.</p>
+
+<p>I want to show you something that should bother you regardless of what you believe. The Hebrew and Christian Scriptures contain claims about the physical world that were written — on parchment, by hand, in ancient languages — thousands of years before the scientific tools existed to verify them. Not vague poetic gestures. <em>Specific, testable, physical claims.</em></p>
+
+<p>The universe had a beginning. That's Genesis 1:1, written roughly 1400 BC. Science confirmed it in 1929 when Edwin Hubble observed the expansion of the universe, which meant you could run the clock backward to a starting point. A 3,300-year head start.</p>
+
+<p>Space is expanding. Job 9:8 and Isaiah 40:22 describe God "stretching out the heavens." Written somewhere between 1400 and 700 BC. Confirmed by Hubble. Same gap.</p>
+
+<p>The earth hangs on nothing. Job 26:7. Written when every surrounding culture had the earth resting on turtles, elephants, or the back of Atlas. Confirmed by Newton's gravitational mechanics in 1687. Three thousand years early.</p>
+
+<p>The hydrological cycle — water evaporates from the sea, forms clouds, falls as rain, returns to the sea. Ecclesiastes 1:7 and Job 36:27-28. Written around 950 BC. The scientific description of the full cycle wasn't established until the 1600s. Twenty-six hundred years.</p>
+
+<p>Life is in the blood. Leviticus 17:11. For most of human history, doctors believed disease lived in the blood and the cure was to drain it out. George Washington was bled to death by his own physicians in 1799. The text said the opposite — that life depends on blood — three thousand years before medicine caught up.</p>
+
+<p>Quarantine protocols for infectious disease. Leviticus 13 through 15 lays out isolation procedures, washing requirements, and containment practices that match modern epidemiological standards. Written 3,200 years before germ theory.</p>
+
+<p>I could keep going. Ocean floor topology described in Second Samuel. Air having weight in Job 28. Ocean currents in Psalm 8. The decay of creation in Psalm 102 — entropy, described in poetry, twenty-eight centuries before Clausius formalized the Second Law.</p>
+
+<p class="land">Fifteen claims I can put in a table. The average gap between the text and the scientific confirmation is approximately 2,800 years.</p>
+
+<p>Now here's the question you have to answer honestly. What mechanism explains a 2,800-year predictive lead?</p>
+
+<p>Lucky guesses? Fifteen of them? Across multiple authors writing in different centuries in different genres? All pointing the same direction? At some point "lucky guess" stops being an explanation and starts being an excuse.</p>
+
+<p>Cultural knowledge that's been lost to history? Possible for one or two — maybe the hydrological cycle was observed by ancient farmers. But the expansion of space? The suspension of the earth in a vacuum? The relationship between blood and life when every empirical observation at the time said bleeding people healed them? Those aren't cultural knowledge. Those are claims that <em>contradicted the available evidence</em> and turned out to be right anyway.</p>
+
+<p class="land">Here's what I think happened. I think the Author of the text and the Author of reality are the same Person. And if that's true, prescience isn't a mystery. It's the expected result.</p>
+
+<hr/>
+
+<p class="drop-cap">Now run it the other direction. Direction two. Science to God.</p>
+
+<p>This is the one that makes materialists uncomfortable, because the data doesn't come from the Bible. It comes from physics, mathematics, information theory, and cosmology — and it keeps pointing at a hole that naturalism can't fill.</p>
+
+<p>There are ten of these. Ten places where the empirical data creates a structural gap, and the naturalistic explanation either doesn't exist, is unfalsifiable, or collapses under its own weight.</p>
+
+<p>Start with fine-tuning. The physical constants of the universe — the strength of gravity, the charge of the electron, the cosmological constant — are calibrated to a precision that defies every probability model we have. The cosmological constant alone is tuned to one part in ten to the 120th power. That's not a big number. That's an <em>incomprehensible</em> number. If that constant were off by a fraction so small you can't write it without scientific notation, the universe would have either collapsed instantly or expanded so fast that no structure could form. No galaxies, no stars, no planets, no chemistry, no life.</p>
+
+<p>The naturalistic response? The multiverse. There are infinite universes, each with different constants, and we happen to be in the one that works. It's a perfectly logical explanation with one problem: it's unfalsifiable. You can never observe another universe. You can never test the hypothesis. It is, structurally, an article of faith.</p>
+
+<p>Gödel's incompleteness theorems. In 1931, Kurt Gödel proved that any formal system powerful enough to describe arithmetic contains true statements that cannot be proven within the system. No closed system can fully justify itself. This is not a philosophical opinion — it's a mathematical proof, as rigorous as anything in science. And it means that if reality is a formal system, it cannot be self-grounding. It requires something outside itself. The naturalist response — various forms of mathematical formalism — was directly refuted by Gödel's work. Bertrand Russell spent decades trying to build a self-grounding logical foundation in his <em>Principia Mathematica</em>, and Gödel killed it in twenty-one years.</p>
+
+<p>The hard problem of consciousness. We can map every neuron. We can trace every chemical pathway. We can tell you exactly which brain region activates when you see the color red. What we cannot explain — what no one has explained — is <em>why there is something it is like to see red.</em> Why the electrochemical signal produces an experience. Neural correlates are not explanations. Saying "this brain region lights up when you feel love" is not the same as explaining why you feel anything at all. The gap isn't closing. It's widening.</p>
+
+<p>The unreasonable effectiveness of mathematics. Eugene Wigner called it a miracle in 1960 and nobody has solved it since. Abstract mathematical structures — developed by pure thought with no reference to the physical world — turn out to describe physical reality with absurd precision. Non-Euclidean geometry was invented as a mathematical curiosity sixty years before Einstein needed it to describe curved spacetime. Group theory was developed to solve algebraic equations and then turned out to organize every subatomic particle in the Standard Model. Dirac wrote an equation for theoretical elegance and it predicted the existence of antimatter four years before anyone found it. <em>Why does the reason inside our heads match the reason outside in the universe?</em></p>
+
+<p>Low-entropy initial conditions. Roger Penrose calculated the probability of the universe beginning in a state of order low enough to produce the structure we see. His number: one in ten to the ten to the 123rd power. That's not ten to the 123rd. It's ten to the <em>ten to the 123rd</em>. A number so large there aren't enough particles in the universe to write it out. The naturalistic explanation is "it just happened." That's not an explanation. That's a shrug with a PhD.</p>
+
+<p>Information requires a source. Rolf Landauer proved in 1961 that information is physical — it has measurable thermodynamic consequences. Information doesn't emerge from nowhere. It requires a source. DNA contains 3.2 billion base pairs of functional, error-correcting code. The question of where the original information came from — the origin of the code, not its subsequent mutation — remains unsolved. "Random mutation" explains adaptation. It does not explain the first functional sequence.</p>
+
+<p>I could keep going. The irreducibility of the ten-variable system. The convergence of independent frameworks arriving at the same structure. The statistically significant evidence for consciousness-matter coupling at seven sigma.</p>
+
+<p class="land">Ten gaps. Ten places where the data points outside the system and the system has no answer.</p>
+
+<p>Not "the system hasn't found the answer yet" — the system has structural reasons it <em>can't</em> find the answer, because the answer would require something beyond the causal closure it assumed at the start.</p>
+
+<hr/>
+
+<p class="drop-cap">Now put them together. Fifteen predictions running forward in time — Bible to science, average gap 2,800 years. Ten gaps running backward — science to God, each one creating a structural demand for something outside naturalism.</p>
+
+<p class="land">That's twenty-five data points, and they're all pointing the same direction.</p>
+
+<p>I'm not asking you to accept a conclusion yet. I'm asking you to notice a pattern. When you run the evidence one way, the Bible keeps being right before anyone knew how to check. When you run it the other way, science keeps finding walls that only make sense if there's something on the other side.</p>
+
+<p>The person who stops here and says "coincidence" is not being rigorous. They're being defensive. Twenty-five coincidences that all point the same direction isn't a coincidence. <em>It's a signal.</em></p>
+
+<p>But I don't want to score this yet. We're not at the verdict. There's more to run. The next question is the one that, honestly, I think is the most beautiful move in the whole series.</p>
+
+<p class="land">Why does math work at all?</p>
+
+</article>
+
+
+<!-- ═══════════════════════════════════════
+     AUDIO PLAYERS
+     ═══════════════════════════════════════ -->
+<div class="listen-section">
+  <div class="listen-label">Listen</div>
+  <div class="player-stack">
+
+    <div class="player-row">
+      <span class="player-type tts"><i class="fas fa-volume-up"></i> Read</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_02_tts.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type deep"><i class="fas fa-microscope"></i> Deep Dive</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_02_deep.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+    <div class="player-row">
+      <span class="player-type debate"><i class="fas fa-comments"></i> Debate</span>
+      <audio controls preload="none">
+        <source src="audio/CNS_02_debate.m4a" type="audio/mp4"/>
+      </audio>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     ARTICLE NAV
+     ═══════════════════════════════════════ -->
+<nav class="article-nav">
+  <a href="cns-01-the-playing-field.html" class="nav-link">
+    <i class="fas fa-arrow-left"></i> Prev: <span class="nav-title">The Playing Field</span>
+  </a>
+  <a href="cns-03-why-math-works.html" class="nav-link">
+    Next: <span class="nav-title">Why Math Works</span> <i class="fas fa-arrow-right"></i>
+  </a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer>
+  <span class="footer-sig">Plant the flag. — POF 2828</span>
+  <span class="footer-colophon">Written by David Lowe with Claude · Theophysics Research Initiative · 2026</span>
+</footer>
+
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════ -->
+<script>
+function toggleFacts() {
+  const body = document.getElementById('factsBody');
+  const arrow = document.querySelector('.facts-toggle-arrow i');
+  body.classList.toggle('open');
+  arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LOWE FACTS+UADP v2.0 — Paper Template | Theophysics</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;600&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+    <script>
+        window.MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #0f0f0f;
+            --surface2: #1a1a1a;
+            --surface3: #222;
+            --border: #2a2a2a;
+            --gold: #d4af37;
+            --gold-dim: rgba(212,175,55,0.1);
+            --text: #e8e8e8;
+            --text-dim: #a0a0a0;
+            --text-muted: #666;
+            --red: #ef4444;
+            --blue: #4a9eff;
+            --teal: #2dd4bf;
+            --purple: #a78bfa;
+            --green: #22c55e;
+            --orange: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .serif { font-family: 'Crimson Text', serif; }
+        .display { font-family: 'Oswald', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* === STICKY HEADER === */
+        .reader-header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,10,10,0.97);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-bar {
+            max-width: 900px; margin: 0 auto;
+            padding: 0.75rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .breadcrumb { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-muted); }
+        .breadcrumb a { color: var(--text-dim); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--gold); }
+        .breadcrumb .current { color: var(--gold); font-weight: 500; }
+
+        .progress-track { height: 2px; background: var(--border); }
+        .progress-fill { height: 100%; width: 0%; background: var(--gold); transition: width 0.1s; }
+
+        /* === MAIN === */
+        .main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem; }
+
+        /* === GATE NOTICE === */
+        .gate-notice {
+            margin-bottom: 2.5rem; padding: 1.5rem;
+            background: rgba(239,68,68,0.05);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-left: 4px solid var(--red);
+            border-radius: 0 10px 10px 0;
+        }
+        .gate-notice .gate-label {
+            font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--red); font-weight: 700; margin-bottom: 0.75rem;
+        }
+        .gate-notice ol { margin-left: 1.25rem; font-size: 0.85rem; color: var(--text-dim); }
+        .gate-notice ol li { margin-bottom: 0.35rem; }
+        .gate-notice .cmd {
+            display: inline-block; margin-top: 0.75rem;
+            padding: 0.4rem 0.75rem; background: var(--surface2);
+            border: 1px solid var(--border); border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            color: var(--teal);
+        }
+        .gate-notice .cost { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+        /* === COLLAPSIBLE PANEL === */
+        .panel {
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.875rem 1.25rem;
+            background: var(--surface2);
+            cursor: pointer; transition: background 0.2s;
+            user-select: none;
+        }
+        .panel-header:hover { background: var(--surface3); }
+        .panel-label {
+            display: flex; align-items: center; gap: 0.6rem;
+            font-size: 0.8rem; font-weight: 500;
+        }
+        .panel-toggle { font-size: 0.75rem; color: var(--text-muted); transition: transform 0.2s; }
+        .panel.open .panel-toggle { transform: rotate(180deg); }
+        .panel-body { display: none; padding: 1.25rem; background: var(--surface); }
+        .panel.open .panel-body { display: block; }
+
+        /* Panel colors */
+        .panel.red .panel-header { border-left: 3px solid var(--red); }
+        .panel.red .panel-label { color: var(--red); }
+        .panel.blue .panel-header { border-left: 3px solid var(--blue); }
+        .panel.blue .panel-label { color: var(--blue); }
+        .panel.teal .panel-header { border-left: 3px solid var(--teal); }
+        .panel.teal .panel-label { color: var(--teal); }
+        .panel.purple .panel-header { border-left: 3px solid var(--purple); }
+        .panel.purple .panel-label { color: var(--purple); }
+        .panel.gold .panel-header { border-left: 3px solid var(--gold); }
+        .panel.gold .panel-label { color: var(--gold); }
+        .panel.green .panel-header { border-left: 3px solid var(--green); }
+        .panel.green .panel-label { color: var(--green); }
+        .panel.orange .panel-header { border-left: 3px solid var(--orange); }
+        .panel.orange .panel-label { color: var(--orange); }
+
+        /* === SCORE TABLE === */
+        .score-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .score-table th {
+            text-align: left; padding: 0.5rem 0.75rem;
+            font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--text-muted); border-bottom: 1px solid var(--border);
+        }
+        .score-table td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+        .score-table tr:last-child td { border-bottom: none; }
+        .score-table .val { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+        .score-table .placeholder { color: var(--text-muted); font-style: italic; }
+
+        /* Score bars */
+        .bar-cell { width: 120px; }
+        .score-bar {
+            height: 6px; background: var(--border); border-radius: 3px;
+            overflow: hidden; width: 100px;
+        }
+        .score-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+        /* === SECTION HEADER === */
+        .section-divider {
+            display: flex; align-items: center; gap: 1rem;
+            margin: 3rem 0 1.5rem; padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-divider h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.25rem; font-weight: 600; color: white;
+            letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        .section-divider .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem; color: var(--gold);
+            padding: 0.2rem 0.6rem; background: var(--gold-dim);
+            border: 1px solid rgba(212,175,55,0.2); border-radius: 4px;
+        }
+        .section-divider .uadp-tag {
+            font-size: 0.6rem; color: var(--text-muted);
+            font-style: italic;
+        }
+
+        h3 { font-family: 'Crimson Text', serif; font-size: 1.15rem; color: var(--text); margin: 1.75rem 0 0.75rem; }
+        p { margin-bottom: 1rem; color: var(--text-dim); }
+        strong { color: var(--text); }
+
+        /* === FORM FIELDS === */
+        .field-group { margin-bottom: 1.5rem; }
+        .field-label {
+            font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 0.5rem;
+        }
+        .field-input, .field-textarea {
+            width: 100%; padding: 0.75rem 1rem;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 6px; color: var(--text); font-family: inherit;
+            font-size: 0.9rem; transition: border-color 0.2s;
+        }
+        .field-input:focus, .field-textarea:focus { outline: none; border-color: var(--gold); }
+        .field-textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+        .field-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.35rem; font-style: italic; }
+
+        /* === BLOCKQUOTE === */
+        blockquote {
+            margin: 1rem 0; padding: 1rem 1.5rem;
+            border-left: 3px solid var(--gold);
+            background: var(--surface);
+            font-family: 'Crimson Text', serif;
+            font-size: 1.05rem; font-style: italic;
+            color: var(--text);
+        }
+
+        /* === BRANCH TABLE === */
+        .branch-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 1rem 0; }
+        .branch-table th {
+            text-align: left; padding: 0.6rem;
+            font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-muted); background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+        .branch-table td {
+            padding: 0.6rem; border-bottom: 1px solid var(--border); color: var(--text-dim);
+            vertical-align: top;
+        }
+        .branch-table .status-dead { color: var(--red); }
+        .branch-table .status-live { color: var(--green); }
+        .branch-table .status-partial { color: var(--orange); }
+
+        /* === MEDIA SECTION === */
+        .media-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 0.75rem; margin: 1rem 0;
+        }
+        .media-item {
+            padding: 1rem; background: var(--surface2);
+            border: 1px solid var(--border); border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+        .media-item:hover { border-color: var(--purple); }
+        .media-item .mi-type {
+            font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--purple); margin-bottom: 0.5rem;
+        }
+        .media-item .mi-title { font-size: 0.9rem; color: white; margin-bottom: 0.25rem; }
+        .media-item .mi-status { font-size: 0.75rem; color: var(--text-muted); }
+        .media-item .mi-status.ready { color: var(--green); }
+
+        /* Audio slot */
+        .audio-slot {
+            margin: 0.75rem 0; padding: 0.75rem;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;
+        }
+        .audio-slot .play-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--gold); border: none; color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; font-size: 0.8rem;
+        }
+        .audio-slot audio { flex: 1; height: 32px; }
+        .audio-slot .slot-label { font-size: 0.75rem; color: var(--text-dim); flex: 1; }
+
+        /* === KILL CONDITIONS === */
+        .kill-card {
+            padding: 1rem; margin-bottom: 0.5rem;
+            background: rgba(239,68,68,0.04);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 6px;
+        }
+        .kill-card .kill-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem; color: var(--red); margin-bottom: 0.35rem;
+        }
+        .kill-card .kill-desc { font-size: 0.9rem; color: var(--text-dim); }
+        .kill-card .kill-threshold { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        /* === T-SCORE CALCULATOR === */
+        .tscore-box {
+            padding: 1.5rem; background: var(--surface);
+            border: 2px solid var(--gold); border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .tscore-box .tscore-title {
+            font-family: 'Oswald', sans-serif; font-size: 1rem;
+            color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+        }
+        .tscore-grid {
+            display: grid; grid-template-columns: 1fr auto auto;
+            gap: 0.35rem 1rem; font-size: 0.85rem; align-items: center;
+        }
+        .tscore-grid .label { color: var(--text-dim); }
+        .tscore-grid .weight { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
+        .tscore-grid .value {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--gold);
+            text-align: right;
+        }
+        .tscore-total {
+            margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .tscore-total .total-label { font-family: 'Oswald', sans-serif; color: white; font-size: 1.1rem; text-transform: uppercase; }
+        .tscore-total .total-val { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: var(--gold); }
+
+        .tier-badges { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .tier-badge {
+            padding: 0.35rem 0.75rem; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+        }
+        .tier-badge.canonical { background: rgba(212,175,55,0.15); color: var(--gold); border: 1px solid rgba(212,175,55,0.3); }
+        .tier-badge.strong { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+        .tier-badge.provisional { background: rgba(245,158,11,0.1); color: var(--orange); border: 1px solid rgba(245,158,11,0.2); }
+        .tier-badge.weak { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+        /* === AUDIT BLOCK === */
+        .audit-block {
+            margin: 2rem 0; padding: 1.5rem;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem; line-height: 1.8; color: var(--text-dim);
+        }
+        .audit-block .audit-title {
+            font-family: 'Oswald', sans-serif; font-size: 0.8rem;
+            color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        /* === FOOTER === */
+        .global-footer {
+            margin-top: 4rem; padding: 2rem;
+            background: var(--surface); border-top: 1px solid var(--border);
+            text-align: center;
+        }
+        .footer-eq { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--gold); margin-bottom: 0.75rem; }
+        .footer-quote { font-family: 'Crimson Text', serif; font-size: 0.9rem; color: var(--text-muted); font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="reader-header">
+        <div class="header-bar">
+            <nav class="breadcrumb">
+                <a href="cover.html">Genesis to Quantum</a>
+                <i class="fas fa-chevron-right" style="font-size:0.5rem;"></i>
+                <span class="current">Paper Template</span>
+            </nav>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+    </header>
+
+    <main class="main">
+
+        <!-- =============================== -->
+        <!--   GATE NOTICE                   -->
+        <!-- =============================== -->
+        <div class="gate-notice">
+            <div class="gate-label"><i class="fas fa-exclamation-triangle"></i>&ensp;Gate Notice — Every Formal Paper Must Have This</div>
+            <ol>
+                <li>Completed YAML frontmatter (all scoring fields populated after first pipeline run)</li>
+                <li>Biaxiosum declaration (Section 0)</li>
+                <li>All five FACTS sections filled (F, A, C, T, S)</li>
+                <li>At least one pipeline scoring run (CKG + Domain + Review + 7Q)</li>
+                <li>Kill conditions explicitly stated</li>
+            </ol>
+            <div class="cmd">python run_all.py &lt;paper&gt;.md</div>
+            <div class="cost">Cost: ~$0.07 per paper (4 tools, real-time)</div>
+        </div>
+
+        <!-- =============================== -->
+        <!--   FACTS AT A GLANCE             -->
+        <!-- =============================== -->
+        <div class="panel purple open" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-chart-bar"></i>&ensp;FACTS Scores</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <table class="score-table">
+                    <tr><th>Dimension</th><th>Score</th><th class="bar-cell">Bar</th></tr>
+                    <tr><td>Q0 Posture</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                    <tr><td>Q1 Identity</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                    <tr><td>Q2 Domain</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                    <tr><td>Q3 Assertion</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                    <tr><td>Q4 Evidence</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                    <tr><td>Q5 Dependencies</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                    <tr><td>Q6 Consequences</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                    <tr><td>Q7 Falsification</td><td class="val placeholder">—</td><td class="bar-cell"><div class="score-bar"><div class="score-bar-fill" style="width:0%; background:var(--purple);"></div></div></td></tr>
+                </table>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                    <strong style="color: var(--text);">T-Score:</strong> <span class="placeholder">—</span> |
+                    <strong style="color: var(--text);">CKG:</strong> <span class="placeholder">—/10</span> |
+                    <strong style="color: var(--text);">Tier:</strong> <span class="placeholder">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FACTS At A Glance -->
+        <div class="panel teal" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-eye"></i>&ensp;FACTS At A Glance</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <table class="score-table">
+                    <tr><td style="width:60px; color:var(--gold); font-weight:600;">F (Find)</td><td class="placeholder">What anomaly prompted this paper?</td></tr>
+                    <tr><td style="color:var(--gold); font-weight:600;">A (Admit)</td><td class="placeholder">Author posture declaration</td></tr>
+                    <tr><td style="color:var(--gold); font-weight:600;">C (Claim)</td><td class="placeholder">One-sentence thesis</td></tr>
+                    <tr><td style="color:var(--gold); font-weight:600;">T (Test)</td><td class="placeholder">Key evidence one-liner</td></tr>
+                    <tr><td style="color:var(--gold); font-weight:600;">S (Snap)</td><td class="placeholder">Primary kill condition</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- MEDIA SECTION -->
+        <div class="panel blue" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-headphones"></i>&ensp;Listen, Watch & Download</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <div class="media-grid">
+                    <div class="media-item">
+                        <div class="mi-type"><i class="fas fa-podcast"></i>&ensp;Podcast</div>
+                        <div class="mi-title">Debate Format (Stress Test)</div>
+                        <div class="mi-status">Coming soon</div>
+                        <div class="audio-slot" style="margin-top:0.5rem;">
+                            <div class="slot-label"><i class="fas fa-microphone-alt" style="color:var(--gold);"></i>&ensp;Drop audio file ID here</div>
+                        </div>
+                    </div>
+                    <div class="media-item">
+                        <div class="mi-type"><i class="fas fa-podcast"></i>&ensp;Podcast</div>
+                        <div class="mi-title">Deep Dive (Full Episode)</div>
+                        <div class="mi-status">Coming soon</div>
+                        <div class="audio-slot" style="margin-top:0.5rem;">
+                            <div class="slot-label"><i class="fas fa-microphone-alt" style="color:var(--gold);"></i>&ensp;Drop audio file ID here</div>
+                        </div>
+                    </div>
+                    <div class="media-item">
+                        <div class="mi-type"><i class="fas fa-volume-up"></i>&ensp;Audio</div>
+                        <div class="mi-title">TTS Article Narration</div>
+                        <div class="mi-status">Coming soon</div>
+                    </div>
+                    <div class="media-item">
+                        <div class="mi-type"><i class="fas fa-square-root-alt"></i>&ensp;Math</div>
+                        <div class="mi-title">Plain-Language Math Walkthrough</div>
+                        <div class="mi-status">Coming soon</div>
+                    </div>
+                    <div class="media-item">
+                        <div class="mi-type"><i class="fas fa-file-powerpoint"></i>&ensp;Slides</div>
+                        <div class="mi-title">Presentation Deck</div>
+                        <div class="mi-status">Coming soon</div>
+                    </div>
+                    <div class="media-item">
+                        <div class="mi-type"><i class="fas fa-folder"></i>&ensp;Drive</div>
+                        <div class="mi-title">Google Drive (All Files)</div>
+                        <div class="mi-status">Coming soon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============================== -->
+        <!--   PAPER TITLE                   -->
+        <!-- =============================== -->
+        <div style="margin: 2.5rem 0 0.5rem;">
+            <div style="font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <span class="mono">ID:</span> <span class="placeholder">—</span> |
+                <span class="mono">Scope:</span> <span class="placeholder">—</span> |
+                <span class="mono">Status:</span> <span class="placeholder">—</span>
+            </div>
+            <h1 style="font-family: 'Oswald', sans-serif; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem;">
+                Paper Title
+            </h1>
+            <p style="font-family: 'Crimson Text', serif; font-size: 1.05rem; color: var(--text-muted); font-style: italic;">
+                LOWE FACTS+UADP v2.0 — The paper IS the filled template. The template IS the audit trail.
+            </p>
+        </div>
+
+        <!-- =============================== -->
+        <!--   PAGE ZERO: BIAXIOSUM          -->
+        <!-- =============================== -->
+        <div class="section-divider" id="page-zero">
+            <div class="section-tag">§0</div>
+            <h2>Page Zero: Biaxiosum + Axiom Declaration</h2>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label">Foundational Axiom (one sentence)</div>
+            <blockquote>State the single bedrock assumption. If this is false, the entire paper fails.</blockquote>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label">Tree Position</div>
+            <div style="padding: 1rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; color: var(--text-dim);">
+                This paper answers <strong style="color: var(--gold);">Q___</strong> in the Ontological Decision Tree.
+                It was FORCED by the survival of <span class="placeholder">[prior]</span> at Q___.
+                Its answer FORCES Q___ to arise.<br><br>
+                <span class="mono" style="color: var(--teal);">Chain: [prior node] → THIS PAPER → [next node]</span>
+            </div>
+        </div>
+
+        <!-- =============================== -->
+        <!--   [F] FIND — THE ANOMALY        -->
+        <!-- =============================== -->
+        <div class="section-divider" id="find">
+            <div class="section-tag">F</div>
+            <h2>Find — The Anomaly</h2>
+            <span class="uadp-tag">UADP: Entity (Facet 1) + Time (Facet 4)</span>
+        </div>
+
+        <p><em>What was observed? What pattern demands explanation? What gap in existing knowledge prompted this inquiry?</em></p>
+
+        <div class="field-group">
+            <div class="field-label">Entity Classification</div>
+            <table class="score-table">
+                <tr><td>Entity class</td><td class="placeholder">—</td></tr>
+                <tr><td>Entity verifiability</td><td class="val placeholder">—/1.0</td></tr>
+                <tr><td>Scope level</td><td class="placeholder">—</td></tr>
+                <tr><td>Scope precision weight</td><td class="val placeholder">1/log₂(interpretations)</td></tr>
+                <tr><td>Question type</td><td class="placeholder">Type 1 / 2 / 3 / 4</td></tr>
+                <tr><td>Forced by</td><td class="placeholder">—</td></tr>
+            </table>
+        </div>
+
+        <!-- =============================== -->
+        <!--   [A] ADMIT — THE BIAS          -->
+        <!-- =============================== -->
+        <div class="section-divider" id="admit">
+            <div class="section-tag">A</div>
+            <h2>Admit — The Bias</h2>
+            <span class="uadp-tag">UADP: Provenance (Facet 7) + Context (Facet 6)</span>
+        </div>
+
+        <table class="score-table">
+            <tr><td style="width:120px; color:var(--gold);">Worldview</td><td class="placeholder">e.g., Christian theist; consciousness-fundamental</td></tr>
+            <tr><td style="color:var(--gold);">Core Belief</td><td class="placeholder">e.g., Physics and theology are dual projections of single substrate</td></tr>
+            <tr><td style="color:var(--gold);">Epistemology</td><td class="placeholder">e.g., Empirical + revelational; cross-domain coherence as truth criterion</td></tr>
+            <tr><td style="color:var(--gold);">Priors</td><td class="placeholder">e.g., Master Equation χ, Ten Laws, 188 axioms</td></tr>
+            <tr><td style="color:var(--gold);">Off-Ramp</td><td class="placeholder">What would change my mind</td></tr>
+            <tr><td style="color:var(--gold);">Mea Culpa</td><td class="placeholder">Honest limitations</td></tr>
+        </table>
+
+        <h3>Pre-Cognitive Belief State</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+            <div style="padding: 1rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem;">Before This Paper</div>
+                <div style="font-size: 0.85rem; color: var(--text-dim);">
+                    Belief: <span class="placeholder">—</span><br>
+                    Confidence: <span class="placeholder">—/100</span>
+                </div>
+            </div>
+            <div style="padding: 1rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 0.5rem;">After This Paper</div>
+                <div style="font-size: 0.85rem; color: var(--text-dim);">
+                    Belief: <span class="placeholder">—</span><br>
+                    Confidence: <span class="placeholder">—/100</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============================== -->
+        <!--   [C] CLAIM — THE THESIS        -->
+        <!-- =============================== -->
+        <div class="section-divider" id="claim">
+            <div class="section-tag">C</div>
+            <h2>Claim — The Thesis</h2>
+            <span class="uadp-tag">UADP: Role (Facet 2)</span>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label">Primary Question</div>
+            <blockquote>One question. The question this paper answers.</blockquote>
+        </div>
+
+        <div class="field-group">
+            <div class="field-label">Thesis (one sentence)</div>
+            <blockquote>One sentence. The claim. No hedging.</blockquote>
+        </div>
+
+        <h3>Role in Chain</h3>
+        <table class="score-table">
+            <tr><td>Primary role</td><td class="placeholder">foundation / bridge / constraint / prediction / definition</td></tr>
+            <tr><td>Acts on</td><td class="placeholder">[target node]</td></tr>
+            <tr><td>If removed, what breaks</td><td class="placeholder">—</td></tr>
+            <tr><td>On canonical spine?</td><td class="placeholder">yes / no</td></tr>
+        </table>
+
+        <!-- =============================== -->
+        <!--   [T] TEST — THE PROOF          -->
+        <!-- =============================== -->
+        <div class="section-divider" id="test">
+            <div class="section-tag">T</div>
+            <h2>Test — The Proof</h2>
+            <span class="uadp-tag">UADP: Evidence (Facet 3) — THE CORE</span>
+        </div>
+
+        <h3>T.1 — Exhaustive Branching</h3>
+        <div style="padding: 0.75rem 1rem; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 6px; font-size: 0.85rem; color: var(--red); margin-bottom: 1rem;">
+            <i class="fas fa-exclamation-triangle"></i>&ensp;Every possible answer must be listed. Not "some options." ALL options.
+        </div>
+
+        <table class="branch-table">
+            <tr><th>Branch</th><th>Answer</th><th>Status</th><th>Death Condition</th></tr>
+            <tr><td>A</td><td class="placeholder">—</td><td class="status-live placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>B</td><td class="placeholder">—</td><td class="status-dead placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>C</td><td class="placeholder">—</td><td class="status-dead placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>D</td><td class="placeholder">—</td><td class="status-dead placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>E</td><td class="placeholder">—</td><td class="status-dead placeholder">—</td><td class="placeholder">—</td></tr>
+        </table>
+
+        <h3>T.2 — Death Condition Tests</h3>
+        <table class="branch-table">
+            <tr><th>#</th><th>Death Condition</th><th>Applied?</th><th>Result</th></tr>
+            <tr><td>1</td><td><strong>Self-Refutation</strong> — Does denying this destroy itself?</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>2</td><td><strong>Infinite Regress</strong> — Does this push the question back forever?</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>3</td><td><strong>Empirical Contradiction</strong> — Does this contradict observation?</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>4</td><td><strong>Logical Incoherence</strong> — Does this contradict an established node?</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+        </table>
+
+        <h3>T.5 — Cross-Domain Mapping</h3>
+        <table class="branch-table">
+            <tr><th>Domain</th><th>Maps?</th><th>Quality</th></tr>
+            <tr><td>Physics</td><td class="placeholder">—</td><td class="placeholder">exact / strong / analogy / weak</td></tr>
+            <tr><td>Theology</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>Consciousness</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>Quantum Mechanics</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>Scripture</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>Information Theory</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>Mathematics</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>Law</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>History</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+            <tr><td>Ethics</td><td class="placeholder">—</td><td class="placeholder">—</td></tr>
+        </table>
+
+        <!-- =============================== -->
+        <!--   [S] SNAP — KILL CONDITIONS    -->
+        <!-- =============================== -->
+        <div class="section-divider" id="snap">
+            <div class="section-tag" style="background: rgba(239,68,68,0.1); color: var(--red); border-color: rgba(239,68,68,0.2);">S</div>
+            <h2>Snap — Kill Conditions</h2>
+            <span class="uadp-tag">UADP: Ops (Facet 5)</span>
+        </div>
+
+        <div class="kill-card">
+            <div class="kill-num">KILL #1</div>
+            <div class="kill-desc placeholder">How to destroy this claim</div>
+            <div class="kill-threshold">Threshold: <span class="placeholder">What would count</span> | Status: Not yet tested</div>
+        </div>
+        <div class="kill-card">
+            <div class="kill-num">KILL #2</div>
+            <div class="kill-desc placeholder">—</div>
+            <div class="kill-threshold">Threshold: <span class="placeholder">—</span> | Status: Not yet tested</div>
+        </div>
+        <div class="kill-card">
+            <div class="kill-num">KILL #3</div>
+            <div class="kill-desc placeholder">—</div>
+            <div class="kill-threshold">Threshold: <span class="placeholder">—</span> | Status: Not yet tested</div>
+        </div>
+
+        <div style="margin-top: 1rem; padding: 1rem; background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.15); border-radius: 8px; font-size: 0.9rem; color: var(--text-dim);">
+            <strong style="color: var(--red);">Explicit Invitation:</strong> If you can satisfy any kill condition, this paper is falsified. I will publicly acknowledge the refutation.
+        </div>
+
+        <!-- =============================== -->
+        <!--   T-SCORE                       -->
+        <!-- =============================== -->
+        <div class="tscore-box">
+            <div class="tscore-title"><i class="fas fa-calculator"></i>&ensp;Computed T-Score</div>
+            <div class="tscore-grid">
+                <span class="label">Death tests survived</span><span class="weight">× 25</span><span class="value placeholder">—/4</span>
+                <span class="label">Evidence confidence</span><span class="weight">× 20</span><span class="value placeholder">—</span>
+                <span class="label">Bridge count</span><span class="weight">× 25</span><span class="value placeholder">—/10</span>
+                <span class="label">Alternatives tested</span><span class="weight">× 15</span><span class="value placeholder">—</span>
+                <span class="label">Scope precision</span><span class="weight">× 5</span><span class="value placeholder">—</span>
+                <span class="label">Entity verifiability</span><span class="weight">× 5</span><span class="value placeholder">—</span>
+                <span class="label">Controversy score</span><span class="weight">× 5</span><span class="value placeholder">—</span>
+            </div>
+            <div class="tscore-total">
+                <span class="total-label">Total</span>
+                <span class="total-val">—/100</span>
+            </div>
+            <div class="tier-badges">
+                <span class="tier-badge canonical">NEAR-CANONICAL ≥90</span>
+                <span class="tier-badge strong">STRONG 75-89</span>
+                <span class="tier-badge provisional">PROVISIONAL 60-74</span>
+                <span class="tier-badge weak">WEAK &lt;60</span>
+            </div>
+        </div>
+
+        <!-- =============================== -->
+        <!--   PIPELINE OUTPUT PANELS        -->
+        <!-- =============================== -->
+        <div class="section-divider" id="pipeline">
+            <div class="section-tag">⚡</div>
+            <h2>Pipeline Scoring Output</h2>
+        </div>
+
+        <div class="panel gold" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-layer-group"></i>&ensp;CKG Score (5-Tier Epistemic Structure)</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <table class="score-table">
+                    <tr><td>T1 Foundations</td><td class="val placeholder">—/20</td></tr>
+                    <tr><td>T2 Propositions</td><td class="val placeholder">—/20</td></tr>
+                    <tr><td>T3 Constraints</td><td class="val placeholder">—/20</td></tr>
+                    <tr><td>T4 Evidence</td><td class="val placeholder">—/20</td></tr>
+                    <tr><td>T5 Integration</td><td class="val placeholder">—/20</td></tr>
+                    <tr><td style="color:var(--gold);"><strong>Total</strong></td><td class="val" style="color:var(--gold);"><strong>—/100 → —/10</strong></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel teal" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-globe"></i>&ensp;Domain Activation Map</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <p class="placeholder" style="font-size:0.85rem;">Paste DOMAINS JSON output here after running pipeline</p>
+            </div>
+        </div>
+
+        <div class="panel red" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-shield-alt"></i>&ensp;CDCM Review (Adversarial)</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <p class="placeholder" style="font-size:0.85rem;">Paste adversarial review markdown here after running pipeline</p>
+            </div>
+        </div>
+
+        <div class="panel orange" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-search"></i>&ensp;7Q Forward Analysis</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <p class="placeholder" style="font-size:0.85rem;">Paste 7Q markdown here after running pipeline</p>
+            </div>
+        </div>
+
+        <div class="panel green" onclick="togglePanel(this)">
+            <div class="panel-header">
+                <div class="panel-label"><i class="fas fa-project-diagram"></i>&ensp;Knowledge Graph YAML</div>
+                <span class="panel-toggle"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="panel-body" onclick="event.stopPropagation()">
+                <pre style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--teal); background:var(--surface2); padding:1rem; border-radius:6px; overflow-x:auto;">nodes:
+  - id: ""
+    type: Claim
+    label: ""
+    description: ""
+edges:
+  - source: ""
+    target: ""
+    relation: implies
+    confidence: 0.0</pre>
+            </div>
+        </div>
+
+        <!-- =============================== -->
+        <!--   AUDIT BLOCK                   -->
+        <!-- =============================== -->
+        <div class="audit-block">
+            <div class="audit-title"><i class="fas fa-fingerprint"></i>&ensp;Audit Block</div>
+            Format:&emsp;&emsp;&emsp;&emsp;&emsp;Lowe FACTS+UADP v2.0 + Pipeline<br>
+            Paper:&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;<span class="placeholder">[Paper Title]</span><br>
+            Author:&emsp;&emsp;&emsp;&emsp;&emsp;David Lowe<br>
+            Date:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;<span class="placeholder">YYYY-MM-DD</span><br>
+            T-Score:&emsp;&emsp;&emsp;&emsp;&ensp;<span class="placeholder">—/100</span><br>
+            CKG Score:&emsp;&emsp;&emsp;<span class="placeholder">—/10</span><br>
+            Tier:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;<span class="placeholder">—</span><br>
+            Death Tests:&emsp;&emsp;&ensp;<span class="placeholder">—/4</span><br>
+            Bridge Count:&emsp;&emsp;<span class="placeholder">—/10</span><br>
+            Kill Conditions:&ensp;<span class="placeholder">[ ] Yes  [ ] No</span><br>
+            Lowe Battery:&emsp;&emsp;LCT <span class="placeholder">[P/F]</span>&ensp;LFT <span class="placeholder">[P/F]</span>&ensp;LMT <span class="placeholder">[P/F]</span><br>
+            Spine Position:&emsp;<span class="placeholder">[ ] Yes  [ ] No</span>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="global-footer">
+            <div class="footer-eq">χ = ∭(G · M · E · S · T · K · R · Q · F · C) dx dy dt</div>
+            <div class="footer-quote">"The method does not guarantee truth. It guarantees transparency."</div>
+        </footer>
+
+    </main>
+
+    <script>
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
+        });
+
+        // Panel toggle
+        function togglePanel(panel) {
+            panel.classList.toggle('open');
+        }
+    </script>
+
+</body>
+</html>

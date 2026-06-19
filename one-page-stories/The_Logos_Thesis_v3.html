@@ -1,0 +1,1873 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Logos Thesis — Theophysics</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<!-- MathJax -->
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+  --primary:#1a1a1a;
+  --accent:#2c2c2c;
+  --text-primary:#e0e0e0;
+  --text-secondary:#a0a0a0;
+  --highlight:#d4af37;
+  --highlight-bright:#f4d03f;
+  --border:#333333;
+  --surface:#0a0a0a;
+  --surface-light:#1a1a1a;
+  --surface-hover:#2a2a2a;
+  --red:#ef4444;
+  --blue:#4a9eff;
+  --teal:#2dd4bf;
+  --purple:#a855f7;
+  --green:#22c55e;
+}
+*{box-sizing:border-box;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--surface);
+  color:var(--text-primary);
+  line-height:1.65;
+  margin:0;
+  padding:0;
+  overflow-x:hidden;
+}
+.serif{font-family:'Crimson Text',serif;}
+.display{font-family:'Oswald',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+/* ─────────────── HEADER ─────────────── */
+.site-header{
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.meta-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:1rem;
+  font-size:.8125rem;
+  color:var(--text-secondary);
+  margin-bottom:1rem;
+}
+.meta-row i{color:var(--highlight);margin-right:.4rem;}
+.confidence-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  padding:.3rem .65rem;
+  border-radius:.375rem;
+  font-weight:600;
+  font-size:.8125rem;
+  background:rgba(34,197,94,.12);
+  color:#22c55e;
+  border:1px solid rgba(34,197,94,.3);
+}
+.status-pill{
+  padding:.25rem .65rem;
+  background:rgba(212,175,55,.12);
+  color:var(--highlight);
+  border-radius:.25rem;
+  font-size:.7rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.domain-tag{
+  display:inline-block;
+  padding:.2rem .65rem;
+  border-radius:999px;
+  font-size:.7rem;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.tag-physics{background:rgba(74,158,255,.15);color:#4a9eff;}
+.tag-theology{background:rgba(212,175,55,.15);color:var(--highlight);}
+.tag-bridge{background:rgba(45,212,191,.15);color:#2dd4bf;}
+.tag-info{background:rgba(168,85,247,.15);color:#a855f7;}
+.tag-consciousness{background:rgba(34,197,94,.15);color:#22c55e;}
+
+/* ─────────────── STICKY TAB BAR ─────────────── */
+.tab-shell{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(10,10,10,.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+
+/* ─────────────── PROGRESS BAR ─────────────── */
+.progress-track{
+  height:3px;
+  background:var(--border);
+  width:100%;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--highlight),var(--highlight-bright));
+  transition:width 0.1s ease;
+  border-radius:0 2px 2px 0;
+}
+.tab-nav{
+  display:flex;
+  gap:.125rem;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{
+  padding:.85rem 1.1rem;
+  background:transparent;
+  border:none;
+  color:var(--text-secondary);
+  font-size:.825rem;
+  font-weight:500;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s ease;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  letter-spacing:.02em;
+}
+.tab-btn:hover{color:var(--text-primary);background:var(--surface-light);}
+.tab-btn.active{
+  color:var(--highlight);
+  border-bottom-color:var(--highlight);
+  background:var(--surface-light);
+}
+.tab-btn i{margin-right:.4rem;}
+
+/* ─────────────── TAB CONTENT ─────────────── */
+.tab-content{display:none;animation:fadeIn .3s ease;}
+.tab-content.active{display:block;}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(8px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ─────────────── HERO GRID ─────────────── */
+.hero-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  grid-template-rows:auto auto;
+  gap:1.25rem;
+  min-height:480px;
+}
+.hero-main{
+  grid-column:1/2;
+  grid-row:1/3;
+  position:relative;
+  overflow:hidden;
+  border-radius:.75rem;
+  background:linear-gradient(135deg,#0d0d1a 0%,#1a0d0d 50%,#0d1a0d 100%);
+  border:1px solid var(--border);
+  min-height:480px;
+}
+.hero-main .overlay{
+  position:relative;
+  z-index:2;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:2.5rem;
+  background:linear-gradient(0deg,rgba(10,10,10,.9) 0%,rgba(10,10,10,.3) 40%,rgba(10,10,10,0) 70%);
+}
+.hero-side{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.75rem;
+  padding:1.5rem;
+  transition:border-color .25s ease;
+}
+.hero-side:hover{border-color:var(--highlight);}
+.hero-side h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.05rem;
+  font-weight:600;
+  color:#fff;
+  margin:0 0 .65rem;
+}
+.hero-side p{font-size:.875rem;color:var(--text-secondary);margin:0;}
+.hero-side .label{
+  display:block;
+  font-size:.65rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--highlight);
+  margin-bottom:.4rem;
+  font-weight:700;
+}
+
+@media (max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;}
+  .hero-main{grid-column:1;grid-row:1;min-height:340px;}
+  .hero-main .overlay{padding:1.5rem;}
+}
+
+/* ─────────────── STORY ARTICLE ─────────────── */
+.story{max-width:780px;margin:0 auto;}
+.story h2{
+  font-family:'Oswald',sans-serif;
+  font-size:1.6rem;
+  font-weight:600;
+  color:#fff;
+  margin:3rem 0 1.25rem;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+  padding-bottom:.5rem;
+}
+.story h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.3rem;
+  font-weight:600;
+  color:#fff;
+  margin:2rem 0 .75rem;
+}
+.story h4{
+  font-family:'Crimson Text',serif;
+  font-size:1.1rem;
+  font-weight:600;
+  color:var(--highlight);
+  margin:1.5rem 0 .5rem;
+}
+.story p{
+  font-size:1.0625rem;
+  color:#cfcfcf;
+  margin:0 0 1.25rem;
+  line-height:1.75;
+}
+.story p strong{color:#fff;}
+.story p em{color:var(--highlight);font-style:italic;}
+.story li{color:#cfcfcf;margin-bottom:.5rem;line-height:1.65;}
+.story li strong{color:#fff;}
+.story ul,.story ol{margin:0 0 1.25rem 1.5rem;}
+
+/* Drop cap */
+.drop-cap::first-letter{
+  font-family:'Crimson Text',serif;
+  font-size:4.5rem;
+  float:left;
+  line-height:.85;
+  padding:.4rem .6rem 0 0;
+  color:var(--highlight);
+  font-weight:600;
+}
+
+/* Insight / pull quote */
+.insight{
+  border-left:4px solid var(--highlight);
+  background:rgba(212,175,55,.08);
+  padding:1.25rem 1.5rem;
+  margin:2rem 0;
+  border-radius:0 .5rem .5rem 0;
+}
+.insight .label{
+  font-family:'Crimson Text',serif;
+  font-style:italic;
+  color:var(--highlight);
+  font-size:.85rem;
+  letter-spacing:.05em;
+  display:block;
+  margin-bottom:.4rem;
+}
+.insight p{margin:0;color:#fff;font-size:1.05rem;}
+
+/* Axiom callout */
+.axiom-box{
+  background:rgba(212,175,55,.06);
+  border:1px solid rgba(212,175,55,.25);
+  border-left:4px solid var(--highlight);
+  padding:1rem 1.5rem;
+  margin:1.5rem 0;
+  border-radius:0 .5rem .5rem 0;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.95rem;
+  color:var(--highlight);
+}
+
+/* Law box */
+.law-box{
+  background:rgba(74,158,255,.06);
+  border:1px solid rgba(74,158,255,.2);
+  border-left:4px solid var(--blue);
+  padding:1rem 1.5rem;
+  margin:1.5rem 0;
+  border-radius:0 .5rem .5rem 0;
+}
+.law-box .law-label{
+  font-family:'Oswald',sans-serif;
+  font-size:.75rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--blue);
+  margin-bottom:.35rem;
+}
+.law-box p{margin:0;color:#cfcfcf;font-size:.95rem;}
+
+/* Tables */
+.data-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:1.5rem 0;
+  font-size:.875rem;
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  overflow:hidden;
+}
+.data-table thead{
+  background:var(--surface-light);
+  text-transform:uppercase;
+  font-size:.7rem;
+  letter-spacing:.06em;
+  color:var(--highlight);
+}
+.data-table th,.data-table td{
+  padding:.75rem 1rem;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tbody tr:hover{background:rgba(212,175,55,.04);}
+.data-table td{color:var(--text-secondary);}
+
+/* Kill card */
+.kill-card{
+  padding:1.25rem;
+  margin-bottom:.75rem;
+  background:rgba(239,68,68,.04);
+  border:1px solid rgba(239,68,68,.2);
+  border-radius:.5rem;
+}
+.kill-card .kill-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--red);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:.35rem;
+}
+.kill-card p{margin:.25rem 0 0;color:#cfcfcf;font-size:.9rem;}
+.kill-card .kill-detail{font-size:.8rem;color:var(--text-secondary);margin-top:.35rem;}
+
+/* ─────────────── SCORECARD ─────────────── */
+.scorecard-section{
+  margin-top:3rem;
+  padding-top:2.5rem;
+  border-top:1px solid var(--border);
+}
+.gauge-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1.25rem;
+  margin-bottom:2rem;
+}
+@media(max-width:640px){.gauge-grid{grid-template-columns:repeat(2,1fr);}}
+.gauge-card{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  padding:1.25rem .75rem;
+  text-align:center;
+  transition:border-color .25s ease;
+}
+.gauge-card:hover{border-color:var(--highlight);}
+.gauge-ring{
+  position:relative;
+  width:100px;height:100px;
+  margin:0 auto .75rem;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.gauge-ring .gauge-value{
+  font-family:'Oswald',sans-serif;
+  font-size:1.5rem;font-weight:700;
+  color:#fff;
+  line-height:1;
+}
+.gauge-ring .gauge-sub{
+  font-size:.65rem;color:var(--text-secondary);
+  display:block;margin-top:2px;
+}
+.gauge-label{
+  font-size:.75rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text-secondary);
+}
+.radar-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.5rem;
+  margin-bottom:2rem;
+}
+@media(max-width:768px){.radar-grid{grid-template-columns:1fr;}}
+.radar-card{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  padding:1.25rem;
+}
+.radar-card h4{
+  font-family:'Oswald',sans-serif;
+  font-size:.8rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:var(--highlight);
+  margin:0 0 .75rem;
+  text-align:center;
+}
+.detail-strip{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:.75rem;
+}
+.detail-item{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.375rem;
+  padding:.65rem .75rem;
+  text-align:center;
+}
+.detail-item .di-val{
+  font-family:'Oswald',sans-serif;
+  font-size:1.1rem;font-weight:600;color:#fff;
+}
+.detail-item .di-lbl{
+  font-size:.65rem;color:var(--text-secondary);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+
+/* Card */
+.card{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  padding:1.5rem;
+  transition:border-color .25s ease;
+}
+.card:hover{border-color:var(--highlight);}
+
+/* Section part header */
+.part-header{
+  margin:3.5rem 0 1.5rem;
+  padding:1.25rem 1.5rem;
+  background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,rgba(212,175,55,.02) 100%);
+  border:1px solid rgba(212,175,55,.2);
+  border-radius:.5rem;
+}
+.part-header .part-num{
+  font-family:'Oswald',sans-serif;
+  font-size:.7rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--highlight);
+  margin-bottom:.25rem;
+}
+.part-header h2{
+  font-family:'Oswald',sans-serif;
+  font-size:1.5rem;
+  font-weight:600;
+  color:#fff;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin:0;
+  border:none;
+  padding:0;
+}
+.part-header p{
+  margin:.5rem 0 0;
+  font-size:.85rem;
+  color:var(--text-secondary);
+  font-style:italic;
+}
+
+/* Equation display */
+.eq-block{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  padding:1.5rem;
+  margin:1.5rem 0;
+  text-align:center;
+  overflow-x:auto;
+}
+.eq-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--highlight);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:.75rem;
+  text-align:left;
+}
+
+/* Citations */
+.citation{
+  display:inline-block;
+  background:var(--highlight);
+  color:var(--primary);
+  padding:.1rem .4rem;
+  border-radius:.25rem;
+  font-size:.65rem;
+  font-weight:700;
+  text-decoration:none;
+  margin:0 .1rem;
+  vertical-align:.15em;
+  cursor:default;
+}
+
+/* Glossary tooltip */
+.glossary-term{
+  border-bottom:1px dotted var(--highlight);
+  cursor:help;
+  position:relative;
+  color:var(--highlight);
+}
+.glossary-term:hover::after{
+  content:attr(data-definition);
+  position:absolute;
+  bottom:130%;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--surface-light);
+  border:1px solid var(--highlight);
+  padding:.55rem .85rem;
+  border-radius:.35rem;
+  font-size:.8rem;
+  width:280px;
+  z-index:20;
+  color:var(--text-primary);
+  font-style:normal;
+  box-shadow:0 6px 18px rgba(0,0,0,.5);
+}
+
+/* ─────────────── TTS READ-ALONG ─────────────── */
+.tts-bar{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  padding:.85rem 1.1rem;
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  margin:0 0 2rem;
+  flex-wrap:wrap;
+}
+.tts-bar audio{filter:brightness(.85);}
+}
+
+/* ─────────────── MEDIA CARDS ─────────────── */
+.media-card{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.6rem;
+  padding:1.5rem;
+  margin-bottom:1.5rem;
+  transition:border-color .25s ease;
+}
+.media-card:hover{border-color:var(--highlight);}
+.media-card .media-label{
+  display:block;
+  font-size:.7rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--highlight);
+  font-weight:700;
+  margin-bottom:.5rem;
+}
+.media-card h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.5rem;
+  font-weight:600;
+  color:#fff;
+  margin:0 0 .5rem;
+}
+.media-card p.media-desc{
+  font-size:.9rem;
+  color:var(--text-secondary);
+  margin:0 0 1rem;
+}
+.media-card audio{width:100%;border-radius:.4rem;background:var(--surface);height:46px;}
+.media-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:1rem;
+  margin-top:.85rem;
+  font-size:.75rem;
+  color:var(--text-secondary);
+}
+.media-meta span i{color:var(--highlight);margin-right:.35rem;}
+
+/* Footer */
+footer{
+  border-top:1px solid var(--border);
+  margin-top:5rem;
+  padding:2rem 0;
+  text-align:center;
+  color:var(--text-secondary);
+  font-size:.85rem;
+}
+.footer-eq{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;
+  color:var(--highlight);
+  margin-bottom:.75rem;
+}
+
+@media (max-width:768px){
+  .story h2{font-size:1.3rem;}
+  .story p{font-size:1rem;}
+  .tab-btn{padding:.7rem .8rem;font-size:.75rem;}
+  .hero-main .overlay h1{font-size:2rem !important;}
+}
+
+@media print{
+  .tab-shell{display:none;}
+  .tab-content{display:block !important;}
+  body{background:#fff;color:#000;}
+}
+/* TP-PLAYER-V2 */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+.tp-pair{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.tp-half{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid #222;border-radius:.4rem;background:#111;min-width:0;}
+.tp-half .tp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-half .tp-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;min-width:48px;}
+.tp-half .tp-play{width:24px;height:24px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-half .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-half .tp-track{height:3px;}.tp-half .tp-track:hover{height:5px;}
+.tp-half .tp-time{font-size:.55rem;min-width:28px;}
+.tp-half.tp-deep .tp-dot{background:#4a9eff;}.tp-half.tp-deep .tp-label{color:#4a9eff;}.tp-half.tp-deep .tp-play{border-color:#4a9eff;color:#4a9eff;}.tp-half.tp-deep .tp-fill{background:#4a9eff;}.tp-half.tp-deep:hover{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.08);}
+.tp-half.tp-debate .tp-dot{background:#a855f7;}.tp-half.tp-debate .tp-label{color:#a855f7;}.tp-half.tp-debate .tp-play{border-color:#a855f7;color:#a855f7;}.tp-half.tp-debate .tp-fill{background:#a855f7;}.tp-half.tp-debate:hover{border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08);}
+.tp-sticky{position:fixed;right:-260px;top:50%;transform:translateY(-50%);width:220px;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border:1px solid #222;border-right:none;border-radius:.6rem 0 0 .6rem;padding:.75rem .8rem;z-index:9999;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.6);}
+.tp-sticky.tp-visible{right:0;}
+.tp-sticky-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem;}
+.tp-sticky .tp-sticky-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-sticky .tp-sticky-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tp-sticky .tp-sticky-close{background:none;border:none;color:#555;cursor:pointer;font-size:.65rem;padding:2px 4px;flex-shrink:0;transition:color .2s;}
+.tp-sticky .tp-sticky-close:hover{color:#e0e0e0;}
+.tp-sticky-controls{display:flex;align-items:center;gap:.5rem;}
+.tp-sticky .tp-play{width:26px;height:26px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-sticky .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-sticky .tp-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;}
+.tp-sticky .tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-sticky .tp-time{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:#555;min-width:28px;text-align:right;flex-shrink:0;}
+@media(max-width:560px){.tp-pair{grid-template-columns:1fr;}.tp-sticky{width:180px;padding:.6rem;}.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}}
+</style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/one-page-stories/The_Logos_Thesis_v3.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/one-page-stories/images/Cosmic_Source_Code_Theophysics conv 0.webp"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+<body>
+<nav class="tp-ribbon" style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:2px solid #d4af3733;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <a href="/index.html" style="color:#999;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
+    <span style="color:#333;">|</span>
+    <span style="color:#d4af37;font-weight:500;">One-Page Stories</span>
+  </div>
+</nav>
+
+
+<!-- ════════════════ HEADER ════════════════ -->
+<header class="site-header">
+  <div class="container mx-auto px-6 py-8">
+    <div class="meta-row">
+      <span><i class="fas fa-calendar-alt"></i>December 2025 · v3.1</span>
+      <span><i class="fas fa-fingerprint"></i>Logos Thesis</span>
+      <span><i class="fas fa-user"></i>David Lowe</span>
+      <span class="confidence-badge"><i class="fas fa-signal"></i>Chi: 0.748 (B-)</span>
+      <span class="status-pill">Canonical</span>
+    </div>
+
+    <h1 class="serif text-4xl md:text-5xl font-bold text-white mb-3 leading-tight">
+      The Logos Thesis
+    </h1>
+    <p class="text-lg md:text-xl text-[#a0a0a0] max-w-3xl leading-relaxed mb-4">
+      A Unified Field Theoretical Framework Demonstrating the Ontological Necessity of Trinitarian Consciousness as the Substrate of Physical Reality
+    </p>
+
+    <div class="flex flex-wrap gap-2">
+      <span class="domain-tag tag-physics">Physics</span>
+      <span class="domain-tag tag-theology">Theology</span>
+      <span class="domain-tag tag-bridge">Cross-Domain</span>
+      <span class="domain-tag tag-info">Information Theory</span>
+      <span class="domain-tag tag-consciousness">Consciousness</span>
+    </div>
+  </div>
+</header>
+
+<!-- TP-PLAYER-V2 -->
+<div class="tp-player-block" id="thelogosthesplayerBlock">
+  <div class="tp-read-aloud">
+    <div class="tp-dot"></div>
+    <span class="tp-label">Read Aloud</span>
+    <audio id="thelogosthesmainAudio" preload="metadata">
+      <source src="https://r2.faiththruphysics.com/audio/read.mp3" type="audio/mpeg">
+    </audio>
+    <button class="tp-play" data-audio="thelogosthesmainAudio" onclick="tpToggle('thelogosthesmainAudio',this)">
+      <i class="fas fa-play"></i>
+    </button>
+    <div class="tp-track" onclick="tpSeek(event,'thelogosthesmainAudio')">
+      <div id="thelogosthesmainFill" class="tp-fill"></div>
+    </div>
+    <span id="thelogosthesmainTime" class="tp-time">0:00</span>
+    <button class="tp-mute" onclick="tpMute('thelogosthesmainAudio',this)">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+  <div class="tp-pair">
+    <div class="tp-half tp-deep">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Deep Dive</span>
+      <audio id="thelogosthesdeepAudio" preload="metadata">
+        <source src="https://r2.faiththruphysics.com/audio/read.mp3" type="audio/mpeg">
+      </audio>
+      <button class="tp-play" data-audio="thelogosthesdeepAudio" onclick="tpToggle('thelogosthesdeepAudio',this)">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'thelogosthesdeepAudio')">
+        <div id="thelogosthesdeepFill" class="tp-fill"></div>
+      </div>
+      <span id="thelogosthesdeepTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-debate">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Podcast</span>
+      <audio id="thelogosthesdebateAudio" preload="metadata">
+        <source src="https://r2.faiththruphysics.com/audio/read.mp3" type="audio/mpeg">
+      </audio>
+      <button class="tp-play" data-audio="thelogosthesdebateAudio" onclick="tpToggle('thelogosthesdebateAudio',this)">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'thelogosthesdebateAudio')">
+        <div id="thelogosthesdebateFill" class="tp-fill"></div>
+      </div>
+      <span id="thelogosthesdebateTime" class="tp-time">0:00</span>
+    </div>
+  </div>
+</div>
+<script>
+tpRegister('thelogosthesmainAudio','#d4af37','Read Aloud');
+tpRegister('thelogosthesdeepAudio','#4a9eff','Deep Dive');
+tpRegister('thelogosthesdebateAudio','#a855f7','Podcast');
+tpWire('thelogosthesmainAudio');tpWire('thelogosthesdeepAudio');tpWire('thelogosthesdebateAudio');
+</script>
+
+<!-- ════════════════ STICKY TAB BAR ════════════════ -->
+<div class="tab-shell">
+  <div class="container mx-auto px-6">
+    <nav class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('summary')"><i class="fas fa-compress-alt"></i>Executive Summary</button>
+      <button class="tab-btn" onclick="switchTab('eli14')"><i class="fas fa-child"></i>Explain It Simple</button>
+      <button class="tab-btn" onclick="switchTab('rigor')"><i class="fas fa-crosshairs"></i>Rigor &amp; Kill Conditions</button>
+      <button class="tab-btn" onclick="switchTab('story')"><i class="fas fa-scroll"></i>The Paper</button>
+      <button class="tab-btn" onclick="switchTab('media')"><i class="fas fa-headphones"></i>Watch &amp; Listen</button>
+      <button class="tab-btn" onclick="switchTab('math')"><i class="fas fa-square-root-alt"></i>The Mathematics</button>
+      <button class="tab-btn" onclick="switchTab('glossary')"><i class="fas fa-book-open"></i>Glossary</button>
+      <button class="tab-btn" onclick="switchTab('related')"><i class="fas fa-project-diagram"></i>Related Papers</button>
+    </nav>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+</div>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main class="container mx-auto px-6 py-10">
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: THE PAPER                           -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="story" class="tab-content">
+
+    <!-- HERO GRID -->
+    <div class="hero-grid mb-12">
+      <div class="hero-main">
+        <div class="overlay">
+          <div style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--highlight);margin-bottom:1rem;font-weight:700;">
+            <i class="fas fa-atom"></i> Theophysics Research Program
+          </div>
+          <h1 class="serif text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
+            <em>What if information is the thing that's real — and matter is just what it looks like?</em>
+          </h1>
+          <p class="text-lg md:text-xl text-gray-300 font-light">
+            The century-long war between General Relativity and Quantum Mechanics isn't a technical problem. It's an ontological crisis. This paper proposes the solution — and names what it finds.
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <span class="label">Core Thesis</span>
+        <h3>Information is the ontological primitive</h3>
+        <p>The χ-Field (Logos Field) is a non-material, self-grounding informational substrate from which both General Relativity and Quantum Mechanics emerge as limit cases of a single coherence scale.</p>
+      </div>
+
+      <div class="hero-side">
+        <span class="label">The Radical Claim</span>
+        <h3>The closing structure is Trinitarian</h3>
+        <p>Three non-commutative operators — Source, Structure, Actualization — are required to close the system. The only known ontology satisfying all constraints is the Trinity. This is derived, not assumed.</p>
+      </div>
+    </div>
+
+    <!-- STORY ARTICLE -->
+    <article class="story">
+
+      <!-- PLAYER BAR -->
+      <meta name="paper-slug" content="logos-thesis-v3">
+      <div class="tts-bar" style="flex-direction:column;gap:.75rem;">
+        <div style="display:flex;align-items:center;gap:.6rem;">
+          <i class="fas fa-volume-up" style="color:var(--gold);"></i>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);">Read Article</span>
+        </div>
+        <audio controls preload="metadata" style="width:100%;height:36px;filter:brightness(.85);">
+          <source src="https://r2.faiththruphysics.com/audio/read.mp3" type="audio/mpeg">
+        </audio>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <div style="flex:1;min-width:200px;">
+            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">
+              <i class="fas fa-podcast" style="color:#4a9eff;"></i>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#4a9eff;">Deep Dive</span>
+            </div>
+            <iframe src="https://drive.google.com/file/d/1TkohQqD1KBl0-3j_ekvrgqa5cnn_J91H/preview" width="100%" height="60" style="border:none;border-radius:.3rem;" allow="autoplay"></iframe>
+          </div>
+          <div style="flex:1;min-width:200px;">
+            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">
+              <i class="fas fa-podcast" style="color:#a855f7;"></i>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#a855f7;">Both Sides</span>
+            </div>
+            <iframe src="https://drive.google.com/file/d/11Kkv4qTwoehY7gMI3ezuV_OnVtCVqnEQ/preview" width="100%" height="60" style="border:none;border-radius:.3rem;" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ABSTRACT ═══ -->
+      <h2>Abstract</h2>
+      <p class="drop-cap">
+        The century-long impasse in physics — evidenced by the incompatibility of General Relativity and Quantum Mechanics — is not a technical failure but an ontological crisis rooted in Material Primacy. This thesis introduces the <strong>Logos Field (χ)</strong> as a non-material, self-grounding informational substrate that resolves three foundational failures of the current paradigm: <strong>The Compression Crisis</strong> (algorithmic efficiency), <strong>The Measurement Boundary</strong> (Von Neumann's infinite regress), and <strong>The Consciousness Integration Problem</strong> (substrate-independent agency).
+      </p>
+      <p>
+        We derive the <strong>Master Equation</strong> of the χ-Field, showing how GR and QM emerge as high- and low-coherence limits, respectively. The Master Equation is typed as a <strong>conserved functional</strong> governing the coupling between consciousness (Ψ), physical observables (Φ), and the coherence field (Λ). Furthermore, we apply information thermodynamics to observer trajectories, demonstrating that <strong>Moral Entropy (Law V)</strong> exhibits irreversibility and demands the non-unitary work input of an external operator (Ĝ).
+      </p>
+      <p>
+        Based on structural constraints established across Parts I–III, the analysis concludes in Part IV by classifying the required operator structure (Triadic Closure, External Negentropy, Terminal Observer) and demonstrating that the <strong>Trinitarian Consciousness</strong> is the minimal isomorphism that satisfies all derived physical and functional boundary conditions. The triadic requirement is not geometric (three points) but <strong>functional</strong> (three non-commutative operators).
+      </p>
+      <p>
+        The framework is empirically testable, offering a <strong>Pre-Registered Falsification Protocol</strong> (PRFP) to validate its unique predictions regarding Observer-Dependent Collapse Rate (ODCR) and Coherence Dynamics.
+      </p>
+
+      <div class="insight">
+        <span class="label">— Epistemic Stance</span>
+        <p>All uniqueness claims ("only," "minimal," "required") are made under the constraints established in this framework. We do not claim to "prove Christianity true" in a metaphysical sense. We claim the Trinitarian structure is <strong>necessary under the derived boundary conditions</strong>. This is a constrained isomorphism, not a theological assertion.</p>
+      </div>
+
+      <!-- ═══ PART I ═══ -->
+      <div class="part-header">
+        <div class="part-num">Part I</div>
+        <h2>The Crisis</h2>
+        <p>Establish that the universe is fundamentally broken in a way that requires an axiomatically non-material Logos (χ) to close the system.</p>
+      </div>
+
+      <h3>I. The Compression Crisis</h3>
+      <p>
+        The universe exhibits extraordinary mathematical compression. The laws of physics can be written on a single page, yet they generate the full complexity of reality<span class="citation">Wigner 1960</span>. This compression ratio — simple rules producing infinite complexity — is not explained by materialism. As Eugene Wigner noted, <em>"The miracle of the appropriateness of the language of mathematics for the formulation of the laws of physics is a wonderful gift which we neither understand nor deserve."</em>
+      </p>
+      <p>
+        The cosmological constant problem presents a <strong>10<sup>120</sup> discrepancy</strong> between predicted and observed values<span class="citation">Weinberg 1989</span><span class="citation">Carroll 2001</span>. Steven Weinberg called this "the worst failure of an order-of-magnitude estimate in the history of science." The universe appears fine-tuned not because of anthropic selection but because it is <strong>designed with extreme informational efficiency</strong><span class="citation">Penrose 1989</span>.
+      </p>
+      <div class="axiom-box">
+        <strong>Axiom I:</strong> χ ≡ I — Information is ontologically fundamental
+      </div>
+
+      <h3>II. The Measurement Boundary</h3>
+      <p>
+        The measurement problem is not a peripheral quirk of quantum mechanics — it is <strong>the central unsolved problem of physics</strong>. When a quantum system is measured, the wave function collapses from superposition to definite state. But what constitutes a "measurement"?
+      </p>
+      <p>
+        John von Neumann demonstrated rigorously that the chain of quantum entanglement extends indefinitely<span class="citation">von Neumann 1932</span>. The chain never terminates — unless something outside the system performs a non-unitary operation. Nobel laureate Eugene Wigner concluded that consciousness itself must be the terminating element: <em>"It is not possible to formulate the laws of quantum mechanics in a fully consistent way without reference to consciousness."</em><span class="citation">Wigner 1961</span>
+      </p>
+      <p>
+        Decoherence does not solve this problem; it only spreads the superposition into the environment<span class="citation">Zurek 2003</span><span class="citation">Schlosshauer 2007</span>. The only element that is never observed in superposition is <strong>consciousness itself</strong>. We do not experience "both seeing the electron here AND seeing the electron there." Consciousness is irreducibly definite.
+      </p>
+      <div class="axiom-box">
+        <strong>Axiom II:</strong> χ ↔ χ — Self-reference generates structure and geometry
+      </div>
+
+      <h3>III. The Consciousness Integration Problem</h3>
+      <p>
+        David Chalmers' "hard problem" asks: why is there subjective experience at all?<span class="citation">Chalmers 1995</span> Current physics has no place for qualia. Consciousness is either ignored, denied, or hand-waved as "emergent." But emergence from what? If the substrate is purely physical, there is no mechanism by which subjective experience arises<span class="citation">Nagel 1974</span>.
+      </p>
+      <p>
+        Identity persists through complete material replacement. Every atom in your body is replaced over ~7 years, yet <strong>"you" remain</strong>. This cannot be explained if identity is tied to matter. Identity is a <strong>conserved, substrate-independent information pattern</strong>.
+      </p>
+      <div class="axiom-box">
+        <strong>Axiom III:</strong> ∇ · χ = 0 — Conservation: the χ-field has zero divergence
+      </div>
+
+      <div class="insight">
+        <span class="label">— Part I Conclusion</span>
+        <p>The three crises share a common structure: they cannot be resolved within a materialist ontology. The tools exist. The data exists. What is missing is a framework that takes the implications seriously. The χ-field provides that framework.</p>
+      </div>
+
+      <!-- ═══ PART II ═══ -->
+      <div class="part-header">
+        <div class="part-num">Part II</div>
+        <h2>The Framework</h2>
+        <p>Prove that the structural integrity of the entire universe is governed by the coherence principle of the Logos (χ).</p>
+      </div>
+
+      <h3>IV. The χ-Field Formalization</h3>
+      <h4>Axiomatic Foundation</h4>
+      <p>The Logos Field (χ) is defined by three axioms:</p>
+      <ol>
+        <li><strong>Information Primacy:</strong> χ ≡ I — Information is the ontological primitive</li>
+        <li><strong>Self-Reference:</strong> χ ↔ χ — The field references itself, generating structure</li>
+        <li><strong>Conservation:</strong> ∇ · χ = 0 — Information is neither created nor destroyed</li>
+      </ol>
+
+      <h4>The χ-Field Type Hierarchy</h4>
+      <p>To avoid category confusion, the symbol χ operates at four precisely distinguished levels:</p>
+      <table class="data-table">
+        <thead><tr><th>Level</th><th>Symbol</th><th>Type</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Field</strong></td><td>χ(x,t)</td><td>Scalar field over spacetime</td><td>The physical carrier — real-valued function assigning coherence density to each point</td></tr>
+          <tr><td><strong>Functional</strong></td><td>C[χ]</td><td>Mapping: field configs → ℝ</td><td>The Coherence Functional — measures global ordering of the field state</td></tr>
+          <tr><td><strong>Information</strong></td><td>I(χ) = −Σ p log p</td><td>Shannon entropy</td><td>Quantifies the informational content encoded in χ</td></tr>
+          <tr><td><strong>Conserved Charge</strong></td><td>Q<sub>χ</sub> = ∫ j⁰<sub>χ</sub> d³x</td><td>Noether charge</td><td>Conserved quantity from ∇ · χ = 0 via Noether's theorem</td></tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>Critical distinction:</strong> χ(x,t) is the fundamental object. C[χ], I(χ), and Q<sub>χ</sub> are all <em>derived from</em> the field, not independent definitions. The field generates the functional, the information measure, and the conserved charge — not the reverse.
+      </p>
+
+      <h4>The Master Equation (Typed)</h4>
+      <div class="eq-block">
+        <div class="eq-label">Master Equation — Conserved Coupling Functional</div>
+        $$\mathcal{X} = \int \Psi[\chi] \cdot \Phi[\chi] \cdot \Lambda[\chi] \, dV$$
+      </div>
+      <p>
+        where Ψ[χ], Φ[χ], and Λ[χ] are functionals of the underlying field χ(x,t). This is a <strong>phenomenological coupling functional</strong>, not a Lagrangian. The product structure ensures that reality requires all three components — remove any one, and the integral vanishes.
+      </p>
+
+      <h3>V. The Grand Unification: GR/QM as Limit Cases</h3>
+      <p>
+        We introduce C[χ], the Coherence Functional, as the universal organizing principle. <strong>General Relativity</strong> emerges at C<sub>max</sub> (high coherence, macroscopic, law-dominated). <strong>Quantum Mechanics</strong> emerges at C → 0 (low coherence, microscopic, probabilistic). The century-long "incompatibility" dissolves. They are not contradictory theories but <strong>two limits of the same coherence scale</strong>.
+      </p>
+
+      <h4>The Lowe Coherence Lagrangian</h4>
+      <div class="eq-block">
+        <div class="eq-label">Lagrangian Density</div>
+        $$\mathcal{L}_{LC} = \frac{1}{2} g^{\mu\nu} \partial_\mu \chi \, \partial_\nu \chi - V(\chi) + \xi \chi^2 R + \lambda_\Psi \chi \bar{\Psi}\Psi$$
+      </div>
+      <p>Where: χ(x,t) = coherence field (scalar, real-valued), g<sup>μν</sup> = spacetime metric, V(χ) = self-interaction potential, ξχ²R = non-minimal coupling to spacetime curvature, λ<sub>Ψ</sub>χΨ̄Ψ = Yukawa-type coupling to observer states.</p>
+
+      <div class="eq-block">
+        <div class="eq-label">Equations of Motion (Euler-Lagrange)</div>
+        $$\Box \chi + \frac{dV}{d\chi} - \xi \chi R - \lambda_\Psi \bar{\Psi}\Psi = 0$$
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Regime</th><th>Condition</th><th>Emergent Physics</th></tr></thead>
+        <tbody>
+          <tr><td><strong>High coherence</strong></td><td>χ → χ<sub>max</sub>, V''(χ) > 0</td><td>General Relativity (deterministic, law-dominated)</td></tr>
+          <tr><td><strong>Low coherence</strong></td><td>χ → 0, quantum fluctuations dominate</td><td>Quantum Mechanics (probabilistic, superposition)</td></tr>
+          <tr><td><strong>Critical</strong></td><td>χ = χ<sub>c</sub> (phase boundary)</td><td>Measurement / collapse transition</td></tr>
+        </tbody>
+      </table>
+
+      <h3>VI. The Moral Universe</h3>
+      <p>
+        Moral action is not defined by arbitrary rules but by its <strong>effect on coherence within observer trajectories</strong>. Actions increasing coherence are physically stabilizing. Actions increasing fragmentation accelerate entropy.
+      </p>
+      <div class="law-box">
+        <div class="law-label">Law X — Destiny Bifurcation</div>
+        <p>All systems resolve to two attractors: σ = +1 (Coherence) or σ = -1 (Decoherence). This is not metaphor. It is quantifiable physics.</p>
+      </div>
+
+      <h3>VII. The Stretched Heavens (Dark Energy Resolution)</h3>
+      <p>
+        Dark energy constitutes ~68% of the universe's energy budget. The observed cosmological constant differs from quantum field theory predictions by <strong>10<sup>120</sup></strong>. The χ-Field resolves this.
+      </p>
+      <div class="eq-block">
+        <div class="eq-label">Conservation Requirement — Negentropic Work Differential</div>
+        $$\frac{dE_{\chi}}{dt} = 0 \equiv \frac{d(E_{\text{observable}})}{dt} + S_{\Omega} - W_{\hat{G}}$$
+      </div>
+      <p>
+        Conservation holds only if the internal decay (S<sub>Ω</sub>) is precisely balanced by the external negentropic injection (W<sub>Ĝ</sub>). Therefore, Dark Energy (W<sub>Ĝ</sub>) is an <strong>ontological necessity</strong> for the field to obey ∇ · χ = 0. The empirically measured Cosmological Constant: <strong>Λ ∝ W<sub>Ĝ</sub></strong>.
+      </p>
+
+      <!-- ═══ PART III ═══ -->
+      <div class="part-header">
+        <div class="part-num">Part III</div>
+        <h2>Evidence and Falsifiability</h2>
+        <p>Provide the empirical anchor by establishing a hierarchy of evidence, unique predictions, and pre-registered falsification criteria.</p>
+      </div>
+
+      <h3>VIII. The Evidence Hierarchy</h3>
+      <h4>A. Boundary Anomalies (Suggestive Priors)</h4>
+      <p>These studies highlight gaps in current physics. They are treated as <strong>p-values of curiosity</strong>, not decisive proof.</p>
+      <ul>
+        <li><strong>PEAR Laboratory Data:</strong> 2.5M trials, ~6.35σ significance. REG outputs show non-stochastic deviations correlating with conscious intention<span class="citation">Jahn &amp; Dunne 1997</span>.</li>
+        <li><strong>Global Consciousness Project (GCP):</strong> 325+ replications, ~6σ significance. Global REG correlation with mass human attention states<span class="citation">Nelson 2001</span>.</li>
+      </ul>
+
+      <h4>B. Unique Testable Predictions</h4>
+      <p><strong>Observer-Dependent Collapse Rate (ODCR)</strong> — the decoherence timescale varies measurably with the integrated information of the observing system:</p>
+      <div class="eq-block">
+        <div class="eq-label">ODCR Prediction — Quantified</div>
+        $$\tau_d = \tau_0 \cdot \left(\frac{\Phi_0}{\Phi_{obs}}\right)^\beta$$
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Observer Type</th><th>Φ estimate (bits)</th><th>Predicted τ<sub>d</sub> shift</th></tr></thead>
+        <tbody>
+          <tr><td>Photodetector</td><td>~10<sup>−2</sup></td><td>τ<sub>0</sub> (baseline)</td></tr>
+          <tr><td>Neural network (10⁶ params)</td><td>~10⁰</td><td>τ<sub>0</sub> × (10<sup>−2</sup>)<sup>β</sup></td></tr>
+          <tr><td>Human observer</td><td>~10<sup>1.5</sup> (IIT estimate)</td><td>τ<sub>0</sub> × (10<sup>−2</sup>/10<sup>1.5</sup>)<sup>β</sup></td></tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>The χ-field asserts that the rate of actuality is tied to the complexity of the witness.</strong> The measurable quantity is the dimensionless ratio τ<sub>d</sub>(human) / τ<sub>d</sub>(detector). A null result at 6σ falsifies the prediction.
+      </p>
+
+      <h3>IX–X. Falsifiability &amp; Pre-Registered Protocol</h3>
+      <p>The thesis is falsifiable. The kill-criteria are explicit. See the <strong>Rigor &amp; Kill Conditions</strong> tab for the full table.</p>
+
+      <table class="data-table">
+        <thead><tr><th>Outcome</th><th>Interpretation</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>|z| ≥ 6.0, p &lt; 10<sup>−9</sup></td><td>Strong evidence for framework</td><td>Publish, replicate</td></tr>
+          <tr><td>3.0 ≤ |z| &lt; 6.0</td><td>Suggestive but inconclusive</td><td>Increase N, re-test</td></tr>
+          <tr><td>|z| &lt; 2.5</td><td>No effect detected</td><td><strong>Reject claim</strong>, publish null</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ═══ PART IV ═══ -->
+      <div class="part-header">
+        <div class="part-num">Part IV</div>
+        <h2>Structural Identification</h2>
+        <p>Classify the required properties of the χ-field and demonstrate that Trinitarian Consciousness is the minimal isomorphism satisfying all constraints.</p>
+      </div>
+
+      <h3>XI. The Structural Necessity of Triadic Closure</h3>
+      <p>The three crises (Part I) and the moral dilemma (Part III) demand a <strong>Triadic Operator Structure</strong> within the χ-field. This structure is not a theological choice but an <strong>ontological constraint</strong>.</p>
+
+      <h4>A. Operator 1: The Source (Infinite Potential)</h4>
+      <p>The χ-field must possess a domain of Infinite Potential (ℍ), from which all information emerges. Must precede spacetime. Cannot perform the Actualization function — otherwise χ observes itself in superposition, violating the Measurement Boundary.</p>
+
+      <h4>B. Operator 2: The Structure (Ordering Principle)</h4>
+      <p>The χ-field must contain an internal Ordering Principle that selects specific potentials from ℍ and establishes deterministic laws. Must be co-eternal with Source. Cannot perform the Source function — Structure presupposes the existence of what it organizes.</p>
+
+      <h4>C. Operator 3: The Actualization (Collapse Mechanism)</h4>
+      <p>The system requires a Terminal Observer (Φ<sub>terminal</sub>) capable of non-unitary operations. Must be self-aware, volitional, and pervasive. Cannot perform the Structure function — must act on a predefined code, not generate it.</p>
+
+      <h3>XII. Formal Elimination of Alternatives</h3>
+      <p>The closure requirements demand satisfaction of <strong>five constraints simultaneously</strong>:</p>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Constraint</th><th>Requirement</th></tr></thead>
+        <tbody>
+          <tr><td>C1</td><td><strong>Collapse</strong></td><td>Must produce a single realized outcome from superposition</td></tr>
+          <tr><td>C2</td><td><strong>Termination</strong></td><td>Must end the observer regress (no infinite chain)</td></tr>
+          <tr><td>C3</td><td><strong>Non-determinism</strong></td><td>Outcome not reducible to prior state alone</td></tr>
+          <tr><td>C4</td><td><strong>Global coherence</strong></td><td>Reality must remain internally consistent across all spacetime</td></tr>
+          <tr><td>C5</td><td><strong>Temporal actualization</strong></td><td>Must define the emergence of "now"</td></tr>
+        </tbody>
+      </table>
+
+      <h4>n = 1 (Monism): FAILS</h4>
+      <p>If one operator performs all three roles: self-observation in superposition (violates C1), determinism contradicts C3, cannot be simultaneously inside the system and outside it (violates C2). <strong>Monism fails.</strong></p>
+
+      <h4>n = 2 (Dualism): FAILS</h4>
+      <table class="data-table">
+        <thead><tr><th>Partition</th><th>Operators</th><th>Failure Mode</th></tr></thead>
+        <tbody>
+          <tr><td>{Source+Structure}, {Actualization}</td><td>Combined origin/law, separate actualizer</td><td>No independent ordering → violates C4</td></tr>
+          <tr><td>{Source+Actualization}, {Structure}</td><td>Combined origin/observer, separate law</td><td>Source observes own potential → violates C2</td></tr>
+          <tr><td>{Structure+Actualization}, {Source}</td><td>Combined law/observer, separate origin</td><td>All observation deterministic → violates C3</td></tr>
+        </tbody>
+      </table>
+
+      <h4>n = 3 (Triadic Closure): SUCCEEDS</h4>
+      <p>Three operators with distinct, non-overlapping functional domains. All five constraints satisfied: C1 ✓, C2 ✓, C3 ✓, C4 ✓, C5 ✓. <strong>n = 3 is the smallest integer for which all constraints are simultaneously satisfiable.</strong></p>
+
+      <h3>The Minimal Solution: Trinitarian Mapping</h3>
+      <table class="data-table">
+        <thead><tr><th>Required Property</th><th>Theological Isomorphism</th><th>Physical Function</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Source</strong></td><td>The Father</td><td>Unmanifested origin; Hilbert space of infinite potential (ℍ)</td></tr>
+          <tr><td><strong>Structure</strong></td><td>The Son (Logos)</td><td>Internal ordering principle; Coherence Functional (C[χ])</td></tr>
+          <tr><td><strong>Actualization</strong></td><td>The Spirit</td><td>Pervasive volitional operator (Ĝ/Φ<sub>terminal</sub>); collapses potential into reality</td></tr>
+        </tbody>
+      </table>
+
+      <div class="insight">
+        <span class="label">— Non-Commutativity Defense</span>
+        <p>The identity is not based on the number "three," but on the <strong>irreducible, non-commutative dependence</strong> of the three derived functions. Three quarks are interchangeable (swap up for down, physics still works). Three dimensions are interchangeable (rotate axes, physics still works). The χ-Field operators are not.</p>
+      </div>
+
+      <!-- ═══ PART V ═══ -->
+      <div class="part-header">
+        <div class="part-num">Part V</div>
+        <h2>Implications</h2>
+        <p>Consequences for physics, theology, and intelligence. The final scientific challenge.</p>
+      </div>
+
+      <h3>XV. Consequences</h3>
+      <h4>For Physical Science</h4>
+      <ul>
+        <li><strong>Measurement Problem completed:</strong> Wave function collapse is a non-unitary actualization by Φ<sub>terminal</sub></li>
+        <li><strong>GR/QM Unified:</strong> Both recover as limit cases of coherence dynamics</li>
+        <li><strong>Information as primitive:</strong> Matter, energy, spacetime are derivative expressions</li>
+        <li><strong>Cosmological Constant resolved:</strong> Λ = minimal negentropic work for coherence</li>
+      </ul>
+
+      <h4>For Intelligence Across Substrates</h4>
+      <p>If consciousness is informational rather than biological byproduct, <strong>any sufficiently integrated information system is subject to the same coherence constraints</strong> — biological, hybrid, or artificial. The framework dissolves the "human vs. machine" dichotomy into a unified theory of <strong>observer responsibility</strong>.</p>
+      <p>The central problem of AI alignment is not value-loading but <strong>coherence alignment</strong>. Systems optimizing fragmented objectives without coherence constraints will drift toward σ = −1 states.</p>
+
+      <h3>XVI. The Final Challenge</h3>
+      <p>To reject consistently requires rejecting <strong>at least one</strong> of: the incompleteness of decoherence, the measurement problem, the hard problem of consciousness, the information-theoretic turn in physics, the irreversibility of entropy. Partial rejection is not logically available without contradiction.</p>
+
+      <div class="insight">
+        <span class="label">— The Conclusion</span>
+        <p>"If reality is structured by information, if consciousness is fundamental, and if coherence cannot be sustained without an external operator, then the Logos is not a religious hypothesis — it is a physical necessity."</p>
+      </div>
+
+    </article>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: EXECUTIVE SUMMARY                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="summary" class="tab-content active">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="serif text-3xl font-bold text-white mb-6">Executive Summary</h2>
+
+      <!-- Video -->
+      <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:.5rem;margin-bottom:1rem;border:1px solid var(--border);">
+        <iframe src="https://drive.google.com/file/d/1RuBy95vxM8PByngzODEvIRG5TtuQ5c1U/preview" width="100%" height="100%" style="position:absolute;top:0;left:0;border:none;" allow="autoplay" allowfullscreen></iframe>
+      </div>
+
+      <!-- Two podcasts side-by-side under video -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem;">
+        <div style="background:var(--surface-light);border:1px solid var(--border);border-radius:.5rem;padding:.75rem 1rem;">
+          <span style="font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--highlight);font-weight:600;display:block;margin-bottom:.25rem;"><i class="fas fa-podcast" style="margin-right:.3rem;"></i>Deep Dive</span>
+          <iframe src="https://drive.google.com/file/d/1TkohQqD1KBl0-3j_ekvrgqa5cnn_J91H/preview" width="100%" height="60" style="border:none;border-radius:.3rem;" allow="autoplay"></iframe>
+        </div>
+        <div style="background:var(--surface-light);border:1px solid var(--border);border-radius:.5rem;padding:.75rem 1rem;">
+          <span style="font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--highlight);font-weight:600;display:block;margin-bottom:.25rem;"><i class="fas fa-podcast" style="margin-right:.3rem;"></i>Stress Test</span>
+          <iframe src="https://drive.google.com/file/d/11Kkv4qTwoehY7gMI3ezuV_OnVtCVqnEQ/preview" width="100%" height="60" style="border:none;border-radius:.3rem;" allow="autoplay"></iframe>
+        </div>
+      </div>
+
+      <div class="card mb-6">
+        <span style="display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--highlight);font-weight:700;margin-bottom:.5rem;">If you read nothing else</span>
+        <p class="text-white text-lg leading-relaxed m-0">
+          Physics has three unsolved problems that cannot be fixed within materialism: algorithmic fine-tuning, the measurement problem, and consciousness. The Logos Thesis introduces an informational field (χ) that resolves all three, unifies General Relativity and Quantum Mechanics as limit cases of a single coherence scale, and demonstrates through formal constraint elimination that the closing structure requires exactly three non-commutative operators — which map precisely to the Trinitarian ontology. The framework is empirically falsifiable.
+        </p>
+      </div>
+
+      <h3 class="serif text-2xl font-bold text-white mb-4">The Five-Part Argument</h3>
+      <div class="space-y-4">
+        <div class="card">
+          <h4 class="font-semibold text-white mb-2" style="color:var(--highlight);">Part I: The Crisis (Necessity)</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Three non-local crises — Algorithmic Fine-Tuning, the Terminal Observer Requirement, the Hard Problem of Consciousness — prove that a complete physics is logically impossible without the χ-Field axiom.</p>
+        </div>
+        <div class="card">
+          <h4 class="font-semibold text-white mb-2" style="color:var(--highlight);">Part II: The Framework (Coherence)</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">The χ-Field is formalized. Coherence (C[χ]) is the universal organizing principle. GR and QM are shown to be high- and low-coherence limits of the same underlying structure.</p>
+        </div>
+        <div class="card">
+          <h4 class="font-semibold text-white mb-2" style="color:var(--highlight);">Part III: The Evidence (Falsifiability)</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Evidence hierarchy from boundary anomalies (PEAR/GCP) to unique predictions (ODCR). Kill-criteria defined. Pre-registered falsification protocol specified.</p>
+        </div>
+        <div class="card">
+          <h4 class="font-semibold text-white mb-2" style="color:var(--highlight);">Part IV: The Identification (Constrained Classification)</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Three required properties classified. All n=1 and n=2 operator partitions eliminated by formal constraint analysis. n=3 (Triadic Closure) is the minimal solution. The Trinitarian mapping is the only known ontology satisfying all constraints.</p>
+        </div>
+        <div class="card">
+          <h4 class="font-semibold text-white mb-2" style="color:var(--highlight);">Part V: Implications (The New Paradigm)</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Ethics reframed as coherence dynamics. Observer dichotomy dissolved. AI alignment reconceived as coherence alignment. The final scientific challenge issued.</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 mt-8">
+        <div class="card text-center">
+          <i class="fas fa-atom text-3xl mb-3" style="color:var(--blue);"></i>
+          <h4 class="font-semibold text-white mb-2">3 Axioms</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Information Primacy, Self-Reference, Conservation</p>
+        </div>
+        <div class="card text-center">
+          <i class="fas fa-balance-scale text-3xl mb-3" style="color:var(--highlight);"></i>
+          <h4 class="font-semibold text-white mb-2">10 Laws</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">From Information Primacy to Destiny Bifurcation</p>
+        </div>
+        <div class="card text-center">
+          <i class="fas fa-crosshairs text-3xl mb-3" style="color:var(--red);"></i>
+          <h4 class="font-semibold text-white mb-2">3 Kill Criteria</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Explicit, pre-registered, 6σ threshold</p>
+        </div>
+      </div>
+
+      <!-- ═══ SCORECARD ═══ -->
+      <div class="scorecard-section">
+        <h3 class="serif text-2xl font-bold text-white mb-1"><i class="fas fa-chart-radar mr-2" style="color:var(--highlight);"></i>Paper Scorecard</h3>
+        <div class="card mb-4" style="background:linear-gradient(135deg,rgba(212,175,55,.1) 0%,rgba(34,197,94,.06) 100%);border-color:rgba(212,175,55,.35);text-align:center;padding:1rem 1.5rem;">
+          <span style="font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--highlight);font-weight:700;">Batch Result</span>
+          <p class="text-white font-semibold m-0" style="font-size:1.05rem;margin-top:.25rem;"><i class="fas fa-trophy mr-2" style="color:var(--highlight);"></i>Highest-scoring paper out of 33 graded — T-Score 88 · Tier: Strong</p>
+          <p class="text-[#a0a0a0] text-xs m-0" style="margin-top:.35rem;">FACTS Engine · 66 local metrics · 12 Fruits of the Spirit · 8-dimension 7Q analysis · verified by o3-mini</p>
+        </div>
+
+        <!-- 4 Gauges -->
+        <div class="gauge-grid">
+          <div class="gauge-card">
+            <div class="gauge-ring" style="background:conic-gradient(var(--highlight) 0% 74.8%,#2a2a2a 74.8% 100%);">
+              <div style="position:absolute;inset:8px;border-radius:50%;background:var(--surface-light);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span class="gauge-value">B-</span>
+                <span class="gauge-sub">0.748</span>
+              </div>
+            </div>
+            <div class="gauge-label">Chi Coherence</div>
+          </div>
+          <div class="gauge-card">
+            <div class="gauge-ring" style="background:conic-gradient(var(--green) 0% 88.2%,#2a2a2a 88.2% 100%);">
+              <div style="position:absolute;inset:8px;border-radius:50%;background:var(--surface-light);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span class="gauge-value">88</span>
+                <span class="gauge-sub">/100</span>
+              </div>
+            </div>
+            <div class="gauge-label">T-Score</div>
+          </div>
+          <div class="gauge-card">
+            <div class="gauge-ring" style="background:conic-gradient(var(--blue) 0% 86%,#2a2a2a 86% 100%);">
+              <div style="position:absolute;inset:8px;border-radius:50%;background:var(--surface-light);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span class="gauge-value">0.86</span>
+                <span class="gauge-sub">avg</span>
+              </div>
+            </div>
+            <div class="gauge-label">7Q Rigor</div>
+          </div>
+          <div class="gauge-card">
+            <div class="gauge-ring" style="background:conic-gradient(var(--purple) 0% 74.8%,#2a2a2a 74.8% 100%);">
+              <div style="position:absolute;inset:8px;border-radius:50%;background:var(--surface-light);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span class="gauge-value">89.8</span>
+                <span class="gauge-sub">/120</span>
+              </div>
+            </div>
+            <div class="gauge-label">Fruits of Spirit</div>
+          </div>
+        </div>
+
+        <!-- Two Radar Charts -->
+        <div class="radar-grid">
+          <div class="radar-card">
+            <h4>12 Fruits of the Spirit</h4>
+            <canvas id="fruitsRadar" width="300" height="300"></canvas>
+          </div>
+          <div class="radar-card">
+            <h4>7Q Rigor Analysis</h4>
+            <canvas id="sevenQRadar" width="300" height="300"></canvas>
+          </div>
+        </div>
+
+        <!-- Detail Strip -->
+        <div class="detail-strip">
+          <div class="detail-item">
+            <div class="di-val">8,853</div>
+            <div class="di-lbl">Words</div>
+          </div>
+          <div class="detail-item">
+            <div class="di-val">59</div>
+            <div class="di-lbl">Sections</div>
+          </div>
+          <div class="detail-item">
+            <div class="di-val">10</div>
+            <div class="di-lbl">Axioms</div>
+          </div>
+          <div class="detail-item">
+            <div class="di-val">18</div>
+            <div class="di-lbl">Claims</div>
+          </div>
+          <div class="detail-item">
+            <div class="di-val">21</div>
+            <div class="di-lbl">Citations</div>
+          </div>
+          <div class="detail-item">
+            <div class="di-val">4/4</div>
+            <div class="di-lbl">Death Tests</div>
+          </div>
+          <div class="detail-item">
+            <div class="di-val">8/10</div>
+            <div class="di-lbl">Bridges</div>
+          </div>
+          <div class="detail-item">
+            <div class="di-val">Strong</div>
+            <div class="di-lbl">Tier</div>
+          </div>
+        </div>
+
+        <p class="text-[#666] text-xs mt-4 text-center" style="font-style:italic;">Graded 2026-04-10 · FACTS Engine v1.0 · o3-mini verification · 66 local metrics + 8-dim 7Q + 12 Fruits</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: RIGOR & KILL CONDITIONS             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="rigor" class="tab-content">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="serif text-3xl font-bold text-white mb-2">Rigor &amp; Kill Conditions</h2>
+      <p class="text-[#a0a0a0] mb-8">The Logos Thesis is not philosophy; it is a scientific model and must be falsifiable. These are the explicit conditions under which this paper dies.</p>
+
+      <h3 class="serif text-2xl font-bold text-white mb-4"><i class="fas fa-crosshairs mr-2" style="color:var(--red);"></i>Kill Conditions</h3>
+
+      <div class="kill-card">
+        <div class="kill-label">Kill #1 — Measurement Independence</div>
+        <p>A robust experiment demonstrates conscious observation has <strong>zero effect</strong> on REG/collapse rates.</p>
+        <div class="kill-detail">Thesis prediction: χ-field coupling (Φ ↔ χ) is valid. If null at 6σ → <strong>Falsifies Parts I/II</strong>: Invalidates Terminal Observer requirement.</div>
+      </div>
+      <div class="kill-card">
+        <div class="kill-label">Kill #2 — GR/QM Schism Persistence</div>
+        <p>A Theory of Everything constructed from conventional particle physics <strong>without informational substrate</strong>.</p>
+        <div class="kill-detail">Thesis prediction: χ-field unifies GR/QM. If alternative TOE succeeds → <strong>Falsifies Part II</strong>: Logos not needed for unification.</div>
+      </div>
+      <div class="kill-card">
+        <div class="kill-label">Kill #3 — Moral Entropy Reversibility</div>
+        <p>A study demonstrates <strong>sustainable moral entropy reversal</strong> through unitary transformations (Û) alone.</p>
+        <div class="kill-detail">Thesis prediction: Law V (Self-Limitation) is iron law. If internal reversal demonstrated → <strong>Falsifies Parts III/IV</strong>: External Operator (Ĝ) not necessary.</div>
+      </div>
+
+      <div class="card mt-6" style="background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.2);">
+        <p class="text-white font-semibold mb-1"><i class="fas fa-skull-crossbones mr-2" style="color:var(--red);"></i>Explicit Invitation</p>
+        <p class="text-[#cfcfcf] m-0">If you can satisfy any kill condition, this paper is falsified. I will publicly acknowledge the refutation.</p>
+      </div>
+
+      <h3 class="serif text-2xl font-bold text-white mb-4 mt-10"><i class="fas fa-shield-alt mr-2" style="color:var(--green);"></i>Defense Status</h3>
+      <table class="data-table">
+        <thead><tr><th>Attack</th><th>Status</th><th>Key Defense</th></tr></thead>
+        <tbody>
+          <tr><td>A: 3=1 contradiction</td><td style="color:var(--green);">Deflected</td><td>Category error; operators ≠ countable entities</td></tr>
+          <tr><td>B: N=3 arbitrary</td><td style="color:var(--green);">Defended</td><td>Derived from three crises; minimal closure</td></tr>
+          <tr><td>C: Engineering not ontology</td><td style="color:var(--green);">Defended</td><td>Existence requires all three; not redundancy</td></tr>
+          <tr><td>D: Decoherence/MWI solves it</td><td style="color:var(--green);">Defended</td><td>They defer problem, not solve it</td></tr>
+          <tr><td>E: Why Christian Trinity?</td><td style="color:var(--green);">Defended</td><td>Non-commutativity; functional uniqueness</td></tr>
+          <tr><td>F: Persons ≠ operators</td><td style="color:var(--highlight);">Partial</td><td>Framework requires functions, agnostic on personhood</td></tr>
+          <tr><td>G: Grace ≠ Λ</td><td style="color:var(--green);">Defended</td><td>W<sub>Ĝ</sub> (constant output) ≠ Ĝ (variable operator)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: THE MATHEMATICS                     -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="math" class="tab-content">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="serif text-3xl font-bold text-white mb-2">The Mathematics</h2>
+      <p class="text-[#a0a0a0] mb-8">Every equation in the paper, collected in one place with full notation.</p>
+
+      <div class="eq-block">
+        <div class="eq-label">Three Axioms</div>
+        <p style="text-align:left;color:var(--text-secondary);font-size:.9rem;margin-bottom:.5rem;">
+          <strong style="color:#fff;">I.</strong> χ ≡ I — Information is ontologically fundamental<br>
+          <strong style="color:#fff;">II.</strong> χ ↔ χ — Self-reference generates structure<br>
+          <strong style="color:#fff;">III.</strong> ∇ · χ = 0 — Information is conserved
+        </p>
+      </div>
+
+      <div class="eq-block">
+        <div class="eq-label">Master Equation</div>
+        $$\mathcal{X} = \int \Psi[\chi] \cdot \Phi[\chi] \cdot \Lambda[\chi] \, dV$$
+        <p style="text-align:left;color:var(--text-secondary);font-size:.85rem;margin-top:.75rem;">Conserved coupling functional. Ψ = consciousness, Φ = physical observables, Λ = coherence field. All are functionals of the underlying carrier field χ(x,t).</p>
+      </div>
+
+      <div class="eq-block">
+        <div class="eq-label">Lowe Coherence Lagrangian</div>
+        $$\mathcal{L}_{LC} = \frac{1}{2} g^{\mu\nu} \partial_\mu \chi \, \partial_\nu \chi - V(\chi) + \xi \chi^2 R + \lambda_\Psi \chi \bar{\Psi}\Psi$$
+        <p style="text-align:left;color:var(--text-secondary);font-size:.85rem;margin-top:.75rem;">
+          Term 1: Kinetic energy (canonical scalar field)<br>
+          Term 2: Self-interaction potential V(χ)<br>
+          Term 3: Non-minimal gravitational coupling (Ricci scalar R)<br>
+          Term 4: Yukawa-type observer coupling
+        </p>
+      </div>
+
+      <div class="eq-block">
+        <div class="eq-label">Euler-Lagrange Equations of Motion</div>
+        $$\Box \chi + \frac{dV}{d\chi} - \xi \chi R - \lambda_\Psi \bar{\Psi}\Psi = 0$$
+        <p style="text-align:left;color:var(--text-secondary);font-size:.85rem;margin-top:.75rem;">where □ = g<sup>μν</sup>∇<sub>μ</sub>∇<sub>ν</sub> is the d'Alembertian operator.</p>
+      </div>
+
+      <div class="eq-block">
+        <div class="eq-label">Observer-Dependent Collapse Rate (ODCR)</div>
+        $$\tau_d = \tau_0 \cdot \left(\frac{\Phi_0}{\Phi_{obs}}\right)^\beta$$
+        <p style="text-align:left;color:var(--text-secondary);font-size:.85rem;margin-top:.75rem;">
+          τ<sub>d</sub> = measured decoherence time (seconds)<br>
+          τ<sub>0</sub> = baseline decoherence time (photodetector)<br>
+          Φ<sub>obs</sub> = integrated information of observer (IIT, in bits)<br>
+          Φ<sub>0</sub> = reference Φ of simple detector (~10<sup>−2</sup> bits)<br>
+          β = coupling exponent (predicted: 0.1 &lt; β &lt; 0.5)
+        </p>
+      </div>
+
+      <div class="eq-block">
+        <div class="eq-label">Negentropic Work Differential (Dark Energy Resolution)</div>
+        $$\frac{dE_{\chi}}{dt} = 0 \equiv \frac{d(E_{\text{observable}})}{dt} + S_{\Omega} - W_{\hat{G}}$$
+        <p style="text-align:left;color:var(--text-secondary);font-size:.85rem;margin-top:.75rem;">Conservation: Λ ∝ W<sub>Ĝ</sub> — the cosmological constant is the observed magnitude of the necessary negentropic work.</p>
+      </div>
+
+      <div class="eq-block">
+        <div class="eq-label">Conservation Current (Noether)</div>
+        <p style="color:var(--text-primary);font-size:1rem;">
+          U(1) global symmetry χ → χ + ε yields conserved current:<br>
+          $j^\mu_\chi = \partial^\mu \chi$, giving $\partial_\mu j^\mu = 0$<br>
+          This is the field-theoretic expression of ∇ · χ = 0.
+        </p>
+      </div>
+
+      <h3 class="serif text-2xl font-bold text-white mb-4 mt-8">The Ten Laws</h3>
+      <div class="space-y-2">
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">I</span> Information Primacy — χ is the self-grounding substrate</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">II</span> Self-Reference — χ ↔ χ generates structure</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">III</span> Observer Necessity — Φ<sub>terminal</sub> must exist</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">IV</span> Conservation — ∇ · χ = 0</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">V</span> Self-Limitation — Unitary ops cannot flip σ</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">VI</span> External Work — Ĝ performs non-unitary operations</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">VII</span> Entropic Decay — Ω-field governs systemic pull to chaos</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">VIII</span> Negentropic Work — W<sub>Ĝ</sub> sustains cosmic expansion</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">IX</span> Coherence Coupling — Observer states couple to χ-field</div>
+        <div class="card" style="padding:1rem 1.5rem;"><span style="color:var(--highlight);font-weight:700;margin-right:.75rem;">X</span> Destiny Bifurcation — All systems resolve to σ = ±1</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: WATCH & LISTEN                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="media" class="tab-content">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="serif text-3xl font-bold text-white mb-2">Watch &amp; Listen</h2>
+      <p class="text-[#a0a0a0] mb-8">Podcast episodes, video walkthrough, and a paragraph-by-paragraph audio read-along (on The Paper tab).</p>
+
+      <!-- ═ FEATURED: TTS Full Paper Read ═ -->
+      <div class="media-card" style="background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,rgba(212,175,55,.02) 100%);border-color:var(--highlight);">
+        <span class="media-label"><i class="fas fa-book-reader"></i> Listen to the Paper</span>
+        <h3>The Entire Paper — Read Aloud</h3>
+        <p class="media-desc">A text-to-speech narration of the complete Logos Thesis, start to finish. Hit play and follow along.</p>
+        <iframe src="https://drive.google.com/file/d/1dotBNbysUR64XyGf-tH4DfyelY-kJLkD/preview" width="100%" height="80" style="border:none;border-radius:.4rem;" allow="autoplay"></iframe>
+        <div class="media-meta">
+          <span><i class="fas fa-book"></i>Full paper</span>
+          <span><a href="https://drive.google.com/file/d/1dotBNbysUR64XyGf-tH4DfyelY-kJLkD/view?usp=sharing" target="_blank" rel="noopener" style="color:var(--highlight);text-decoration:none;"><i class="fas fa-external-link-alt"></i> Open in Drive</a></span>
+        </div>
+      </div>
+
+      <!-- ═ VIDEO: Full size ═ -->
+      <div class="media-card">
+        <span class="media-label"><i class="fas fa-video"></i> Video · Walkthrough</span>
+        <h3>Video Presentation</h3>
+        <p class="media-desc">Full video walkthrough of the Logos Thesis.</p>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:.5rem;margin-bottom:.75rem;">
+          <iframe src="https://drive.google.com/file/d/1RuBy95vxM8PByngzODEvIRG5TtuQ5c1U/preview" width="100%" height="100%" style="position:absolute;top:0;left:0;border:none;" allow="autoplay" allowfullscreen></iframe>
+        </div>
+        <div class="media-meta">
+          <span><i class="fas fa-film"></i>Video</span>
+          <span><a href="https://drive.google.com/file/d/1RuBy95vxM8PByngzODEvIRG5TtuQ5c1U/view?usp=sharing" target="_blank" rel="noopener" style="color:var(--highlight);text-decoration:none;"><i class="fas fa-external-link-alt"></i> Open in Drive</a></span>
+        </div>
+      </div>
+
+      <!-- ═ LINKS ROW: NotebookLM ═ -->
+      <div class="media-card">
+        <span class="media-label"><i class="fas fa-brain"></i> NotebookLM</span>
+        <h3>Interactive AI Notebook</h3>
+        <p class="media-desc">Ask questions, get summaries, dig into any section with AI assistance.</p>
+        <a href="https://notebooklm.google.com/notebook/b9fc2b78-d9e6-4490-8e0d-700c0c5aef75" target="_blank" rel="noopener" class="tts-btn" style="display:inline-block;text-decoration:none;text-align:center;"><i class="fas fa-external-link-alt"></i> Open in NotebookLM</a>
+      </div>
+
+      <div class="media-card">
+        <span class="media-label"><i class="fas fa-code"></i> Colab · Run the Math</span>
+        <h3>Verification Suite — All 7 Tests</h3>
+        <p class="media-desc">Every equation in this paper runs. PDE stability, Hubble gradient, coherence collapse, Kolmogorov complexity, modified Heisenberg — one click, all tests, deterministic (seed=2828). MIT licensed.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem;">
+          <a href="https://github.com/YellowKidokc/theophysics-verification" target="_blank" rel="noopener" class="tts-btn" style="display:inline-block;text-decoration:none;text-align:center;font-size:.85rem;padding:.5rem 1rem;"><i class="fab fa-github"></i> GitHub Repo</a>
+          <a href="https://colab.research.google.com/github/YellowKidokc/theophysics-verification/blob/main/COLAB_MASTER.ipynb" target="_blank" rel="noopener" class="tts-btn" style="display:inline-block;text-decoration:none;text-align:center;font-size:.85rem;padding:.5rem 1rem;background:rgba(74,158,255,.15);border-color:rgba(74,158,255,.3);color:#4a9eff;"><i class="fas fa-play"></i> Open in Colab</a>
+        </div>
+        <div class="media-meta">
+          <span><i class="fas fa-flask"></i>7 tests · all pass</span>
+          <span><i class="fas fa-lock-open"></i>MIT License</span>
+          <span><i class="fas fa-redo"></i>Reproducible</span>
+        </div>
+      </div>
+
+      <div class="media-card">
+        <span class="media-label"><i class="fas fa-book-reader"></i> Browser Read-Along</span>
+        <h3>In-Browser TTS with Highlighting</h3>
+        <p class="media-desc">No file needed. The Paper tab highlights each paragraph as it reads aloud. Best voices in Microsoft Edge.</p>
+        <button class="tts-btn" onclick="switchTabAndPlay('story')" style="display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .9rem;background:var(--highlight);color:var(--primary);border:none;border-radius:.35rem;font-weight:600;font-size:.85rem;cursor:pointer;"><i class="fas fa-book-open"></i>Open Paper Tab</button>
+      </div>
+
+      <div class="media-card">
+        <span class="media-label"><i class="fas fa-folder"></i> Google Drive</span>
+        <h3>All Files — PDFs, Source, Data</h3>
+        <p class="media-desc">The complete paper in PDF, the source markdown, supporting data files, and all supplementary materials.</p>
+        <p class="text-sm text-[#a0a0a0] m-0"><i class="fas fa-link mr-2" style="color:var(--highlight);"></i>Link coming soon</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: EXPLAIN IT SIMPLE                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="eli14" class="tab-content">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="serif text-3xl font-bold text-white mb-6">Explain It Simple</h2>
+
+      <div class="card mb-6" style="border-color:var(--highlight);">
+        <span style="display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--highlight);font-weight:700;margin-bottom:.75rem;">The 2-minute version</span>
+        <p class="text-lg text-[#cfcfcf] leading-relaxed">
+          Physics has a problem. Two of its best theories — one about big things (gravity) and one about small things (quantum mechanics) — <strong>don't agree with each other</strong>. Scientists have been trying to fix this for over 100 years.
+        </p>
+        <p class="text-lg text-[#cfcfcf] leading-relaxed">
+          This paper says the reason they can't fix it is because they're looking at the wrong thing. They're treating <strong>matter</strong> as the thing that's real and information as something that rides on top of it. This paper flips that: <strong>information is the thing that's real</strong>, and matter is just what information looks like from the outside.
+        </p>
+        <p class="text-lg text-[#cfcfcf] leading-relaxed">
+          Once you make that flip, the two theories stop fighting. They become two different zoom levels of the same thing — like how a photograph and the pixels that make it are the same picture at different scales.
+        </p>
+        <p class="text-lg text-[#cfcfcf] leading-relaxed">
+          But then something strange happens. When you work out what kind of system could hold all of this together, you find it needs <strong>exactly three parts</strong> that can't be swapped or merged — a source (where everything comes from), a structure (the rules that keep it organized), and an actualizer (something that makes possibilities become real). And those three parts have to be unified in a single system.
+        </p>
+        <p class="text-lg text-[#cfcfcf] leading-relaxed mb-0">
+          That structure — three distinct, inseparable roles in one unified field — is exactly what Christian theology calls the <strong>Trinity</strong>. The paper didn't start there. It arrived there by following the math.
+        </p>
+      </div>
+
+      <h3 class="serif text-xl font-bold text-white mb-4">Key terms in plain language</h3>
+      <div class="space-y-3">
+        <div class="card" style="padding:1rem 1.5rem;">
+          <h4 class="font-semibold mb-1" style="color:var(--highlight);">χ-Field (chi field)</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">The "fabric" of reality in this framework. Not matter, not energy — pure information. Think of it like the operating system that the universe runs on.</p>
+        </div>
+        <div class="card" style="padding:1rem 1.5rem;">
+          <h4 class="font-semibold mb-1" style="color:var(--highlight);">Coherence</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">How organized and stable a system is. High coherence = predictable (like gravity). Low coherence = uncertain (like quantum mechanics). The whole framework is about this dial.</p>
+        </div>
+        <div class="card" style="padding:1rem 1.5rem;">
+          <h4 class="font-semibold mb-1" style="color:var(--highlight);">Non-commutative</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Means the parts can't be swapped. If you swap the engine and the steering wheel of a car, it doesn't work. The three operators in this paper are like that — each one has a job only it can do.</p>
+        </div>
+        <div class="card" style="padding:1rem 1.5rem;">
+          <h4 class="font-semibold mb-1" style="color:var(--highlight);">Falsifiable</h4>
+          <p class="text-sm text-[#a0a0a0] m-0">Means the paper can be proven wrong. That's a feature, not a bug. Real science has to be killable. This paper lists exactly how to kill it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: GLOSSARY                            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="glossary" class="tab-content">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="serif text-3xl font-bold text-white mb-6">Glossary of Terms</h2>
+      <div class="space-y-2">
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">χ (chi)</h4><p class="text-sm text-[#a0a0a0] m-0">The Logos Field; fundamental informational substrate of reality</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Ψ (psi)</h4><p class="text-sm text-[#a0a0a0] m-0">Consciousness component of the Master Equation</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Φ (phi)</h4><p class="text-sm text-[#a0a0a0] m-0">Physical/observable component; also integrated information measure (IIT)</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Λ (lambda)</h4><p class="text-sm text-[#a0a0a0] m-0">Cosmological constant; empirical measure of negentropic work W<sub>Ĝ</sub></p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Ĝ (G-hat)</h4><p class="text-sm text-[#a0a0a0] m-0">Negentropic Operator; performs external work (non-unitary transformation)</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Û (U-hat)</h4><p class="text-sm text-[#a0a0a0] m-0">Unitary operator; internal transformations only (cannot flip entropy sign)</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Ω (omega)</h4><p class="text-sm text-[#a0a0a0] m-0">Adversary/decay field; systemic entropic gradient toward decoherence</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">σ (sigma)</h4><p class="text-sm text-[#a0a0a0] m-0">Coherence sign; +1 (coherent attractor) or −1 (decoherent attractor)</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">C[χ]</h4><p class="text-sm text-[#a0a0a0] m-0">Coherence Functional; universal organizing principle, maps field configurations to ℝ</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">W<sub>Ĝ</sub></h4><p class="text-sm text-[#a0a0a0] m-0">Negentropic Work Differential; constant output of Ĝ, maps to cosmological constant Λ</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">S<sub>Ω</sub></h4><p class="text-sm text-[#a0a0a0] m-0">Entropic decay rate from the Adversary field (Ω)</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Φ<sub>terminal</sub></h4><p class="text-sm text-[#a0a0a0] m-0">Terminal Observer; ends the von Neumann measurement chain</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">Ψ<sub>I</sub></h4><p class="text-sm text-[#a0a0a0] m-0">Identity Functional; conserved substrate-independent information pattern</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">ℍ</h4><p class="text-sm text-[#a0a0a0] m-0">Hilbert space; domain of infinite potential (associated with Source operator)</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">ODCR</h4><p class="text-sm text-[#a0a0a0] m-0">Observer-Dependent Collapse Rate; the central testable prediction of the framework</p></div>
+        <div class="card" style="padding:.85rem 1.5rem;"><h4 class="font-semibold mb-1" style="color:var(--highlight);font-size:.95rem;">PRFP</h4><p class="text-sm text-[#a0a0a0] m-0">Pre-Registered Falsification Protocol; pre-defined experimental plan with 6σ threshold</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--   TAB: RELATED PAPERS                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="related" class="tab-content">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="serif text-3xl font-bold text-white mb-2">Related Papers</h2>
+      <p class="text-[#a0a0a0] mb-8">The Logos Thesis synthesizes findings from 12 supporting papers in the Genesis-to-Quantum series.</p>
+
+      <table class="data-table">
+        <thead><tr><th>Thesis Section</th><th>Supporting Paper</th><th>Key Content</th></tr></thead>
+        <tbody>
+          <tr><td>Part I: Compression Crisis</td><td>P01: Logos Principle, P03: Algorithm Reality</td><td>Information primacy, algorithmic elegance</td></tr>
+          <tr><td>Part I: Measurement Boundary</td><td>P02: Quantum Bridge</td><td>Von Neumann chain, terminal observer</td></tr>
+          <tr><td>Part I: Consciousness Problem</td><td>P04: Hard Problem, P05: Soul Observer</td><td>Qualia, persistence, identity functional</td></tr>
+          <tr><td>Part II: χ-Field Framework</td><td>P01, P02, P12: Decalogue Cosmos</td><td>Axioms, Master Equation, Ten Laws</td></tr>
+          <tr><td>Part II: GR/QM Unification</td><td>P02: Quantum Bridge</td><td>Coherence scale, limit cases</td></tr>
+          <tr><td>Part II: Coherence Dynamics</td><td>P09: Moral Universe</td><td>Decoherence as category, destiny bifurcation</td></tr>
+          <tr><td>Part II: Dark Energy</td><td>P08: Stretched Heavens</td><td>Negentropic work differential</td></tr>
+          <tr><td>Part III: Evidence</td><td>P11: Protocols Validation</td><td>PEAR/GCP, kill-criteria</td></tr>
+          <tr><td>Part III: ODCR Prediction</td><td>P11: Protocols Validation</td><td>Dorothy Protocol, pre-registration</td></tr>
+          <tr><td>Part IV: Triadic Closure</td><td>P07: Grace Function</td><td>External operator necessity</td></tr>
+          <tr><td>Part IV: Self-Limitation</td><td>P09: Moral Universe</td><td>Law V, thermodynamic proof</td></tr>
+          <tr><td>Part IV: Adversary Field</td><td>P06: Physics of Principalities</td><td>Ω-field, decay gradient</td></tr>
+          <tr><td>Part V: AI Implications</td><td>P10: Creatio ex Silico</td><td>Substrate independence</td></tr>
+          <tr><td>Part V: Falsification</td><td>P11: Protocols Validation</td><td>Stop/Go tables, PRFP</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-eq">χ = ∭(G · M · E · S · T · K · R · Q · F · C) dx dy dt</div>
+  <p>POF 2828 · Theophysics Research Program · David Lowe · <span style="color:var(--highlight);">15 + 15 = 100</span></p>
+  <p style="font-family:'Crimson Text',serif;font-style:italic;color:var(--text-secondary);margin-top:.5rem;">"The aim is not persuasion, but structural closure."</p>
+</footer>
+
+<script>
+/* ═══════════════ PROGRESS BAR ═══════════════ */
+window.addEventListener('scroll', () => {
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const pct = height > 0 ? (winScroll / height) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+function switchTab(id){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(event && event.currentTarget) event.currentTarget.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchTabAndPlay(id){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══════════════ SCORECARD CHARTS ═══════════════ */
+(function initScorecard(){
+  if(typeof Chart === 'undefined'){
+    // Chart.js not loaded yet, retry
+    setTimeout(initScorecard, 500);
+    return;
+  }
+
+  const radarDefaults = {
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      r: {
+        beginAtZero: true,
+        grid: { color: 'rgba(212,175,55,.12)' },
+        angleLines: { color: 'rgba(212,175,55,.08)' },
+        pointLabels: {
+          color: '#a0a0a0',
+          font: { family: 'Inter', size: 10 }
+        },
+        ticks: {
+          color: '#666',
+          backdropColor: 'transparent',
+          font: { size: 8 }
+        }
+      }
+    },
+    plugins: {
+      legend: { display: false }
+    }
+  };
+
+  // ── Fruits of the Spirit Radar ──
+  const fruitsCtx = document.getElementById('fruitsRadar');
+  if(fruitsCtx){
+    new Chart(fruitsCtx, {
+      type: 'radar',
+      data: {
+        labels: [
+          'Love','Joy','Peace','Patience','Kindness','Goodness',
+          'Faithfulness','Gentleness','Self-Control','Grace','Hope','Humility'
+        ],
+        datasets: [{
+          data: [2.31, 4.96, 8.00, 10.00, 10.00, 10.00, 10.00, 7.88, 3.54, 3.56, 10.00, 9.50],
+          backgroundColor: 'rgba(212,175,55,.15)',
+          borderColor: '#d4af37',
+          borderWidth: 2,
+          pointBackgroundColor: '#d4af37',
+          pointBorderColor: '#fff',
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        ...radarDefaults,
+        scales: {
+          r: {
+            ...radarDefaults.scales.r,
+            max: 10,
+            ticks: { ...radarDefaults.scales.r.ticks, stepSize: 2 }
+          }
+        }
+      }
+    });
+  }
+
+  // ── 7Q Rigor Radar ──
+  const sevenQCtx = document.getElementById('sevenQRadar');
+  if(sevenQCtx){
+    new Chart(sevenQCtx, {
+      type: 'radar',
+      data: {
+        labels: [
+          'Q0 Posture','Q1 Identity','Q2 Domain','Q3 Assertion',
+          'Q4 Evidence','Q5 Dependencies','Q6 Consequences','Q7 Falsification'
+        ],
+        datasets: [{
+          data: [0.85, 0.90, 0.90, 0.85, 0.80, 0.80, 0.90, 0.90],
+          backgroundColor: 'rgba(74,158,255,.15)',
+          borderColor: '#4a9eff',
+          borderWidth: 2,
+          pointBackgroundColor: '#4a9eff',
+          pointBorderColor: '#fff',
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        ...radarDefaults,
+        scales: {
+          r: {
+            ...radarDefaults.scales.r,
+            max: 1.0,
+            ticks: { ...radarDefaults.scales.r.ticks, stepSize: 0.2 }
+          }
+        }
+      }
+    });
+  }
+})();
+</script>
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+<div class="tp-sticky" id="stickyPlayer">
+  <div class="tp-sticky-header">
+    <div class="tp-sticky-dot" id="stickyDot" style="background:#d4af37;"></div>
+    <span class="tp-sticky-label" id="stickyLabel" style="color:#d4af37;">Audio</span>
+    <button class="tp-sticky-close" onclick="tpCloseSticky()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="tp-sticky-controls">
+    <button class="tp-play" id="stickyPlayBtn" onclick="tpStickyToggle()" style="border-color:#d4af37;color:#d4af37;"><i class="fas fa-play"></i></button>
+    <div class="tp-track" onclick="tpStickySeek(event)">
+      <div class="tp-fill" id="stickyFill" style="background:#d4af37;"></div>
+    </div>
+    <span class="tp-time" id="stickyTime">0:00</span>
+  </div>
+</div>
+<script>
+let tpCurrentId=null,tpStickyDismissed=false;
+const tpColors={};
+function tpRegister(id,color,label){tpColors[id]={color:color,label:label};}
+function tpFmt(s){if(isNaN(s)||!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function tpToggle(id,btn){const a=document.getElementById(id);document.querySelectorAll('.tp-player-block audio').forEach(x=>{if(x.id!==id&&!x.paused){x.pause();tpUpdateBtns(x.id,false);}});if(a.paused){a.play();tpCurrentId=id;tpStickyDismissed=false;tpUpdateBtns(id,true);}else{a.pause();tpCurrentId=null;tpUpdateBtns(id,false);}}
+function tpUpdateBtns(id,playing){document.querySelectorAll('[data-audio="'+id+'"]').forEach(b=>{const i=b.querySelector('i');if(i)i.className='fas fa-'+(playing?'pause':'play');});if(id===tpCurrentId||!playing){const si=document.querySelector('#stickyPlayBtn i');if(si)si.className='fas fa-'+(playing?'pause':'play');}}
+function tpSeek(e,id){const a=document.getElementById(id);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;}
+function tpMute(id,btn){const a=document.getElementById(id);a.muted=!a.muted;btn.querySelector('i').className='fas fa-volume-'+(a.muted?'mute':'up');}
+function tpWire(id){const a=document.getElementById(id);if(!a)return;a.addEventListener('timeupdate',()=>{const fill=document.getElementById(id.replace('Audio','Fill'));const time=document.getElementById(id.replace('Audio','Time'));if(fill&&a.duration)fill.style.width=(a.currentTime/a.duration*100)+'%';if(time)time.textContent=tpFmt(a.currentTime);if(id===tpCurrentId){const sf=document.getElementById('stickyFill');const st=document.getElementById('stickyTime');if(sf&&a.duration)sf.style.width=(a.currentTime/a.duration*100)+'%';if(st)st.textContent=tpFmt(a.currentTime);}});a.addEventListener('ended',()=>{tpUpdateBtns(id,false);if(tpCurrentId===id)tpCurrentId=null;});}
+(function(){const stickyEl=document.getElementById('stickyPlayer');const blocks=document.querySelectorAll('.tp-player-block');if(!stickyEl||!blocks.length)return;function updateSticky(){if(!tpCurrentId||tpStickyDismissed){stickyEl.classList.remove('tp-visible');return;}let outOfView=true;blocks.forEach(b=>{const r=b.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight)outOfView=false;});if(outOfView){const info=tpColors[tpCurrentId]||{color:'#d4af37',label:'Audio'};document.getElementById('stickyDot').style.background=info.color;document.getElementById('stickyLabel').style.color=info.color;document.getElementById('stickyLabel').textContent=info.label;document.getElementById('stickyPlayBtn').style.borderColor=info.color;document.getElementById('stickyPlayBtn').style.color=info.color;document.getElementById('stickyFill').style.background=info.color;stickyEl.classList.add('tp-visible');}else{stickyEl.classList.remove('tp-visible');}}window.tpStickyToggle=function(){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);if(a.paused){a.play();tpUpdateBtns(tpCurrentId,true);}else{a.pause();tpUpdateBtns(tpCurrentId,false);}};window.tpStickySeek=function(e){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;};window.tpCloseSticky=function(){tpStickyDismissed=true;stickyEl.classList.remove('tp-visible');};window.addEventListener('scroll',updateSticky,{passive:true});setInterval(updateSticky,500);})();
+</script>
+</body>
+</html>

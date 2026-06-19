@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lean 4 Corpus — Theophysics Research Initiative</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:       #070707;
+  --void-soft:  #0e0e0e;
+  --void-mid:   #151515;
+  --void-light: #1d1d1d;
+  --void-rim:   #252525;
+  --void-hover: #1a1a1a;
+  --gold:       #c8a84b;
+  --gold-soft:  #a8883b;
+  --gold-dim:   rgba(200,168,75,0.18);
+  --gold-trace: rgba(200,168,75,0.07);
+  --gold-line:  rgba(200,168,75,0.28);
+  --text-primary: #e2dbd0;
+  --text-body:    #b0a898;
+  --text-dim:     #6a6258;
+  --text-ghost:   #3e3830;
+  --green:        #2d6e3e;
+  --green-bright: #4a9e62;
+  --green-soft:   rgba(45,110,62,0.2);
+  --red:          #7a2e2e;
+  --red-bright:   #c07070;
+  --red-soft:     rgba(122,46,46,0.2);
+  --amber:        #8a6820;
+  --amber-bright: #d4a840;
+  --amber-soft:   rgba(138,104,32,0.2);
+  --blue:         #1e4e6e;
+  --blue-bright:  #5a9aca;
+  --blue-soft:    rgba(30,78,110,0.2);
+  --purple:       #4e2e6e;
+  --purple-bright:#9a70ca;
+  --purple-soft:  rgba(78,46,110,0.2);
+  --f-display: 'Cormorant Garamond', Georgia, serif;
+  --f-body:    'Inter', system-ui, sans-serif;
+  --f-mono:    'JetBrains Mono', monospace;
+  --nav-w: 220px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; background: var(--void); color: var(--text-body); scroll-behavior: smooth; }
+body { font-family: var(--f-body); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+/* ── SIDE NAV ── */
+.sidenav {
+  position: fixed; top: 0; left: 0; width: var(--nav-w);
+  height: 100vh; background: var(--void-soft);
+  border-right: 1px solid var(--void-rim);
+  overflow-y: auto; z-index: 100; padding: 1.5rem 0;
+  display: flex; flex-direction: column;
+}
+.sidenav-logo {
+  padding: 0 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--void-rim);
+  margin-bottom: 1rem;
+}
+.sidenav-logo-title {
+  font-family: var(--f-display); font-size: 1.1rem; font-weight: 400;
+  color: var(--gold); line-height: 1.2;
+}
+.sidenav-logo-sub {
+  font-family: var(--f-mono); font-size: 0.55rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-ghost); margin-top: 0.3rem;
+}
+.nav-section { margin-bottom: 0.3rem; }
+.nav-section-label {
+  font-family: var(--f-mono); font-size: 0.52rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text-ghost);
+  padding: 0.5rem 1.2rem 0.3rem; display: block;
+}
+.nav-link {
+  display: block; padding: 0.4rem 1.2rem;
+  font-size: 0.8rem; color: var(--text-dim);
+  text-decoration: none; transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+.nav-link:hover { color: var(--text-primary); background: var(--void-mid); border-left-color: var(--gold); }
+.nav-link.active { color: var(--gold); border-left-color: var(--gold); background: var(--gold-trace); }
+.nav-sub { padding-left: 0.6rem; }
+.nav-sub .nav-link { font-size: 0.72rem; padding: 0.3rem 1.2rem 0.3rem 1.8rem; }
+
+/* ── MAIN ── */
+.main { margin-left: var(--nav-w); min-height: 100vh; }
+
+/* ── HERO ── */
+.hero {
+  padding: 5rem 3rem 4rem;
+  border-bottom: 1px solid var(--void-rim);
+  position: relative; overflow: hidden;
+  background: var(--void-soft);
+}
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.hero-eyebrow {
+  font-family: var(--f-mono); font-size: 0.6rem; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem;
+}
+.hero-title {
+  font-family: var(--f-display); font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 300; line-height: 1.0; color: var(--text-primary);
+  margin-bottom: 1rem; letter-spacing: -0.02em;
+}
+.hero-title em { font-style: italic; color: var(--gold); }
+.hero-sub {
+  font-family: var(--f-display); font-size: 1.2rem; font-style: italic;
+  color: var(--text-dim); max-width: 600px; margin-bottom: 2.5rem;
+}
+.hero-stats {
+  display: flex; gap: 3rem; flex-wrap: wrap;
+  padding-top: 2rem; border-top: 1px solid var(--void-rim);
+}
+.stat { display: flex; flex-direction: column; gap: 0.3rem; }
+.stat-num {
+  font-family: var(--f-display); font-size: 3rem; font-weight: 300;
+  color: var(--gold); line-height: 1;
+}
+.stat-num.green { color: var(--green-bright); }
+.stat-label {
+  font-family: var(--f-mono); font-size: 0.55rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--text-ghost);
+}
+.hero-def {
+  margin-top: 2.5rem; padding: 1.5rem 2rem;
+  background: var(--void-mid); border-left: 2px solid var(--gold-soft);
+  max-width: 680px;
+}
+.hero-def p {
+  font-size: 0.9rem; line-height: 1.75; color: var(--text-body);
+}
+.hero-def p + p { margin-top: 0.8rem; }
+
+/* ── SECTIONS ── */
+.section {
+  padding: 3.5rem 3rem;
+  border-bottom: 1px solid var(--void-rim);
+  max-width: 1100px;
+}
+.section-eyebrow {
+  font-family: var(--f-mono); font-size: 0.58rem; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--gold-soft); margin-bottom: 0.8rem;
+}
+.section-title {
+  font-family: var(--f-display); font-size: 2rem; font-weight: 400;
+  color: var(--text-primary); margin-bottom: 0.6rem; line-height: 1.2;
+}
+.section-intro {
+  font-size: 0.9rem; line-height: 1.8; color: var(--text-body);
+  max-width: 680px; margin-bottom: 2rem;
+}
+
+/* ── LANE BLOCKS ── */
+.lane {
+  margin-bottom: 1px; background: var(--void-soft);
+  border: 1px solid var(--void-rim);
+}
+.lane-header {
+  display: grid; grid-template-columns: 60px 1fr auto;
+  align-items: center; gap: 1rem;
+  padding: 1.2rem 1.4rem; cursor: pointer;
+  transition: background 0.15s; user-select: none;
+}
+.lane-header:hover { background: var(--void-mid); }
+.lane-num {
+  font-family: var(--f-display); font-size: 2.2rem; font-weight: 300;
+  color: var(--void-rim); line-height: 1;
+}
+.lane-header.open .lane-num { color: var(--gold); }
+.lane-title-group {}
+.lane-title {
+  font-family: var(--f-display); font-size: 1.2rem; font-weight: 500;
+  color: var(--text-primary); line-height: 1.2;
+}
+.lane-god-shape {
+  font-family: var(--f-mono); font-size: 0.58rem; letter-spacing: 0.12em;
+  color: var(--gold-soft); text-transform: uppercase; margin-top: 0.2rem;
+}
+.lane-toggle {
+  font-family: var(--f-mono); font-size: 0.65rem; color: var(--text-ghost);
+  transition: transform 0.3s;
+}
+.lane-header.open .lane-toggle { transform: rotate(180deg); color: var(--gold); }
+.lane-body { display: none; border-top: 1px solid var(--void-rim); }
+.lane-body.open { display: block; }
+
+/* ── Q TABLE ── */
+.q-table { width: 100%; border-collapse: collapse; }
+.q-table th {
+  font-family: var(--f-mono); font-size: 0.52rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-ghost); text-align: left;
+  padding: 0.7rem 1rem; background: var(--void-mid);
+  border-bottom: 1px solid var(--void-rim); white-space: nowrap;
+}
+.q-table td {
+  padding: 0.85rem 1rem; border-bottom: 1px solid var(--void-rim);
+  vertical-align: top; font-size: 0.82rem; line-height: 1.6;
+}
+.q-table tr:last-child td { border-bottom: none; }
+.q-table tr:hover td { background: var(--void-hover); }
+.q-id {
+  font-family: var(--f-mono); font-size: 0.62rem; color: var(--gold);
+  white-space: nowrap; font-weight: 500;
+}
+.q-claim { color: var(--text-primary); max-width: 280px; }
+.q-lean { color: var(--text-body); max-width: 220px; font-size: 0.78rem; }
+.q-guard { color: var(--text-dim); max-width: 200px; font-size: 0.75rem; font-style: italic; }
+.q-shape { color: var(--gold-soft); font-size: 0.78rem; font-style: italic; }
+
+/* ── LOGIC TYPE BADGES ── */
+.ltype {
+  display: inline-block; font-family: var(--f-mono); font-size: 0.5rem;
+  letter-spacing: 0.1em; text-transform: uppercase; padding: 0.18em 0.5em;
+  border-radius: 2px; white-space: nowrap; margin-top: 0.3rem;
+}
+.ltype-deductive  { background: var(--green-soft);  color: var(--green-bright);  border: 1px solid var(--green); }
+.ltype-abductive  { background: var(--amber-soft);  color: var(--amber-bright);  border: 1px solid var(--amber); }
+.ltype-axiom      { background: var(--blue-soft);   color: var(--blue-bright);   border: 1px solid var(--blue); }
+.ltype-framework  { background: var(--purple-soft); color: var(--purple-bright); border: 1px solid var(--purple); }
+.ltype-naming     { background: var(--red-soft);    color: var(--red-bright);    border: 1px solid var(--red); }
+.ltype-thought    { background: rgba(60,60,60,0.4); color: #888; border: 1px solid #333; }
+
+/* ── LAYER SCORECARD ── */
+.layer-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1px; background: var(--void-rim);
+  border: 1px solid var(--void-rim); margin-top: 1.5rem;
+}
+.layer-card {
+  background: var(--void-soft); padding: 1.2rem 1.4rem;
+  transition: background 0.15s;
+}
+.layer-card:hover { background: var(--void-mid); }
+.layer-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.8rem; margin-bottom: 0.6rem; }
+.layer-id { font-family: var(--f-mono); font-size: 0.58rem; letter-spacing: 0.15em; color: var(--text-ghost); }
+.layer-file { font-family: var(--f-mono); font-size: 0.6rem; color: var(--gold-soft); }
+.layer-title { font-family: var(--f-display); font-size: 1.05rem; font-weight: 500; color: var(--text-primary); margin-bottom: 0.4rem; line-height: 1.25; }
+.layer-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.55; margin-bottom: 0.6rem; }
+.layer-footer { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.thm-count { font-family: var(--f-mono); font-size: 0.58rem; color: var(--text-ghost); }
+.star { color: var(--gold); font-size: 0.9rem; }
+
+/* ── STATUS TAGS ── */
+.tag {
+  display: inline-block; font-family: var(--f-mono); font-size: 0.5rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.2em 0.55em; border-radius: 2px; white-space: nowrap;
+}
+.tag-proved   { background: var(--green-soft);  color: var(--green-bright);  border: 1px solid var(--green); }
+.tag-rejected { background: var(--red-soft);    color: var(--red-bright);    border: 1px solid var(--red); }
+.tag-boundary { background: var(--amber-soft);  color: var(--amber-bright);  border: 1px solid var(--amber); }
+.tag-demoted  { background: rgba(50,50,50,0.5); color: #666;                 border: 1px solid #333; }
+.tag-gap      { background: var(--blue-soft);   color: var(--blue-bright);   border: 1px solid var(--blue); }
+.tag-spec     { background: var(--purple-soft); color: var(--purple-bright); border: 1px solid var(--purple); }
+
+/* ── THEOREM TABLE ── */
+.thm-controls {
+  display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;
+}
+.thm-filter-btn {
+  font-family: var(--f-mono); font-size: 0.58rem; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 0.4em 0.9em;
+  background: var(--void-mid); border: 1px solid var(--void-rim);
+  color: var(--text-dim); cursor: pointer; border-radius: 2px;
+  transition: all 0.15s;
+}
+.thm-filter-btn:hover, .thm-filter-btn.active {
+  background: var(--gold-trace); border-color: var(--gold-soft); color: var(--gold);
+}
+.thm-table { width: 100%; border-collapse: collapse; }
+.thm-table th {
+  font-family: var(--f-mono); font-size: 0.52rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-ghost); text-align: left;
+  padding: 0.6rem 0.8rem; background: var(--void-mid);
+  border-bottom: 1px solid var(--void-rim); white-space: nowrap;
+}
+.thm-table td {
+  padding: 0.7rem 0.8rem; border-bottom: 1px solid rgba(37,37,37,0.7);
+  vertical-align: top; font-size: 0.78rem; line-height: 1.55;
+}
+.thm-table tr:hover td { background: var(--void-hover); }
+.thm-table tr.hidden { display: none; }
+.thm-num { font-family: var(--f-mono); font-size: 0.6rem; color: var(--gold); white-space: nowrap; }
+.thm-layer { font-family: var(--f-mono); font-size: 0.55rem; color: var(--text-ghost); white-space: nowrap; }
+.thm-name { font-family: var(--f-mono); font-size: 0.65rem; color: var(--text-primary); word-break: break-all; }
+.thm-what { color: var(--text-body); max-width: 340px; }
+.thm-method { font-family: var(--f-mono); font-size: 0.58rem; color: var(--text-ghost); }
+
+/* ── FALSE POSITIVE TABLE ── */
+.fp-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+.fp-table th {
+  font-family: var(--f-mono); font-size: 0.52rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-ghost); text-align: left;
+  padding: 0.6rem 1rem; background: var(--void-mid);
+  border-bottom: 1px solid var(--void-rim);
+}
+.fp-table td {
+  padding: 0.85rem 1rem; border-bottom: 1px solid var(--void-rim);
+  vertical-align: top; font-size: 0.82rem; line-height: 1.6; color: var(--text-body);
+}
+.fp-table tr:hover td { background: var(--void-hover); }
+.fp-right { font-style: italic; color: var(--green-bright); font-size: 0.78rem; }
+.fp-wrong { color: var(--text-dim); font-size: 0.78rem; }
+.fp-fail  { color: var(--red-bright); font-family: var(--f-mono); font-size: 0.6rem; }
+
+/* ── GAP SECTION ── */
+.gap-row {
+  display: grid; grid-template-columns: 90px 1fr 1fr auto;
+  gap: 1rem; padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--void-rim);
+  background: var(--void-soft); transition: background 0.15s;
+  align-items: start;
+}
+.gap-row:hover { background: var(--void-mid); }
+.gap-row:last-child { border-bottom: none; }
+.gap-id-cell { font-family: var(--f-mono); font-size: 0.62rem; color: var(--blue-bright); padding-top: 0.2rem; }
+.gap-title { font-size: 0.85rem; color: var(--text-primary); font-weight: 500; margin-bottom: 0.3rem; }
+.gap-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+.gap-file { font-family: var(--f-mono); font-size: 0.6rem; color: var(--text-ghost); }
+
+/* ── COMPRESS / FINAL ── */
+.compress-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--void-rim);
+  border: 1px solid var(--void-rim); margin-top: 1.5rem;
+}
+.compress-card {
+  background: var(--void-soft); padding: 1.8rem 2rem; transition: background 0.15s;
+}
+.compress-card:hover { background: var(--void-mid); }
+.compress-id {
+  font-family: var(--f-mono); font-size: 0.55rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold-soft); margin-bottom: 0.6rem;
+}
+.compress-title {
+  font-family: var(--f-display); font-size: 1.3rem; font-weight: 400;
+  color: var(--text-primary); margin-bottom: 0.8rem; line-height: 1.25;
+}
+.compress-body { font-size: 0.85rem; line-height: 1.75; color: var(--text-body); }
+
+/* ── DEP GRAPH ── */
+.dep-block {
+  font-family: var(--f-mono); font-size: 0.72rem; color: var(--text-dim);
+  line-height: 2.2; padding: 2rem; background: var(--void-mid);
+  border: 1px solid var(--void-rim); margin-top: 1.5rem; overflow-x: auto;
+}
+.dep-node { color: var(--gold); }
+.dep-arrow { color: var(--text-ghost); }
+.dep-branch { color: var(--blue-bright); }
+.dep-standalone { color: var(--text-dim); }
+.dep-note { color: var(--green-bright); font-size: 0.65rem; }
+
+/* ── VERDICT BLOCK ── */
+.verdict-block {
+  margin: 2rem 0; padding: 2.5rem;
+  background: var(--void-mid); border: 1px solid var(--gold-line);
+  position: relative; overflow: hidden;
+}
+.verdict-block::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.verdict-label {
+  font-family: var(--f-mono); font-size: 0.58rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
+}
+.verdict-statement {
+  font-family: var(--f-display); font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-weight: 300; font-style: italic; color: var(--text-primary);
+  line-height: 1.35; margin-bottom: 1rem;
+}
+.verdict-body { font-size: 0.88rem; line-height: 1.75; color: var(--text-body); max-width: 620px; }
+
+/* ── PULL QUOTE ── */
+.pull {
+  margin: 2rem 0; padding: 1.2rem 0 1.2rem 1.8rem;
+  border-left: 2px solid var(--gold-soft);
+}
+.pull p {
+  font-family: var(--f-display); font-size: 1.2rem; font-weight: 300;
+  font-style: italic; color: var(--text-primary); line-height: 1.5;
+}
+
+/* ── FOOTER ── */
+.footer {
+  padding: 2.5rem 3rem; border-top: 1px solid var(--void-rim);
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-wrap: wrap; gap: 1rem; background: var(--void-soft);
+}
+.footer-left {
+  font-family: var(--f-mono); font-size: 0.58rem; letter-spacing: 0.12em;
+  color: var(--text-ghost); text-transform: uppercase; line-height: 2;
+}
+.footer-right {
+  font-family: var(--f-display); font-size: 0.95rem; font-style: italic; color: var(--text-ghost);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidenav { display: none; }
+  .main { margin-left: 0; }
+  .hero, .section { padding: 2rem 1.2rem; }
+  .compress-grid { grid-template-columns: 1fr; }
+  .gap-row { grid-template-columns: 1fr; }
+  .layer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ SIDE NAV ══════════ -->
+<nav class="sidenav">
+  <div class="sidenav-logo">
+    <div class="sidenav-logo-title">Lean 4 Corpus</div>
+    <div class="sidenav-logo-sub">Theophysics · POF 2828</div>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">Overview</span>
+    <a class="nav-link" href="#overview">What This Is</a>
+    <a class="nav-link" href="#stats">Numbers</a>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">The 7 Lanes</span>
+    <a class="nav-link nav-sub" href="#lane1">Lane 1 — Coherence</a>
+    <a class="nav-link nav-sub" href="#lane2">Lane 2 — Moral/Duality</a>
+    <a class="nav-link nav-sub" href="#lane3">Lane 3 — Information</a>
+    <a class="nav-link nav-sub" href="#lane4">Lane 4 — Consciousness</a>
+    <a class="nav-link nav-sub" href="#lane5">Lane 5 — God-Builder</a>
+    <a class="nav-link nav-sub" href="#lane6">Lane 6 — Repair</a>
+    <a class="nav-link nav-sub" href="#lane7">Lane 7 — Convergence</a>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">16 Layers</span>
+    <a class="nav-link" href="#layers">Layer Scorecard</a>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">Full Corpus</span>
+    <a class="nav-link" href="#theorems">All Theorems</a>
+    <a class="nav-link" href="#falsepos">False Positives</a>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">Boundaries</span>
+    <a class="nav-link" href="#gaps">Formal Gaps</a>
+    <a class="nav-link" href="#specgaps">Spec Gaps</a>
+    <a class="nav-link" href="#depgraph">Dependency Graph</a>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-section-label">Compression</span>
+    <a class="nav-link" href="#compress">Final Argument</a>
+  </div>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main">
+
+<!-- ── HERO ── -->
+<section class="hero" id="overview">
+  <div class="hero-eyebrow">Theophysics Research Initiative · POF 2828 · Lean 4 Formal Verification</div>
+  <h1 class="hero-title">The Lean 4<br><em>Corpus</em></h1>
+  <p class="hero-sub">287 machine-verified theorems. Zero gaps. The structural claims of Theophysics, formally proved.</p>
+
+  <div class="hero-stats" id="stats">
+    <div class="stat"><div class="stat-num">287</div><div class="stat-label">Named Theorems</div></div>
+    <div class="stat"><div class="stat-num green">0</div><div class="stat-label">Sorry / Admit</div></div>
+    <div class="stat"><div class="stat-num green">0</div><div class="stat-label">Axioms</div></div>
+    <div class="stat"><div class="stat-num">16</div><div class="stat-label">Lean Files</div></div>
+    <div class="stat"><div class="stat-num">70+</div><div class="stat-label">Adversarial Rejections</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Structural Isomorphisms</div></div>
+    <div class="stat"><div class="stat-num">1</div><div class="stat-label">Uniqueness Result</div></div>
+    <div class="stat"><div class="stat-num">80%</div><div class="stat-label">Bridge Hit Rate</div></div>
+  </div>
+
+  <div class="hero-def">
+    <p>Lean 4 is an interactive theorem prover. When a theorem compiles with zero <code style="font-family:var(--f-mono);color:var(--amber-bright);font-size:0.85em">sorry</code> or <code style="font-family:var(--f-mono);color:var(--amber-bright);font-size:0.85em">admit</code> placeholders, the proof is formally complete — the machine verified every logical step without exception.</p>
+    <p>What Lean proves here: internal structural consistency. The definitions, gate conditions, isomorphisms, sign disciplines, and uniqueness results all compile and hold. Whether the formal models faithfully represent the real physics and theology they describe is a domain judgment question that Lean cannot answer — and which the framework addresses through empirical evidence, adversarial review, and named kill conditions.</p>
+    <p>The overclaim guard runs on every theorem. Read what each proves — and what it does not.</p>
+  </div>
+</section>
+
+<!-- ══════════ 7 LANES ══════════ -->
+<section class="section" id="lane1">
+  <div class="section-eyebrow">The Argument Architecture</div>
+  <h2 class="section-title">The 7 Lanes</h2>
+  <p class="section-intro">Seven independent lines of inquiry. Each begins from a different starting point. Each produces the same structural shape. The force is not in any single lane — it is in the convergence of all seven arriving at the same destination by different roads.</p>
+
+  <!-- LANE 1 -->
+  <div class="lane" id="lane1-block">
+    <div class="lane-header" onclick="toggleLane(this)">
+      <div class="lane-num">1</div>
+      <div class="lane-title-group">
+        <div class="lane-title">The Coherence Lane</div>
+        <div class="lane-god-shape">God-Shape: A prior, stable, truth-bearing source of order</div>
+      </div>
+      <div class="lane-toggle">▼</div>
+    </div>
+    <div class="lane-body">
+      <table class="q-table">
+        <thead><tr><th>ID</th><th>Claim</th><th>Type</th><th>What Lean Proves</th><th>Does NOT Prove</th><th>God Shape</th></tr></thead>
+        <tbody>
+          <tr><td class="q-id">L1-Q1</td><td class="q-claim">Can a contradiction be finally true?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Coherence functional defined; zero-factor collapse proved in Core.lean</td><td class="q-guard">Does not prove reality matches the coherence functional</td><td class="q-shape">Coherence is prerequisite to any truth claim</td></tr>
+          <tr><td class="q-id">L1-Q2</td><td class="q-claim">Does truth require coherence?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Coherence measure compiles; chi collapses if any factor is zero</td><td class="q-guard">Does not prove coherence is the only theory of truth</td><td class="q-shape">Truth presupposes non-contradiction</td></tr>
+          <tr><td class="q-id">L1-Q3</td><td class="q-claim">Does every worldview require coherence before it can argue, measure, or explain anything?</td><td><span class="ltype ltype-framework">Framework Commitment</span></td><td class="q-lean">—</td><td class="q-guard">Pragmatic observation, not formal proof</td><td class="q-shape">Coherence is universally presupposed</td></tr>
+          <tr><td class="q-id">L1-Q4</td><td class="q-claim">Does coherence require a standard of alignment?</td><td><span class="ltype ltype-abductive">Abductive</span></td><td class="q-lean">Factor signatures typed; canonical rows valid; named swaps fail — BridgeMatrix.lean</td><td class="q-guard">Does not prove these 10 factors are correct or complete</td><td class="q-shape">Alignment requires a reference signal</td></tr>
+          <tr><td class="q-id">L1-Q5</td><td class="q-claim">Can the broken, contradictory world be the final standard of coherence?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Destructive signs cannot self-redeem through ordinary multiplication — PolarityDiscipline.lean</td><td class="q-guard">Does not prove moral polarity in the real world works this way</td><td class="q-shape">The standard cannot be the broken thing being measured</td></tr>
+          <tr><td class="q-id">L1-Q6</td><td class="q-claim">Must the final standard be prior, stable, truth-bearing, generative, and authoritative?</td><td><span class="ltype ltype-abductive">Abductive</span></td><td class="q-lean">Self-grounding substrate defined; missing source/relation/command forces bridge score to zero</td><td class="q-guard">Does not prove these are the right failure modes for real theology or physics</td><td class="q-shape">Source must be prior, stable, self-grounding</td></tr>
+          <tr><td class="q-id">L1-Q7</td><td class="q-claim">What do we call the source of truth, order, and coherence?</td><td><span class="ltype ltype-naming">Identification</span></td><td class="q-lean">—</td><td class="q-guard">The naming step is not formally provable. The shape is argued; the name is offered.</td><td class="q-shape">God</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LANE 2 -->
+  <div class="lane" id="lane2-block">
+    <div class="lane-header" onclick="toggleLane(this)">
+      <div class="lane-num">2</div>
+      <div class="lane-title-group">
+        <div class="lane-title">The Moral / Duality Lane</div>
+        <div class="lane-god-shape">God-Shape: A prior source of goodness from which evil deviates</div>
+      </div>
+      <div class="lane-toggle">▼</div>
+    </div>
+    <div class="lane-body">
+      <table class="q-table">
+        <thead><tr><th>ID</th><th>Claim</th><th>Type</th><th>What Lean Proves</th><th>Does NOT Prove</th><th>God Shape</th></tr></thead>
+        <tbody>
+          <tr><td class="q-id">L2-Q1</td><td class="q-claim">Is there such a thing as real evil?</td><td><span class="ltype ltype-axiom">Axiom / Gateway</span></td><td class="q-lean">Sign states (positive/negative/neutral) formally defined with typed arithmetic — PolarityDiscipline.lean</td><td class="q-guard">Does not prove evil is real metaphysically — only that sign polarity is formally definable</td><td class="q-shape">Evil is real, not merely preference</td></tr>
+          <tr><td class="q-id">L2-Q2</td><td class="q-claim">Is evil different from merely disliking something?</td><td><span class="ltype ltype-axiom">Axiom / Gateway</span></td><td class="q-lean">—</td><td class="q-guard">A moral anti-realist can reject this step</td><td class="q-shape">Evil is objective, not subjective</td></tr>
+          <tr><td class="q-id">L2-Q3</td><td class="q-claim">Does evil corrupt, harm, distort, or destroy something that should be whole?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Burden coupling: two negatives stay negative; destructive signs cannot self-redeem</td><td class="q-guard">Does not prove moral polarity in the real world follows this arithmetic</td><td class="q-shape">Evil is parasitic on prior good</td></tr>
+          <tr><td class="q-id">L2-Q4</td><td class="q-claim">Can corruption exist without something good to corrupt?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Incoherent records not retained; negative states require prior positive substrate to deviate from</td><td class="q-guard">Formal model only</td><td class="q-shape">Good is logically prior to evil</td></tr>
+          <tr><td class="q-id">L2-Q5</td><td class="q-claim">Can evil create itself without borrowing from good?</td><td><span class="ltype ltype-deductive">Theorem (proved in model)</span></td><td class="q-lean">External conversion required for restoration; self-generated operations cannot flip sign — SignConversionDiscipline.lean</td><td class="q-guard">Proves the arithmetic; does not prove moral self-repair is impossible in all frameworks</td><td class="q-shape">Evil cannot be its own ground</td></tr>
+          <tr><td class="q-id">L2-Q6</td><td class="q-claim">Is good therefore more fundamental than evil?</td><td><span class="ltype ltype-deductive">Theorem (follows from Q3–Q5)</span></td><td class="q-lean">Sign arithmetic enforces asymmetry: positive is generative, negative is parasitic</td><td class="q-guard">Model asymmetry — real-world ontological priority is a separate claim</td><td class="q-shape">Good is ontologically prior</td></tr>
+          <tr><td class="q-id">L2-Q7</td><td class="q-claim">What do we call the ultimate source of good?</td><td><span class="ltype ltype-naming">Identification</span></td><td class="q-lean">—</td><td class="q-guard">Naming step — not formally provable. Same pattern as Lane 1 Q7.</td><td class="q-shape">God</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LANE 3 -->
+  <div class="lane" id="lane3-block">
+    <div class="lane-header" onclick="toggleLane(this)">
+      <div class="lane-num">3</div>
+      <div class="lane-title-group">
+        <div class="lane-title">The Information / Logic Lane</div>
+        <div class="lane-god-shape">God-Shape: Self-grounding Logos</div>
+      </div>
+      <div class="lane-toggle">▼</div>
+    </div>
+    <div class="lane-body">
+      <table class="q-table">
+        <thead><tr><th>ID</th><th>Claim</th><th>Type</th><th>What Lean Proves</th><th>Does NOT Prove</th><th>God Shape</th></tr></thead>
+        <tbody>
+          <tr><td class="q-id">L3-Q1</td><td class="q-claim">Does anything exist?</td><td><span class="ltype ltype-axiom">Axiom (self-evident)</span></td><td class="q-lean">Substrate states formally defined; existence is the first typed element — Core.lean</td><td class="q-guard">Formal type existence ≠ metaphysical proof of existence</td><td class="q-shape">Existence is undeniable</td></tr>
+          <tr><td class="q-id">L3-Q2</td><td class="q-claim">Can existence be meaningful without distinction?</td><td><span class="ltype ltype-axiom">Axiom (self-evident)</span></td><td class="q-lean">—</td><td class="q-guard">Spencer-Brown, Bateson: 'a difference that makes a difference'</td><td class="q-shape">Distinction is required for meaning</td></tr>
+          <tr><td class="q-id">L3-Q3</td><td class="q-claim">Is distinction information?</td><td><span class="ltype ltype-deductive">Definition / Logical Necessity</span></td><td class="q-lean">—</td><td class="q-guard">Deductive from Shannon's definition; the ontological claim (info is primitive) is stronger</td><td class="q-shape">Distinction IS information (Shannon, Wheeler)</td></tr>
+          <tr><td class="q-id">L3-Q4</td><td class="q-claim">Can information exist without being grounded, carried, or instantiated?</td><td><span class="ltype ltype-axiom">Axiom</span></td><td class="q-lean">Substrate requirement formally typed; coupling states defined — Core.lean</td><td class="q-guard">Formal typing ≠ proof that information requires substrate in all metaphysical systems</td><td class="q-shape">Information requires instantiation</td></tr>
+          <tr><td class="q-id">L3-Q5</td><td class="q-claim">Can a contingent ground explain itself without regress?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">C0 ≠ C1 proved; coupling transition is irreversible; no backward step — Core.lean</td><td class="q-guard">Irreversibility in the model ≠ metaphysical proof against infinite regress or brute fact</td><td class="q-shape">Regress must terminate</td></tr>
+          <tr><td class="q-id">L3-Q6</td><td class="q-claim">Must the final ground be self-grounding?</td><td><span class="ltype ltype-framework">Framework Commitment</span></td><td class="q-lean">Self-grounding substrate formally defined as typed structure — Core.lean</td><td class="q-guard">Self-grounding is a framework choice over brute fact — not deduced</td><td class="q-shape">Self-grounding is the most coherent option</td></tr>
+          <tr><td class="q-id">L3-Q7</td><td class="q-claim">What kind of source can ground information, meaning, and reality itself?</td><td><span class="ltype ltype-naming">Identification</span></td><td class="q-lean">—</td><td class="q-guard">Naming step — the shape is argued, the name is offered</td><td class="q-shape">Self-grounding Logos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LANE 4 -->
+  <div class="lane" id="lane4-block">
+    <div class="lane-header" onclick="toggleLane(this)">
+      <div class="lane-num">4</div>
+      <div class="lane-title-group">
+        <div class="lane-title">The Consciousness Lane</div>
+        <div class="lane-god-shape">God-Shape: A personal or supra-personal ground of consciousness</div>
+      </div>
+      <div class="lane-toggle">▼</div>
+    </div>
+    <div class="lane-body">
+      <table class="q-table">
+        <thead><tr><th>ID</th><th>Claim</th><th>Type</th><th>What Lean Proves</th><th>Does NOT Prove</th><th>God Shape</th></tr></thead>
+        <tbody>
+          <tr><td class="q-id">L4-Q1</td><td class="q-claim">Are you conscious right now?</td><td><span class="ltype ltype-axiom">Axiom (self-evident)</span></td><td class="q-lean">—</td><td class="q-guard">Descartes-level. Denying it uses it.</td><td class="q-shape">Consciousness is undeniable to the conscious</td></tr>
+          <tr><td class="q-id">L4-Q2</td><td class="q-claim">Is your experience real, or only an illusion?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">—</td><td class="q-guard">Cannot deny there is something it is like to be the experiencer</td><td class="q-shape">Experience is real even if contents are mistaken</td></tr>
+          <tr><td class="q-id">L4-Q3</td><td class="q-claim">If consciousness is an illusion, who is experiencing the illusion?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">—</td><td class="q-guard">The Dennett objection is self-refuting</td><td class="q-shape">Illusion requires an experiencer</td></tr>
+          <tr><td class="q-id">L4-Q4</td><td class="q-claim">Does knowledge require a conscious knower?</td><td><span class="ltype ltype-axiom">Axiom</span></td><td class="q-lean">Observer stages formally defined; actualization requires observer — StageMachine.lean</td><td class="q-guard">Does not prove consciousness is metaphysically required for all knowledge</td><td class="q-shape">Knowledge presupposes consciousness</td></tr>
+          <tr><td class="q-id">L4-Q5</td><td class="q-claim">Does moral responsibility require an agent capable of awareness and choice?</td><td><span class="ltype ltype-axiom">Axiom</span></td><td class="q-lean">—</td><td class="q-guard">Determinists deny libertarian free will; this claim is weaker</td><td class="q-shape">Moral agency requires consciousness</td></tr>
+          <tr><td class="q-id">L4-Q6</td><td class="q-claim">Can blind mechanism fully ground meaning, moral responsibility, and first-person experience?</td><td><span class="ltype ltype-abductive">Abductive</span></td><td class="q-lean">—</td><td class="q-guard">Hard problem does not alone prove Christianity; consciousness is one more domain that borrows coherence</td><td class="q-shape">Mechanism alone is insufficient</td></tr>
+          <tr><td class="q-id">L4-Q7</td><td class="q-claim">What kind of source can ground consciousness, meaning, and personhood?</td><td><span class="ltype ltype-naming">Identification</span></td><td class="q-lean">—</td><td class="q-guard">Naming step — PERSONHOOD axiom critical: structural properties alone don't make something a person</td><td class="q-shape">Personal or supra-personal God</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LANE 5 -->
+  <div class="lane" id="lane5-block">
+    <div class="lane-header" onclick="toggleLane(this)">
+      <div class="lane-num">5</div>
+      <div class="lane-title-group">
+        <div class="lane-title">The God-Builder / Imagination Lane</div>
+        <div class="lane-god-shape">God-Shape: Genesis / Logos structure — built by the reader before the name is given</div>
+      </div>
+      <div class="lane-toggle">▼</div>
+    </div>
+    <div class="lane-body">
+      <table class="q-table">
+        <thead><tr><th>ID</th><th>Claim</th><th>Type</th><th>What Lean Proves</th><th>Does NOT Prove</th><th>What Reader Builds</th></tr></thead>
+        <tbody>
+          <tr><td class="q-id">L5-Q1</td><td class="q-claim">You wake up and you are God. Would you create anything?</td><td><span class="ltype ltype-thought">Thought Experiment</span></td><td class="q-lean">—</td><td class="q-guard">Imagination alone does not prove doctrine</td><td class="q-shape">Creation is natural to a good source</td></tr>
+          <tr><td class="q-id">L5-Q2</td><td class="q-claim">Would what you create reflect your nature?</td><td><span class="ltype ltype-thought">Thought Experiment</span></td><td class="q-lean">—</td><td class="q-guard">Maps to Imago Dei — reader builds it before hearing the name</td><td class="q-shape">Creation bears image of creator</td></tr>
+          <tr><td class="q-id">L5-Q3</td><td class="q-claim">Would a creation made by you contain order, beauty, law, and meaning?</td><td><span class="ltype ltype-thought">Thought Experiment</span></td><td class="q-lean">—</td><td class="q-guard">Nearly universal response; exceptions reveal reader's assumptions</td><td class="q-shape">Order, beauty, law, meaning follow from a coherent source</td></tr>
+          <tr><td class="q-id">L5-Q4</td><td class="q-claim">Would love require freedom?</td><td><span class="ltype ltype-thought">Thought Experiment</span></td><td class="q-lean">—</td><td class="q-guard">BC8 (Voluntary Coupling) enters here from the formal system</td><td class="q-shape">Love requires voluntary coupling</td></tr>
+          <tr><td class="q-id">L5-Q5</td><td class="q-claim">Would freedom allow rejection?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">—</td><td class="q-guard">The reader discovers the Fall as a consequence of their own design choice</td><td class="q-shape">Freedom entails possibility of Fall</td></tr>
+          <tr><td class="q-id">L5-Q6</td><td class="q-claim">Would rejection create disorder and consequence?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Sign conservation: self-operations cannot flip sign; consequences persist — PolarityDiscipline.lean</td><td class="q-guard">Model arithmetic — does not prove consequences are inescapable in all frameworks</td><td class="q-shape">Rejection produces real consequences</td></tr>
+          <tr><td class="q-id">L5-Q7</td><td class="q-claim">Would you destroy the rebel, override freedom, or create a path of repair?</td><td><span class="ltype ltype-thought">Thought Experiment</span></td><td class="q-lean">C_op converts negative to positive while preserving source record; restoration ≠ erasure — ChristOperatorDiscipline.lean</td><td class="q-guard">The operator does what it claims in the model. The model is not a proof of the Incarnation.</td><td class="q-shape">Repair is the only coherent answer</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LANE 6 -->
+  <div class="lane" id="lane6-block">
+    <div class="lane-header" onclick="toggleLane(this)">
+      <div class="lane-num">6</div>
+      <div class="lane-title-group">
+        <div class="lane-title">The Repair / Salvation Lane</div>
+        <div class="lane-god-shape">God-Shape: Incarnation, Cross, Resurrection, Grace — the unique repair configuration</div>
+      </div>
+      <div class="lane-toggle">▼</div>
+    </div>
+    <div class="lane-body">
+      <table class="q-table">
+        <thead><tr><th>ID</th><th>Claim</th><th>Type</th><th>What Lean Proves</th><th>Does NOT Prove</th><th>God Shape</th></tr></thead>
+        <tbody>
+          <tr><td class="q-id">L6-Q1</td><td class="q-claim">Can a corrupted system fully repair itself using only corrupted resources?</td><td><span class="ltype ltype-deductive">Theorem (proved in model)</span></td><td class="q-lean">Destructive signs cannot self-redeem; external conversion required — PolarityDiscipline.lean + SignConversionDiscipline.lean</td><td class="q-guard">Proves the model arithmetic; does not prove real-world moral self-repair is impossible in all frameworks</td><td class="q-shape">Corrupted systems cannot self-repair</td></tr>
+          <tr><td class="q-id">L6-Q2</td><td class="q-claim">Can repair ignore consequences without ceasing to be just?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Records persist; incoherent records not retained at death; cost must be borne — MemoryPersistenceDiscipline.lean</td><td class="q-guard">Record persistence is a model rule, not a proved metaphysical law</td><td class="q-shape">Justice requires consequences to be addressed — COMMAND is not denied</td></tr>
+          <tr><td class="q-id">L6-Q3</td><td class="q-claim">Can repair override freedom without destroying love?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">—</td><td class="q-guard">Response is invited, not forced — BC8 throughout</td><td class="q-shape">Freedom must be preserved — WILL remains free</td></tr>
+          <tr><td class="q-id">L6-Q4</td><td class="q-claim">Must repair come from outside the corrupted system?</td><td><span class="ltype ltype-deductive">Theorem (proved in model)</span></td><td class="q-lean">C_op is external integration, not scalar multiplication; converts negative to positive — ChristOperatorDiscipline.lean</td><td class="q-guard">The operator does what it claims in the model. Not a proof of the Incarnation.</td><td class="q-shape">External intervention required</td></tr>
+          <tr><td class="q-id">L6-Q5</td><td class="q-claim">Must repair enter the system without becoming corrupted by it?</td><td><span class="ltype ltype-deductive">Theorem (proved in model)</span></td><td class="q-lean">Substrate identity preserved across incarnation, death, resurrection; entropy contact does not corrupt identity — MissionReturnOperator.lean</td><td class="q-guard">Architecture is formally consistent. Does not prove the Resurrection happened.</td><td class="q-shape">Uncorrupted entry into corrupted system</td></tr>
+          <tr><td class="q-id">L6-Q6 ⭐</td><td class="q-claim">Must repair preserve freedom, absorb consequence, and distribute restoration?</td><td><span class="ltype ltype-deductive">Theorem (proved in model)</span></td><td class="q-lean">THE LOCK: Cross convergence is the unique configuration satisfying all 5 conditions — JusticeMercyOperator.lean + ChristOperatorDiscipline.lean</td><td class="q-guard">Uniqueness is within the model. Does not prove Cross is a historical event.</td><td class="q-shape">Perfect justice + perfect mercy + freedom require cost-bearing judge</td></tr>
+          <tr><td class="q-id">L6-Q7</td><td class="q-claim">What historical event, if any, matches this exact repair specification?</td><td><span class="ltype ltype-abductive">Empirical / Historical</span></td><td class="q-lean">Structural isomorphism conditions compile; intended mapping passes; wrong substitutions fail — IsomorphismTest.lean + MasterEquationInvariance.lean</td><td class="q-guard">Lean can formalize the required structure. It cannot prove Jesus rose from the dead. History must be tested separately.</td><td class="q-shape">Jesus of Nazareth — incarnation, cross, resurrection, grace</td></tr>
+          <tr><td class="q-id">L6-P1</td><td class="q-claim">Four Primitives — RELATION: persists even when wounded; Cross makes reconciliation possible</td><td><span class="ltype ltype-framework">Four Primitives</span></td><td class="q-lean">C_op preserves source state while restoring visible sign</td><td class="q-guard">Preservation in model ≠ proof that divine-human relation works this way</td><td class="q-shape">Relation restored</td></tr>
+          <tr><td class="q-id">L6-P2</td><td class="q-claim">Four Primitives — COMMAND: violated; justice is not denied at the Cross</td><td><span class="ltype ltype-framework">Four Primitives</span></td><td class="q-lean">Five-component operator; Cross convergence unique — JusticeMercyOperator.lean</td><td class="q-guard">Uniqueness within modeled constraints only</td><td class="q-shape">Justice satisfied; cost is borne, not waived</td></tr>
+          <tr><td class="q-id">L6-P3</td><td class="q-claim">Four Primitives — WILL: must remain free; response is invited, not forced</td><td><span class="ltype ltype-framework">Four Primitives</span></td><td class="q-lean">—</td><td class="q-guard">Superposition preserved until voluntary collapse (faith decision)</td><td class="q-shape">Freedom preserved</td></tr>
+          <tr><td class="q-id">L6-P4</td><td class="q-claim">Four Primitives — RECORD: sin is not erased falsely; cost is borne; the record persists</td><td><span class="ltype ltype-framework">Four Primitives</span></td><td class="q-lean">Records persist; visible restoration does not imply erasure; source state preserved — MemoryPersistenceDiscipline.lean + ChristOperatorDiscipline.lean</td><td class="q-guard">Record persistence is a model rule, not metaphysical proof</td><td class="q-shape">Record honored, not erased</td></tr>
+        </tbody>
+      </table>
+
+      <div style="padding:1.2rem 1.4rem; border-top: 1px solid var(--void-rim);">
+        <div class="section-eyebrow" style="margin-bottom:0.8rem">Rival Elimination — 11 Alternatives Formally Tested</div>
+        <table class="fp-table">
+          <thead><tr><th>Rival</th><th>Model</th><th>Why It Seems Plausible</th><th>Constraint Failed</th></tr></thead>
+          <tbody>
+            <tr><td class="q-id">L6-R1</td><td class="fp-wrong">Human self-improvement</td><td class="fp-wrong">People visibly improve behavior</td><td class="fp-fail">FAILS: self-repair from corrupted resources</td></tr>
+            <tr><td class="q-id">L6-R2</td><td class="fp-wrong">Moral relativism</td><td class="fp-wrong">No real violation, so no justice needed</td><td class="fp-fail">FAILS: denies evil is real (rejected at L2-Q1)</td></tr>
+            <tr><td class="q-id">L6-R3</td><td class="fp-wrong">Pure punishment</td><td class="fp-wrong">Justice without mercy</td><td class="fp-fail">FAILS: justice alone destroys; does not restore</td></tr>
+            <tr><td class="q-id">L6-R4</td><td class="fp-wrong">Pure forgiveness without cost</td><td class="fp-wrong">Sounds merciful</td><td class="fp-fail">FAILS: denies justice (COMMAND violated) — cheap grace</td></tr>
+            <tr><td class="q-id">L6-R5</td><td class="fp-wrong">Forced divine override</td><td class="fp-wrong">Maximizes immediate coherence</td><td class="fp-fail">FAILS: destroys WILL — if freedom is overridden, love is impossible</td></tr>
+            <tr><td class="q-id">L6-R6</td><td class="fp-wrong">Generic theism</td><td class="fp-wrong">Source exists</td><td class="fp-fail">FAILS: no repair mechanism specified; stops before Cross-shape</td></tr>
+            <tr><td class="q-id">L6-R7</td><td class="fp-wrong">Deism</td><td class="fp-wrong">Source does not intervene</td><td class="fp-fail">FAILS: no external intervention; denies entry into corrupted system</td></tr>
+            <tr><td class="q-id">L6-R8</td><td class="fp-wrong">Pantheism</td><td class="fp-wrong">All is one</td><td class="fp-fail">FAILS: no RELATION distinction — no judge, offender, restorer</td></tr>
+            <tr><td class="q-id">L6-R9</td><td class="fp-wrong">Buddhism</td><td class="fp-wrong">Treats suffering/attachment</td><td class="fp-fail">FAILS: no RECORD, no cost-bearer — dissolution, not restoration</td></tr>
+            <tr><td class="q-id">L6-R10</td><td class="fp-wrong">Islam</td><td class="fp-wrong">Strong sovereignty</td><td class="fp-fail">FAILS: sovereign does not enter system and bear the cost</td></tr>
+            <tr><td class="q-id">L6-R11</td><td class="fp-wrong">Secular humanism</td><td class="fp-wrong">Can improve symptoms</td><td class="fp-fail">FAILS: no RECORD mechanism; cannot address guilt or ground final justice</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANE 7 -->
+  <div class="lane" id="lane7-block">
+    <div class="lane-header" onclick="toggleLane(this)">
+      <div class="lane-num">7</div>
+      <div class="lane-title-group">
+        <div class="lane-title">The Convergence Lane</div>
+        <div class="lane-god-shape">God-Shape: Not one proof — one destination reached by many roads</div>
+      </div>
+      <div class="lane-toggle">▼</div>
+    </div>
+    <div class="lane-body">
+      <table class="q-table">
+        <thead><tr><th>ID</th><th>Claim</th><th>Type</th><th>What Lean Proves</th><th>Does NOT Prove</th><th>God Shape</th></tr></thead>
+        <tbody>
+          <tr><td class="q-id">L7-Q1</td><td class="q-claim">If one argument reaches a conclusion, can it be mistaken?</td><td><span class="ltype ltype-axiom">Axiom (self-evident)</span></td><td class="q-lean">—</td><td class="q-guard">Establishes the principle that convergence is needed</td><td class="q-shape">Single arguments are fallible</td></tr>
+          <tr><td class="q-id">L7-Q2</td><td class="q-claim">If two independent arguments reach the same conclusion, does that increase evidential weight?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">—</td><td class="q-guard">Standard epistemology. Hard to deny without undermining all of science.</td><td class="q-shape">Independent convergence increases weight</td></tr>
+          <tr><td class="q-id">L7-Q3</td><td class="q-claim">If several domains reach the same shape independently, is that stronger than one domain alone?</td><td><span class="ltype ltype-deductive">Logical Necessity</span></td><td class="q-lean">Structural isomorphism passes for intended mappings; nearby wrong mappings fail — IsomorphismTest.lean</td><td class="q-guard">Isomorphism in the model ≠ proof that the domains really have the same structure</td><td class="q-shape">Cross-domain convergence is evidence</td></tr>
+          <tr><td class="q-id">L7-Q4</td><td class="q-claim">If logic, moral reasoning, consciousness, information, experience, and mathematics all converge, should that be taken seriously?</td><td><span class="ltype ltype-abductive">Abductive</span></td><td class="q-lean">Ten canonical bridge rows valid; physical-to-spiritual substitution preserves signatures — BridgeMatrix.lean + MasterEquationInvariance.lean</td><td class="q-guard">Bridge rows tested inside the model. They do not prove the framework is complete.</td><td class="q-shape">Multi-domain convergence demands explanation</td></tr>
+          <tr><td class="q-id">L7-Q5</td><td class="q-claim">If the reader already agreed that convergence counts as evidence, should that standard apply here?</td><td><span class="ltype ltype-framework">Receipt Principle</span></td><td class="q-lean">Anomalous hit-rate claim blocked unless denominator is closed — HitRateDiscipline.lean</td><td class="q-guard">Audit rule is built in. Does not mean the audit has been completed.</td><td class="q-shape">The reader's own standard applies</td></tr>
+          <tr><td class="q-id">L7-Q6</td><td class="q-claim">If all lanes produce the same God-shaped structure, what alternative explains the convergence better?</td><td><span class="ltype ltype-abductive">Abductive</span></td><td class="q-lean">Triadic invariants pass for intended candidates; four named wrong controls fail — MaxwellTrinity.lean</td><td class="q-guard">Does not say convergence removes all possible doubt. Convergence changes the burden.</td><td class="q-shape">No alternative explains the full convergence</td></tr>
+          <tr><td class="q-id">L7-Q7</td><td class="q-claim">What else fits the full shape?</td><td><span class="ltype ltype-naming">Challenge (open)</span></td><td class="q-lean">—</td><td class="q-guard">This is an open invitation, not a closed proof. The reader is invited to find an alternative.</td><td class="q-shape">REVEAL: 'You already agreed that convergence counts as evidence. Here is the convergence.'</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 16 LAYERS ══════════ -->
+<section class="section" id="layers">
+  <div class="section-eyebrow">The Formal Architecture</div>
+  <h2 class="section-title">16 Lean Files — Layer Scorecard</h2>
+  <p class="section-intro">Every layer builds on what came before. The trunk runs 8 layers deep. Three branches extend from it. Six standalone files prove their claims without importing from the trunk. ⭐ marks the two strongest standalone results.</p>
+
+  <div class="layer-grid">
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L0</div><div class="layer-file">Core.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Dual-Substrate Foundation</div>
+      <div class="layer-desc">Coupling states, irreversibility gate, χ product. C0 ≠ C1 proved. Any single zero factor collapses the entire chi product. The multiplicative architecture that makes compensation impossible.</div>
+      <div class="layer-footer"><span class="thm-count">5 theorems</span><span class="tag tag-boundary">No imports — foundational</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L1</div><div class="layer-file">StageMachine.lean</div></div>
+        <span class="tag tag-demoted">Demoted</span>
+      </div>
+      <div class="layer-title">Stage Ordering</div>
+      <div class="layer-desc">Strictly ordered, irreversible operation sequence. No backward steps proved. DEMOTED to teaching layer — the real dependency object is a lattice, not a line. DependencyLattice.lean supersedes this.</div>
+      <div class="layer-footer"><span class="thm-count">5 theorems</span><span class="tag tag-demoted">Teaching layer only</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L2</div><div class="layer-file">Mapping.lean</div></div>
+        <span class="tag tag-demoted">Demoted</span>
+      </div>
+      <div class="layer-title">Physics↔Theology Sequence Map</div>
+      <div class="layer-desc">1-to-1 order-preserving map. localization → incarnation; confirmation → resurrection. Internally consistent but DEMOTED — proves a hand-assigned mapping, which is circular if used as major proof. Lattice supersedes.</div>
+      <div class="layer-footer"><span class="thm-count">3 theorems</span><span class="tag tag-demoted">Toy correspondence</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L3</div><div class="layer-file">BridgeMatrix.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Bridge Matrix — 10-Factor Signature</div>
+      <div class="layer-desc">All 10 canonical bridge rows pass validation. Grace↔Faith swap caught by signature layer. Entropy↔Grace swap rejected. K↔F swap rejected. Product alone is blind to semantic swaps — the signature layer catches what arithmetic misses.</div>
+      <div class="layer-footer"><span class="thm-count">21 theorems</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L4</div><div class="layer-file">MasterEquationInvariance.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Master Equation Invariance</div>
+      <div class="layer-desc">χ(physical) = χ(spiritual) under canonical map. The equation runs the same in both registers. Signature discipline is load-bearing — product alone permits wrong swaps that the signature layer correctly rejects.</div>
+      <div class="layer-footer"><span class="thm-count">8 theorems</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L5</div><div class="layer-file">FieldBridgeControls.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Field Bridge Controls — Laws 3, 6, 7, 8</div>
+      <div class="layer-desc">Per-law collapse proofs for Electromagnetics/Truth, Information/Logos, Relativity/Frame, Quantum/Faith. Each bypass zeroes the relevant factor → zeroes χ globally. Laws 1, 2, 9, 10 still lack domain-specific controls (GAP-01).</div>
+      <div class="layer-footer"><span class="thm-count">22 theorems</span><span class="tag tag-gap">GAP-01 noted</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L6</div><div class="layer-file">BridgeScoreDiscipline.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Bridge Score Discipline</div>
+      <div class="layer-desc">Graded scores must pass binary gate before entering ME. Gate output is always exactly 0 or 1 — no intermediate states. High raw amplitude ≠ truth without source backing. Blocks silent conflation of graded with binary.</div>
+      <div class="layer-footer"><span class="thm-count">10 theorems</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L7</div><div class="layer-file">IsomorphismTest.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Law 4 Isomorphism — Strong Force ≅ Love</div>
+      <div class="layer-desc">Two-level isomorphism with adversarial false-positive testing. Basic LawIso too weak — coin model also passes at that level. RichLawIso (roles + transitions preserved) eliminates coin. Strong Force ≅ Love holds at the stronger level.</div>
+      <div class="layer-footer"><span class="thm-count">10 theorems</span><span class="tag tag-boundary">Coin boundary named</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L8</div><div class="layer-file">MaxwellTrinity.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title"><span class="star">⭐</span> Maxwell / Trinity Isomorphism</div>
+      <div class="layer-desc">5-condition structural spec. Quaternion EM ≅ Relational Trinity under TriadicIso. 5 false positives tested and rejected — Heaviside EM, Modalism, static single-field EM, arbitrary 3-part system, relabeled role system. Every guard is load-bearing: removing any single guard admits the corresponding false positive.</div>
+      <div class="layer-footer"><span class="thm-count">24 theorems</span><span class="tag tag-proved">Strongest standalone</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L9</div><div class="layer-file">JusticeMercyOperator.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title"><span class="star">⭐</span> Justice/Mercy — Cross Uniqueness</div>
+      <div class="layer-desc">THE CROSS IS THE UNIQUE SOLUTION. ∀ c, CrossConvergence(c) → c = cross. Existence AND uniqueness by exhaustive case elimination. Every alternative formally eliminated. Justice and Mercy share 4 components, differ in exactly one coordinate: who pays the cost.</div>
+      <div class="layer-footer"><span class="thm-count">14 theorems</span><span class="tag tag-proved">Strongest single result</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L10</div><div class="layer-file">PolarityDiscipline.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Polarity Discipline</div>
+      <div class="layer-desc">(-1)×(-1) = +1 in raw arithmetic. But the coherence gate rejects double-destructive signs. Arithmetic sign ≠ moral sign. Two wrongs don't make a right — formally. Sign polarity is diagnostic, not redemptive. Below-accountability threshold gives zero culpability.</div>
+      <div class="layer-footer"><span class="thm-count">7 theorems</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L11</div><div class="layer-file">SignConversionDiscipline.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Sign Conversion Discipline</div>
+      <div class="layer-desc">Moral burdens do not self-redeem. Negative + negative = negative in burden coupling (not arithmetic). External Christic conversion is the only operation that flips a negative burden to positive. Accumulation does not redeem.</div>
+      <div class="layer-footer"><span class="thm-count">9 theorems</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L12</div><div class="layer-file">ChristOperatorDiscipline.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Christ Operator Discipline</div>
+      <div class="layer-desc">C_op: external integration, not scalar. Converts negative → positive while preserving source record. Grace does not pretend the past didn't happen. Restoration ≠ erasure — formally. God sees the full record; visible output is non-injective.</div>
+      <div class="layer-footer"><span class="thm-count">11 theorems</span><span class="tag tag-boundary">Non-injective boundary named</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L13</div><div class="layer-file">MissionReturnOperator.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Mission Return Operator</div>
+      <div class="layer-desc">Resurrection is not repair — it is mission return. Substrate identity preserved through incarnation, death, and resurrection. Resolution drops from infinite to finite (incarnation) then returns to infinite (resurrection). Entropy and death contact records carried. Post-resurrection ≠ pre-incarnate: it is richer.</div>
+      <div class="layer-footer"><span class="thm-count">13 theorems</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L14</div><div class="layer-file">MemoryPersistenceDiscipline.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Memory Persistence Discipline</div>
+      <div class="layer-desc">Three-layer memory: record, compilation, persistence. Recorded + Christ-coherent → retention = 1. Recorded but incoherent → retention = 0. Reorientation to Christ restores retention. Heaven = coherent + eternal domain. Living memory ≠ final identity memory.</div>
+      <div class="layer-footer"><span class="thm-count">22 theorems</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L15</div><div class="layer-file">DependencyLattice.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Dependency Lattice</div>
+      <div class="layer-desc">3 lattices: theology (21 nodes), physics (32 nodes), ordo (6 nodes). Fall → Death, Judgment, Promise as parallel consequences — not a chain. Energy and Momentum are Noether siblings, not parent-child. Union → Justification AND Sanctification as parallel branches. Wrong orderings rejected by name.</div>
+      <div class="layer-footer"><span class="thm-count">15 theorems</span><span class="tag tag-boundary">3/20 cross-domain witnesses</span></div>
+    </div>
+
+    <div class="layer-card">
+      <div class="layer-card-header">
+        <div><div class="layer-id">L16</div><div class="layer-file">HitRateDiscipline.lean</div></div>
+        <span class="tag tag-proved">Proved</span>
+      </div>
+      <div class="layer-title">Hit Rate Discipline</div>
+      <div class="layer-desc">Closed denominator. 10 attempts logged. 8 hits (80%). 90% claim is formally blocked — cannot claim what has not been earned. Hidden failures block any anomaly claim. Partials are not hits. All attempts, failures, and partials counted.</div>
+      <div class="layer-footer"><span class="thm-count">8 theorems</span><span class="tag tag-proved">Statistical integrity</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ FULL THEOREM TABLE ══════════ -->
+<section class="section" id="theorems">
+  <div class="section-eyebrow">Complete Corpus</div>
+  <h2 class="section-title">All Theorems — Filterable</h2>
+  <p class="section-intro">Every named theorem in the corpus. Filter by type. PROVED = formally demonstrated. REJECTION = adversarial false positive correctly eliminated. BOUNDARY = named limit of what Lean can verify. DEMOTED = internally consistent but superseded by stronger proof.</p>
+
+  <div class="thm-controls">
+    <button class="thm-filter-btn active" onclick="filterThm('ALL', this)">All (210+)</button>
+    <button class="thm-filter-btn" onclick="filterThm('PROVED', this)">✅ Proved</button>
+    <button class="thm-filter-btn" onclick="filterThm('REJECTION', this)">❌ Rejection</button>
+    <button class="thm-filter-btn" onclick="filterThm('BOUNDARY', this)">⚠️ Boundary</button>
+    <button class="thm-filter-btn" onclick="filterThm('DEMOTED', this)">↓ Demoted</button>
+    <button class="thm-filter-btn" onclick="filterThm('L8', this)">⭐ Maxwell/Trinity</button>
+    <button class="thm-filter-btn" onclick="filterThm('L9', this)">⭐ Cross Unique</button>
+  </div>
+
+  <div style="overflow-x:auto;">
+  <table class="thm-table" id="thmTable">
+    <thead><tr><th>#</th><th>Layer</th><th>File</th><th>Theorem Name</th><th>What It Says</th><th>Method</th><th>Type</th></tr></thead>
+    <tbody>
+<!-- L0 -->
+<tr data-type="PROVED"><td class="thm-num">1</td><td class="thm-layer">L0</td><td class="thm-layer">Core.lean</td><td class="thm-name">C0_ne_C1</td><td class="thm-what">C0 ≠ C1 — the two coupling states are structurally distinct</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">2</td><td class="thm-layer">L0</td><td class="thm-layer">Core.lean</td><td class="thm-name">C1_ne_C0</td><td class="thm-what">C1 ≠ C0 (symmetric direction)</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">3</td><td class="thm-layer">L0</td><td class="thm-layer">Core.lean</td><td class="thm-name">coupling_modification_irreversible</td><td class="thm-what">C0 → C1 is one-way; C1 → C0 has no constructor. The transition cannot be undone.</td><td class="thm-method">structural case</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">4</td><td class="thm-layer">L0</td><td class="thm-layer">Core.lean</td><td class="thm-name">Q_zero_collapses_chi</td><td class="thm-what">If Q = 0, then χ = 0 regardless of all other factors. Any single zero kills the product.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">5</td><td class="thm-layer">L0</td><td class="thm-layer">Core.lean</td><td class="thm-name">Q_nonzero_not_sufficient_for_positive_chi</td><td class="thm-what">Q > 0 does NOT guarantee χ > 0 (G = 0 still kills it). No single factor saves you.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<!-- L1 -->
+<tr data-type="PROVED DEMOTED"><td class="thm-num">6</td><td class="thm-layer">L1</td><td class="thm-layer">StageMachine.lean</td><td class="thm-name">reaches_localization_from_pre</td><td class="thm-what">preLocalization can reach localization</td><td class="thm-method">constructor</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<tr data-type="PROVED DEMOTED"><td class="thm-num">7</td><td class="thm-layer">L1</td><td class="thm-layer">StageMachine.lean</td><td class="thm-name">reaches_redistribution_from_pre</td><td class="thm-what">Full 5-step sequence is reachable from preLocalization to redistribution</td><td class="thm-method">transitive</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<tr data-type="REJECTION DEMOTED"><td class="thm-num">8</td><td class="thm-layer">L1</td><td class="thm-layer">StageMachine.lean</td><td class="thm-name">no_stage_step_back_to_pre_from_localization</td><td class="thm-what">No backward step from localization to pre. Irreversible.</td><td class="thm-method">cases</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<tr data-type="REJECTION DEMOTED"><td class="thm-num">9</td><td class="thm-layer">L1</td><td class="thm-layer">StageMachine.lean</td><td class="thm-name">no_stage_step_back_to_release_from_confirmation</td><td class="thm-what">No backward step from confirmation to release</td><td class="thm-method">cases</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<tr data-type="REJECTION DEMOTED"><td class="thm-num">10</td><td class="thm-layer">L1</td><td class="thm-layer">StageMachine.lean</td><td class="thm-name">no_stage_step_back_to_confirmation_from_redistribution</td><td class="thm-what">No backward step from redistribution to confirmation</td><td class="thm-method">cases</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<!-- L2 -->
+<tr data-type="PROVED DEMOTED"><td class="thm-num">11</td><td class="thm-layer">L2</td><td class="thm-layer">Mapping.lean</td><td class="thm-name">map_physics_sequence_is_theology_sequence</td><td class="thm-what">Mapping the full physics list produces the full theology list — order-preserving.</td><td class="thm-method">rfl</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<tr data-type="PROVED DEMOTED"><td class="thm-num">12</td><td class="thm-layer">L2</td><td class="thm-layer">Mapping.lean</td><td class="thm-name">localization_maps_to_incarnation</td><td class="thm-what">Specific: localization → incarnation</td><td class="thm-method">rfl</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<tr data-type="PROVED DEMOTED"><td class="thm-num">13</td><td class="thm-layer">L2</td><td class="thm-layer">Mapping.lean</td><td class="thm-name">confirmation_maps_to_resurrection</td><td class="thm-what">Specific: confirmation → resurrection</td><td class="thm-method">rfl</td><td><span class="tag tag-demoted">Demoted</span></td></tr>
+<!-- L3 -->
+<tr data-type="PROVED"><td class="thm-num">14</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">canonicalRows_all_valid</td><td class="thm-what">All 10 canonical bridge rows pass signature validation</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">15</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">grace_swapped_with_faith_invalid</td><td class="thm-what">Swapping grace↔faith breaks the signature</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">16</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">entropy_swapped_with_grace_invalid</td><td class="thm-what">Swapping entropy↔grace breaks the signature</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">17</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">compression_swapped_with_communion_invalid</td><td class="thm-what">K↔F swap rejected</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">18</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">coherence_swapped_with_consequence_lock_invalid</td><td class="thm-what">C↔R swap rejected</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">19</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">wrong_physical_for_grace_invalid</td><td class="thm-what">Assigning entanglement to G slot rejected</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="BOUNDARY"><td class="thm-num">20</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">arbitrary_grace_clone_matches_G</td><td class="thm-what">A new term with G's signature passes structurally. Adversarial boundary: label honesty cannot be verified by Lean alone.</td><td class="thm-method">decide</td><td><span class="tag tag-boundary">Boundary</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">21</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">arbitrary_faith_clone_does_not_match_G</td><td class="thm-what">A term with Q's signature fails the G slot</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">22–31</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">full_[G/M/E/S/T/K/R/Q/F/C]_zero_collapses</td><td class="thm-what">Each of the 10 factors: if zero → χ = 0. Every factor is load-bearing. No exceptions.</td><td class="thm-method">simp (×10)</td><td><span class="tag tag-proved">Proved ×10</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">32</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">full_Q_nonzero_not_sufficient</td><td class="thm-what">Q > 0 doesn't save you if G = 0. No single factor is sufficient.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">33</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">full_R_gate_required</td><td class="thm-what">R = 0 kills χ even if everything else is 1. Gate is non-negotiable.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">34</td><td class="thm-layer">L3</td><td class="thm-layer">BridgeMatrix.lean</td><td class="thm-name">all_ones_live</td><td class="thm-what">All factors at 1 → χ = 1 (life). The only surviving state when all gates pass.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<!-- L4 -->
+<tr data-type="PROVED"><td class="thm-num">35</td><td class="thm-layer">L4</td><td class="thm-layer">MasterEquation​Invariance.lean</td><td class="thm-name">canonical_substitution_row_valid</td><td class="thm-what">Every factor's canonical substitution row passes</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">36</td><td class="thm-layer">L4</td><td class="thm-layer">MasterEquation​Invariance.lean</td><td class="thm-name">canonical_substitution_preserves_signature</td><td class="thm-what">Physical→spiritual substitution preserves signatures for all 10 factors</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">37</td><td class="thm-layer">L4</td><td class="thm-layer">MasterEquation​Invariance.lean</td><td class="thm-name">master_equation_invariant_under_canonical_substitution</td><td class="thm-what">χ(physical) = χ(spiritual) under canonical map. The equation is the same in both registers.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">38–39</td><td class="thm-layer">L4</td><td class="thm-layer">MasterEquation​Invariance.lean</td><td class="thm-name">G/Q_zero_still_collapses_after_substitution</td><td class="thm-what">G = 0 and Q = 0 collapse survive the substitution. Gate holds in both registers.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="BOUNDARY"><td class="thm-num">40</td><td class="thm-layer">L4</td><td class="thm-layer">MasterEquation​Invariance.lean</td><td class="thm-name">product_only_does_not_detect_grace_faith_swap</td><td class="thm-what">Product alone is BLIND to semantic swaps. Grace↔Faith swap passes product check.</td><td class="thm-method">decide</td><td><span class="tag tag-boundary">Boundary</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">41</td><td class="thm-layer">L4</td><td class="thm-layer">MasterEquation​Invariance.lean</td><td class="thm-name">signature_layer_rejects_grace_faith_swap</td><td class="thm-what">The signature layer catches Grace↔Faith swap that product missed</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">42</td><td class="thm-layer">L4</td><td class="thm-layer">MasterEquation​Invariance.lean</td><td class="thm-name">master_invariance_requires_signature_discipline</td><td class="thm-what">BOTH product AND signature needed — neither alone suffices. This is why the bridge is two-layer.</td><td class="thm-method">conjunction</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<!-- L5 -->
+<tr data-type="PROVED"><td class="thm-num">43</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law3_truth_limit_E_one</td><td class="thm-what">Full slots + source-backed + phase-aligned → E = 1</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">44</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law3_command_bypass_forces_E_zero</td><td class="thm-what">Command bypass → E = 0 (∀ states). Bypassing command kills truth-fidelity.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">45</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law3_phase_inversion_forces_E_zero</td><td class="thm-what">Phase inversion → E = 0 (∀ states). Inverted alignment kills truth.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">46</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law3_command_bypass_collapses_chi</td><td class="thm-what">Command bypass → χ = 0. Truth bypass kills the whole system.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">47</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law3_phase_inversion_collapses_chi</td><td class="thm-what">Phase inversion → χ = 0</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">48</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law6_logos_limit_K_one</td><td class="thm-what">Full conditions → K = 1</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">49</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law6_relation_bypass_forces_K_zero</td><td class="thm-what">Relation bypass → K = 0. No relation, no Logos.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">50</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law6_bandwidth_closed_forces_K_zero</td><td class="thm-what">Bandwidth closed → K = 0. Channel closed, Logos blocked.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">51</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law6_distortion_dominates_forces_K_zero</td><td class="thm-what">Distortion dominates → K = 0</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">52</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law6_bandwidth_collapse_collapses_chi</td><td class="thm-what">Bandwidth collapse → χ = 0</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">53</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law7_righteous_limit_R_one</td><td class="thm-what">Full conditions → R = 1</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">54</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law7_relation_bypass_forces_R_zero</td><td class="thm-what">Relation bypass → R = 0. No relation, no frame translation.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">55</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law7_metric_absent_forces_R_zero</td><td class="thm-what">No shared metric → R = 0</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">56</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law7_frame_lock_forces_R_zero</td><td class="thm-what">Frame lock → R = 0</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">57</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law7_relation_bypass_collapses_chi</td><td class="thm-what">Relation bypass → χ = 0</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">58</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law7_frame_lock_collapses_chi</td><td class="thm-what">Frame lock → χ = 0</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">59</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law8_faith_limit_Q_one</td><td class="thm-what">Full conditions → Q = 1</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">60</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law8_command_bypass_forces_Q_zero</td><td class="thm-what">Command bypass → Q = 0</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">61</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law8_missing_eigenbasis_forces_Q_zero</td><td class="thm-what">Missing eigenbasis → Q = 0. No basis to collapse into.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">62</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law8_control_refusal_forces_Q_zero</td><td class="thm-what">Will refuses to measure → Q = 0. Free will preserved but no collapse.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">63–64</td><td class="thm-layer">L5</td><td class="thm-layer">FieldBridgeControls.lean</td><td class="thm-name">law8_bypass/refusal_collapses_chi</td><td class="thm-what">Command bypass → χ = 0. Control refusal → χ = 0.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<!-- L6 -->
+<tr data-type="PROVED"><td class="thm-num">65</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">binaryGate_zero</td><td class="thm-what">Score 0 → gate 0</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">66</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">binaryGate_positive</td><td class="thm-what">Score ≥ 1 → gate 1</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">67</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">binaryGate_zero_or_one</td><td class="thm-what">Gate output is always exactly 0 or 1. No intermediate states.</td><td class="thm-method">cases</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">68</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">law3_unbacked_amplitude_still_has_zero_truth_fidelity</td><td class="thm-what">Raw amplitude can be 5 but truth fidelity is 0 without source backing. High signal ≠ truth.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">69</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">law3_command_bypass_zeroes_source_backed_fidelity</td><td class="thm-what">Command bypass → truth fidelity 0 (∀ states)</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">70</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">law7_healthy_score_passes_R_gate</td><td class="thm-what">Healthy frame score → R gate = 1</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">71</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">law7_frame_locked_score_fails_R_gate</td><td class="thm-what">Frame locked → R gate = 0</td><td class="thm-method">rfl</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">72</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">law7_relation_bypass_score_fails_R_gate</td><td class="thm-what">No relation → R gate = 0</td><td class="thm-method">rfl</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">73</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">law7_final_R_is_binary</td><td class="thm-what">R gate is always 0 or 1. No drift.</td><td class="thm-method">cases</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">74–77</td><td class="thm-layer">L6</td><td class="thm-layer">BridgeScore​Discipline.lean</td><td class="thm-name">chi_collapse_through_score_discipline (×4)</td><td class="thm-what">Various bypass/lock conditions → χ = 0 through the score gate layer</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved ×4</span></td></tr>
+<!-- L7 -->
+<tr data-type="PROVED"><td class="thm-num">78</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">law4Iso</td><td class="thm-what">StrongForce ≅ Love (LawIso — value + collapse preserving bijection)</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="BOUNDARY"><td class="thm-num">79</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">strongForceCoinIso</td><td class="thm-what">Coin model ALSO passes LawIso. The adversarial boundary — basic isomorphism is too weak.</td><td class="thm-method">constructor</td><td><span class="tag tag-boundary">Boundary</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">80</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">richLaw4Iso</td><td class="thm-what">StrongForce ≅ Love under RichLawIso (roles + transitions preserved). Stronger level.</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">81</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">no_rich_iso_to_natural_coin</td><td class="thm-what">Natural coin model FAILS RichLawIso — role mismatch blocks it</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="BOUNDARY"><td class="thm-num">82</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">richRelabeledCoinIso</td><td class="thm-what">Relabeled coin PASSES — deliberately adversarial. Lean cannot verify label honesty.</td><td class="thm-method">constructor</td><td><span class="tag tag-boundary">Boundary</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">83</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">faith_candidate_not_right_inverse</td><td class="thm-what">3-state Faith model fails bijection with 2-state StrongForce</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">84</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">em_candidate_not_right_inverse</td><td class="thm-what">3-state EM model fails bijection with 2-state StrongForce</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">85</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">inverted_mapping_does_not_preserve_value</td><td class="thm-what">bound→liberation fails value preservation</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">86</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">no_law4_iso_uses_inverted_mapping</td><td class="thm-what">No valid Law4 iso uses the inverted map</td><td class="thm-method">contradiction</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">87</td><td class="thm-layer">L7</td><td class="thm-layer">IsomorphismTest.lean</td><td class="thm-name">misaligned_collapse_rule_invalid</td><td class="thm-what">Collapse at stateB (value=one) contradicts axiom</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<!-- L8 — Maxwell/Trinity -->
+<tr data-type="PROVED L8"><td class="thm-num">88</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">full_quaternion_product_has_coupling_invariant</td><td class="thm-what">Quaternion multiplication has scalar-vector coupling that vector-only product lacks</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">89</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">vector_only_product_lacks_coupling_invariant</td><td class="thm-what">Heaviside vector-only product lacks coupling invariant</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED L8"><td class="thm-num">90</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">full_scalar_vector_split_reconstructs_quaternion_product</td><td class="thm-what">Split product reconstructs full quaternion product</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">91</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">same_dot_cross_but_different_quaternion_product</td><td class="thm-what">Same dot+cross ≠ same quaternion product. Scalar coupling matters.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED L8"><td class="thm-num">92</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">quaternionEM_valid</td><td class="thm-what">Quaternion EM model passes all 5 ValidTriadic conditions</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED L8"><td class="thm-num">93</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">trinityRelational_valid</td><td class="thm-what">Trinity relational model passes all 5 ValidTriadic conditions</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED L8"><td class="thm-num">94</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">quaternionTrinityIso</td><td class="thm-what">Quaternion EM ≅ Trinity (TriadicIso — full structural isomorphism)</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">95</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">heavisideVectorEM_invalid</td><td class="thm-what">Heaviside EM fails — no coupling invariant</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">96</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">modalism_invalid</td><td class="thm-what">Modalism fails — no relational distinctness; persons collapse into modes</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">97</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">staticSingleFieldEM_invalid</td><td class="thm-what">Static single-field EM fails — not full dynamic</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">98</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">arbitraryThreePartSystem_invalid</td><td class="thm-what">Generic 3-part system fails — wrong role profiles</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">99</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">relabeledRoleSystem_invalid</td><td class="thm-what">Relabeled roles fail — labels ≠ profiles; renaming doesn't create structure</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">100–104</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">no_iso_from_* (5 theorems)</td><td class="thm-what">No TriadicIso to Heaviside, Modalism, static EM, arbitrary 3-part, or relabeled system</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection ×5</span></td></tr>
+<tr data-type="REJECTION L8"><td class="thm-num">105–106</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">cyclicRoleMap_not_source/profile_preserving</td><td class="thm-what">Cyclic role swap fails source preservation AND profile preservation</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED L8"><td class="thm-num">107–111</td><td class="thm-layer">⭐ L8</td><td class="thm-layer">MaxwellTrinity.lean</td><td class="thm-name">load_bearing_constraint_audits (5)</td><td class="thm-what">Each guard does real work: removing ANY single guard admits the corresponding false positive</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved ×5</span></td></tr>
+<!-- L9 -->
+<tr data-type="PROVED L9"><td class="thm-num">112</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">justice_and_mercy_share_common_components</td><td class="thm-what">Same 4 restoration components shared between Justice and Mercy</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED L9"><td class="thm-num">113</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">justice_and_mercy_differ_by_cost_bearer</td><td class="thm-what">Differ in exactly one coordinate: who pays the cost</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION L9"><td class="thm-num">114–117</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">four_missing_component_rejections</td><td class="thm-what">Missing ANY of proportionality / impartiality / truthNaming / victimRestoration breaks perfectCommon</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection ×4</span></td></tr>
+<tr data-type="PROVED L9"><td class="thm-num">118</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">cross_satisfies_convergence</td><td class="thm-what">The Cross config meets all 5 convergence conditions simultaneously</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION L9"><td class="thm-num">119</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">offender_payment_fails_mercy_condition</td><td class="thm-what">Offender-pays fails the mercy axis. Self-payment is not mercy.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L9"><td class="thm-num">120</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">human_third_party_fails_authority_and_capacity</td><td class="thm-what">Human third party fails authority + universality</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L9"><td class="thm-num">121</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">coerced_third_party_fails_voluntariness</td><td class="thm-what">Coercion fails voluntariness. Forced repair is not love.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L9"><td class="thm-num">122</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">waived_debt_fails_justice_condition</td><td class="thm-what">Waived debt fails justice. Cheap grace. Debt not paid.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION L9"><td class="thm-num">123</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">shared_cost_fails_mercy_condition</td><td class="thm-what">Shared cost fails mercy — offender still pays</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED L9"><td class="thm-num">124</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">cross_unique_convergence_configuration</td><td class="thm-what">∀ c, CrossConvergence(c) → c = cross. Any config satisfying all 5 conditions IS the Cross.</td><td class="thm-method">exhaustive cases</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED L9"><td class="thm-num">125</td><td class="thm-layer">⭐ L9</td><td class="thm-layer">JusticeMercyOperator.lean</td><td class="thm-name">cross_is_unique_solution</td><td class="thm-what">THE CROSS IS THE UNIQUE SOLUTION — existence AND uniqueness. Strongest single result in the package.</td><td class="thm-method">exhaustive cases</td><td><span class="tag tag-proved">⭐ Strongest</span></td></tr>
+<!-- L10 -->
+<tr data-type="PROVED"><td class="thm-num">126</td><td class="thm-layer">L10</td><td class="thm-layer">PolarityDiscipline.lean</td><td class="thm-name">two_destructive_signs_have_positive_raw_product</td><td class="thm-what">(-1)×(-1) = +1 in raw arithmetic</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">127</td><td class="thm-layer">L10</td><td class="thm-layer">PolarityDiscipline.lean</td><td class="thm-name">two_destructive_signs_do_not_pass_coherence_gate</td><td class="thm-what">The coherence gate rejects them. Arithmetic sign ≠ moral sign.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">128</td><td class="thm-layer">L10</td><td class="thm-layer">PolarityDiscipline.lean</td><td class="thm-name">below_accountability_maps_to_neutral</td><td class="thm-what">Below age of accountability → neutral regardless of observed behavior</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">129</td><td class="thm-layer">L10</td><td class="thm-layer">PolarityDiscipline.lean</td><td class="thm-name">below_accountability_has_zero_culpability</td><td class="thm-what">Below threshold → 0 culpability</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">130</td><td class="thm-layer">L10</td><td class="thm-layer">PolarityDiscipline.lean</td><td class="thm-name">destructive_strict_M_collapses_chi</td><td class="thm-what">Destructive polarity → M gate = 0 → χ = 0</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">131</td><td class="thm-layer">L10</td><td class="thm-layer">PolarityDiscipline.lean</td><td class="thm-name">neutral_accountability_aware_M_does_not_zero_M</td><td class="thm-what">Neutral polarity → M = 1 under accountability-aware gate</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">132</td><td class="thm-layer">L10</td><td class="thm-layer">PolarityDiscipline.lean</td><td class="thm-name">destructive_accountability_aware_M_collapses_chi</td><td class="thm-what">Destructive polarity still kills χ under accountability-aware gate</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<!-- L11 -->
+<tr data-type="PROVED"><td class="thm-num">133</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">raw_two_negatives_multiply_positive</td><td class="thm-what">Arithmetic: (-1)×(-1) = 1. Raw math says yes.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">134</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">burden_two_negatives_stay_negative</td><td class="thm-what">Burden coupling: negative + negative = negative. Accumulation does not redeem.</td><td class="thm-method">rfl</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">135</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">burden_negative_positive_stays_negative</td><td class="thm-what">Any negative in the burden keeps it negative</td><td class="thm-method">rfl</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">136</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">christic_conversion_turns_negative_burden_positive</td><td class="thm-what">External Christic conversion: negative → positive</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">137</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">christic_conversion_turns_neutral_burden_positive</td><td class="thm-what">Christic conversion: neutral → positive</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">138</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">two_negative_burdens_require_conversion_for_positive</td><td class="thm-what">Accumulated negative burdens need conversion, not more burdens</td><td class="thm-method">rfl</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">139</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">two_negative_burdens_without_conversion_not_positive</td><td class="thm-what">Without conversion, burdens stay negative</td><td class="thm-method">rfl</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">140</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">negative_burden_gate_zero</td><td class="thm-what">Negative burden → coherence gate = 0</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">141</td><td class="thm-layer">L11</td><td class="thm-layer">SignConversion​Discipline.lean</td><td class="thm-name">converted_negative_burden_gate_one</td><td class="thm-what">Converted burden → coherence gate = 1</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<!-- L12 -->
+<tr data-type="PROVED"><td class="thm-num">142</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">C_op_converts_negative_to_positive</td><td class="thm-what">C_op takes negative → positive (visible sign)</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">143</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">C_op_converts_neutral_to_positive</td><td class="thm-what">C_op takes neutral → positive</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">144</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">C_op_keeps_positive_positive</td><td class="thm-what">Already positive stays positive</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">145</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">C_op_preserves_record_mark</td><td class="thm-what">The record of what happened is NOT erased. History survives grace.</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">146</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">C_op_preserves_source_state</td><td class="thm-what">Entire source state carried forward. Nothing lost.</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">147</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">C_op_preserves_negative_history_even_after_positive_output</td><td class="thm-what">Source = negative, output = positive — simultaneously. Grace does not pretend the past didn't happen.</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="BOUNDARY"><td class="thm-num">148</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">visible_projection_conflates_negative_and_neutral_conversion</td><td class="thm-what">Visible output same for both paths — non-injective. You can't tell from the outside which path someone took.</td><td class="thm-method">decide</td><td><span class="tag tag-boundary">Boundary</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">149</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">lifted_outputs_preserve_distinct_source_signs</td><td class="thm-what">Lifted output preserves the distinction. God sees the full record.</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">150</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">visible_restoration_does_not_imply_erasure</td><td class="thm-what">Restoration ≠ erasure — formally. Looking forgiven ≠ past erased.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">151</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">chi_via_COp_converts_two_negative_burdens</td><td class="thm-what">C_op converts accumulated negative burdens into positive coherence</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">152</td><td class="thm-layer">L12</td><td class="thm-layer">ChristOperator​Discipline.lean</td><td class="thm-name">chi_via_COp_is_not_plain_scalar_self_multiplication</td><td class="thm-what">C is NOT just another factor in the product. External integration, not scalar.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<!-- L13 -->
+<tr data-type="PROVED"><td class="thm-num">153</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">incarnation_preserves_substrate_identity</td><td class="thm-what">Substrate ID unchanged through incarnation</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">154</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">cross_preserves_substrate_identity</td><td class="thm-what">Substrate ID unchanged through crucifixion</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">155</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">resurrection_preserves_substrate_identity</td><td class="thm-what">Substrate ID unchanged through resurrection</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">156</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">incarnation_is_finite_compression</td><td class="thm-what">Incarnation = resolution drops from infinite to finite</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">157</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">resurrection_returns_to_infinite_resolution</td><td class="thm-what">Resurrection = resolution returns to infinite</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">158</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">cross_has_entropy_and_death_contact</td><td class="thm-what">Cross records entropy contact AND death contact</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">159–160</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">resurrection_carries_entropy/death_contact_record</td><td class="thm-what">Resurrection preserves entropy AND death contact records. The proof of the mission is carried in the return.</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">161</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">resurrection_is_not_identical_to_preincarnate_visible_record</td><td class="thm-what">Post-resurrection ≠ pre-incarnate. It is RICHER — not a reset.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">162</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">resurrection_same_substrate_richer_expression</td><td class="thm-what">Same substrate + finite record carried = richer than before. The scar tissue is part of the proof.</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">163–164</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">mission_COp_restores/preserves</td><td class="thm-what">Combined mission+C_op restores negative burden AND preserves source history</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">165</td><td class="thm-layer">L13</td><td class="thm-layer">MissionReturn​Operator.lean</td><td class="thm-name">mission_COp_is_not_repair_only</td><td class="thm-what">This is mission return, NOT repair-only.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<!-- L14 -->
+<tr data-type="PROVED"><td class="thm-num">166</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">christ_coherent_memory_retained</td><td class="thm-what">Recorded + Christ-coherent → retention bit = 1</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">167</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">incoherent_recorded_memory_not_retained</td><td class="thm-what">Recorded but incoherent → retention bit = 0. Record alone is insufficient.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">168–169</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">unrecorded/incoherent_forces_no_retention</td><td class="thm-what">∀ m, unrecorded → retention = 0. ∀ m, incoherent → retention = 0.</td><td class="thm-method">simp</td><td><span class="tag tag-rejected">Rejection ×2</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">170</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">recorded_and_christ_coherent_forces_retention</td><td class="thm-what">∀ m, recorded ∧ coherent → retention = 1</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">171</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">incoherent_recorded_memory_fails_only_final_retention</td><td class="thm-what">Accessible during life but filtered at death. Living memory ≠ final identity.</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">172</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">living_memory_is_not_final_identity_memory</td><td class="thm-what">Life memory ≠ final identity memory. What you carry ≠ who you become.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">173</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">reoriented_incoherent_memory_becomes_retained</td><td class="thm-what">Reorientation to Christ → retention restored. Conversion works.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">174–176</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">final_identity_conditions (3 theorems)</td><td class="thm-what">Coherent + integrated = final identity. Discoherent = no final identity. Coherent but not integrated = no final identity.</td><td class="thm-method">simp/decide</td><td><span class="tag tag-proved">Proved ×3</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">177</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">heaven_is_coherent_and_eternal</td><td class="thm-what">Heaven = coherent + eternal domain. Unique characterization.</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">178–179</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">merely_temporal/eternal_insufficient</td><td class="thm-what">Temporal coherence insufficient. Eternal instability insufficient. Both needed.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection ×2</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">180</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">direct_discoherent_christ_entry_into_heaven_fails</td><td class="thm-what">Discoherent memory cannot directly enter heaven</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">181</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">transformed_discoherent_christ_entry_into_heaven_passes</td><td class="thm-what">Reintegrated memory CAN enter heaven. Conversion opens the gate.</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">182</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">transformed_unrecorded_discoherent_entry_still_fails</td><td class="thm-what">Unrecorded events cannot be rescued. Cannot convert what was never recorded.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">183</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">valid_giving_life_to_christ</td><td class="thm-what">Surrender + external grace = valid conversion</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">184</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">resisting_without_grace_not_valid_conversion</td><td class="thm-what">Resisting without grace = invalid. Will alone is not enough.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">185–186</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">accountable_conversion + record_preservation</td><td class="thm-what">Conversion: negative → final identity. Record persists through conversion.</td><td class="thm-method">simp</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">187</td><td class="thm-layer">L14</td><td class="thm-layer">MemoryPersistence​Discipline.lean</td><td class="thm-name">unrecorded_negative_conversion_still_has_no_identity_trace</td><td class="thm-what">Cannot create record from nothing. Grace restores, but doesn't fabricate.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<!-- L15 -->
+<tr data-type="PROVED"><td class="thm-num">188</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">fall_has_parallel_death_and_judgment</td><td class="thm-what">Death and judgment are parallel consequences of the Fall — not a chain</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">189</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">fall_has_parallel_promise_not_death_then_promise</td><td class="thm-what">Promise is parallel from Fall, NOT sequential from Death</td><td class="thm-method">constructor</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">190</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">no_death_strictly_before_judgment</td><td class="thm-what">Death is NOT a prerequisite for judgment</td><td class="thm-method">cases</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">191</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">fall_as_covenant_rupture_requires_image_and_covenant</td><td class="thm-what">Fall requires BOTH Image and Covenant (multi-parent). Cannot fall from a covenant you never had.</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">192</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">energy_and_momentum_are_noether_siblings</td><td class="thm-what">Energy and momentum are parallel from symmetry (Noether). Neither parents the other.</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">193</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">no_energy_parent_of_momentum</td><td class="thm-what">Energy does NOT parent momentum</td><td class="thm-method">cases</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">194</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">bound_state_requires_excitation_and_coupling</td><td class="thm-what">Bound state requires both excitation AND coupling (multi-parent)</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">195–197</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">union_branches + no_before_union (3 theorems)</td><td class="thm-what">Union → justification AND sanctification (parallel). Neither before Union.</td><td class="thm-method">constructor/cases</td><td><span class="tag tag-proved">Proved + Rej</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">198</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">glorification_requires_both</td><td class="thm-what">Glorification requires both justification and sanctification</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">199</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">narrative_and_dependency_orders_diverge_at_justification_union</td><td class="thm-what">Teaching order and dependency order diverge at exactly this point. The line is not the lattice.</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">200–202</td><td class="thm-layer">L15</td><td class="thm-layer">DependencyLattice.lean</td><td class="thm-name">cross_domain_edge_witnesses (3 theorems)</td><td class="thm-what">faith→union ↔ excitation+coupling→bound_state. union→justification ↔ bound_state→reclassification. union→sanctification ↔ bound_state+energy→annealing.</td><td class="thm-method">constructor</td><td><span class="tag tag-proved">Proved ×3</span></td></tr>
+<!-- L16 -->
+<tr data-type="PROVED"><td class="thm-num">203</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">closedEightOfTen_attempt_count</td><td class="thm-what">10 attempts logged</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">204</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">closedEightOfTen_hit_count</td><td class="thm-what">8 hits (compiled bridges)</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">205</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">closedEightOfTen_denominator_closed</td><td class="thm-what">All attempts logged before publication. No hidden failures.</td><td class="thm-method">rfl</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="PROVED"><td class="thm-num">206</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">closedEightOfTen_can_claim_80_percent</td><td class="thm-what">80% hit rate claim is valid</td><td class="thm-method">decide</td><td><span class="tag tag-proved">Proved</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">207</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">closedEightOfTen_cannot_claim_90_percent</td><td class="thm-what">90% claim is blocked. Can't claim what you haven't earned.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">208</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">hiddenDenominator_blocks_anomaly_claim</td><td class="thm-what">Hidden failures block ANY anomaly claim. Integrity is non-negotiable.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">209</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">failed_attempt_counts_in_denominator</td><td class="thm-what">Failures count against you. No cherry-picking.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+<tr data-type="REJECTION"><td class="thm-num">210</td><td class="thm-layer">L16</td><td class="thm-layer">HitRateDiscipline.lean</td><td class="thm-name">partial_attempt_does_not_count_as_hit</td><td class="thm-what">Partials are not hits. Close enough is not enough.</td><td class="thm-method">decide</td><td><span class="tag tag-rejected">Rejection</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ══════════ FALSE POSITIVE QUEUE ══════════ -->
+<section class="section" id="falsepos">
+  <div class="section-eyebrow">Adversarial Testing</div>
+  <h2 class="section-title">False Positive Queue — 10 Wrong Models Tested</h2>
+  <p class="section-intro">The framework names the things that should look right but don't hold under formal testing. Every wrong model was tested before publication. The denominator is closed.</p>
+
+  <table class="fp-table">
+    <thead><tr><th>#</th><th>Right Claim Being Tested</th><th>Wrong / Rival Model</th><th>Why It Seems Plausible</th><th>Constraint Failed</th><th>Lean Anchor</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="q-id">FP-01</td>
+        <td class="fp-right">Cost-bearing judge is the unique repair</td>
+        <td class="fp-wrong">Offender pays full cost</td>
+        <td class="fp-wrong">Satisfies consequence/justice intuitively</td>
+        <td class="fp-fail">Mercy fails — self-payment is not mercy</td>
+        <td class="thm-layer">JusticeMercyOperator (Thm 119)</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-02</td>
+        <td class="fp-right">Cost-bearing judge is the unique repair</td>
+        <td class="fp-wrong">Debt simply waived</td>
+        <td class="fp-wrong">Sounds maximally forgiving</td>
+        <td class="fp-fail">Justice/record unresolved — cheap grace</td>
+        <td class="thm-layer">JusticeMercyOperator (Thm 122)</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-03</td>
+        <td class="fp-right">Cost-bearing judge is the unique repair</td>
+        <td class="fp-wrong">Coerced third party pays</td>
+        <td class="fp-wrong">Substitution appears to cover cost</td>
+        <td class="fp-fail">Voluntariness fails — forced repair is not love</td>
+        <td class="thm-layer">JusticeMercyOperator (Thm 121)</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-04</td>
+        <td class="fp-right">Cost-bearing judge is the unique repair</td>
+        <td class="fp-wrong">Finite human third party pays</td>
+        <td class="fp-wrong">Martyrdom/substitution intuition</td>
+        <td class="fp-fail">Authority and universality fail — scope insufficient</td>
+        <td class="thm-layer">JusticeMercyOperator (Thm 120)</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-05</td>
+        <td class="fp-right">Cost-bearing judge is the unique repair</td>
+        <td class="fp-wrong">Shared cost (partial substitution)</td>
+        <td class="fp-wrong">Balances justice and mercy</td>
+        <td class="fp-fail">Maximal mercy fails — offender still pays</td>
+        <td class="thm-layer">JusticeMercyOperator (Thm 123)</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-06</td>
+        <td class="fp-right">Cross is necessary above entropy threshold</td>
+        <td class="fp-wrong">Progressive grace only</td>
+        <td class="fp-wrong">Gradual repair feels less violent</td>
+        <td class="fp-fail">Fails above S ≈ 0.28 entropy threshold</td>
+        <td class="thm-layer">TANGENT_13_Entropy_Crossover</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-07</td>
+        <td class="fp-right">Cross uniqueness</td>
+        <td class="fp-wrong">Universal pardon — no cost</td>
+        <td class="fp-wrong">Maximizes forgiveness</td>
+        <td class="fp-fail">Justice / love / entropy / holiness all fail per model</td>
+        <td class="thm-layer">THE CROSS UNIQUE SOLUTION</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-08</td>
+        <td class="fp-right">Cross uniqueness</td>
+        <td class="fp-wrong">Divine override — reset without consent</td>
+        <td class="fp-wrong">Maximizes immediate coherence</td>
+        <td class="fp-fail">Free will destroyed — love requires freedom</td>
+        <td class="thm-layer">THE CROSS UNIQUE SOLUTION / Constraint Fork</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-09</td>
+        <td class="fp-right">Self-repair is impossible</td>
+        <td class="fp-wrong">Works-based self-improvement</td>
+        <td class="fp-wrong">People visibly improve behavior</td>
+        <td class="fp-fail">Sign flip vs magnitude change confused — improvement ≠ conversion</td>
+        <td class="thm-layer">TANGENT_10 / C8.1 / SignConversionDiscipline</td>
+      </tr>
+      <tr>
+        <td class="q-id">FP-10</td>
+        <td class="fp-right">Good is ontologically prior to evil</td>
+        <td class="fp-wrong">Evil is merely less-good / immaturity</td>
+        <td class="fp-wrong">Explains imperfection and immaturity</td>
+        <td class="fp-fail">Cannot explain inversion, betrayal, or malice — these are not deficits but active negations</td>
+        <td class="thm-layer">Duality Project / PolarityDiscipline</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════ GAPS ══════════ -->
+<section class="section" id="gaps">
+  <div class="section-eyebrow">Honest Accounting</div>
+  <h2 class="section-title">Formal Gaps — Could Be Addressed With More Lean</h2>
+  <p class="section-intro">A framework that names its own gaps is more trustworthy than one that does not. These are the places where the formal work is incomplete. Every gap is an honest admission. The system does not claim what it has not proved.</p>
+
+  <div style="border: 1px solid var(--void-rim);">
+    <div class="gap-row">
+      <div class="gap-id-cell">GAP-01</div>
+      <div>
+        <div class="gap-title">Laws 1, 2, 9, 10 — No Domain-Specific Collapse Conditions</div>
+        <div class="gap-desc">Law 1 (Gravity/Grace → G), Law 2 (Motion/Will → M), Law 9 (Weak Force/Moral Conservation), Law 10 (Coherence/Christ as factor). Generic zero-collapse is proved but the physical mechanism that drives each to zero is NOT encoded.</div>
+      </div>
+      <div>
+        <div class="gap-file">FieldBridgeControls.lean</div>
+        <div class="gap-desc" style="margin-top:0.4rem">Laws 3, 6, 7, 8 are proved. Laws 1, 2, 9, 10 remain at generic level only.</div>
+      </div>
+      <span class="tag tag-gap">Closable</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">GAP-02</div>
+      <div>
+        <div class="gap-title">Law 4 Factor-Level Bridge Wiring</div>
+        <div class="gap-desc">StrongForce ≅ Love is proved at the model level under RichLawIso. But there is no FieldBridgeControls-style gate wiring of Factor.S into the χ product.</div>
+      </div>
+      <div>
+        <div class="gap-file">FieldBridgeControls.lean</div>
+      </div>
+      <span class="tag tag-gap">Closable</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">GAP-03</div>
+      <div>
+        <div class="gap-title">Law 5 Factor-Level Bridge Wiring</div>
+        <div class="gap-desc">Justice/Mercy operator is proved independently, but no formal wiring shows how R(offense, α) maps into the Factor.S product slot.</div>
+      </div>
+      <div>
+        <div class="gap-file">FieldBridgeControls.lean</div>
+      </div>
+      <span class="tag tag-gap">Closable</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">GAP-04</div>
+      <div>
+        <div class="gap-title">Category-Theoretic Upgrade of Mapping.lean</div>
+        <div class="gap-desc">Currently a list-map equality. A proper functor between categories of operations would be structurally stronger. Currently DEMOTED to teaching layer.</div>
+      </div>
+      <div>
+        <div class="gap-file">Mapping.lean</div>
+      </div>
+      <span class="tag tag-gap">Closable</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">GAP-05</div>
+      <div>
+        <div class="gap-title">Cross-Domain Lattice Coverage</div>
+        <div class="gap-desc">Only 3 of ~20 theology edges have explicit physics edge witnesses formally proved. The rest are structurally provable but not yet encoded.</div>
+      </div>
+      <div>
+        <div class="gap-file">DependencyLattice.lean</div>
+      </div>
+      <span class="tag tag-gap">Closable</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SPEC GAPS ══════════ -->
+<section class="section" id="specgaps">
+  <div class="section-eyebrow">Outside Lean's Scope</div>
+  <h2 class="section-title">Specification Gaps — These Cannot Be Closed by More Lean</h2>
+  <p class="section-intro">These gaps require domain judgment, empirical data, or philosophical argument. They are not failures — they are the honest boundary between what formal systems can verify and what requires evidence from the world.</p>
+
+  <div style="border: 1px solid var(--void-rim);">
+    <div class="gap-row">
+      <div class="gap-id-cell">SPEC-01</div>
+      <div>
+        <div class="gap-title">Faithful Abstraction</div>
+        <div class="gap-desc">Does quaternionEM faithfully represent historical Maxwell quaternion electromagnetics? Does the relational model faithfully represent Nicene Trinitarian doctrine? These are domain judgment calls, not formal proof targets.</div>
+      </div>
+      <div><div class="gap-desc">All isomorphism modules</div></div>
+      <span class="tag tag-spec">Spec Gap</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">SPEC-02</div>
+      <div>
+        <div class="gap-title">Label Honesty</div>
+        <div class="gap-desc">The relabeled-coin adversarial result (Thm 82) proves Lean CAN be gamed by relabeling. The guard is domain review, not formal proof. This is an inherent limit of any formal system — and the framework names it explicitly.</div>
+      </div>
+      <div><div class="gap-desc">BridgeMatrix, IsomorphismTest</div></div>
+      <span class="tag tag-spec">Spec Gap</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">SPEC-03</div>
+      <div>
+        <div class="gap-title">Empirical Validation</div>
+        <div class="gap-desc">The 5.7–6.35σ experimental correlations are NOT formalized in Lean. Statistical claims reference external data not encoded in the proof system. The bilateral audit and MDA diagnostic address this separately.</div>
+      </div>
+      <div><div class="gap-desc">External datasets</div></div>
+      <span class="tag tag-spec">Spec Gap</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">SPEC-04</div>
+      <div>
+        <div class="gap-title">Continuous Mathematics</div>
+        <div class="gap-desc">All models use Nat/Int/Bool. Continuous-domain physics — real-valued fields, differential equations, Lagrangians — would require Mathlib. Not attempted in this corpus.</div>
+      </div>
+      <div><div class="gap-desc">All Lean files</div></div>
+      <span class="tag tag-spec">Spec Gap</span>
+    </div>
+    <div class="gap-row">
+      <div class="gap-id-cell">SPEC-05</div>
+      <div>
+        <div class="gap-title">Historical Claims</div>
+        <div class="gap-desc">Lean proves the repair structure is unique (Thm 125). Whether Jesus of Nazareth is that structure requires historical evidence — dates, documents, testimony, resurrection accounts. Lean cannot answer this. History must be tested separately against the structure.</div>
+      </div>
+      <div><div class="gap-desc">JusticeMercyOperator + history</div></div>
+      <span class="tag tag-spec">Spec Gap</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ DEPENDENCY GRAPH ══════════ -->
+<section class="section" id="depgraph">
+  <div class="section-eyebrow">Import Architecture</div>
+  <h2 class="section-title">Dependency Graph</h2>
+  <p class="section-intro">The 16 files form a dependency tree 8 layers deep. Each node builds on what it imports. Standalone files (no imports) prove their claims independently — MaxwellTrinity and JusticeMercyOperator are the strongest of these.</p>
+
+  <div class="dep-block">
+<span style="color:var(--gold-soft);font-size:0.62rem;letter-spacing:0.2em">TRUNK (depth 8)</span>
+
+<span class="dep-node">Core</span> <span class="dep-arrow">→</span> <span class="dep-node">BridgeMatrix</span> <span class="dep-arrow">→</span> <span class="dep-node">FieldBridgeControls</span> <span class="dep-arrow">→</span> <span class="dep-node">BridgeScoreDiscipline</span>
+  <span class="dep-arrow">→</span> <span class="dep-node">PolarityDiscipline</span> <span class="dep-arrow">→</span> <span class="dep-node">MemoryPersistenceDiscipline</span> <span class="dep-arrow">→</span> <span class="dep-node">SignConversionDiscipline</span> <span class="dep-arrow">→</span> <span class="dep-node">ChristOperatorDiscipline</span>
+
+<span style="color:var(--gold-soft);font-size:0.62rem;letter-spacing:0.2em">BRANCHES</span>
+
+<span class="dep-branch">├──</span> <span class="dep-node">ChristOperatorDiscipline</span> <span class="dep-arrow">→</span> <span class="dep-node">HitRateDiscipline</span>
+     <span class="dep-arrow">Statistical integrity sits on top of the operator</span>
+
+<span class="dep-branch">├──</span> <span class="dep-node">ChristOperatorDiscipline</span> <span class="dep-arrow">→</span> <span class="dep-node">MissionReturnOperator</span>
+     <span class="dep-arrow">Resurrection architecture builds on the conversion operator</span>
+
+<span class="dep-branch">└──</span> <span class="dep-node">BridgeMatrix</span> <span class="dep-arrow">→</span> <span class="dep-node">MasterEquationInvariance</span>
+     <span class="dep-arrow">Product + signature invariance</span>
+
+<span style="color:var(--gold-soft);font-size:0.62rem;letter-spacing:0.2em">STANDALONE (no imports — each proves its claims independently)</span>
+
+<span class="dep-standalone">StageMachine</span> <span class="dep-arrow">·</span> <span class="dep-standalone">Mapping</span> <span class="dep-arrow">·</span> <span class="dep-standalone">IsomorphismTest</span> <span class="dep-arrow">·</span> <span class="dep-standalone">DependencyLattice</span>
+<span class="dep-node">MaxwellTrinity</span> <span class="dep-arrow">·</span> <span class="dep-node">JusticeMercyOperator</span>
+
+<span class="dep-note">⭐ MaxwellTrinity + JusticeMercyOperator are the strongest standalone results in the corpus.</span>
+<span class="dep-note">   They do not depend on any other file. They stand alone and compile clean.</span>
+  </div>
+</section>
+
+<!-- ══════════ COMPRESSION ══════════ -->
+<section class="section" id="compress" style="border-bottom:none;">
+  <div class="section-eyebrow">Final Argument</div>
+  <h2 class="section-title">The Compression</h2>
+  <p class="section-intro">After 7 lanes, 16 layers, 210+ theorems, 70+ adversarial rejections — four sentences remain.</p>
+
+  <div class="compress-grid">
+
+    <div class="compress-card">
+      <div class="compress-id">COMPRESS-1 · The Argument</div>
+      <div class="compress-title">The God-Shape</div>
+      <div class="compress-body">Every worldview depends on coherence. Coherence requires a reference. The reference cannot be the broken system being measured. Therefore the source of coherence must be prior to the system. That source must be stable, generative, truth-bearing, good, authoritative, personal, and life-giving. That is the God-shape.</div>
+    </div>
+
+    <div class="compress-card">
+      <div class="compress-id">COMPRESS-2 · The Bridge</div>
+      <div class="compress-title">The Cross-Shape</div>
+      <div class="compress-body">Perfect repair requires a cost-bearing judge. The judge must enter the system, bear the cost, preserve freedom, restore relation, honor the record, and validate repair through return. The Cross is the unique configuration satisfying all five conditions simultaneously. Every alternative fails at least one. This is the lock: God-shaped → Cross-shaped.</div>
+    </div>
+
+    <div class="compress-card">
+      <div class="compress-id">COMPRESS-3 · The Question</div>
+      <div class="compress-title">The Challenge</div>
+      <div class="compress-body">Can any worldview walk through all seven lanes and avoid that shape? Not because the questions are tricks. Because reality is coherent. And coherence is His.</div>
+    </div>
+
+    <div class="compress-card">
+      <div class="compress-id">COMPRESS-4 · The Honest Boundary</div>
+      <div class="compress-title">What Lean Proves and Does Not Prove</div>
+      <div class="compress-body">Lean proves the framework is internally consistent: 287 theorems, 0 axioms, 0 sorry, 0 admit. Whether the model is the right model for the real world is a question Lean cannot answer. That question belongs to theology, physics, history, and honest argument. The honest boundary is public. The gaps are named. The kill conditions are stated.</div>
+    </div>
+
+  </div>
+
+  <div class="verdict-block" style="margin-top:2rem;">
+    <div class="verdict-label">The Verdict — Discovered, Not Assumed</div>
+    <div class="verdict-statement">
+      Coherence is narrow.<br>
+      Decoherence is easy.<br>
+      Restoration is costly.
+    </div>
+    <div class="verdict-body">This is not a premise. It is the output of the method applied across 70 domains. The Lean corpus formalizes the structural architecture that produces this output. The bilateral audit runs the evidence both directions. The convergence is not decoration. The convergence is the evidence.</div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+  <div class="footer-left">
+    Theophysics Research Initiative · POF 2828<br>
+    David Lowe · faiththruphysics.com<br>
+    June 2026 · Lean 4 Corpus · v1.0
+  </div>
+  <div class="footer-right">
+    287 theorems · 0 sorry · 70 domains · 5.7σ · 1 coherence · 1 question
+  </div>
+</footer>
+
+</main>
+
+<!-- ══════════ JAVASCRIPT ══════════ -->
+<script>
+// Lane toggle
+function toggleLane(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// Theorem filter
+function filterThm(type, btn) {
+  document.querySelectorAll('.thm-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('#thmTable tbody tr');
+  rows.forEach(row => {
+    if (type === 'ALL') {
+      row.classList.remove('hidden');
+    } else {
+      const rowType = row.getAttribute('data-type') || '';
+      if (rowType.includes(type)) {
+        row.classList.remove('hidden');
+      } else {
+        row.classList.add('hidden');
+      }
+    }
+  });
+}
+
+// Scroll spy for side nav
+const sections = document.querySelectorAll('section[id], div[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-100px 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

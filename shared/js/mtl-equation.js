@@ -20,8 +20,10 @@
       }
     });
 
-    document.querySelectorAll('.mda-tb-tab[data-reader-mode]').forEach(function(tab) {
-      tab.classList.toggle('active', tab.getAttribute('data-reader-mode') === level);
+    document.querySelectorAll('.mda-tb-tab[data-reader-mode], .mtl-reader-tab[data-reader-mode], .mda-reader-mode-btn[data-reader-mode]').forEach(function(tab) {
+      const isMatch = tab.getAttribute('data-reader-mode') === level;
+      tab.classList.toggle('active', isMatch);
+      tab.setAttribute('aria-selected', isMatch ? 'true' : 'false');
     });
 
     document.querySelectorAll('[data-reader-panel]').forEach(function(panel) {
@@ -163,8 +165,10 @@
   }
 
   function initTopBarTabs() {
-    document.querySelectorAll('.mda-tb-tab[data-reader-mode]').forEach(function(tab) {
+    const selectors = '.mda-tb-tab[data-reader-mode], .mtl-reader-tab[data-reader-mode], .mda-reader-mode-btn[data-reader-mode]';
+    document.querySelectorAll(selectors).forEach(function(tab) {
       tab.addEventListener('click', function() {
+        if (tab.classList.contains('locked')) return;
         setLevel(tab.getAttribute('data-reader-mode'));
       });
     });
