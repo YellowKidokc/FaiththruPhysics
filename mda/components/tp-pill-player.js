@@ -42,9 +42,11 @@
       if(!tracks.length) return false;
       const map = {};
       tracks.forEach(t=>{ if(t.mode) map[t.mode] = t.url || t.src; });
+      const ttsFallback = map.tts || map['tts-athena'] || map['voice-sample-athena'] || map['tts-orpheus'] || map['voice-sample-orpheus'] || '';
       root.querySelectorAll('.tp-pill').forEach(pill=>{
         const mode = pill.dataset.mode;
         if(mode && map[mode]) pill.dataset.src = map[mode];
+        else if(mode === 'tts' && ttsFallback) pill.dataset.src = ttsFallback;
       });
       return true;
     }catch(e){
@@ -53,6 +55,9 @@
   }
 
   async function initPlayer(root){
+    if(root.dataset.tpInitialized === 'true') return;
+    root.dataset.tpInitialized = 'true';
+
     const isBar = root.classList.contains('tp-pill-bar');
     const audio = root.querySelector('audio');
     const pills = root.querySelectorAll('.tp-pill');
@@ -69,8 +74,8 @@
     const durEl   = isBar ? null : root.querySelector('#tpDuration');
     const labelEl = isBar ? null : root.querySelector('#tpNowPlayingLabel');
     const dotEl   = isBar ? null : root.querySelector('#tpModeDot');
-    const muteBtn = isBar ? null : root.querySelector('#tpMuteBtn');
-    const volSl   = isBar ? null : root.querySelector('#tpVolumeSlider');
+    const muteBtn = isBar ? root.querySelector('.tp-bar-mute') : root.querySelector('#tpMuteBtn');
+    const volSl   = isBar ? root.querySelector('.tp-bar-volume') : root.querySelector('#tpVolumeSlider');
 
     function setVisuals(pill){
       pills.forEach(p=>p.classList.remove('active'));
@@ -88,10 +93,10 @@
 
     function loadPill(pill, autoplay){
       setVisuals(pill);
+      if(!pill.dataset.src) return;
       const wasPlaying = !audio.paused;
       audio.pause();
       audio.src = pill.dataset.src;
-      audio.dataset.fallbackSrc = pill.dataset.fallbackSrc || '';
       audio.load();
       if(speed) audio.playbackRate = parseFloat(speed.value);
       if(autoplay || wasPlaying) audio.play().catch(()=>{});
@@ -125,14 +130,6 @@
     audio.addEventListener('ended', ()=>{ updateIcon(); fill.style.width = '0%'; });
     audio.addEventListener('play', updateIcon);
     audio.addEventListener('pause', updateIcon);
-    audio.addEventListener('error', ()=>{
-      const fallback = audio.dataset.fallbackSrc;
-      if(fallback && audio.src !== fallback){
-        audio.src = fallback;
-        audio.load();
-        audio.play().catch(()=>{});
-      }
-    });
 
     track.addEventListener('click', (e)=>{
       if(!audio.duration) return;
@@ -160,21 +157,37 @@
       });
     }
 
+    if(isBar){
+      let lastY = window.scrollY;
+      const updateDock = ()=>{
+        const y = window.scrollY;
+        root.classList.toggle('is-docked', y > 260 && y < lastY);
+        lastY = y;
+      };
+      window.addEventListener('scroll', updateDock, { passive: true });
+      updateDock();
+    }
+
     // init first pill without playing
     const active = root.querySelector('.tp-pill.active') || pills[0];
     setVisuals(active);
-    audio.src = active.dataset.src;
-    audio.dataset.fallbackSrc = active.dataset.fallbackSrc || '';
-    audio.load();
+    if(active.dataset.src){
+      audio.src = active.dataset.src;
+      audio.load();
+    }
     if(timeEl) timeEl.textContent = '0:00 / 0:00';
   }
 
+  function initAll(){
+    document.querySelectorAll('.tp-pill-player, .tp-pill-bar').forEach(initPlayer);
+  }
+
+  window.TPPillPlayer = { initAll, initPlayer };
+
   // Initialize on DOM ready
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ()=>{
-      document.querySelectorAll('.tp-pill-player, .tp-pill-bar').forEach(initPlayer);
-    });
+    document.addEventListener('DOMContentLoaded', initAll);
   }else{
-    document.querySelectorAll('.tp-pill-player, .tp-pill-bar').forEach(initPlayer);
+    initAll();
   }
 })();
