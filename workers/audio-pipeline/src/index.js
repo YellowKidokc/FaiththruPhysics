@@ -1,7 +1,7 @@
 const DEFAULT_MODEL = "@cf/deepgram/aura-2-en";
 const DEFAULT_SPEAKER = "luna";
 const DEFAULT_MAX_TEXT_CHARS = 12000;
-const DEFAULT_CHUNK_CHARS = 2500;
+const DEFAULT_CHUNK_CHARS = 1800;
 
 const SUPPORTED_SPEAKERS = new Set([
   "luna",
@@ -428,10 +428,17 @@ async function resolveHtml(body) {
 }
 
 async function extractCleanText(html) {
+  const targeted = await extractTextWithSelector(html, SOURCE_SELECTOR);
+  if (targeted.length >= 200) return targeted;
+  const bodyFallback = await extractTextWithSelector(html, "body");
+  return bodyFallback.length > targeted.length ? bodyFallback : targeted;
+}
+
+async function extractTextWithSelector(html, sourceSelector) {
   const extractor = new TextExtractor();
   const response = new HTMLRewriter()
     .on("title", new TitleHandler(extractor))
-    .on(SOURCE_SELECTOR, new CaptureHandler(extractor))
+    .on(sourceSelector, new CaptureHandler(extractor))
     .on(EXCLUDE_SELECTOR, new ExcludeHandler(extractor))
     .transform(new Response(html, { headers: { "content-type": "text/html;charset=utf-8" } }));
 
@@ -527,6 +534,9 @@ async function generateMp3(env, model, speaker, chunks) {
 
 async function responseToArrayBuffer(value) {
   if (value instanceof Response) {
+    if (!value.ok) {
+      throw httpError(await safeAiErrorMessage(value), value.status || 502);
+    }
     return value.arrayBuffer();
   }
   if (value && typeof value.arrayBuffer === "function") {
@@ -539,6 +549,17 @@ async function responseToArrayBuffer(value) {
     return value;
   }
   throw httpError("TTS model did not return audio bytes", 502);
+}
+
+async function safeAiErrorMessage(response) {
+  try {
+    const text = await response.text();
+    if (!text) return "TTS model returned an error";
+    const parsed = JSON.parse(text);
+    return parsed.description || parsed.message || text.slice(0, 300);
+  } catch {
+    return "TTS model returned an error";
+  }
 }
 
 function chunkText(text, maxChars) {

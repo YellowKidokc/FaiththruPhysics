@@ -51,6 +51,8 @@ Smoke test track:
 GET /api/audio?slug=smoke-test&mode=tts
 ```
 
+Aura-2 currently rejects chunks over 2,000 input characters. The deployed Worker uses `CHUNK_CHARS=1800` to stay below that limit.
+
 ## Setup
 
 Already completed for the current deployment. For a rebuild from scratch, run from this folder:

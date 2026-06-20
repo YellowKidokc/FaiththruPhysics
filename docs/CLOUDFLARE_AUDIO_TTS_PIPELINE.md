@@ -40,6 +40,8 @@ Current resources:
 | R2 | `faiththruphysics-audio` |
 | Worker secret | `ADMIN_TOKEN` |
 
+Operational note: Aura-2 currently rejects chunks over 2,000 input characters. The deployed Worker uses `CHUNK_CHARS=1800` and rejects AI error responses instead of saving them as audio.
+
 Smoke tests passed after deployment:
 
 | Test | Result |
