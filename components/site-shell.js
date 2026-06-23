@@ -51,9 +51,9 @@
   ];
 
   const LAYERS = [
-    { id: 'easy', label: 'Story' },
-    { id: 'academic', label: 'Plain' },
-    { id: 'math', label: 'Deep' },
+    { id: 'easy', label: 'Easy Reader' },
+    { id: 'academic', label: 'Academic Reader' },
+    { id: 'math', label: 'Math Layer' },
     { id: 'proof', label: 'Proof' },
   ];
 
