@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cross-Domain Analysis — Theophysics</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root{
+  --bg:#050505;--surface:#0a0a0a;--surface2:#111;--border:#222;
+  --text:#e0e0e0;--text-dim:#999;--text-muted:#555;
+  --gold:#d4af37;--gold-dim:rgba(212,175,55,.08);
+  --red:#c94040;--green:#22c55e;--blue:#4a9eff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;padding-bottom:60px;}
+
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 2rem;border-bottom:1px solid var(--border);
+  background:rgba(5,5,5,.95);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:50;
+}
+.top-bar a{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--text-dim);text-decoration:none;transition:color .2s;}
+.top-bar a:hover{color:var(--gold);}
+.top-bar .right-links{display:flex;gap:1.25rem;}
+.top-bar .right-links a{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;}
+
+.hero{
+  min-height:40vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:4rem 2rem 3rem;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:700px;height:700px;
+  background:radial-gradient(circle,#4a9eff08 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-icon{font-size:2.5rem;color:#4a9eff;margin-bottom:1.5rem;opacity:.7;}
+.hero-tag{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+.hero h1{font-family:'Crimson Text',serif;font-size:clamp(2.2rem,5vw,3.5rem);color:white;font-weight:400;margin-bottom:.75rem;}
+.hero .subtitle{font-size:1.05rem;color:var(--text-dim);max-width:660px;margin:0 auto 2rem;line-height:1.8;font-family:'Crimson Text',serif;font-style:italic;}
+.hero .badge{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:2rem;
+  border:1px solid rgba(212,175,55,.25);background:var(--gold-dim);
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--gold);letter-spacing:.05em;
+}
+
+.test-banner{max-width:960px;margin:0 auto;padding:0 2rem 2rem;}
+.test-strip{
+  display:flex;align-items:center;justify-content:center;gap:2rem;
+  background:var(--surface2);border:1px solid var(--border);border-radius:.5rem;
+  padding:1rem 2rem;flex-wrap:wrap;
+}
+.test-strip .sigma{text-align:center;}
+.test-strip .sigma .val{font-family:'Oswald',sans-serif;font-size:1.4rem;color:white;font-weight:600;}
+.test-strip .sigma .val span{color:var(--gold);font-size:.9rem;}
+.test-strip .sigma .lab{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);}
+.test-strip .sep{width:1px;height:30px;background:var(--border);}
+.test-strip a{font-size:.75rem;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:.3rem;}
+.test-strip a:hover{color:white;}
+
+.divider{max-width:900px;margin:0 auto;border:none;border-top:1px solid var(--border);}
+
+.section{max-width:900px;margin:0 auto;padding:2rem 2rem 1rem;}
+.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;}
+.section-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.section-header h2{font-family:'Crimson Text',serif;font-size:1.4rem;color:white;}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:2.5rem;}
+.card{
+  display:block;background:var(--surface2);border:1px solid var(--border);
+  border-radius:.5rem;padding:1.25rem 1.5rem;text-decoration:none;color:var(--text);
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.card:hover{border-color:#4a9eff40;transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.card-title{font-family:'Crimson Text',serif;font-size:1.1rem;color:white;margin-bottom:.4rem;font-weight:600;}
+.card-desc{font-size:.8rem;color:var(--text-dim);line-height:1.5;}
+.card-arrow{position:absolute;top:1.25rem;right:1.25rem;color:var(--text-muted);font-size:.7rem;transition:all .25s;}
+.card:hover .card-arrow{color:#4a9eff;transform:translateX(3px);}
+
+/* Site nav bar */
+.site-nav-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  background:rgba(8,8,12,0.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid #1a1a2a;font-family:'Inter',sans-serif;
+}
+.site-nav-inner{
+  max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;
+  min-height:52px;gap:.15rem;
+}
+.site-nav-inner a{
+  display:flex;align-items:center;gap:.35rem;padding:.5rem .8rem;color:#666;
+  text-decoration:none;font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;
+  font-weight:500;transition:all .2s;border-radius:4px;
+}
+.site-nav-inner a:hover{color:var(--gold);background:rgba(212,175,55,.08);}
+.site-nav-inner a.sn-home{color:var(--gold);}
+.site-nav-inner a.sn-home:hover{color:white;}
+.site-nav-inner a i{font-size:.6rem;}
+.site-nav-inner .sns{width:1px;height:18px;background:#1a1a2a;}
+@media(max-width:640px){
+  .site-nav-inner a span{display:none;}
+  .site-nav-inner a{padding:.5rem .6rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <a href="../index.html"><i class="fas fa-arrow-left"></i> Home</a>
+  <div class="right-links">
+    <a href="../core-articles/we-ran-the-tests.html"><i class="fas fa-flask"></i> Tests</a>
+    <a href="https://faiththruphysics.com" style="color:var(--gold);"><i class="fas fa-cross"></i> Faith Through Physics</a>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-icon"><i class="fas fa-arrows-alt"></i></div>
+  <div class="hero-tag">Theophysics</div>
+  <h1>Cross-Domain Analysis</h1>
+  <p class="subtitle">Where physics meets theology meets civilization — the bridges that shouldn't exist but do.</p>
+  <div class="badge"><i class="fas fa-file-alt"></i> 12 articles</div>
+</div>
+
+<!-- Test Results Strip -->
+<div class="test-banner">
+  <div class="test-strip">
+    <div class="sigma"><div class="val">6.35<span>&sigma;</span></div><div class="lab">PEAR-LAB</div></div>
+    <div class="sep"></div>
+    <div class="sigma"><div class="val">6.0<span>&sigma;</span></div><div class="lab">GCP</div></div>
+    <div class="sep"></div>
+    <div class="sigma"><div class="val">5.7<span>&sigma;</span></div><div class="lab">PROP-COSMOS</div></div>
+    <div class="sep"></div>
+    <a href="../core-articles/we-ran-the-tests.html">See the tests <i class="fas fa-arrow-right"></i></a>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- Articles -->
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-dot" style="background:#4a9eff;box-shadow:0 0 8px #4a9eff40;"></div>
+    <h2>Framework Foundations</h2>
+  </div>
+  <div class="card-grid">
+    <a href="01-an-introduction-to-theophysics.html" class="card">
+      <div class="card-title">An Introduction to Theophysics</div>
+      <div class="card-desc">The starting point — what this framework is and why it exists.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="02-the-coherence-metric.html" class="card">
+      <div class="card-title">The Coherence Metric</div>
+      <div class="card-desc">The mathematical measure that connects every domain.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="03-the-only-top-down-framework.html" class="card">
+      <div class="card-title">The Only Top-Down Framework</div>
+      <div class="card-desc">Why starting from axioms changes everything.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-dot" style="background:#d4af37;box-shadow:0 0 8px #d4af3740;"></div>
+    <h2>Applied Analysis</h2>
+  </div>
+  <div class="card-grid">
+    <a href="05-fruits-of-the-spirit.html" class="card">
+      <div class="card-title">Semantic Evolution of the Fruits of the Spirit</div>
+      <div class="card-desc">Tracing how biblical language maps to measurable quantities.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="06-the-scientific-method-redux.html" class="card">
+      <div class="card-title">The Scientific Method Redux</div>
+      <div class="card-desc">Rebuilding the scientific method from first principles.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="07-master-coherence-analysis.html" class="card">
+      <div class="card-title">Master Coherence Analysis</div>
+      <div class="card-desc">The full coherence calculation across all domains.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="08-the-thermodynamics-of-grace.html" class="card">
+      <div class="card-title">The Thermodynamics of Grace</div>
+      <div class="card-desc">Grace as a thermodynamic process — not metaphor, but mechanism.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-dot" style="background:#c94040;box-shadow:0 0 8px #c9404040;"></div>
+    <h2>Civilizational Diagnostics</h2>
+  </div>
+  <div class="card-grid">
+    <a href="04-the-american-coherence-collapse.html" class="card">
+      <div class="card-title">The American Coherence Collapse</div>
+      <div class="card-desc">Measuring the entropy increase in American institutions.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="09-church-debris-audit.html" class="card">
+      <div class="card-title">The Church Debris Audit</div>
+      <div class="card-desc">What's left when you measure the church by its own standard.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="10-cliodynamic-analysis-great-demoralization.html" class="card">
+      <div class="card-title">Predictive Threshold Detection</div>
+      <div class="card-desc">Using cliodynamics to predict where civilizations break.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="11-constitutional-overlay-analysis.html" class="card">
+      <div class="card-title">The Great Unraveling</div>
+      <div class="card-desc">Constitutional architecture through the coherence lens.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="12-reverse-sequence-hypothesis.html" class="card">
+      <div class="card-title">The Reverse Sequence Hypothesis</div>
+      <div class="card-desc">Civilizational negentropy — how recovery actually works.</div>
+      <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+  </div>
+</div>
+
+
+<!-- Bottom Nav -->
+<div class="site-nav-bar">
+  <div class="site-nav-inner">
+    <a href="../index.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <div class="sns"></div>
+    <a href="../core-articles/we-ran-the-tests.html"><i class="fas fa-flask"></i><span>Tests</span></a>
+    <div class="sns"></div>
+    <a href="https://faiththruphysics.com" class="sn-home"><i class="fas fa-cross"></i><span>Faith Through Physics</span></a>
+  </div>
+</div>
+
+</body>
+</html>

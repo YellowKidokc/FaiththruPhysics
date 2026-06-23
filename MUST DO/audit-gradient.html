@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<title>Audit Gradient — What We Got Right / Wrong / Overstated</title>
+<style>
+:root {
+  --surface: #0a0a0a;
+  --surface-light: #1a1a1a;
+  --border: #333333;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --highlight: #d4af37;
+  --red: #ef4444;
+  --green: #22c55e;
+  --purple: #a855f7;
+  --blue: #4a9eff;
+  --teal: #2dd4bf;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--text-primary);
+  padding: 2rem;
+}
+h1 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.4rem; color: var(--highlight);
+  letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: .5rem;
+}
+.page-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem; color: var(--text-secondary);
+  font-style: italic; margin-bottom: 2rem;
+}
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--text-secondary);
+  margin: 3rem 0 1rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ═══ AUDIT GRADIENT BOX ═══ */
+.audit-gradient-box {
+  background: linear-gradient(180deg,
+    rgba(34,197,94,.04) 0%,
+    rgba(10,10,10,.95) 30%,
+    rgba(239,68,68,.03) 60%,
+    rgba(168,85,247,.03) 100%
+  );
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  padding: 2.5rem 2rem;
+  margin: 1rem 0;
+}
+.audit-header { text-align: center; margin-bottom: 2.5rem; }
+.audit-header .audit-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--text-secondary);
+  display: block; margin-bottom: .5rem;
+}
+.audit-header h2 {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.6rem; font-weight: 600; color: #fff;
+  margin: 0 0 .5rem;
+}
+.audit-header p {
+  font-size: .9rem; color: var(--text-secondary);
+  margin: 0; font-style: italic;
+}
+.audit-grid {
+  display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .audit-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+.audit-card {
+  border-radius: .5rem; padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+.audit-card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: .85rem; letter-spacing: .1em;
+  text-transform: uppercase; margin: 0 0 1rem;
+  padding-bottom: .5rem; border-bottom: 2px solid;
+}
+.audit-card ul { list-style: none; padding: 0; margin: 0; }
+.audit-card li {
+  font-family: 'Crimson Text', serif;
+  font-size: .95rem; line-height: 1.6; color: #cfcfcf;
+  padding: .5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.audit-card li:last-child { border-bottom: none; }
+
+/* Right — green */
+.audit-card.audit-right {
+  background: rgba(34,197,94,.04);
+  border-color: rgba(34,197,94,.25);
+}
+.audit-card.audit-right h3 { color: var(--green); border-bottom-color: var(--green); }
+.audit-card.audit-right li::before { content: "✓ "; color: var(--green); font-weight: 700; }
+
+/* Wrong — red */
+.audit-card.audit-wrong {
+  background: rgba(239,68,68,.04);
+  border-color: rgba(239,68,68,.2);
+}
+.audit-card.audit-wrong h3 { color: var(--red); border-bottom-color: var(--red); }
+.audit-card.audit-wrong li::before { content: "✗ "; color: var(--red); font-weight: 700; }
+
+/* Overstated — purple */
+.audit-card.audit-overstated {
+  background: rgba(168,85,247,.04);
+  border-color: rgba(168,85,247,.2);
+}
+.audit-card.audit-overstated h3 { color: var(--purple); border-bottom-color: var(--purple); }
+.audit-card.audit-overstated li::before { content: "⚠ "; color: var(--purple); font-weight: 700; }
+
+/* ═══ KILL CARDS (Rigor) ═══ */
+.kill-card {
+  padding: 1.25rem; margin-bottom: .75rem;
+  border-radius: .5rem;
+}
+.kill-card .kill-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem; text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: .35rem;
+}
+.kill-card p { margin: .25rem 0 0; color: #cfcfcf; font-size: .9rem; }
+.kill-card p strong { color: #fff; }
+
+/* ═══ FALSIFICATION BOX (from screenshot) ═══ */
+.falsification-box {
+  border: 1px solid rgba(239,68,68,.3);
+  border-top: 3px solid var(--red);
+  border-radius: .5rem;
+  background: linear-gradient(180deg, rgba(239,68,68,.06) 0%, var(--surface) 100%);
+  padding: 2rem;
+  margin: 1rem 0;
+}
+.falsification-box h2 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.3rem; font-weight: 700;
+  color: var(--red); text-transform: uppercase;
+  letter-spacing: .06em; margin-bottom: .5rem;
+}
+.falsification-box > p {
+  font-size: .9rem; color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+.claim-card {
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  border-radius: .5rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.claim-card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--red); text-transform: uppercase;
+  letter-spacing: .04em; margin-bottom: .75rem;
+}
+.claim-card p {
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem; line-height: 1.7;
+  color: var(--text-primary); margin: 0;
+}
+.claim-card p em { color: var(--highlight); }
+</style>
+</head>
+<body>
+
+<h1>Audit &amp; Rigor Components</h1>
+<p class="page-subtitle">The honest audit block + falsification criteria + confidence-tiered kill cards</p>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  COMPONENT 1: Audit Gradient Block     -->
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label">Component 1 — What We Got Right / Wrong / Overstated</div>
+
+<div class="audit-gradient-box">
+  <div class="audit-header">
+    <span class="audit-kicker">Honest Closing Audit</span>
+    <h2>What We Got Right, What We Got Wrong, and Where We Overstated</h2>
+    <p>This section separates the durable claim from the speculative extension.</p>
+  </div>
+
+  <div class="audit-grid">
+    <div class="audit-card audit-right">
+      <h3>What We Got Right</h3>
+      <ul>
+        <li>The structural parallel between Genesis 2–3 and quantum measurement is coherent and survives formal testing.</li>
+        <li>The sequence matters: Eve eats, nothing happens. Adam eats, both collapse. "Then" marks the second measurement.</li>
+        <li>Paul independently attributes the collapse to Adam in four separate passages — this is not our reading, it's his.</li>
+      </ul>
+    </div>
+
+    <div class="audit-card audit-wrong">
+      <h3>What We Got Wrong</h3>
+      <ul>
+        <li>This does not prove Genesis is quantum physics. It proves the structure maps — the ontological claim is separate.</li>
+        <li>The Tree of Knowledge is not literally a measurement apparatus. The model treats it as functionally equivalent.</li>
+        <li>Writing moral states in Hilbert space notation is operationally clean but physically unproven.</li>
+      </ul>
+    </div>
+
+    <div class="audit-card audit-overstated">
+      <h3>Where We Overstated</h3>
+      <ul>
+        <li>"Standard quantum mechanics cannot solve it" — true within the model, but needs framing as an interpretive claim.</li>
+        <li>"Exact physics problem" should be stated as a proposed structural mapping, not a literal identity.</li>
+        <li>Conviction of voice throughout. We chose conviction over hedging for readability. This audit is where we pay for that choice.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  COMPONENT 2: Falsification Criteria   -->
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label">Component 2 — Falsification Criteria (Red Gradient Box)</div>
+
+<div class="falsification-box">
+  <h2>X. Falsification Criteria</h2>
+  <p>The framework survives or falls on testable claims:</p>
+
+  <div class="claim-card">
+    <h3>Claim 1</h3>
+    <p>If the Genesis narrative describes real physics, then the Eve-Adam measurement gap should find parallels in other quantum scenarios with ranked or sequential observers. If no such parallels exist in any physical system, the mapping is merely a metaphor.</p>
+  </div>
+
+  <div class="claim-card">
+    <h3>Claim 2</h3>
+    <p>If federal observer authority is a real physical principle, then quantum measurement outcomes should differ based on the observer's link to the system instruction. The PEAR Lab results (6.35σ over 2.5 million trials) and the Global Consciousness Project (6σ over 325+ events) provide early evidence that observer states affect physical systems. But targeted experiments testing observer <em>authority</em> have not yet been designed.</p>
+  </div>
+
+  <div class="claim-card">
+    <h3>Claim 3</h3>
+    <p>If the Grace function R(Λ) operates as described — entropy-fighting, restoring coherence — then systems under its influence should show lower entropy growth rates than systems without it. This is testable in principle. But designing the experiment requires defining "Grace" as a variable you can measure.</p>
+  </div>
+
+  <div class="claim-card">
+    <h3>Claim 4</h3>
+    <p>If the entire mapping is wrong — if Genesis 2–3 is purely symbolic and has no structural link to quantum mechanics — then the match should break under rigorous testing. Forced connections that do not survive /PROBE analysis should be discarded. The framework demands this of itself.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  COMPONENT 3: Confidence-Tiered Cards  -->
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label">Component 3 — Confidence-Tiered Kill Cards</div>
+
+<div style="max-width:780px;">
+  <!-- Load-Bearing (green) -->
+  <div class="kill-card" style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.2);">
+    <div class="kill-label" style="color:var(--green);">Load-Bearing — We'd Bet On This</div>
+    <p><strong>Genesis records a measurement gap.</strong> Eve eats, nothing happens. Adam eats, both collapse. "Then" in Gen 3:7 marks the second measurement, not the first.</p>
+  </div>
+
+  <div class="kill-card" style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.2);">
+    <div class="kill-label" style="color:var(--green);">Load-Bearing</div>
+    <p><strong>The serpent's strategy is a textbook decoherence attack.</strong> Distort spec → contradict outcome → offer alternative eigenbasis.</p>
+  </div>
+
+  <!-- Suggestive (gold) -->
+  <div class="kill-card" style="background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.2);margin-top:1.5rem;">
+    <div class="kill-label" style="color:var(--highlight);">Suggestive — Needs More Work</div>
+    <p><strong>Superposition formalism for moral states.</strong> Writing |Good⟩ + |Evil⟩ as a quantum state. Operational logic maps, but literal Hilbert space occupancy is unproven.</p>
+  </div>
+
+  <div class="kill-card" style="background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.2);">
+    <div class="kill-label" style="color:var(--highlight);">Suggestive</div>
+    <p><strong>Born Rule Trinity mapping.</strong> Father = possibility space, Son = measurement basis, Spirit = becoming real. Formally clean; whether the operations <em>are</em> the Trinity or merely <em>resemble</em> it is the open question.</p>
+  </div>
+
+  <!-- Overextended (dim) -->
+  <div class="kill-card" style="background:rgba(255,255,255,.02);border:1px solid var(--border);margin-top:1.5rem;">
+    <div class="kill-label" style="color:var(--text-secondary);">Overextended — Acknowledged</div>
+    <p><strong>"Necessary feature of any system that contains free observers."</strong> Stated with more certainty than the argument earns. The framework suggests it; we haven't proven it.</p>
+  </div>
+</div>
+
+<div class="section-label">Usage Notes</div>
+<p style="font-size:.85rem;color:var(--text-secondary);line-height:1.7;max-width:700px;">
+  The <strong style="color:#fff;">Audit Gradient</strong> block goes in every article as its own tab (after Rigor, before Tangents). Content must be article-specific — never use placeholder text.<br><br>
+  The <strong style="color:#fff;">Falsification Box</strong> goes in the Rigor tab. Red top border, claim cards with red left border, Oswald headers.<br><br>
+  The <strong style="color:#fff;">Kill Cards</strong> go in the Rigor tab below the falsification table. Three tiers: Load-Bearing (green), Suggestive (gold), Overextended (dim). This is how the framework audits itself.
+</p>
+
+</body>
+</html>

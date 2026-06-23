@@ -158,11 +158,9 @@
     }
 
     if(isBar){
-      let lastY = window.scrollY;
       const updateDock = ()=>{
         const y = window.scrollY;
-        root.classList.toggle('is-docked', y > 260 && y < lastY);
-        lastY = y;
+        root.classList.toggle('is-docked', y > 260);
       };
       window.addEventListener('scroll', updateDock, { passive: true });
       updateDock();

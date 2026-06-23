@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Q — Faith | Theophysics Variable</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #4a4a4a;
+            --accent: #2c2c2c;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --highlight: #d4af37;
+            --border: #333333;
+            --surface: #0f0f0f;
+            --surface-light: #1f1f1f;
+            --surface-hover: #2a2a2a;
+            --var-accent: #d4af37;
+            --var-accent-dim: #d4af3720;
+            --var-accent-glow: #d4af3740;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--surface); color: var(--text-primary); line-height: 1.6; margin: 0; padding: 0; }
+        .serif { font-family: 'Crimson Text', serif; }
+        .display { font-family: 'Cinzel', serif; }
+
+        .var-header {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1f1f1f 100%);
+            border-bottom: 3px solid var(--var-accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .var-header::before {
+            content: "Q";
+            position: absolute;
+            right: -2rem;
+            top: 50%;
+            transform: translateY(-50%) none;
+            font-family: 'Cinzel', serif;
+            font-size: 20rem;
+            color: var(--var-accent);
+            opacity: 0.03;
+            pointer-events: none;
+            line-height: 1;
+            text-shadow: 0 0 100px var(--var-accent-glow);
+        }
+
+        .var-header::after { display: none; }
+
+        .law-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem; background: var(--var-accent-dim);
+            border: 1px solid var(--var-accent); border-radius: 0.5rem;
+            font-size: 0.875rem; font-weight: 600; color: var(--var-accent);
+        }
+
+        .pair-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.375rem 0.75rem; background: var(--surface-hover);
+            border: 1px solid var(--border); border-radius: 999px;
+            font-size: 0.75rem; color: var(--text-secondary);
+            transition: all 0.2s ease; text-decoration: none;
+        }
+        .pair-badge:hover { border-color: var(--var-accent); color: var(--var-accent); }
+
+        .projection-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+            border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden;
+        }
+        .projection-col { padding: 2rem; position: relative; }
+        .projection-col:first-child {
+            background: linear-gradient(135deg, rgba(74, 158, 255, 0.05) 0%, transparent 100%);
+            border-right: 1px solid var(--border);
+        }
+        .projection-col:last-child {
+            background: linear-gradient(135deg, var(--var-accent-dim) 0%, transparent 100%);
+        }
+
+        .projection-label {
+            position: absolute; top: 1rem; right: 1rem;
+            font-size: 0.6875rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.1em; padding: 0.25rem 0.75rem; border-radius: 0.25rem;
+        }
+        .projection-col:first-child .projection-label {
+            background: rgba(74, 158, 255, 0.15); color: #4a9eff;
+        }
+        .projection-col:last-child .projection-label {
+            background: var(--var-accent-dim); color: var(--var-accent);
+        }
+
+        .equation-box {
+            background: var(--surface);
+            border: 2px solid var(--var-accent); border-radius: 0.75rem;
+            padding: 2rem; text-align: center; position: relative; margin: 2rem 0;
+        }
+        .equation-box::before {
+            content: "EQUATION OF MOTION";
+            position: absolute; top: -0.75rem; left: 1.5rem;
+            background: var(--surface); color: var(--var-accent);
+            padding: 0.125rem 0.75rem; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.1em; border: 1px solid var(--var-accent); border-radius: 0.25rem;
+        }
+        .equation-main {
+            font-family: 'Crimson Text', serif; font-size: 1.75rem;
+            color: var(--var-accent); margin-bottom: 1rem; letter-spacing: 0.02em;
+        }
+        .equation-note { font-size: 0.875rem; color: var(--text-secondary); font-style: italic; }
+
+        .axiom-card {
+            background: var(--surface-light); border: 1px solid var(--border);
+            border-left: 4px solid var(--var-accent); border-radius: 0 0.5rem 0.5rem 0;
+            padding: 1.25rem; margin-bottom: 1rem; transition: all 0.2s ease;
+        }
+        .axiom-card:hover { border-color: var(--var-accent); transform: translateX(4px); }
+        .axiom-card.new {
+            border-left-color: var(--highlight);
+            background: linear-gradient(90deg, rgba(212,175,55,0.05) 0%, var(--surface-light) 100%);
+        }
+
+        .axiom-number {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 2rem; height: 2rem; background: var(--var-accent-dim);
+            border: 1px solid var(--var-accent); border-radius: 0.375rem;
+            font-family: 'Cinzel', serif; font-weight: 600; color: var(--var-accent);
+            font-size: 0.875rem; margin-right: 0.75rem;
+        }
+        .axiom-card.new .axiom-number {
+            background: rgba(212, 175, 55, 0.2); border-color: var(--highlight); color: var(--highlight);
+        }
+
+        .new-badge {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.125rem 0.5rem; background: var(--highlight); color: var(--surface);
+            font-size: 0.625rem; font-weight: 700; text-transform: uppercase;
+            border-radius: 0.25rem; margin-left: 0.5rem;
+        }
+
+        .domain-table {
+            width: 100%; border-collapse: collapse; font-size: 0.875rem;
+        }
+        .domain-table th {
+            background: var(--surface-light); color: var(--var-accent); font-weight: 600;
+            text-align: left; padding: 1rem; border-bottom: 2px solid var(--var-accent);
+            text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;
+        }
+        .domain-table td {
+            padding: 1rem; border-bottom: 1px solid var(--border); color: var(--text-secondary);
+        }
+        .domain-table tr:hover td { background: var(--surface-hover); color: var(--text-primary); }
+
+        .kill-box {
+            background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 0.75rem; padding: 1.5rem;
+        }
+        .kill-item {
+            display: flex; align-items: flex-start; gap: 1rem;
+            padding: 1rem; background: var(--surface); border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.5rem; margin-bottom: 0.75rem;
+        }
+        .kill-icon {
+            width: 2rem; height: 2rem; border-radius: 50%; background: rgba(239, 68, 68, 0.2);
+            color: #ef4444; display: flex; align-items: center; justify-content: center;
+            font-size: 0.875rem; flex-shrink: 0;
+        }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.25rem 0.75rem; border-radius: 0.25rem;
+            font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+        }
+        .status-not-met {
+            background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .status-not-tested {
+            background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .var-nav {
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            padding: 1.5rem; background: var(--surface-light); border-top: 1px solid var(--border);
+        }
+        .nav-arrow {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 1.25rem; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 0.5rem; color: var(--text-secondary); text-decoration: none;
+            transition: all 0.2s ease; font-size: 0.875rem;
+        }
+        .nav-arrow:hover { border-color: var(--var-accent); color: var(--var-accent); transform: translateY(-2px); }
+
+        .nav-center { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .nav-dots { display: flex; gap: 0.5rem; }
+        .nav-dot {
+            width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--border);
+            transition: all 0.2s ease;
+        }
+        .nav-dot.active { background: var(--var-accent); transform: scale(1.2); box-shadow: 0 0 10px var(--var-accent-glow); }
+
+        .scripture-box {
+            background: linear-gradient(135deg, var(--var-accent-dim) 0%, transparent 100%);
+            border-left: 4px solid var(--var-accent); border-radius: 0 0.5rem 0.5rem 0;
+            padding: 1.5rem; margin: 1.5rem 0; position: relative;
+        }
+        .scripture-box::before { display: none; }
+
+        .scripture-ref {
+            font-family: 'Cinzel', serif; color: var(--var-accent);
+            font-size: 0.875rem; font-weight: 600; margin-top: 0.75rem;
+        }
+
+        .pair-visual {
+            display: flex; align-items: center; justify-content: center; gap: 2rem;
+            padding: 2rem; background: var(--surface-light); border-radius: 0.75rem; margin: 1.5rem 0;
+        }
+        .pair-node {
+            width: 5rem; height: 5rem; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-family: 'Cinzel', serif;
+            font-size: 2rem; font-weight: 600; border: 3px solid; position: relative;
+        }
+        .pair-node.active {
+            background: var(--var-accent-dim); border-color: var(--var-accent); color: var(--var-accent);
+            box-shadow: 0 0 30px var(--var-accent-glow);
+        }
+        .pair-node.partner {
+            background: rgba(168, 85, 247, 0.1); border-color: #a78bfa; color: #a78bfa;
+        }
+
+        .pair-connector {
+            flex: 1; max-width: 8rem; height: 2px;
+            background: linear-gradient(90deg, var(--var-accent), #a78bfa);
+            position: relative;
+        }
+        .pair-connector::after {
+            content: "⟷";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--surface-light); padding: 0 0.5rem;
+            color: var(--var-accent); font-size: 0.875rem;
+        }
+
+        .warning-callout {
+            background: linear-gradient(135deg, #450a0a 0%, var(--surface-light) 100%);
+            border: 1px solid #ef4444; border-radius: 0.75rem;
+            padding: 1.5rem; margin: 2rem 0; display: flex; align-items: flex-start; gap: 1rem;
+        }
+        .warning-icon {
+            width: 3rem; height: 3rem; border-radius: 50%; background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444; display: flex; align-items: center; justify-content: center;
+            color: #ef4444; font-size: 1.25rem; flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .projection-grid { grid-template-columns: 1fr; }
+            .projection-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+            .var-header::before { font-size: 10rem; right: -1rem; }
+            .pair-visual { flex-direction: column; gap: 1rem; }
+            .pair-connector {
+                width: 2px; height: 3rem; max-width: none;
+                background: linear-gradient(180deg, var(--var-accent), #a78bfa);
+            }
+        }
+    </style>
+<script id="article-meta" type="application/json">
+{
+  "slug": "variable-Q-faith",
+  "title": "Q — Faith",
+  "series": "faith-through-physics",
+  "classification": [
+    {
+      "tag": "theophysics",
+      "pct": 100,
+      "color": "#d4af37"
+    }
+  ],
+  "reading_levels": [
+    "story",
+    "plain"
+  ],
+  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
+}
+</script>
+</head>
+<body>
+
+    <header class="var-header">
+        <div class="container mx-auto px-6 py-12 relative z-10">
+            <div class="flex flex-wrap items-center gap-4 mb-6">
+                <span class="law-badge"><i class="fas fa-gavel"></i> Law 8</span>
+                <a href="variable-G-grace.html" class="pair-badge">
+                    <i class="fas fa-link"></i> Paired with G (Grace) — Pair 1-8
+                </a>
+            </div>
+
+            <h1 class="display text-5xl md:text-7xl font-bold text-white mb-4 tracking-wide">
+                Q <span style="color: #d4af37">—</span> Faith
+            </h1>
+
+            <p class="serif text-xl md:text-2xl text-[#a0a0a0] max-w-3xl italic leading-relaxed">
+                "The Faith variable — Law 8 of the LLC"
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 max-w-6xl">
+
+        
+
+        <section class="mb-16">
+            <h2 class="serif text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                <span style="color: #d4af37">§1</span> The Dual Projection
+            </h2>
+
+            <div class="projection-grid">
+                <div class="projection-col">
+                    <span class="projection-label">Science</span>
+                    <h3 class="text-[#4a9eff] font-semibold text-lg mb-4 uppercase tracking-wide">Quantum Mechanics / Wave Function Collapse</h3>
+                    <div class="equation-main text-[#4a9eff] text-xl mb-4">iℏ∂ψ/∂t = Ĥψ</div>
+                    <p class="text-[#a0a0a0] mb-4 leading-relaxed">Quantum systems exist in superposition until measured. Faith is the measurement that collapses possibility into actuality — the choice that makes the wave function real.</p>
+                    <p class="text-sm text-[#666]"><strong class="text-white">Projects into:</strong> Quantum mechanics, measurement problem, Copenhagen interpretation</p>
+                </div>
+
+                <div class="projection-col">
+                    <span class="projection-label">God</span>
+                    <h3 style="color: #d4af37" class="font-semibold text-lg mb-4 uppercase tracking-wide">Faith / Pistis</h3>
+                    <p class="text-[#e0e0e0] mb-4 leading-relaxed serif text-lg italic">"Now faith is the assurance of things hoped for, the conviction of things not seen."</p>
+                    <p class="text-[#a0a0a0] mb-4 leading-relaxed">Faith is a gift that cannot be self-generated (1/Q singularity). It is the threshold gate: Θ(F·Q − Θ<sub>c</sub>). Without faith, grace cannot enter the system.</p>
+                    <p class="text-sm text-[#666]"><strong class="text-white">Key Scripture:</strong> <span style="color: #d4af37">Hebrews 11:1</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="serif text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                <span style="color: #d4af37">§2</span> Equation of Motion
+            </h2>
+
+            <div class="equation-box">
+                <div class="equation-main">Q(t) = ∫<sub>0</sub><sup>t</sup> G(τ) · e<sup>−(t−τ)/τ<sub>c</sub></sup> dτ · Θ(F·Q − Θ<sub>c</sub>)</div>
+                <p class="text-[#a0a0a0] max-w-3xl mx-auto">
+                    <strong class="text-white">Term by term:</strong> 
+                    Derived from Euler-Lagrange application to the LLC. See derivation document for full proof.
+                </p>
+                <p class="equation-note mt-4">
+                    <i class="fas fa-info-circle mr-2"></i> This was derived, not assumed. Falls out of the action principle.
+                </p>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="serif text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                <span style="color: #d4af37">§3</span> Derived Axioms
+            </h2>
+
+            <div class="space-y-4">
+                
+                <div class="axiom-card">
+                    <div class="flex items-start gap-4">
+                        <span class="axiom-number">16</span>
+                        <div class="flex-1">
+                            <p class="text-white font-medium mb-2">Faith is a gift — it cannot be self-generated (1/Q singularity).</p>
+                            <p class="text-[#a0a0a0] text-sm"><strong>Plain English:</strong> You cannot decide to have faith. It arrives or it does not. The singularity at Q=0 is absolute.</p>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="axiom-card">
+                    <div class="flex items-start gap-4">
+                        <span class="axiom-number">17</span>
+                        <div class="flex-1">
+                            <p class="text-white font-medium mb-2">Faith and Grace are symmetric under exchange — the G-Q duality.</p>
+                            <p class="text-[#a0a0a0] text-sm"><strong>Plain English:</strong> You cannot have one without the other. They are the same thing seen from different angles.</p>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="axiom-card">
+                    <div class="flex items-start gap-4">
+                        <span class="axiom-number">18</span>
+                        <div class="flex-1">
+                            <p class="text-white font-medium mb-2">Faith operates through the threshold gate Θ(F·Q − Θ<sub>c</sub>).</p>
+                            <p class="text-[#a0a0a0] text-sm"><strong>Plain English:</strong> There is a minimum threshold. Below it, nothing happens. Above it, everything happens.</p>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="serif text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                <span style="color: #d4af37">§4</span> Pair Dynamics — Conjugate
+            </h2>
+
+            <div class="pair-visual">
+                <div class="pair-node active">
+                    Q
+                    <span class="absolute -bottom-8 text-xs text-[#a0a0a0] font-sans">Faith</span>
+                </div>
+                <div class="pair-connector"></div>
+                <div class="pair-node partner">
+                    G
+                    <span class="absolute -bottom-8 text-xs text-[#a0a0a0] font-sans">Grace</span>
+                </div>
+            </div>
+
+            <div class="scripture-box">
+                <p class="serif text-lg italic text-[#e0e0e0]">"Now faith is the assurance of things hoped for, the conviction of things not seen."</p>
+                <p class="scripture-ref">— Hebrews 11:1 (ESV)</p>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="serif text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                <span style="color: #d4af37">§5</span> Universal Domain Manifestation
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="domain-table">
+                    <thead>
+                        <tr>
+                            <th>Domain</th>
+                            <th>Faith Manifests As</th>
+                            <th>Key Equation/Principle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td class="font-semibold text-white">Physics</td>
+                <td>Q field manifestation</td>
+                <td>Field equation</td>
+            </tr>
+        
+            <tr>
+                <td class="font-semibold text-white">Biology</td>
+                <td>Biological Q processes</td>
+                <td>Bio-equation</td>
+            </tr>
+        
+            <tr>
+                <td class="font-semibold text-white">Neuroscience</td>
+                <td>Neural Q correlates</td>
+                <td>Neural measure</td>
+            </tr>
+        
+            <tr>
+                <td class="font-semibold text-white">Psychology</td>
+                <td>Psychological Q dimension</td>
+                <td>Psychometric</td>
+            </tr>
+        
+            <tr>
+                <td class="font-semibold text-white">CompSci</td>
+                <td>Computational Q</td>
+                <td>Algorithm</td>
+            </tr>
+        
+            <tr>
+                <td class="font-semibold text-white">Finance</td>
+                <td>Market Q</td>
+                <td>Economic indicator</td>
+            </tr>
+        
+            <tr>
+                <td class="font-semibold text-white">Information</td>
+                <td>Information-theoretic Q</td>
+                <td>Info metric</td>
+            </tr>
+        
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="serif text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                <span style="color: #d4af37">§6</span> Kill Conditions
+            </h2>
+
+            <div class="kill-box">
+                <p class="text-[#a0a0a0] mb-6">If any of the following conditions are met, the claims about Q (Faith) in this framework fail:</p>
+
+                <div class="kill-item">
+                    <div class="kill-icon"><i class="fas fa-times"></i></div>
+                    <div class="flex-1">
+                        <p class="text-white font-semibold mb-2">Demonstrate violation of the governing equation under standard conditions</p>
+                        <p class="text-sm text-[#a0a0a0] mb-3">If the equation of motion fails experimental verification, the variable's formal structure collapses.</p>
+                        <span class="status-badge status-not-met"><i class="fas fa-shield-alt"></i> NOT MET</span>
+                    </div>
+                </div>
+
+                <div class="kill-item">
+                    <div class="kill-icon"><i class="fas fa-times"></i></div>
+                    <div class="flex-1">
+                        <p class="text-white font-semibold mb-2">Show that Faith can be generated from within a closed system</p>
+                        <p class="text-sm text-[#a0a0a0] mb-3">If Q is externally-sourced, demonstrating self-generation would violate the external-source axiom.</p>
+                        <span class="status-badge status-not-tested"><i class="fas fa-question-circle"></i> NOT TESTED</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="var-nav">
+        <a href="variable-R-relationship.html" class="nav-arrow">
+            <i class="fas fa-arrow-left"></i>
+            <div class="text-left">
+                <div class="text-xs text-[#666]">Previous</div>
+                <div class="font-semibold">R — Relationship</div>
+            </div>
+        </a>
+
+        <div class="nav-center">
+            <div class="nav-dots"><div class="nav-dot "></div><div class="nav-dot "></div><div class="nav-dot "></div><div class="nav-dot "></div><div class="nav-dot "></div><div class="nav-dot "></div><div class="nav-dot "></div><div class="nav-dot active"></div><div class="nav-dot "></div><div class="nav-dot "></div></div>
+            <div class="text-xs text-[#666]">Q · 8 of 10</div>
+        </div>
+
+        <a href="variable-F-sin-decay.html" class="nav-arrow">
+            <div class="text-right">
+                <div class="text-xs text-[#666]">Next</div>
+                <div class="font-semibold">F — Sin-Decay</div>
+            </div>
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </footer>
+
+    <div class="bg-[#0f0f0f] border-t border-[#333] py-6">
+        <div class="container mx-auto px-6 flex flex-wrap justify-center gap-6 text-sm">
+            <a href="llc-page.html" class="text-[#666] hover:text-[#d4af37] transition flex items-center gap-2">
+                <i class="fas fa-layer-group"></i> Back to LLC (Page II)
+            </a>
+            <a href="trinity-page.html" class="text-[#666] hover:text-[#d4af37] transition flex items-center gap-2">
+                <i class="fas fa-circle-notch"></i> Back to Trinity (Page I)
+            </a>
+            <span class="text-[#333]">|</span>
+            <span class="text-[#666]"><i class="fas fa-map-marked-alt mr-2"></i> Domain Mapper (Page IV) — Coming</span>
+        </div>
+    </div>
+
+<script src="/components/tp-inject.js" data-theme="dark"></script>
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Predictive Threshold Detection — David Lowe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0a09;--surface:#131210;--surface2:#1a1916;--surface3:#22211d;
+  --border:rgba(193,127,62,.12);--border-h:rgba(193,127,62,.30);
+  --copper:#c17f3e;--copper-l:#d9a066;--copper-dim:rgba(193,127,62,.06);--copper-glow:rgba(193,127,62,.15);
+  --cream:#ede6d6;--cream-d:#a89f8b;--cream-m:#6b6456;--ink:#d4cfc3;--white:#f5f0e6;
+  --sage:#7a8c6e;--sage-dim:rgba(122,140,110,.08);
+  --slate:#6b8fbf;--slate-dim:rgba(107,143,191,.08);
+  --red:#c87070;--red-dim:rgba(200,60,60,.06);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;font-size:1.08rem;line-height:1.82;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 30% -10%,rgba(193,127,62,.04) 0%,transparent 50%),radial-gradient(ellipse at 70% 110%,rgba(193,127,62,.02) 0%,transparent 50%)}
+::selection{background:rgba(193,127,62,.25);color:var(--white)}
+.display{font-family:'Playfair Display',Georgia,serif}
+.serif{font-family:'Source Serif 4',Georgia,serif}
+.sans{font-family:'Inter',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.page{max-width:780px;margin:0 auto;padding:0 2rem}
+
+.top-bar{border-bottom:1px solid var(--border);padding:1rem 0}
+.top-bar .inner{max-width:780px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between}
+.series-mark{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--cream-m)}
+.series-mark span{color:var(--copper)}
+.top-nav{display:flex;gap:1.4rem}
+.top-nav a{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cream-m);text-decoration:none;transition:color .25s}
+.top-nav a:hover{color:var(--copper-l)}
+
+.hero{padding:6rem 0 4rem;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80px;height:1px;background:var(--copper);opacity:.4}
+.hero-number{font-family:'Playfair Display',serif;font-size:clamp(5rem,12vw,8rem);font-weight:900;color:rgba(193,127,62,.06);line-height:1;margin-bottom:-1.5rem}
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;color:var(--copper);display:block;margin-bottom:1.8rem;position:relative;z-index:1}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5.5vw,3.8rem);font-weight:700;color:var(--white);line-height:1.1;margin-bottom:.8rem;letter-spacing:-.02em;position:relative;z-index:1}
+.hero h1 em{font-style:italic;color:var(--copper-l);font-weight:400}
+.hero .subtitle{font-family:'Playfair Display',serif;font-size:1.2rem;font-style:italic;color:var(--cream-d);margin-bottom:1.5rem}
+.hero .byline{font-family:'Inter',sans-serif;font-size:.85rem;color:var(--cream-m);letter-spacing:.05em}
+
+.section{padding:3.5rem 0;position:relative}
+.section+.section{border-top:1px solid var(--border)}
+.section-num{font-family:'Playfair Display',serif;font-size:4rem;font-weight:900;color:rgba(193,127,62,.05);position:absolute;top:2rem;right:0;line-height:1;pointer-events:none}
+h2{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--white);margin-bottom:1.8rem;line-height:1.2}
+h2 .part-label{display:block;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;color:var(--copper);margin-bottom:.6rem;font-weight:400}
+h3{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--white);margin:2rem 0 1rem;line-height:1.3}
+h4{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--white);margin:1.5rem 0 .8rem}
+p{margin-bottom:1.4rem}
+strong{color:var(--white);font-weight:600}
+em{color:var(--copper-l)}
+
+.pull-quote{border-left:3px solid var(--copper);padding:1.5rem 0 1.5rem 2rem;margin:2.5rem 0}
+.pull-quote p{font-family:'Playfair Display',serif;font-size:1.35rem;font-style:italic;color:var(--cream);line-height:1.6;margin-bottom:0}
+
+/* Domain analysis cards */
+.domain-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:2rem;margin:2rem 0;position:relative;overflow:hidden;transition:border-color .25s}
+.domain-card:hover{border-color:var(--border-h)}
+.domain-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--copper),var(--copper-l))}
+.domain-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--copper);margin-bottom:.8rem;display:block}
+.domain-card h3{margin-top:0;margin-bottom:1rem}
+.domain-card p{font-size:.98rem}
+
+/* Threshold year badge */
+.threshold-badge{display:inline-flex;align-items:center;gap:.6rem;background:linear-gradient(135deg,rgba(193,127,62,.15),rgba(193,127,62,.05));border:1px solid var(--copper);border-radius:6px;padding:.6rem 1.2rem;margin:1.2rem 0 .5rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--copper-l);letter-spacing:.1em}
+.threshold-badge .label{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--cream-m)}
+.threshold-badge .year{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--copper-l)}
+
+/* Data tables */
+.mesh-table{width:100%;border-collapse:collapse;margin:2rem 0}
+.mesh-table th{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--copper);padding:.8rem 1rem;text-align:left;border-bottom:1px solid var(--border)}
+.mesh-table td{padding:.8rem 1rem;border-bottom:1px solid rgba(193,127,62,.06);font-size:.95rem;color:var(--cream-d)}
+.mesh-table tr:hover td{background:var(--copper-dim)}
+.mesh-table .here{color:var(--copper);font-weight:600}
+.mesh-table .copper-year{color:var(--copper-l);font-weight:700;font-family:'Playfair Display',serif;font-size:1.05rem}
+
+/* Synthesis table — the centerpiece */
+.synthesis-table{width:100%;border-collapse:collapse;margin:2.5rem 0;border:1px solid var(--border)}
+.synthesis-table th{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.25em;text-transform:uppercase;color:var(--copper);padding:1rem;text-align:left;border-bottom:2px solid var(--copper);background:var(--surface)}
+.synthesis-table td{padding:.9rem 1rem;border-bottom:1px solid rgba(193,127,62,.08);font-size:.92rem;color:var(--cream-d)}
+.synthesis-table tr:hover td{background:rgba(193,127,62,.04)}
+.synthesis-table .domain-name{color:var(--white);font-weight:600;font-size:.95rem}
+.synthesis-table .pc-year{color:var(--copper-l);font-weight:700;font-family:'Playfair Display',serif;font-size:1.15rem;text-align:center}
+.synthesis-table .tv-year{color:var(--cream-d);font-family:'JetBrains Mono',monospace;font-size:.85rem;text-align:center}
+.synthesis-table .lag{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--cream-m);text-align:center}
+
+/* Integrity interval callout */
+.cascade-callout{background:linear-gradient(135deg,var(--surface2),var(--surface));border:2px solid var(--copper);border-radius:10px;padding:2.5rem;margin:2.5rem 0;position:relative;overflow:hidden}
+.cascade-callout::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 50% 0%,rgba(193,127,62,.06),transparent 70%);pointer-events:none}
+.cascade-callout .callout-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;color:var(--copper);display:block;margin-bottom:1rem;position:relative}
+.cascade-callout .callout-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:1rem;position:relative}
+.cascade-callout .callout-years{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--copper-l);text-align:center;margin:1.5rem 0;position:relative;letter-spacing:.05em}
+.cascade-callout p{position:relative;font-size:.98rem}
+
+/* Source list */
+.source-list{list-style:none;padding:0;margin:1.5rem 0}
+.source-list li{font-size:.88rem;color:var(--cream-d);padding:.4rem 0 .4rem 1.2rem;position:relative}
+.source-list li::before{content:'\2014';position:absolute;left:0;color:var(--copper)}
+
+/* Sub-section divider */
+.sub-divider{width:40px;height:1px;background:var(--copper);opacity:.3;margin:2rem 0}
+
+footer{border-top:1px solid var(--border);padding:3rem 0;text-align:center}
+footer p{font-family:'Inter',sans-serif;font-size:.75rem;color:var(--cream-m);letter-spacing:.05em}
+
+@media(max-width:640px){
+  .page{padding:0 1.2rem}
+  .hero{padding:4rem 0 3rem}
+  .hero-number{font-size:4rem}
+  .section{padding:2.5rem 0}
+  .section-num{display:none}
+  .domain-card{padding:1.5rem}
+  .synthesis-table{font-size:.85rem}
+  .synthesis-table td,.synthesis-table th{padding:.6rem .5rem}
+  .cascade-callout{padding:1.5rem}
+  .cascade-callout .callout-years{font-size:1.8rem}
+}
+</style>
+<script id="article-meta" type="application/json">
+{
+  "slug": "10-cliodynamic-analysis-great-demoralization",
+  "title": "Predictive Threshold Detection — David Lowe",
+  "series": "faith-through-physics",
+  "classification": [
+    {
+      "tag": "theophysics",
+      "pct": 100,
+      "color": "#d4af37"
+    }
+  ],
+  "reading_levels": [
+    "story",
+    "plain"
+  ],
+  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
+}
+</script>
+</head>
+<body>
+
+<nav class="top-bar">
+  <div class="inner">
+    <div class="series-mark"><span>Cross-Domain</span> Coherence Series</div>
+    <div class="top-nav">
+      <a href="09-church-debris-audit.html">Prev</a>
+      <a href="#" class="on">10 of 12</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero page">
+  <div class="hero-number">10</div>
+  <span class="hero-tag">Cross-Domain Coherence Project &middot; Paper 10</span>
+  <h1>Predictive Threshold <em>Detection</em></h1>
+  <p class="subtitle">A Cliodynamic Analysis of the &ldquo;Great De-Moralization&rdquo; (1960&ndash;1980)</p>
+  <p class="byline"><strong>David Lowe</strong> &middot; 2026</p>
+</header>
+
+<article class="page">
+
+<!-- 1. EXECUTIVE ABSTRACT -->
+<section class="section">
+  <span class="section-num">01</span>
+  <h2><span class="part-label">Section I</span>The Anatomy of a Phase Transition</h2>
+
+  <p>The period spanning 1960 to 1980 represents the most significant phase transition in American social functionality since the Civil War, a distinctive era characterized by the simultaneous inversion of nearly every major trend line in American life. Often characterized in popular histories as a &ldquo;cultural revolution&rdquo; or a &ldquo;loosening of mores,&rdquo; quantitative analysis reveals a phenomenon far more structural and systemic: a sequential cascade failure of the stabilizing feedback loops that had maintained social cohesion for the preceding century.</p>
+
+  <p>This report executes a <strong>Deep Research Predictive Threshold Detection</strong> protocol to test the hypothesis of a sequential contagion: <strong>Semantic &rarr; Familial &rarr; Institutional &rarr; Economic</strong>.</p>
+
+  <p>The objective is to isolate the <em>earliest detectable signal</em>&mdash;the inflection point (P<sub>c</sub>) or the turn in the second derivative (acceleration)&mdash;for critical domains of human organization. By analyzing high-resolution data on linguistic frequency, family formation, institutional trust, economic performance, educational attainment, psychological diagnoses, spiritual adherence, somatic health, and criminal activity, we reconstruct the anatomy of the collapse.</p>
+
+  <p>The inquiry is foundational: Did the material conditions of the economy fail, causing families to break? Or did the linguistic and semantic framework of &ldquo;virtue&rdquo; fail first, precipitating a moral collapse that subsequently shattered the family unit and the economic engine?</p>
+
+  <p>The analysis indicates that the hypothesis holds true with high confidence, though with a critical refinement regarding the sequencing of institutional versus familial decay. The <strong>Semantic</strong> domain crossed a critical downward threshold <em>before</em> visible structural deterioration in the <strong>Familial</strong> and <strong>Institutional</strong> domains. The collapse of the &ldquo;moral lexicon&rdquo;&mdash;the cognitive tools with which a culture processes duty, restraint, and obligation&mdash;preceded the disintegration of the nuclear family and the erosion of public trust by approximately 3 to 5 years.</p>
+
+  <p>The <strong>Economic</strong> and <strong>Somatic</strong> domains were the lagging indicators, manifesting the accumulated entropy of the prior social dissolution.</p>
+
+  <div class="pull-quote">
+    <p>The &ldquo;Great De-Moralization&rdquo; was not a simultaneous event but a slow-motion detonation that began in the dictionary, moved to the altar and the voting booth, and finally settled in the wallet and the body.</p>
+  </div>
+</section>
+
+<!-- 2. METHODOLOGY -->
+<section class="section">
+  <span class="section-num">02</span>
+  <h2><span class="part-label">Section II</span>Theoretical Framework and Methodology</h2>
+
+  <h3>2.1 The Cliodynamic Approach</h3>
+  <p>To understand the shifts of the 1960s, we must move beyond narrative history and employ cliodynamics&mdash;the mathematical modeling of historical processes. Social systems are complex adaptive systems maintained by homeostatic feedback loops. Stability is not a natural state but a dynamic equilibrium maintained by energy input (cultural transmission, enforcement of norms, economic production).</p>
+
+  <p>A &ldquo;phase transition&rdquo; occurs when these stabilizing loops are overwhelmed or dismantled. In physics, water turns to steam at a precise boiling point; in sociology, a high-trust society turns to a low-trust society at a specific threshold of norm violation. This report seeks to identify the specific years those thresholds were crossed. We are looking for the P<sub>c</sub> (Critical Point), defined here as the moment the trend line shifts from a linear progression to an exponential acceleration (the &ldquo;knee&rdquo; of the curve) or reverses direction entirely (the inflection point).</p>
+
+  <h3>2.2 The Sapir-Whorf Precursor</h3>
+  <p>The analysis is grounded in a modified Sapir-Whorf hypothesis: that language does not merely describe reality but structures cognition. If a society deletes the word &ldquo;prudence&rdquo; or &ldquo;fortitude&rdquo; from its active lexicon, it eventually loses the capacity to conceptualize and act upon those virtues. We posit that <strong>Linguistic Entropy</strong> is the leading indicator of <strong>Social Entropy</strong>. By tracking the frequency of &ldquo;thick&rdquo; moral terms versus &ldquo;thin&rdquo; or individualistic terms, we can detect the erosion of the &ldquo;moral immune system&rdquo; before the infection of social disorder becomes visible.</p>
+
+  <h3>2.3 Data Sources and Granularity</h3>
+  <ul class="source-list">
+    <li><strong>Semantic:</strong> Google Books Ngram corpus (American English), analyzing &ldquo;moral foundations&rdquo; dictionaries defined by Kesebir &amp; Kesebir (2012) and Wheeler et al. (2019).</li>
+    <li><strong>Vital Statistics:</strong> CDC and National Vital Statistics System data on marriage, divorce, and birth rates.</li>
+    <li><strong>Institutional:</strong> Gallup longitudinal polling on trust in government and institutions (1958&ndash;present).</li>
+    <li><strong>Economic:</strong> Bureau of Labor Statistics (BLS) and Federal Reserve Economic Data (FRED) on wages, productivity, and inflation.</li>
+    <li><strong>Somatic:</strong> National Health and Nutrition Examination Survey (NHANES) data on obesity and metabolic health.</li>
+    <li><strong>Psychological/Medical:</strong> Pharmaceutical sales data (Valium) and diagnostic criteria changes (DSM).</li>
+  </ul>
+</section>
+
+<!-- 3. DOMAIN I: SEMANTIC -->
+<section class="section">
+  <span class="section-num">03</span>
+  <h2><span class="part-label">Domain I</span>The Semantic Precursor</h2>
+
+  <div class="domain-card">
+    <span class="domain-label">Language</span>
+    <h3>The Erosion of Virtue Ethics Terminology</h3>
+    <p>Analysis of the Google Books Ngram corpus reveals a profound shift in the linguistic landscape beginning in the mid-20th century. A granular examination of specific &ldquo;thick&rdquo; ethical concepts&mdash;words that describe specific character traits rather than general moral rules&mdash;shows a distinct acceleration in decline during the 1950s, crossing a critical threshold of marginalization by <strong>1962</strong>.</p>
+    <p>The terms &ldquo;prudence,&rdquo; &ldquo;humility,&rdquo; &ldquo;temperance,&rdquo; and &ldquo;fortitude&rdquo;&mdash;the cardinal virtues that necessitate delayed gratification and impulse control&mdash;exhibit a &ldquo;death cross&rdquo; pattern against terms related to subjective feeling and individual rights. Kesebir and Kesebir (2012) documented that 74% of virtue words showed a significant decline over the century, but the inflection point where the <em>rate</em> of decline accelerated&mdash;the &ldquo;second derivative turn&rdquo;&mdash;is detectable in the data around <strong>1960&ndash;1962</strong>.</p>
+    <p>This period marks the transition from a &ldquo;character culture,&rdquo; where the primary semantic unit is the cultivation of internal traits to meet external demands, to a &ldquo;personality culture,&rdquo; where the primary unit is the expression of the internal self. The Ngram data for &ldquo;conscience&rdquo; shows a steep decline commencing in the 1950s and accelerating downward through the 1960s. Conversely, individualistic phrases like &ldquo;I am special,&rdquo; &ldquo;unique,&rdquo; and &ldquo;personalize&rdquo; began a sharp ascent.</p>
+
+    <div class="sub-divider"></div>
+
+    <h4>The Semantic-Behavioral Lag</h4>
+    <p>Crucially, this semantic erosion <em>preceded</em> the behavioral explosions of the late 1960s. The decline in the usage of &ldquo;modesty&rdquo; and &ldquo;chastity&rdquo; was statistically significant by <strong>1961</strong>, several years before the sexual revolution became a visible sociological phenomenon. The language of restraint was abandoned before the behavior of restraint was abandoned.</p>
+    <p>This supports the &ldquo;Semantic First&rdquo; hypothesis. The removal of the linguistic scaffolding&mdash;the words used to praise restraint and condemn impulsivity&mdash;rendered the cultural architecture vulnerable to the shocks of the mid-60s.</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1962</span>
+    </div>
+  </div>
+</section>
+
+<!-- 4. DOMAIN II: COGNITIVE -->
+<section class="section">
+  <span class="section-num">04</span>
+  <h2><span class="part-label">Domain II</span>The Cognitive and Educational Substrate</h2>
+
+  <div class="domain-card">
+    <span class="domain-label">Education</span>
+    <h3>The Great SAT Score Turnover (1963)</h3>
+    <p>The Scholastic Aptitude Test provides a standardized metric of cognitive performance. From the post-war period until the early 1960s, scores were stable or rising.</p>
+    <p>The peak was reached in <strong>1963</strong>. In that year, the average Verbal score was 478 and the Math score was 502. Immediately following 1963, a 17-year continuous decline began. By 1980, Verbal scores had plummeted to 424 and Math to 466.</p>
+
+    <table class="mesh-table">
+      <thead><tr><th>Year</th><th>Verbal</th><th>Math</th></tr></thead>
+      <tbody>
+        <tr><td class="copper-year">1963</td><td>478</td><td>502</td></tr>
+        <tr><td>1970</td><td>460</td><td>488</td></tr>
+        <tr><td>1975</td><td>434</td><td>472</td></tr>
+        <tr><td>1980</td><td>424</td><td>466</td></tr>
+      </tbody>
+    </table>
+
+    <p>This 1963 inflection point aligns with the onset of the semantic erosion (1962) and <em>precedes</em> the chaos of the late 60s campus unrest. The &ldquo;learning rot&rdquo; set in simultaneously with the &ldquo;virtue rot.&rdquo;</p>
+
+    <h4>Grade Inflation and the Loss of Standards</h4>
+    <p>Concurrent with the decline in objective performance (SATs) was a paradoxical rise in subjective evaluation (Grades). Prior to the mid-1960s, the average college GPA was roughly 2.5 (C+). Starting in the mid-60s, GPAs began a steady ascent. This divergence between <em>falling</em> objective capability and <em>rising</em> subjective validation marks the onset of the &ldquo;culture of narcissism&rdquo; and the breakdown of objective standards.</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1963</span>
+    </div>
+  </div>
+</section>
+
+<!-- 5. DOMAIN III: SPIRITUAL/PSYCHOLOGICAL -->
+<section class="section">
+  <span class="section-num">05</span>
+  <h2><span class="part-label">Domain III</span>The Spiritual and Psychological Shift</h2>
+
+  <div class="domain-card">
+    <span class="domain-label">Spiritual</span>
+    <h3>The Mainline Protestant Collapse (1963&ndash;1965)</h3>
+    <p>Mainline Protestant denominations were the pillars of American civil society. Gallup polling indicates church membership peaked at 73% in 1937 and remained near 70% through the late 1950s.</p>
+    <p>The critical threshold was crossed in <strong>1963&ndash;1965</strong>. By 1965, Mainline church membership began an absolute numerical decline&mdash;from 31 million in 1965 to 25 million by 1988. The cultural gatekeepers stopped speaking the language of virtue (1962) and subsequently stopped attending the institutions that taught it (1965).</p>
+
+    <div class="sub-divider"></div>
+
+    <h4>The Psychological Pivot: From Anxiety to Medication (1963)</h4>
+    <p>The threshold for this domain is marked by the introduction of <strong>Valium (diazepam) in 1963</strong>. Valium became the most prescribed drug in the United States between 1969 and 1982, peaking in 1978 with 2.3 billion pills sold.</p>
+    <p>This signals the move from &ldquo;stoic endurance&rdquo; (a virtue ethic) to &ldquo;pharmacological management&rdquo; (a therapeutic ethic).</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1963</span>
+      <span style="margin-left:.5rem;color:var(--cream-m);font-size:.75rem">/ 1965</span>
+    </div>
+  </div>
+</section>
+
+<!-- 6. DOMAIN IV: INSTITUTIONAL/MORAL -->
+<section class="section">
+  <span class="section-num">06</span>
+  <h2><span class="part-label">Domain IV</span>The Institutional and Moral Collapse</h2>
+
+  <div class="domain-card">
+    <span class="domain-label">Moral</span>
+    <h3>The Explosion of Violence (1964)</h3>
+
+    <table class="mesh-table">
+      <thead><tr><th>Year</th><th>Homicide Rate (per 100k)</th></tr></thead>
+      <tbody>
+        <tr><td>1960</td><td>5.1</td></tr>
+        <tr><td>1963</td><td>4.6 (Low point)</td></tr>
+        <tr><td class="copper-year">1964</td><td>4.9</td></tr>
+        <tr><td>1965</td><td>5.1</td></tr>
+        <tr><td>1966</td><td>5.6</td></tr>
+        <tr><td>1967</td><td>6.2</td></tr>
+        <tr><td>1968</td><td>6.9</td></tr>
+      </tbody>
+    </table>
+
+    <p>The inflection point is <strong>1964</strong>. The violent crime rate more than tripled between 1960 and 1980. The streets became unsafe exactly two years after the virtue words began their terminal decline.</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1964</span>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <span class="domain-label">Institutional</span>
+    <h3>The Collapse of Institutional Trust (1965)</h3>
+
+    <table class="mesh-table">
+      <thead><tr><th>Year</th><th>Trust in Government</th></tr></thead>
+      <tbody>
+        <tr><td>1964</td><td>77% (Peak)</td></tr>
+        <tr><td class="copper-year">1966</td><td>65%</td></tr>
+        <tr><td>1968</td><td>61%</td></tr>
+        <tr><td>1970</td><td>53%</td></tr>
+        <tr><td>1974</td><td>36% (Post-Watergate)</td></tr>
+      </tbody>
+    </table>
+
+    <p>The threshold crossing occurred in <strong>1965&ndash;1966</strong>. While Watergate (1974) is often remembered as the death of trust, the <em>collapse</em> was already well underway by 1966.</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1965</span>
+    </div>
+  </div>
+</section>
+
+<!-- 7. DOMAIN V: FAMILIAL -->
+<section class="section">
+  <span class="section-num">07</span>
+  <h2><span class="part-label">Domain V</span>The Familial Disintegration</h2>
+
+  <div class="domain-card">
+    <span class="domain-label">Familial</span>
+    <h3>The Divorce Revolution (1967)</h3>
+
+    <table class="mesh-table">
+      <thead><tr><th>Year</th><th>Divorce Rate (per 1,000)</th></tr></thead>
+      <tbody>
+        <tr><td>1960</td><td>2.2</td></tr>
+        <tr><td>1965</td><td>2.5</td></tr>
+        <tr><td class="copper-year">1967</td><td>2.6</td></tr>
+        <tr><td>1968</td><td>2.9</td></tr>
+        <tr><td>1970</td><td>3.5</td></tr>
+        <tr><td>1980</td><td>5.3 (Peak)</td></tr>
+      </tbody>
+    </table>
+
+    <p>The acceleration turns positive in 1967. The filing rates were already accelerating <em>before</em> the legal changes facilitated them. The &ldquo;Semantic&rdquo; collapse of 1962 took about 5 years to metabolize into the &ldquo;Familial&rdquo; action of filing for divorce in 1967.</p>
+
+    <h4>The Rise of Cohabitation (1968&ndash;1970)</h4>
+    <p>Cohabitation was statistically negligible in 1960. The &ldquo;normalization&rdquo; of cohabitation tracks with the <strong>1968&ndash;1970</strong> period&mdash;the rejection of the formal, binding institution of marriage in favor of a fluid, contingent arrangement based on emotional gratification.</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1967</span>
+    </div>
+  </div>
+</section>
+
+<!-- 8. DOMAIN VI: ECONOMIC/SOMATIC -->
+<section class="section">
+  <span class="section-num">08</span>
+  <h2><span class="part-label">Domain VI</span>The Economic and Somatic Lag</h2>
+
+  <div class="domain-card">
+    <span class="domain-label">Economic</span>
+    <h3>The Economic Decoupling and the Great Inflation</h3>
+
+    <h4>The Great Inflation (1965)</h4>
+    <p>Inflation rose from 1.6% in 1965 to 3.0% in 1966, eventually spiraling to 13.5% by 1980. The &ldquo;loss of temperance&rdquo; in the semantic domain (1962) manifested as the &ldquo;loss of monetary discipline&rdquo; in 1965.</p>
+
+    <h4>The Productivity/Wage Divergence (1968)</h4>
+    <p>For decades, hourly compensation rose in lockstep with productivity. The divergence began in <strong>1968</strong>. They never re-converged.</p>
+
+    <h4>The Peak of Real Wages (1973)</h4>
+    <p>The absolute peak of real wages for production workers occurred in <strong>January 1973</strong>. The American Dream statistically ended in 1973&mdash;<strong>11 years after</strong> the semantic collapse began.</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1965</span>
+      <span style="margin-left:.5rem;color:var(--cream-m);font-size:.75rem">/ 1968 / 1973</span>
+    </div>
+  </div>
+
+  <div class="domain-card">
+    <span class="domain-label">Somatic</span>
+    <h3>The Somatic Shift (Obesity)</h3>
+    <p>In the early 1960s, the obesity rate was roughly 13% and stable. The inflection point appears in the <strong>1976&ndash;1980</strong> data window. The lag of <strong>16 years</strong> from semantic loss to somatic loss represents the time required for changed values to alter dietary habits and lifestyle patterns to the point of physiological dysregulation.</p>
+
+    <div class="threshold-badge">
+      <span class="label">Threshold Year (P<sub>c</sub>)</span>
+      <span class="year">1978</span>
+    </div>
+  </div>
+</section>
+
+<!-- 9. SYNTHESIS -->
+<section class="section">
+  <span class="section-num">09</span>
+  <h2><span class="part-label">Section IX</span>The Chronology of Collapse</h2>
+
+  <h3>Table 1: Threshold Year (P<sub>c</sub>) vs. Visible Collapse Year (T<sub>v</sub>)</h3>
+
+  <table class="synthesis-table">
+    <thead>
+      <tr>
+        <th>Domain</th>
+        <th>Indicator</th>
+        <th style="text-align:center">Threshold (P<sub>c</sub>)</th>
+        <th style="text-align:center">Visible Collapse (T<sub>v</sub>)</th>
+        <th style="text-align:center">Lag</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="domain-name">Semantic</td>
+        <td>Virtue Word Freq.</td>
+        <td class="pc-year">1962</td>
+        <td class="tv-year">1970</td>
+        <td class="lag">8 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Cognitive</td>
+        <td>SAT Score Peak</td>
+        <td class="pc-year">1963</td>
+        <td class="tv-year">1975</td>
+        <td class="lag">12 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Psychological</td>
+        <td>Valium Introduction</td>
+        <td class="pc-year">1963</td>
+        <td class="tv-year">1978</td>
+        <td class="lag">15 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Moral</td>
+        <td>Violent Crime Accel.</td>
+        <td class="pc-year">1964</td>
+        <td class="tv-year">1972</td>
+        <td class="lag">8 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Institutional</td>
+        <td>Trust in Gov&rsquo;t</td>
+        <td class="pc-year">1965</td>
+        <td class="tv-year">1974</td>
+        <td class="lag">9 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Spiritual</td>
+        <td>Mainline Reversal</td>
+        <td class="pc-year">1965</td>
+        <td class="tv-year">1975</td>
+        <td class="lag">10 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Monetary</td>
+        <td>Inflation Onset</td>
+        <td class="pc-year">1965</td>
+        <td class="tv-year">1979</td>
+        <td class="lag">14 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Familial</td>
+        <td>Divorce Accel.</td>
+        <td class="pc-year">1967</td>
+        <td class="tv-year">1980</td>
+        <td class="lag">13 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Structural</td>
+        <td>Prod/Wage Diverge</td>
+        <td class="pc-year">1968</td>
+        <td class="tv-year">1973</td>
+        <td class="lag">5 Years</td>
+      </tr>
+      <tr>
+        <td class="domain-name">Somatic</td>
+        <td>Obesity Inflection</td>
+        <td class="pc-year">1978</td>
+        <td class="tv-year">1990s</td>
+        <td class="lag">12+ Years</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- INTEGRITY INTERVAL CALLOUT -->
+  <div class="cascade-callout">
+    <span class="callout-label">Critical Finding</span>
+    <div class="callout-title">The &ldquo;Integrity Interval&rdquo;</div>
+    <div class="callout-years">1963 &mdash; 1965</div>
+    <p>The system experienced a catastrophic cascade failure in a tight 3-year window. SAT scores, Crime rates, Trust levels, and Church growth all turned negative between 1963 and 1965. This is the detonation window&mdash;the moment when the loss of semantic coherence began propagating across every measurable domain of American life.</p>
+  </div>
+
+  <h3>The &ldquo;Twin Peaks&rdquo; of 1964/1965</h3>
+  <p>The Civil Rights Act of 1964 and the Great Society programs (1964&ndash;65) occurred exactly at this moment. The massive expansion of government responsibility coincided with the erosion of personal responsibility, creating a dissonance that shattered trust.</p>
+
+  <h3>The Economic and Somatic Lag</h3>
+  <p>The economic pain (1973&ndash;1980) came <em>after</em> the social capital had been spent. The &ldquo;divorce revolution&rdquo; was a product of cultural/semantic changes, not economic hardship. The <em>affluence</em> of the 1960s likely subsidized the dissolution of the family.</p>
+</section>
+
+<!-- 10. CONCLUSION -->
+<section class="section">
+  <span class="section-num">10</span>
+  <h2><span class="part-label">Section X</span>Conclusion</h2>
+
+  <p>The &ldquo;Great De-Moralization&rdquo; was not a random series of unfortunate events, but a sequential cascade. The data supports a causal chain where the erosion of the <strong>Semantic</strong> framework created a vacuum filled by <strong>Psychological</strong> distress, <strong>Moral</strong> disorder, <strong>Institutional</strong> collapse, <strong>Familial</strong> fracture, and finally <strong>Economic</strong> stagnation.</p>
+
+  <p>For predictive modeling, the lesson is clear:</p>
+
+  <div class="pull-quote">
+    <p>Watch the language.</p>
+  </div>
+
+  <p>When a society stops speaking the language of duty, its institutions will collapse within 3 to 5 years, its families within 5 to 7, and its economy within 10.</p>
+
+  <div class="pull-quote">
+    <p>The word is the canary; the world is the coal mine.</p>
+  </div>
+</section>
+
+</article>
+
+<footer>
+  <div class="page">
+    <p>Cross-Domain Coherence Series &middot; Paper 10 of 12</p>
+    <p style="margin-top:.5rem">Theophysics Research Program &middot; David Lowe &middot; 2026</p>
+  </div>
+</footer>
+
+<script src="/components/tp-inject.js" data-theme="dark"></script>
+</body>
+</html>

@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7Q Method Explorer — Axiom Layer</title>
+<meta name="description" content="Seven questions forward: classify anything. Seven questions reversed: prove anything. Q0: arrive humble or don't arrive at all.">
+<meta property="og:title" content="7Q Method Explorer — A New Scientific Method">
+<meta property="og:description" content="The 7Q framework: forward classification and reverse proof. Five death conditions. Three truth-score caps. One posture.">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "7Q Method Explorer",
+  "author": {"@type": "Person", "name": "David Lowe"},
+  "publisher": {"@type": "Organization", "name": "Faith Through Physics"},
+  "datePublished": "2026-04-27",
+  "description": "The 7Q epistemic framework: seven questions that classify any claim and five death conditions that falsify it."
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bg: #050505;
+  --bg-panel: #0a0a0a;
+  --bg-card: #111111;
+  --bg-hover: #1a1a1a;
+  --border: #222;
+  --border-hover: #333;
+  --text: #e0e0e0;
+  --text-dim: #999;
+  --text-muted: #555;
+  --gold: #d4af37;
+  --gold-dim: rgba(212,175,55,0.1);
+  --red: #c94040;
+  --red-dim: rgba(201,64,64,0.1);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.1);
+  --teal: #14b8a6;
+  --teal-dim: rgba(20,184,166,0.1);
+  --violet: #8b7fc2;
+  --violet-dim: rgba(139,127,194,0.1);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 25% 0%, rgba(212,175,55,0.04), transparent 55%),
+              radial-gradient(ellipse at 75% 100%, rgba(212,175,55,0.02), transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+.layout {
+  display: grid; grid-template-columns: 260px 1fr 300px;
+  gap: 1px; min-height: calc(100vh - 60px); position: relative; z-index: 1;
+}
+.sidebar {
+  background: var(--bg-panel); padding: 1.25rem;
+  overflow-y: auto; max-height: calc(100vh - 60px);
+}
+.sidebar h3 {
+  font-family: 'Oswald', sans-serif; font-size: 0.65rem; text-transform: uppercase;
+  letter-spacing: 0.2em; color: var(--text-muted); margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+}
+.q-item {
+  display: block; padding: 0.5rem 0.6rem; border-radius: 0.35rem;
+  text-decoration: none; color: var(--text-dim); transition: all 0.2s; margin-bottom: 0.2rem;
+}
+.q-item:hover { background: var(--bg-hover); color: var(--text); }
+.q-item .q-row { display: flex; align-items: baseline; gap: 0.5rem; }
+.q-item .q-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--gold); min-width: 2.5rem; }
+.q-item .q-label { font-size: 0.8rem; font-weight: 500; }
+.q-item .q-desc { font-size: 0.7rem; color: var(--text-muted); padding-left: 3rem; }
+.q-item.active { background: var(--gold-dim); border-left: 2px solid var(--gold); }
+.q-item.active .q-label { color: var(--gold); }
+.main {
+  background: var(--bg); padding: 2rem;
+  overflow-y: auto; max-height: calc(100vh - 60px);
+}
+.breadcrumb { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--gold); }
+.breadcrumb .sep { margin: 0 0.4rem; color: var(--text-muted); }
+.badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+.badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+  padding: 0.3rem 0.7rem; border-radius: 0.3rem; border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.35rem;
+}
+.badge.gold { color: var(--gold); border-color: rgba(212,175,55,0.3); background: var(--gold-dim); }
+.badge.green { color: var(--green); border-color: rgba(34,197,94,0.3); background: var(--green-dim); }
+.badge.blue { color: var(--blue); border-color: rgba(59,130,246,0.3); background: var(--blue-dim); }
+.badge.red { color: var(--red); border-color: rgba(201,64,64,0.3); background: var(--red-dim); }
+.badge.violet { color: var(--violet); border-color: rgba(139,127,194,0.3); background: var(--violet-dim); }
+.badge.teal { color: var(--teal); border-color: rgba(20,184,166,0.3); background: var(--teal-dim); }
+.paper-title {
+  font-family: 'Crimson Text', serif; font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 400; color: var(--text); line-height: 1.2; margin-bottom: 0.4rem;
+}
+.paper-subtitle {
+  font-family: 'Crimson Text', serif; font-size: 1.1rem; color: var(--text-dim);
+  font-style: italic; margin-bottom: 1.5rem;
+}
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 0.5rem; padding: 1.25rem; margin-bottom: 1.25rem;
+}
+.card-header {
+  display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.875rem;
+  font-family: 'Oswald', sans-serif; font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--gold);
+}
+.card-header i { font-size: 0.9rem; }
+.section-title {
+  font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold);
+  margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+}
+.formal-box {
+  background: var(--bg-panel); border-left: 3px solid var(--gold);
+  padding: 1rem 1.25rem; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 1rem;
+}
+.axiom-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;
+  padding: 1.5rem; margin-bottom: 1.25rem; position: relative;
+  border-left: 3px solid var(--gold);
+  cursor: pointer; transition: background 0.18s ease, border-color 0.18s ease;
+}
+.axiom-card:hover { background: var(--bg-hover); }
+.axiom-card.trace-dim { opacity: 0.22; filter: saturate(0.65); }
+.axiom-card.trace-hit { outline: 2px solid var(--gold); outline-offset: 2px; }
+.axiom-card.hidden-layer { display: none; }
+/* Color variants */
+.axiom-card.ac-blue { border-left-color: var(--blue); }
+.axiom-card.ac-blue .axiom-id { color: var(--blue); background: var(--blue-dim); }
+.axiom-card.ac-blue .axiom-statement { background: rgba(59,130,246,0.04); }
+.axiom-card.ac-teal { border-left-color: var(--teal); }
+.axiom-card.ac-teal .axiom-id { color: var(--teal); background: var(--teal-dim); }
+.axiom-card.ac-teal .axiom-statement { background: rgba(20,184,166,0.04); }
+.axiom-card.ac-violet { border-left-color: var(--violet); }
+.axiom-card.ac-violet .axiom-id { color: var(--violet); background: var(--violet-dim); }
+.axiom-card.ac-violet .axiom-statement { background: rgba(139,127,194,0.04); }
+.axiom-card.ac-red { border-left-color: var(--red); }
+.axiom-card.ac-red .axiom-id { color: var(--red); background: var(--red-dim); }
+.axiom-card.ac-red .axiom-statement { background: rgba(201,64,64,0.04); }
+.axiom-card.ac-green { border-left-color: var(--green); }
+.axiom-card.ac-green .axiom-id { color: var(--green); background: var(--green-dim); }
+.axiom-card.ac-green .axiom-statement { background: rgba(34,197,94,0.04); }
+.axiom-card .axiom-id {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--gold);
+  background: var(--gold-dim); padding: 0.2rem 0.5rem; border-radius: 0.2rem;
+  display: inline-block; margin-bottom: 0.5rem;
+}
+.axiom-card .axiom-name {
+  font-family: 'Cinzel', serif; font-size: 1rem; color: #fff; margin-bottom: 0.4rem;
+}
+.axiom-card .axiom-statement {
+  font-family: 'Crimson Text', serif; font-size: 1.05rem; color: var(--text);
+  font-style: italic; margin-bottom: 0.75rem; line-height: 1.6;
+  padding: 0.75rem; background: rgba(212,175,55,0.04); border-radius: 0.3rem;
+}
+.axiom-card .axiom-meaning {
+  font-size: 0.85rem; color: var(--text-dim); line-height: 1.65; margin-bottom: 0.75rem;
+}
+.kill-box {
+  background: var(--red-dim); border: 1px solid rgba(201,64,64,0.3);
+  border-radius: 0.4rem; padding: 1rem;
+}
+.kill-box .kill-header {
+  font-family: 'Oswald', sans-serif; font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--red); margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th, td { padding: 0.6rem 0.5rem; text-align: left; border-bottom: 1px solid var(--border); }
+th {
+  font-family: 'Oswald', sans-serif; font-size: 0.68rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-muted); font-weight: 500;
+}
+td { color: var(--text-dim); }
+.meta-row {
+  display: flex; justify-content: space-between; padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border); font-size: 0.78rem;
+}
+.meta-row .meta-label { color: var(--text-muted); }
+.meta-row .meta-value { color: var(--text-dim); text-align: right; max-width: 55%; }
+.meta-value.gold { color: var(--gold); }
+.action-btn {
+  display: flex; width: 100%; padding: 0.55rem 0.7rem; margin-bottom: 0.4rem;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.35rem;
+  color: var(--text-dim); text-decoration: none; font-size: 0.78rem;
+  transition: all 0.2s; align-items: center; gap: 0.5rem; cursor: pointer;
+}
+.action-btn:hover { background: var(--bg-hover); border-color: var(--gold); color: var(--gold); }
+.dir-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; }
+.dir-btn {
+  padding: 0.5rem; text-align: center; border-radius: 0.35rem;
+  font-family: 'Oswald', sans-serif; font-size: 0.65rem; letter-spacing: 0.1em;
+  text-transform: uppercase; cursor: pointer; transition: all 0.15s;
+  border: 1px solid var(--border); background: var(--bg-card); color: var(--text-dim);
+}
+.dir-btn.active { background: var(--gold); color: #050505; border-color: var(--gold); font-weight: 700; }
+.check-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.4rem; }
+.check-row input { accent-color: var(--gold); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.leg-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+.filter-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 0.6rem; }
+.trace-note {
+  margin-top: 0.6rem; padding: 0.6rem 0.75rem; border-radius: 0.5rem;
+  border: 1px dashed rgba(212,168,83,0.3); background: rgba(212,168,83,0.05);
+  font-size: 0.72rem; color: var(--text-dim);
+}
+select {
+  width: 100%; appearance: none; border: 1px solid var(--border);
+  background: var(--bg-card); color: var(--text); padding: 0.5rem 0.7rem;
+  border-radius: 0.35rem; font-size: 0.78rem; margin-bottom: 0.4rem;
+}
+.detail-panel {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 0.5rem; padding: 1.5rem; margin-top: 2rem; margin-bottom: 1.25rem;
+}
+.detail-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1rem; margin-top: 1rem; }
+.detail-inner {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 0.4rem; padding: 1rem;
+}
+.detail-label {
+  font-family: 'Oswald', sans-serif; font-size: 0.65rem; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 0.5rem;
+}
+@media (max-width: 1200px) { .layout { grid-template-columns: 220px 1fr 260px; } }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { max-height: none; }
+  .main { max-height: none; padding: 1rem; }
+  .detail-grid { grid-template-columns: 1fr; }
+}
+</style>
+<link rel="stylesheet" href="/components/tp-pill-player.css">
+<script defer src="/components/tp-pill-player.js"></script>
+</head>
+<body>
+<div class="layout">
+
+<!-- LEFT SIDEBAR -->
+<aside class="sidebar">
+  <h3><i class="fas fa-compass" style="margin-right:0.4rem;"></i>7Q Chain</h3>
+
+  <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);margin:0.75rem 0 0.5rem;">Questions</div>
+  <a href="#q0" class="q-item active"><div class="q-row"><span class="q-num">Q0</span><span class="q-label">Presupposition</span></div><span class="q-desc">The floor before inquiry</span></a>
+  <a href="#q1" class="q-item"><div class="q-row"><span class="q-num">Q1</span><span class="q-label">Definition</span></div><span class="q-desc">Name it. Type it. Tier it.</span></a>
+  <a href="#q2" class="q-item"><div class="q-row"><span class="q-num">Q2</span><span class="q-label">Definition</span></div><span class="q-desc">Where does it live?</span></a>
+  <a href="#q3" class="q-item"><div class="q-row"><span class="q-num">Q3</span><span class="q-label">Definition</span></div><span class="q-desc">What does it say?</span></a>
+  <a href="#q4" class="q-item"><div class="q-row"><span class="q-num">Q4</span><span class="q-label">Definition</span></div><span class="q-desc">What supports it?</span></a>
+  <a href="#q5" class="q-item"><div class="q-row"><span class="q-num">Q5</span><span class="q-label">Lemma</span></div><span class="q-desc">What does it stand on?</span></a>
+  <a href="#q6" class="q-item"><div class="q-row"><span class="q-num">Q6</span><span class="q-label">Theorem</span></div><span class="q-desc">What does it force?</span></a>
+  <a href="#q7" class="q-item"><div class="q-row"><span class="q-num">Q7</span><span class="q-label">Axiom</span></div><span class="q-desc">What kills it?</span></a>
+  <a href="#truth-score" class="q-item"><div class="q-row"><span class="q-num" style="color:var(--teal);">T</span><span class="q-label">Theorem</span></div><span class="q-desc">Synthesis formula</span></a>
+
+  <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);margin:1.25rem 0 0.5rem;">Filters</div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="posture" checked><span>Q0 Presupposition</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="identity" checked><span>Q1 Definition</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="domain" checked><span>Q2 Definition</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="assertion" checked><span>Q3 Definition</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="evidence" checked><span>Q4 Definition</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="dependency" checked><span>Q5 Lemma</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="consequence" checked><span>Q6 Theorem</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="falsification" checked><span>Q7 Axiom</span></div>
+  <div class="check-row"><input type="checkbox" data-layer-toggle="formula" checked><span>T Theorem</span></div>
+  <div class="filter-btn-row">
+    <button class="action-btn" id="showAll" style="font-size:0.72rem;justify-content:center;">Show all</button>
+    <button class="action-btn" id="showCore" style="font-size:0.72rem;justify-content:center;">Core only</button>
+  </div>
+
+  <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);margin:1.25rem 0 0.5rem;">Legend</div>
+  <div class="leg-row"><span class="legend-dot" style="background:rgba(212,175,55,0.4);"></span>Q0–Q1 Posture / Identity</div>
+  <div class="leg-row"><span class="legend-dot" style="background:rgba(59,130,246,0.5);"></span>Q2 / Q4 Domain / Evidence</div>
+  <div class="leg-row"><span class="legend-dot" style="background:rgba(20,184,166,0.5);"></span>Q3 / Q6 Assertion / Consequence</div>
+  <div class="leg-row"><span class="legend-dot" style="background:rgba(139,127,194,0.5);"></span>Q5 Dependencies</div>
+  <div class="leg-row"><span class="legend-dot" style="background:rgba(201,64,64,0.5);"></span>Q7 Falsification</div>
+  <div class="leg-row"><span class="legend-dot" style="background:rgba(212,175,55,0.4);border:1px dashed rgba(212,175,55,0.4);"></span>T Truth Score / Formula</div>
+
+  <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);margin:1.25rem 0 0.5rem;">Pages</div>
+  <a href="index.html" class="q-item"><div class="q-row"><span class="q-num" style="color:var(--gold);">&larr;</span><span class="q-label">Axiom Layer Index</span></div></a>
+  <a href="axioms.html" class="q-item"><div class="q-row"><span class="q-num" style="color:var(--gold);">A</span><span class="q-label">Axioms</span></div></a>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="breadcrumb">
+    <a href="../index.html">Main Site</a><span class="sep">&rarr;</span><a href="index.html">Axiom Layer</a><span class="sep">&rarr;</span><span style="color:var(--gold);">7Q Framework</span>
+  </div>
+
+  <div class="badges">
+    <span class="badge gold"><i class="fas fa-flask"></i> New Scientific Method</span>
+    <span class="badge blue"><i class="fas fa-layer-group"></i> 8 Epistemic Layers</span>
+    <span class="badge teal"><i class="fas fa-exchange-alt"></i> Forward + Reverse</span>
+    <span class="badge red"><i class="fas fa-skull"></i> 5 Death Conditions</span>
+  </div>
+
+  <h1 class="paper-title">7Q Method Explorer</h1>
+  <p class="paper-subtitle">Seven questions forward: classify anything. Seven questions reversed: prove anything. Q0: arrive humble or don't arrive at all.</p>
+
+  <!-- ═══ Q0: POSTURE ═══ -->
+  <h2 class="section-title" id="q0"><i class="fas fa-seedling" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q0 — Presupposition</h2>
+
+  <div class="axiom-card" data-id="q0_precondition" data-kind="posture" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q0 — PRECONDITION</span>
+    <div class="axiom-name">The Inquirer Cannot Be the Ground of Inquiry</div>
+    <div class="axiom-statement">Arrive open or don't arrive at all.</div>
+    <div class="axiom-meaning">
+      Before the first question, there is a posture. You do not arrive decided. You arrive open to whatever the evidence produces, including results that disconfirm your priors. This is not humility as virtue — it is an operational requirement. Every dead framework committed the exact error Q0 prevents: positivism arrived decided that metaphysics was meaningless; behaviorism arrived decided that consciousness was irrelevant. Q0 is the silence before the first letter. The empty soil before any seed lands.
+    </div>
+    <div class="formal-box">Q0 &notin; {Q1..Q7} — sits outside the sequence<br>posture(decided) &rarr; dead framework<br>posture(open) &rarr; breakthrough potential</div>
+  </div>
+
+  <div class="axiom-card" data-id="q0_humility" data-kind="posture" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q0 — OPERATIONAL</span>
+    <div class="axiom-name">What Q0 Prevents</div>
+    <div class="axiom-statement">Historical test: every framework that ossified arrived decided.</div>
+    <div class="axiom-meaning">
+      Einstein didn't set out to disprove Newton — he resolved a genuine tension. Planck didn't want quanta — the data forced him. Q0 is the weakest operational element (non-enforceable) and the most important structural one. Cannot be scored, only acknowledged.
+    </div>
+  </div>
+
+  <!-- ═══ Q1: IDENTITY ═══ -->
+  <h2 class="section-title" id="q1"><i class="fas fa-tag" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q1 — Definition</h2>
+
+  <div class="axiom-card" data-id="q1_classify" data-kind="identity" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q1.1 — CLASSIFICATION</span>
+    <div class="axiom-name">Name It. Type It. Tier It.</div>
+    <div class="axiom-statement">Undefined &rarr; defined. Create the object before testing it.</div>
+    <div class="axiom-meaning">
+      Q1 forces the inquirer to name the claim, classify its type, and assign it a tier. Misclassification at Q1 propagates through every subsequent question. Has it been named before — and does that name carry assumptions you haven't verified?
+    </div>
+    <div class="formal-box">Types: causal &middot; descriptive &middot; ontological &middot; mathematical &middot; predictive &middot; mechanistic &middot; normative</div>
+  </div>
+
+  <div class="axiom-card" data-id="q1_tier" data-kind="identity" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q1.2 — TIER</span>
+    <div class="axiom-name">Where in the Knowledge Hierarchy?</div>
+    <div class="axiom-statement">Tier determines how a claim is tested.</div>
+    <div class="axiom-meaning">
+      A foundational claim (axiom, postulate, definition) needs different kill conditions than a derived claim (theorem, corollary, hypothesis). A hypothesis treated as an axiom will never be traced to its dependencies — because axioms don't have dependencies, they ARE dependencies.
+    </div>
+    <div class="formal-box">Foundational: axiom &middot; postulate &middot; definition<br>Derived: theorem &middot; corollary &middot; hypothesis<br>Constraint: boundary condition<br>Support: evidence bundle &middot; Connection: bridge &middot; relationship</div>
+  </div>
+
+  <div class="axiom-card ac-green" data-id="q1_gr" data-kind="identity" data-traces="gr">
+    <span class="axiom-id">Q1 — GR EXAMPLE</span>
+    <div class="axiom-name">GR Is Causal, Not Descriptive</div>
+    <div class="axiom-statement">Q1 reclassified GR from descriptive to causal — a stronger commitment.</div>
+    <div class="axiom-meaning">
+      Standard textbook presentation treats GR as a description of spacetime geometry. Q1 reclassifies it: GR asserts that mass-energy CAUSES curvature. That is a causal claim — a stronger commitment than "spacetime is curved." The reclassification immediately sharpens the kill conditions.
+    </div>
+    <div class="formal-box">classify(GR) = causal &gt; descriptive<br>Causal = removing the cause should remove the effect<br>This is testable in ways "descriptive" is not.</div>
+  </div>
+
+  <!-- ═══ Q2: DOMAIN ═══ -->
+  <h2 class="section-title" id="q2"><i class="fas fa-map-marker-alt" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q2 — Definition</h2>
+
+  <div class="axiom-card ac-blue" data-id="q2_primary" data-kind="domain" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q2.1 — DOMAIN ANCHOR</span>
+    <div class="axiom-name">Anchor in Domain and Scale</div>
+    <div class="axiom-statement">Defined &rarr; located. Place the claim in conceptual space.</div>
+    <div class="axiom-meaning">
+      Q2 establishes primary domain, additional domains, and scale of operation. The critical question: does this claim appear in more than one domain? Cross-domain presence triggers the isomorphism test.
+    </div>
+    <div class="formal-box">Domains: physics &middot; theology &middot; consciousness &middot; info theory &middot; math &middot; biology &middot; economics<br>Scale: quantum &rarr; molecular &rarr; neural &rarr; individual &rarr; social &rarr; civilizational &rarr; cosmic</div>
+  </div>
+
+  <div class="axiom-card ac-blue" data-id="q2_iso" data-kind="domain" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q2.2 — ISOMORPHISM TEST</span>
+    <div class="axiom-name">Analogy or Structural Identity?</div>
+    <div class="axiom-statement">If the math preserves topology, boundary conditions, and conservation laws under variable substitution &rarr; isomorphism, not analogy.</div>
+    <div class="axiom-meaning">
+      Analogies suggest similarity. Isomorphisms demonstrate structural identity. If the same structural relationships hold when you swap domain labels — the same tensor equations, the same conservation laws — that's not metaphor. That's structure. Riemannian geometry appears in physics (GR), ML (manifold learning), economics (curved utility), and information theory (Fisher geometry). Same mathematics in all four domains.
+    </div>
+    <div class="formal-box">iso(A,B) iff &forall; relations R: R_A &harr; R_B under variable substitution<br>Analogy: "gravity is like love" — metaphorical, non-constraining<br>Isomorphism: "the same tensor equations describe both" — structural, prediction-constraining</div>
+  </div>
+
+  <!-- ═══ Q3: ASSERTION ═══ -->
+  <h2 class="section-title" id="q3"><i class="fas fa-quote-right" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q3 — Definition</h2>
+
+  <div class="axiom-card ac-teal" data-id="q3_precision" data-kind="assertion" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q3.1 — PRECISION</span>
+    <div class="axiom-name">One Sentence. No Hedging.</div>
+    <div class="axiom-statement">Located &rarr; stated. Every claim has a single falsifiable core.</div>
+    <div class="axiom-meaning">
+      Q3 forces the claim into a single precise statement. Classify by certainty level (proven, well-supported, tentative, speculative) and scope (universal, domain-specific, context-dependent). The opponent restatement test: can a serious, informed opponent restate your claim accurately? If not, it's not precise enough to test.
+    </div>
+  </div>
+
+  <div class="axiom-card ac-teal" data-id="q3_negation" data-kind="assertion" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q3.2 — NEGATION TEST</span>
+    <div class="axiom-name">Every Claim Carries Its Own Death Warrant</div>
+    <div class="axiom-statement">Auto-generate the logical opposite. Hidden bundled claims surface here.</div>
+    <div class="axiom-meaning">
+      Q3 automatically generates the negation: &not;(A &and; B) = &not;A &or; &not;B. If the negation decomposes the original into independently testable components, you've found bundled claims hidden inside a single statement. GR's negation: "Mass-energy does NOT curve spacetime, OR objects do NOT follow geodesics." Two independently killable components — found automatically.
+    </div>
+    <div class="formal-box">&not;(A &and; B) = &not;A &or; &not;B — negation splits bundled claims<br>GR negation: &not;(curvature causation) &or; &not;(geodesic following)</div>
+  </div>
+
+  <!-- ═══ Q4: EVIDENCE ═══ -->
+  <h2 class="section-title" id="q4"><i class="fas fa-microscope" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q4 — Definition</h2>
+
+  <div class="axiom-card ac-blue" data-id="q4_ps" data-kind="evidence" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q4 — CHANNEL 1: PS</span>
+    <div class="axiom-name">Phenomenon Strength — What Do We Reliably Observe?</div>
+    <div class="axiom-statement">Reproducibility &times; 0.4 + Effect size &times; 0.3 + Measurement quality &times; 0.3</div>
+    <div class="axiom-meaning">
+      The rain that falls on the tree. This is what science already does well: measurement, replication, signal detection. Reproducibility is weighted highest because if it can't be repeated, it doesn't exist as evidence.
+    </div>
+    <div class="formal-box">PS = reproducibility&times;0.4 + effect_size&times;0.3 + measurement_quality&times;0.3</div>
+  </div>
+
+  <div class="axiom-card ac-blue" data-id="q4_ed" data-kind="evidence" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q4 — CHANNEL 2: ED (THE WHY-PENALTY)</span>
+    <div class="axiom-name">Explanatory Depth — Do We Know WHY?</div>
+    <div class="axiom-statement">Mechanism clarity &times; 0.4 + Constraint consistency &times; 0.3 + Scope &times; 0.3. ED = 0 caps evidence at 50%.</div>
+    <div class="axiom-meaning">
+      The sunlight that tells the tree which direction to grow. This is what science systematically avoids. Every dead framework refused this question. Every breakthrough came from someone who held it. The why-penalty: if you observe without explaining, you cannot have full credit. Pre-1927 scientists who asked WHY moved the needle. Post-1927 instrumentalism correlates with fragmentation.
+    </div>
+    <div class="formal-box">ED = mechanism_clarity&times;0.4 + constraint_consistency&times;0.3 + scope&times;0.3<br>ED = 0 &rarr; evidence capped at 50% regardless of PS</div>
+  </div>
+
+  <div class="axiom-card ac-blue" data-id="q4_ec" data-kind="evidence" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q4 — CHANNEL 3: EC</span>
+    <div class="axiom-name">Experiential Coherence — Does It Produce Stable Structure?</div>
+    <div class="axiom-statement">Internal consistency &times; .25 + Longitudinal stability &times; .25 + Behavioral transformation &times; .25 + Intersubjective pattern &times; .25</div>
+    <div class="axiom-meaning">
+      The soil moisture the roots actually draw from. Not "I feel strongly" — does the evidence produce consistent downstream effects across time, behavior, and agents? Does the insight change how people act? Do multiple observers report the same structure across different contexts?
+    </div>
+    <div class="formal-box">EC = consistency&times;.25 + stability&times;.25 + transformation&times;.25 + pattern&times;.25</div>
+  </div>
+
+  <div class="axiom-card ac-blue" data-id="q4_formula" data-kind="evidence" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q4 — THE COMPLETENESS FACTOR</span>
+    <div class="axiom-name">E_final = PS &times; CF — The Three Channels Multiply</div>
+    <div class="axiom-statement">CF = (0.5 + 0.5 &times; ED) &times; (0.5 + 0.5 &times; EC). A tree with infinite rain but no sunlight dies.</div>
+    <div class="axiom-meaning">
+      The three channels multiply, not add. You cannot compensate for zero in one channel by maxing another. ED = 0, EC = 0 &rarr; CF = 0.25 &rarr; evidence capped at 25%. ED = 1, EC = 1 &rarr; CF = 1.0 &rarr; full credit earned. Observed &ne; Explained. Repeatable &ne; Understood.
+    </div>
+    <div class="formal-box">CF = (0.5 + 0.5&times;ED) &times; (0.5 + 0.5&times;EC)<br>E_final = PS &times; CF<br>ED=0, EC=0 &rarr; CF=0.25 (25% ceiling)<br>ED=1, EC=1 &rarr; CF=1.0 (full credit)</div>
+  </div>
+
+  <div class="card" style="margin-bottom:1.25rem;">
+    <div class="card-header"><i class="fas fa-check-circle"></i> GR Evidence — Kill Condition Results</div>
+    <table>
+      <tr><th>Evidence</th><th>Result</th><th>Formal</th></tr>
+      <tr><td>Mercury perihelion precession</td><td style="color:var(--green);">SURVIVED</td><td>&Delta;&phi; = 43.0&Prime; &plusmn; 0.1&Prime; per century</td></tr>
+      <tr><td>Gravitational lensing (Eddington 1919)</td><td style="color:var(--green);">SURVIVED</td><td>&theta; = 4GM/(c&sup2;b)</td></tr>
+      <tr><td>Gravitational waves (LIGO 2015)</td><td style="color:var(--green);">SURVIVED</td><td>Chirp waveform matched</td></tr>
+      <tr><td>GPS time dilation</td><td style="color:var(--green);">SURVIVED (daily)</td><td>+38 &mu;s/day net correction</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══ Q5: DEPENDENCIES ═══ -->
+  <h2 class="section-title" id="q5"><i class="fas fa-sitemap" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q5 — Lemma</h2>
+
+  <div class="axiom-card ac-violet" data-id="q5_chain" data-kind="dependency" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q5.1 — CHAIN TERMINUS</span>
+    <div class="axiom-name">Where Does the Chain End?</div>
+    <div class="axiom-statement">Supported &rarr; load-tested. Every dependency chain has a terminus.</div>
+    <div class="axiom-meaning">
+      Q5 traces the dependency chain all the way down. Terminus types: Axiom (self-evident) &rarr; solid ground. Brute fact (accepted without proof) &rarr; honest but ungrounded. Circularity (loops back) &rarr; STRUCTURAL VULNERABILITY FLAGGED. Open (never terminates) &rarr; INCOMPLETE FLAGGED.
+    </div>
+    <div class="formal-box">terminus(axiom) = solid ground<br>terminus(brute_fact) = honest<br>terminus(circular) = FLAGGED — structural vulnerability<br>terminus(open) = FLAGGED — incomplete</div>
+  </div>
+
+  <div class="axiom-card ac-violet" data-id="q5_fragility" data-kind="dependency" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q5.2 — THE FRAGILITY MAP</span>
+    <div class="axiom-name">If This Foundation Fails, What Happens?</div>
+    <div class="axiom-statement">Structural engineering load test applied to ideas.</div>
+    <div class="axiom-meaning">
+      For each dependency: immediate collapse (critical) &middot; graceful degradation (the claim still partially works) &middot; independent survival (the dependency wasn't actually needed). GR example: Q5 surfaced GR's hidden dependency — the smooth manifold assumption. At Planck scale (~10&minus;&sup3;&sup5; m), spacetime might be discrete. This has been driving unsolved physics for a century. Q5 surfaced it in one question.
+    </div>
+    <div class="formal-box">GR depends on: equivalence principle &middot; Riemannian geometry &middot; c=const &middot; E-mom conservation &middot; smooth manifold<br>Hidden: smooth manifold assumption (unverified at Planck scale)<br>&rarr; root of the quantum gravity problem</div>
+  </div>
+
+  <!-- ═══ Q6: CONSEQUENCES ═══ -->
+  <h2 class="section-title" id="q6"><i class="fas fa-project-diagram" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q6 — Theorem</h2>
+
+  <div class="axiom-card ac-teal" data-id="q6_predictions" data-kind="consequence" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q6.1 — PREDICTIONS</span>
+    <div class="axiom-name">What Must Be True If This Claim Is True?</div>
+    <div class="axiom-statement">Grounded &rarr; generative. Confirmed/untested prediction ratio = generative maturity.</div>
+    <div class="axiom-meaning">
+      A claim that forces nothing downstream explains nothing — it occupies conceptual space without generating knowledge. Q6 separates confirmed predictions from untested ones. GR forced black holes (Schwarzschild 1916), gravitational waves (detected 2015), GPS corrections (daily) — all consequences the math generated that Einstein himself didn't plant.
+    </div>
+    <div class="formal-box">generative_maturity = confirmed_predictions / total_predictions<br>Q6(claim) = &empty; &rarr; explanatory failure signal</div>
+  </div>
+
+  <div class="axiom-card ac-teal" data-id="q6_crossdomain" data-kind="consequence" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q6.2 — CROSS-DOMAIN FORCING</span>
+    <div class="axiom-name">Where Do Consequences Land in Other Fields?</div>
+    <div class="axiom-statement">If a Q6 consequence preserves structural relationships in another domain &rarr; isomorphism candidate. Loops back to Q2.</div>
+    <div class="axiom-meaning">
+      This is the discovery mechanism for cross-domain connections. Standard disciplinary boundaries hide these connections. The framework makes them structurally visible. When a consequence appears in another domain and preserves the same mathematical structure under variable substitution, an isomorphism candidate has been detected — loop back to Q2 for verification.
+    </div>
+    <div class="formal-box">Q6 consequence &isin; domain_B &rarr; flag for Q2 isomorphism test<br>Q2 &harr; Q6 form a detection loop</div>
+  </div>
+
+  <!-- ═══ Q7: FALSIFICATION ═══ -->
+  <h2 class="section-title" id="q7"><i class="fas fa-skull-crossbones" style="margin-right:0.5rem;font-size:0.9rem;"></i>Q7 — Axiom</h2>
+
+  <div class="axiom-card ac-red" data-id="q7_self" data-kind="falsification" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q7 — DEATH CONDITION #1</span>
+    <div class="axiom-name">Self-Refutation</div>
+    <div class="axiom-statement">P &rarr; &not;P. The fastest death condition to check.</div>
+    <div class="axiom-meaning">
+      The claim destroys itself when stated. The denial presupposes what it denies. "There is no truth" is itself a truth claim. "Logic is unreliable" requires logic to state. If the claim self-refutes, nothing else matters. Many philosophical positions fail here silently, never examined because the framework never demanded it.
+    </div>
+  </div>
+
+  <div class="axiom-card ac-red" data-id="q7_regress" data-kind="falsification" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q7 — DEATH CONDITION #2</span>
+    <div class="axiom-name">Infinite Regress</div>
+    <div class="axiom-statement">answer(Q) &rarr; new instance of Q &rarr; &infin;</div>
+    <div class="axiom-meaning">
+      The claim pushes the question backward without ever resolving it. Each answer generates a new instance of the same question. Not the same as a deep dependency chain — regress means the chain never terminates by design. Some frameworks embrace this; the 7Q system flags it as a structural failure.
+    </div>
+  </div>
+
+  <div class="axiom-card ac-red" data-id="q7_empirical" data-kind="falsification" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q7 — DEATH CONDITION #3</span>
+    <div class="axiom-name">Empirical Contradiction</div>
+    <div class="axiom-statement">prediction(claim) &ne; observation &rarr; falsified</div>
+    <div class="axiom-meaning">
+      The claim contradicts observed data. This is the traditional mode of falsification — the one Popper formalized. Necessary but not sufficient alone: a claim can survive empirical testing and still fail on other conditions. The 7Q system adds four more death conditions beyond Popper's one.
+    </div>
+  </div>
+
+  <div class="axiom-card ac-red" data-id="q7_logical" data-kind="falsification" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q7 — DEATH CONDITION #4</span>
+    <div class="axiom-name">Logical Incoherence</div>
+    <div class="axiom-statement">claim &and; &not;(consequence of claim) &rarr; incoherent</div>
+    <div class="axiom-meaning">
+      The claim contradicts something already established in its own chain — a prior dependency, a forced consequence, or itself at a different point in the argument. Different from self-refutation (which is immediate). This catches delayed contradictions that only appear when the full chain is traced.
+    </div>
+  </div>
+
+  <div class="axiom-card ac-red" data-id="q7_explanatory" data-kind="falsification" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q7 — DEATH CONDITION #5</span>
+    <div class="axiom-name">Explanatory Failure</div>
+    <div class="axiom-statement">Q6(claim) = &empty; — the claim stops generating consequences</div>
+    <div class="axiom-meaning">
+      The claim cannot answer forced downstream questions from Q6. It stops generating. It runs out of road. Kuhn described this as anomaly accumulation — the 7Q system formalizes it. A theory that stops generating is dying. Different from empirical failure — the data might still fit, but the theory can no longer explain.
+    </div>
+  </div>
+
+  <div class="axiom-card ac-red" data-id="q7_adversarial" data-kind="falsification" data-traces="gr consciousness entropy">
+    <span class="axiom-id">Q7 — ADVERSARIAL TEST</span>
+    <div class="axiom-name">Has Anyone Actually Tried to Kill It?</div>
+    <div class="axiom-statement">Surviving sympathetic review &ne; surviving hostile review. Adversarial status: tracked.</div>
+    <div class="axiom-meaning">
+      A claim that survived adversarial testing by informed opponents is categorically different from one examined only by sympathetic parties. Most claims in most fields have NOT been adversarially tested. The 7Q system requires this field to be declared. A claim with no adversarial history is unproven, not confirmed.
+    </div>
+  </div>
+
+  <!-- ═══ TRUTH SCORE ═══ -->
+  <h2 class="section-title" id="truth-score"><i class="fas fa-calculator" style="margin-right:0.5rem;font-size:0.9rem;"></i>T — Theorem</h2>
+
+  <div class="axiom-card" data-id="score_formula" data-kind="formula" data-traces="gr consciousness entropy">
+    <span class="axiom-id">SYNTHESIS — TRUTH SCORE</span>
+    <div class="axiom-name">T = w&sub1;&middot;S + w&sub2;&middot;E + w&sub3;&middot;L + w&sub4;&middot;D + w&sub5;&middot;P + w&sub6;&middot;C</div>
+    <div class="axiom-statement">Six variables, all derived from 7Q fields. No external judgment needed.</div>
+    <div class="axiom-meaning">
+      S &larr; Q7 survivability &middot; E &larr; Q4 E_final with why-penalty &middot; L &larr; Q3 precision &times; Q4 type &middot; D &larr; Q5 dependency stability &middot; P &larr; Q6 confirmed prediction ratio &middot; C &larr; Q2 cross-domain coherence. Every variable comes from fields the inquirer already filled. No external judgment needed — the math handles it.
+    </div>
+    <div class="formal-box">T = &Sigma; w_i &middot; V_i where V &isin; {S, E, L, D, P, C}<br>Maps to: T=&chi;, confidence=&kappa;, cluster variance=&rho;</div>
+  </div>
+
+  <div class="axiom-card" data-id="score_enhanced" data-kind="formula" data-traces="gr consciousness entropy">
+    <span class="axiom-id">SYNTHESIS — MODULATOR</span>
+    <div class="axiom-name">T_enhanced = T &times; (0.6 + 0.4 &times; 7Q_score)</div>
+    <div class="axiom-statement">Zero 7Q markers = 60% of truth score. Full 7Q = 100%.</div>
+    <div class="axiom-meaning">
+      The 7Q framework score itself modulates the truth score. This means: using the method makes your work score higher. Not because it's biased — because structured epistemic practice IS better epistemic practice.
+    </div>
+    <div class="formal-box">T_enhanced = T_base &times; (0.6 + 0.4 &times; 7Q_composite)</div>
+  </div>
+
+  <div class="axiom-card" data-id="score_caps" data-kind="formula" data-traces="gr consciousness entropy">
+    <span class="axiom-id">SYNTHESIS — CAPS</span>
+    <div class="axiom-name">Weak Dimensions Cap the Total</div>
+    <div class="axiom-statement">You cannot game this system.</div>
+    <div class="axiom-meaning">
+      If explanatory depth is missing, the score is capped regardless of evidence strength. If kill conditions are absent, the score is capped regardless of everything else. Three hard caps enforce completeness.
+    </div>
+    <div class="kill-box">
+      <div class="kill-header"><i class="fas fa-exclamation-triangle"></i> Hard Caps</div>
+      <div class="formal-box" style="margin:0;border-left-color:var(--red);">ED &lt; 0.3 &rarr; max(T) = 0.70 (no explanation)<br>Q7 &lt; 0.3 &rarr; max(T) = 0.60 (unfalsifiable)<br>Q6 &lt; 0.3 &rarr; max(T) = 0.70 (no consequences)</div>
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="card-header"><i class="fas fa-expand-alt"></i> Selected Node Detail</div>
+    <div id="detailTitle" style="font-family:'Cinzel',serif;font-size:1.1rem;color:#fff;margin-bottom:0.3rem;">Click any axiom card for detail.</div>
+    <div id="detailKind" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.75rem;">&mdash;</div>
+    <div class="detail-grid">
+      <div class="detail-inner">
+        <div class="detail-label">Claim / Function</div>
+        <p id="detailClaim" style="font-size:0.85rem;color:var(--text-dim);line-height:1.65;margin:0;">Select an axiom card above to see its full claim, function within the framework, and worked example.</p>
+      </div>
+      <div class="detail-inner">
+        <div class="detail-label">Formal</div>
+        <div class="formal-box" id="detailEq" style="margin-bottom:0.75rem;">&mdash;</div>
+        <ul id="detailBullets" style="padding-left:1.2rem;font-size:0.82rem;color:var(--text-dim);line-height:1.7;margin:0;"></ul>
+      </div>
+    </div>
+    <div class="trace-note" id="detailTrace">No trace active. Select a trace example in the right sidebar to highlight how a specific claim flows through all seven questions.</div>
+  </div>
+
+</main>
+
+<!-- RIGHT SIDEBAR -->
+<aside class="sidebar">
+  <h3><i class="fas fa-exchange-alt" style="margin-right:0.4rem;"></i>Direction</h3>
+  <div class="dir-btn-row">
+    <button class="dir-btn active" id="dirForward" onclick="setDirection('forward')">&#9654; Forward</button>
+    <button class="dir-btn" id="dirReverse" onclick="setDirection('reverse')">&#9664; Reverse</button>
+  </div>
+  <div style="font-size:0.78rem;color:var(--text-dim);line-height:1.55;margin-bottom:0.75rem;" id="dirDesc">Forward: Q0 &rarr; Q7. Classify any claim into a structured, testable object.</div>
+
+  <h3 style="margin-top:1.25rem;"><i class="fas fa-crosshairs" style="margin-right:0.4rem;"></i>Trace Example</h3>
+  <select id="traceSelect">
+    <option value="">No trace</option>
+    <option value="gr">General Relativity</option>
+    <option value="consciousness">Consciousness is fundamental</option>
+    <option value="entropy">Entropy = moral decay</option>
+  </select>
+  <button class="action-btn" id="clearTrace" style="justify-content:center;font-size:0.72rem;">Reset trace</button>
+  <div class="trace-note">Highlights how a specific claim flows through all seven questions.</div>
+
+  <h3 style="margin-top:1.25rem;"><i class="fas fa-database" style="margin-right:0.4rem;"></i>Metadata</h3>
+  <div class="meta-row"><span class="meta-label">Method</span><span class="meta-value gold">7Q Framework</span></div>
+  <div class="meta-row"><span class="meta-label">Questions</span><span class="meta-value">Q0&ndash;Q7 + T</span></div>
+  <div class="meta-row"><span class="meta-label">Death conds.</span><span class="meta-value">5</span></div>
+  <div class="meta-row"><span class="meta-label">Score caps</span><span class="meta-value">3</span></div>
+  <div class="meta-row"><span class="meta-label">Domain</span><span class="meta-value">Epistemic Method</span></div>
+  <div class="meta-row"><span class="meta-label">Author</span><span class="meta-value">David Lowe (POF 2828)</span></div>
+  <div class="meta-row"><span class="meta-label">Date</span><span class="meta-value">2026-04-27</span></div>
+
+  <h3 style="margin-top:1.25rem;">Tags</h3>
+  <div style="margin-bottom:0.75rem;">
+    <span style="display:inline-block;font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:0.2rem;background:var(--bg-hover);border:1px solid var(--border);color:var(--text-dim);margin:0.1rem;">7Q-method</span>
+    <span style="display:inline-block;font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:0.2rem;background:var(--bg-hover);border:1px solid var(--border);color:var(--text-dim);margin:0.1rem;">falsification</span>
+    <span style="display:inline-block;font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:0.2rem;background:var(--bg-hover);border:1px solid var(--border);color:var(--text-dim);margin:0.1rem;">epistemology</span>
+    <span style="display:inline-block;font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:0.2rem;background:var(--bg-hover);border:1px solid var(--border);color:var(--text-dim);margin:0.1rem;">truth-score</span>
+    <span style="display:inline-block;font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:0.2rem;background:var(--bg-hover);border:1px solid var(--border);color:var(--text-dim);margin:0.1rem;">isomorphism</span>
+    <span style="display:inline-block;font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:0.2rem;background:var(--bg-hover);border:1px solid var(--border);color:var(--text-dim);margin:0.1rem;">theophysics</span>
+  </div>
+
+  <h3 style="margin-top:1.25rem;">Navigate</h3>
+  <a href="index.html" class="action-btn"><i class="fas fa-home"></i> Axiom Layer Index</a>
+  <a href="axioms.html" class="action-btn"><i class="fas fa-arrow-left"></i> Axioms</a>
+  <a href="definitions.html" class="action-btn"><i class="fas fa-arrow-right"></i> Definitions</a>
+  <a href="../index.html" class="action-btn"><i class="fas fa-globe"></i> Main Site</a>
+</aside>
+
+</div>
+
+<script>
+const details = {
+  q0_precondition:{kind:'Precondition',title:'The inquirer cannot be the ground of inquiry',claim:'Before the first question, there is a posture. You do not arrive decided. You arrive open to whatever the evidence produces, including results that disconfirm your priors. This is not humility as virtue — it is an operational requirement. Every dead framework — positivism, behaviorism, instrumentalism — arrived decided before investigating. Q0 prevents that error mode.',eq:'Q0 ∉ {Q1..Q7} — sits outside the sequence',bullets:['Cannot be scored, only acknowledged.','Historical test: every framework that ossified arrived decided.','Einstein didn\'t set out to disprove Newton — he resolved a genuine tension.','Planck didn\'t want quanta — the data forced him.']},
+  q0_humility:{kind:'Operational',title:'Arrive open or don\'t arrive at all',claim:'Q0 is the silence before the first letter. The empty soil before any seed lands. Its function is to create a moment of reflection before inquiry begins. The posture shapes what grows.',eq:'posture(decided) → dead framework | posture(open) → breakthrough potential',bullets:['Not philosophical ornament — operational check.','Prevents: positivism (decided metaphysics meaningless before investigating), behaviorism (decided consciousness irrelevant before measuring).','Weakest operational element — non-enforceable. Honest about this.']},
+  q1_classify:{kind:'Identity',title:'Name it. Type it. Tier it.',claim:'Q1 creates the object. Forces the inquirer to name the claim, classify its type, and assign it a tier. Prevents category confusion — the error that occurs when a descriptive claim is treated as causal, or a hypothesis is treated as an axiom.',eq:'undefined → defined',bullets:['Types: causal, descriptive, ontological, mathematical, predictive, mechanistic, normative.','Tiers: foundational, derived, constraint, support, connection.','Misclassification at Q1 propagates through every subsequent question.','Sub-Q: Has it been named before — and does that name carry assumptions you haven\'t verified?']},
+  q1_tier:{kind:'Hierarchy',title:'Where does it sit in the knowledge hierarchy?',claim:'A claim\'s tier determines how it should be tested. Foundational claims need different kill conditions than derived claims. A hypothesis treated as an axiom will never be traced to its dependencies because axioms don\'t have dependencies — they ARE dependencies.',eq:'tier(claim) → {foundational, derived, constraint, support, connection}',bullets:['Foundational: axiom, postulate, definition.','Derived: theorem, corollary, hypothesis.','Constraint: boundary condition.','Support: evidence bundle.','Connection: bridge, relationship.']},
+  q1_gr:{kind:'GR Example',title:'GR is causal, not descriptive',claim:'Standard textbook presentation treats GR as a description of spacetime geometry. Q1 reclassifies it: GR asserts that mass-energy CAUSES curvature. That\'s a causal claim — a stronger commitment than "spacetime is curved." The reclassification immediately sharpens the kill conditions.',eq:'classify(GR) = causal > descriptive',bullets:['Causal means: removing the cause should remove the effect.','This is testable in ways "descriptive" is not.','The reclassification was not expected — Q1 surfaced it.']},
+  q2_primary:{kind:'Domain',title:'Anchor in domain and scale',claim:'Q2 places the claim in conceptual space. Primary domain, additional domains, scale of operation. The critical question: does this claim appear in more than one domain?',eq:'defined → located',bullets:['Domains: physics, theology, consciousness, info theory, math, biology, economics, social science.','Scale: quantum, molecular, neural, individual, social, civilizational, cosmic, universal.','Cross-domain presence triggers the isomorphism test.']},
+  q2_iso:{kind:'Isomorphism Test',title:'Analogy or structural identity?',claim:'If the same structural relationships hold when you swap the domain labels — if the mathematics preserves topology, boundary conditions, and conservation laws under variable substitution — that\'s not analogy. That\'s isomorphism. Analogies suggest similarity. Isomorphisms demonstrate structural identity.',eq:'iso(A,B) iff ∀ relations R: R_A ↔ R_B under variable substitution',bullets:['Analogy: "gravity is like love" — metaphorical, non-constraining.','Isomorphism: "the same tensor equations describe both" — structural, prediction-constraining.','The distinction is critical: isomorphisms constrain predictions in both domains.']},
+  q2_gr:{kind:'GR Example',title:'Riemannian geometry exists independently',claim:'The mathematical substrate GR depends on — Riemannian geometry — appears independently in machine learning (manifold learning), economics (curved utility surfaces), and information theory (Fisher information geometry). The soil is more universal than the seed planted in it.',eq:'Riemannian geometry: physics ∩ ML ∩ economics ∩ info theory → ISO confirmed',bullets:['Not analogy — the same mathematics operates in all four domains.','This means GR\'s mathematical foundation is NOT physics-specific.','Cross-domain structural identity confirmed.']},
+  q3_precision:{kind:'Precision',title:'One sentence. No hedging.',claim:'Q3 forces the claim into a single precise statement. No qualifiers, no escape routes. Classify by certainty level and scope. The opponent restatement test: can a serious, informed opponent restate your claim accurately? If not, it\'s not precise enough to test.',eq:'located → stated',bullets:['Certainty: proven, well-supported, tentative, speculative.','Scope: universal, domain-specific, context-dependent.','The opponent restatement test catches vagueness other checks miss.']},
+  q3_negation:{kind:'Negation',title:'Every claim carries its own death warrant',claim:'Q3 auto-generates the logical opposite of the claim. The negation is testable. If the negation decomposes the original into independently testable components, you\'ve found bundled claims that were hidden inside a single statement.',eq:'¬(A ∧ B) = ¬A ∨ ¬B — negation splits bundled claims',bullets:['This is a mechanical operation, not a judgment call.','The negation reveals the claim\'s internal structure.','Bundled claims are the most common hidden vulnerability.']},
+  q3_gr:{kind:'GR Example',title:'Negation splits GR into two claims',claim:'"Mass-energy does NOT curve spacetime, OR objects do NOT follow geodesics." The negation reveals GR is actually two claims bundled together, each independently killable. Most treatments present GR as unified — Q3 decomposed it automatically.',eq:'¬GR = ¬(curvature causation) ∨ ¬(geodesic following)',bullets:['Two independently testable components found.','This was not anticipated — the method surfaced it.','Suggests general utility for decomposing complex theories.']},
+  q4_ps:{kind:'Channel 1: PS',title:'Phenomenon Strength',claim:'What do we reliably observe? This is what science already does well. Measurement, replication, signal detection. The rain that falls on the tree.',eq:'PS = reproducibility×0.4 + effect_size×0.3 + measurement_quality×0.3',bullets:['Reproducibility weighted highest — can it be repeated?','Effect size — how strong is the signal?','Measurement quality — are the instruments adequate?']},
+  q4_ed:{kind:'Channel 2: ED',title:'Explanatory Depth',claim:'Do we understand WHY? This is what science systematically avoids. Every dead framework refused this question. Every breakthrough came from someone who held it. The sunlight that tells the tree which direction to grow.',eq:'ED = mechanism_clarity×0.4 + constraint_consistency×0.3 + scope×0.3',bullets:['THE why-penalty channel. ED = 0 caps evidence at 50%.','Mechanism clarity — do we know HOW it works?','Pre-1927 scientists who asked WHY moved the needle.','Post-1927 instrumentalism correlates with fragmentation.']},
+  q4_ec:{kind:'Channel 3: EC',title:'Experiential Coherence',claim:'Does it produce stable structure in lived systems? Not "I feel strongly." Does the evidence produce consistent downstream effects across time, behavior, and agents? The soil moisture the roots actually draw from.',eq:'EC = consistency×.25 + stability×.25 + transformation×.25 + pattern×.25',bullets:['Internal consistency — does it contradict itself over time?','Longitudinal stability — does the effect persist?','Behavioral transformation — does it change how people act?','Intersubjective pattern — do multiple observers report the same structure?']},
+  q4_formula:{kind:'Formula',title:'The Completeness Factor',claim:'The three channels multiply, not add. You can\'t compensate for zero in one channel by maxing another. A tree with infinite rain but no sunlight dies. A tree with perfect sunlight but no water dies.',eq:'CF = (0.5 + 0.5×ED) × (0.5 + 0.5×EC)\nE_final = PS × CF',bullets:['ED=0, EC=0 → CF=0.25 → evidence capped at 25%.','ED=1, EC=1 → CF=1.0 → full credit earned.','The why-penalty is the signature feature.','Observed ≠ Explained. Repeatable ≠ Understood.']},
+  q4_competing:{kind:'Critical Sub-Q',title:'Could this evidence support a competing model?',claim:'If the same evidence equally supports multiple models, it doesn\'t distinguish between them. It supports a class of theories, not a specific one. This is not weakness — it\'s information about discriminating power.',eq:'E_discriminating = E_final × (1 − competing_model_fit)',bullets:['Most evidence in most fields supports multiple models.','The question is not "does evidence exist?" but "does it distinguish?"','Q4 forces this question explicitly.']},
+  q4_gr1:{kind:'GR Evidence',title:'Mercury perihelion precession',claim:'43 arcseconds of precession predicted exactly by GR. No competing model matches this specific quantitative prediction.',eq:'Δφ = 43.0" ± 0.1" per century (observed = predicted)',bullets:['First confirmed prediction of GR.','No competing model matches the exact value.']},
+  q4_gr2:{kind:'GR Evidence',title:'Gravitational lensing',claim:'Light bending around massive objects. First confirmed by Eddington in 1919 during solar eclipse. Confirmed thousands of times since.',eq:'θ = 4GM/(c²b) (deflection angle)',bullets:['Eddington 1919 — the experiment that made Einstein famous.','Now used routinely in astronomy (gravitational lensing surveys).']},
+  q4_gr3:{kind:'GR Evidence',title:'Gravitational waves',claim:'Ripples in spacetime detected by LIGO in 2015. Waveform matched GR predictions to extraordinary precision.',eq:'h(t) ∝ (Mc)^(5/3) f(t)^(2/3) — chirp waveform',bullets:['LIGO 2015 — first direct detection.','Waveform matched numerical relativity simulations.','Nobel Prize 2017.']},
+  q4_gr4:{kind:'GR Evidence',title:'GPS time dilation',claim:'GPS satellites must correct for relativistic time dilation. Without GR corrections, GPS would drift by ~10 km per day.',eq:'Δt_GR ≈ 45 μs/day (gravitational) − 7 μs/day (velocity) = +38 μs/day net',bullets:['Operational daily confirmation of GR.','Not an experiment — a working engineering system.']},
+  q5_chain:{kind:'Chain Terminus',title:'Where does the chain end?',claim:'Q5 traces the dependency chain all the way down. Where does it terminate? Axiom (self-evident, not derived) · Brute fact (accepted without proof) · Circularity (loops back — structural vulnerability) · Open (never terminates — incomplete).',eq:'supported → grounded',bullets:['Axiom terminus = solid ground.','Brute fact terminus = honest but ungrounded.','Circular terminus = FLAGGED as structural vulnerability.','Open terminus = FLAGGED as incomplete.']},
+  q5_fragility:{kind:'Fragility',title:'If this foundation fails, what happens?',claim:'For each dependency: if it fails, does the entire claim collapse immediately, degrade gracefully, or survive independently? This produces a fragility map — the equivalent of a structural engineering load test applied to ideas.',eq:'fragility(dep) → {immediate_collapse, graceful_degradation, independent_survival}',bullets:['Immediate collapse = critical dependency.','Graceful degradation = the claim still partially works.','Independent survival = the dependency wasn\'t actually needed.']},
+  q5_gr:{kind:'GR Example',title:'Hidden dependency: smooth manifold assumption',claim:'GR assumes spacetime is a smooth, continuous manifold. At the Planck scale (~10⁻³⁵ m), spacetime might be discrete. This hidden root has been driving unsolved physics for a century. Q5 surfaced it in one question.',eq:'GR depends on: equivalence principle, Riemannian geometry, c=const, E-mom conservation, smooth manifold',bullets:['Chain terminus: equivalence principle = axiom (solid).','Hidden dependency: smooth manifold = unverified assumption.','This is the root of the quantum gravity problem.','Standard textbooks don\'t flag this as a dependency.']},
+  q6_predictions:{kind:'Predictions',title:'What must be true if this claim is true?',claim:'Q6 separates confirmed predictions from untested predictions. The ratio is a direct measure of generative maturity. A claim that forces nothing downstream explains nothing — it occupies conceptual space without generating new knowledge.',eq:'grounded → generative',bullets:['Confirmed/untested ratio = generative maturity metric.','A claim with 0 predictions = decorative, not productive.','Q6 is where isomorphisms are born — consequences appearing in other domains.']},
+  q6_crossdomain:{kind:'Cross-Domain',title:'Where do consequences land in other fields?',claim:'If a consequence of the claim appears in a domain other than its primary domain, and preserves structural relationships under variable substitution, an isomorphism candidate has been detected. This loops back to Q2 for verification.',eq:'Q6 consequence ∈ domain_B → flag for Q2 isomorphism test',bullets:['This is the discovery mechanism for cross-domain connections.','Standard disciplinary boundaries hide these connections.','The framework makes them structurally visible.']},
+  q6_gr:{kind:'GR Example',title:'GR bore fruit its planter didn\'t foresee',claim:'Black holes, gravitational waves, GPS corrections — all forced by the equations, not predicted by Einstein himself. The math generated consequences the author didn\'t plant.',eq:'GR → {black holes, grav waves, GPS, frame dragging, ...}',bullets:['Black holes: Schwarzschild 1916 (not Einstein).','Gravitational waves: predicted but Einstein doubted them.','GPS: practical engineering consequence nobody anticipated.','4 major consequences, all confirmed.']},
+  q7_self:{kind:'Death Condition #1',title:'Self-refutation',claim:'The claim destroys itself when stated. The denial presupposes what it denies. Example: "There is no truth" is itself a truth claim. "Logic is unreliable" requires logic to state.',eq:'P → ¬P (self-refuting)',bullets:['The fastest death condition to check.','If the claim self-refutes, nothing else matters.','Many philosophical positions fail here silently.']},
+  q7_regress:{kind:'Death Condition #2',title:'Infinite regress',claim:'The claim pushes the question backward without ever resolving it. Each answer generates a new instance of the same question. "Who created the creator?" is the classic example.',eq:'answer(Q) → new instance of Q → ∞',bullets:['Not the same as a deep dependency chain.','Regress = the chain never terminates by design.','Some frameworks embrace this — the 7Q system flags it.']},
+  q7_empirical:{kind:'Death Condition #3',title:'Empirical contradiction',claim:'The claim contradicts observed data. This is the traditional mode of falsification — the one Popper formalized. Necessary but not sufficient alone: a claim can survive empirical testing and still fail on other conditions.',eq:'prediction(claim) ≠ observation → falsified',bullets:['The only death condition the traditional method recognizes.','The 7Q system adds four more.','Empirical contradiction is necessary but not sufficient.']},
+  q7_logical:{kind:'Death Condition #4',title:'Logical incoherence',claim:'The claim contradicts something already established in its own chain — a prior dependency, a forced consequence, or itself at a different point in the argument.',eq:'claim ∧ ¬(consequence of claim) → incoherent',bullets:['Different from self-refutation (which is immediate).','This catches delayed contradictions.','Often invisible until the full chain is traced.']},
+  q7_explanatory:{kind:'Death Condition #5',title:'Explanatory failure',claim:'The claim cannot answer forced downstream questions from Q6. It stops generating. It runs out of road. Kuhn described this as anomaly accumulation — the 7Q system formalizes it.',eq:'Q6(claim) → ∅ (no downstream consequences)',bullets:['The Kuhnian death condition, formalized.','A theory that stops generating is dying.','Different from empirical failure — the data might still fit.']},
+  q7_gr1:{kind:'Survived',title:'Light bends around mass',claim:'Confirmed since Eddington 1919. Replicated thousands of times. No anomalies detected.',eq:'θ_observed = θ_predicted ± measurement error',bullets:['Kill condition: light does NOT bend. Status: SURVIVED.']},
+  q7_gr2:{kind:'Survived',title:'Gravitational waves exist',claim:'LIGO 2015. Waveform matched numerical relativity predictions to extraordinary precision.',eq:'h_observed matches h_NR within detector sensitivity',bullets:['Kill condition: gravitational waves do NOT exist. Status: SURVIVED.']},
+  q7_gr3:{kind:'Survived',title:'GPS needs relativistic correction',claim:'Operational daily. Without corrections, GPS drifts ~10 km/day. The correction works.',eq:'GPS_corrected - GPS_uncorrected ≈ 10 km/day drift',bullets:['Kill condition: GPS does NOT need GR correction. Status: SURVIVED.']},
+  q7_gr4:{kind:'STILL LIVE',title:'Singularity problem — open kill condition',claim:'GR produces infinities at black hole centers and the Big Bang origin. This is not "needs more work" — it\'s a structural failure at extreme conditions. Connects directly to Q5\'s hidden dependency (smooth manifold assumption).',eq:'R_μν → ∞ at r = 0 (singularity)',bullets:['Kill condition: GR cannot handle singularities. Status: STILL LIVE.','This is the open wound.','Connects directly to Q5 (smooth manifold dependency).','The 7Q method traced the connection in two questions.']},
+  q7_adversarial:{kind:'Adversarial Test',title:'Has anyone actually tried to kill it?',claim:'A claim that survived adversarial testing by informed opponents is categorically different from one examined only by sympathetic parties. The system tracks this distinction explicitly.',eq:'adversarial_tested: true/false (tracked)',bullets:['Most claims in most fields have NOT been adversarially tested.','Surviving sympathetic review ≠ surviving hostile review.','The 7Q system requires this field to be declared.']},
+  score_formula:{kind:'Truth Score',title:'T = w₁·S + w₂·E + w₃·L + w₄·D + w₅·P + w₆·C',claim:'Six variables, all derived from 7Q fields. S = Survivability (Q7). E = Evidence (Q4 E_final with why-penalty). L = Logic (Q3 precision × Q4 type). D = Dependencies (Q5 stability). P = Predictions (Q6 confirmed ratio). C = Coherence (Q2 cross-domain).',eq:'T = Σ wᵢ · Vᵢ where V ∈ {S, E, L, D, P, C}',bullets:['Every variable comes from fields the user already filled.','No external judgment needed — the math handles it.','Maps to existing unified_scorer.py: T=χ, confidence=κ, cluster variance=ρ.']},
+  score_enhanced:{kind:'Modulator',title:'T_enhanced = T × (0.6 + 0.4 × 7Q_score)',claim:'The 7Q framework score itself modulates the truth score. A document with zero 7Q markers keeps 60% of its score. Full 7Q presence amplifies to 100%. The framework rewards structured epistemic practice.',eq:'T_enhanced = T_base × (0.6 + 0.4 × 7Q_composite)',bullets:['This means: using the method makes your work score higher.','Not because it\'s biased — because structured inquiry IS better inquiry.']},
+  score_caps:{kind:'Caps',title:'Weak dimensions cap the total',claim:'You cannot game this system by maxing one dimension and ignoring others. If explanatory depth is missing, the score is capped regardless of evidence strength. If kill conditions are absent, the score is capped regardless of everything else.',eq:'if ED < 0.3 → max(T) = 0.70\nif Q7 < 0.3 → max(T) = 0.60\nif Q6 < 0.3 → max(T) = 0.70',bullets:['The caps enforce completeness.','A paper with perfect evidence but no kill conditions caps at 60%.','A paper with perfect kill conditions but no explanation caps at 70%.','You need all dimensions present for full credit.']}
+};
+
+// Click to detail
+const cards = [...document.querySelectorAll('.axiom-card[data-id]')];
+const detailKind = document.getElementById('detailKind');
+const detailTitle = document.getElementById('detailTitle');
+const detailClaim = document.getElementById('detailClaim');
+const detailEq = document.getElementById('detailEq');
+const detailBullets = document.getElementById('detailBullets');
+const detailTrace = document.getElementById('detailTrace');
+
+cards.forEach(card => {
+  card.addEventListener('click', () => {
+    const d = details[card.dataset.id];
+    if (!d) return;
+    detailKind.textContent = d.kind;
+    detailTitle.textContent = d.title;
+    detailClaim.textContent = d.claim;
+    detailEq.textContent = d.eq;
+    detailBullets.innerHTML = d.bullets.map(x => `<li>${x}</li>`).join('');
+    document.getElementById('detailPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+});
+
+// Layer filters
+function applyLayerFilters() {
+  const on = new Set([...document.querySelectorAll('[data-layer-toggle]')].filter(i => i.checked).map(i => i.dataset.layerToggle));
+  cards.forEach(c => c.classList.toggle('hidden-layer', !on.has(c.dataset.kind)));
+}
+[...document.querySelectorAll('[data-layer-toggle]')].forEach(i => i.addEventListener('change', applyLayerFilters));
+document.getElementById('showAll').addEventListener('click', () => {
+  document.querySelectorAll('[data-layer-toggle]').forEach(i => i.checked = true);
+  applyLayerFilters();
+});
+document.getElementById('showCore').addEventListener('click', () => {
+  document.querySelectorAll('[data-layer-toggle]').forEach(i => {
+    i.checked = ['identity','assertion','evidence','dependency','consequence','falsification'].includes(i.dataset.layerToggle);
+  });
+  applyLayerFilters();
+});
+applyLayerFilters();
+
+// Trace
+const traceSelect = document.getElementById('traceSelect');
+function applyTrace() {
+  const val = traceSelect.value;
+  cards.forEach(c => {
+    c.classList.remove('trace-hit', 'trace-dim');
+    if (!val) return;
+    const traces = (c.dataset.traces || '').split(/\s+/).filter(Boolean);
+    if (traces.includes(val)) c.classList.add('trace-hit');
+    else c.classList.add('trace-dim');
+  });
+  const traceNames = {gr:'General Relativity', consciousness:'Consciousness is fundamental', entropy:'Entropy = moral decay'};
+  detailTrace.textContent = val ? `Trace active: ${traceNames[val] || val}` : 'No trace active. Select a trace example to highlight how a specific claim flows through all seven questions.';
+}
+traceSelect.addEventListener('change', applyTrace);
+document.getElementById('clearTrace').addEventListener('click', () => { traceSelect.value = ''; applyTrace(); });
+
+// Direction toggle
+function setDirection(dir) {
+  document.getElementById('dirForward').classList.toggle('active', dir === 'forward');
+  document.getElementById('dirReverse').classList.toggle('active', dir === 'reverse');
+  document.getElementById('dirDesc').innerHTML = dir === 'forward'
+    ? 'Forward: Q0 &rarr; Q7. Classify any claim into a structured, testable object.'
+    : 'Reverse: Q7 &rarr; Q0. Prove by exhaustive elimination &mdash; identity earned last.';
+}
+</script>
+
+<script src="/components/site-shell.js" data-active-tab="academic" data-series-href="/Axiom%20Layer/7Q%20Axioms.html" data-audio-slug="7q-axioms"></script>
+</body>
+</html>

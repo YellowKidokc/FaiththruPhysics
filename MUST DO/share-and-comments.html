@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Share &amp; Comments Components — Theophysics Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root{
+  --bg:#0a0a0a;
+  --surface:#0f0f0f;
+  --surface-light:#1a1a1a;
+  --surface-hover:#2a2a2a;
+  --border:#333;
+  --text-primary:#e0e0e0;
+  --text-secondary:#a0a0a0;
+  --text-muted:#666;
+  --highlight:#d4af37;
+  --highlight-bright:#e8c84a;
+  --highlight-dim:#a08020;
+  --blue:#4a9eff;
+  --teal:#2dd4bf;
+  --purple:#a855f7;
+  --red:#ef4444;
+  --green:#22c55e;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-primary);line-height:1.65;padding:0;}
+.serif{font-family:'Crimson Text',serif;}
+.display{font-family:'Oswald',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+/* ══════════════════════════════════════════════════════════
+   COMPONENT 1: SHARE BAR
+   Floating or inline share buttons.
+   Uses native Web Share API on mobile, fallback links on desktop.
+   ══════════════════════════════════════════════════════════ */
+
+.share-bar{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  padding:.75rem 0;
+}
+
+.share-bar .share-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-right:.25rem;
+}
+
+.share-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  border-radius:.4rem;
+  border:1px solid var(--border);
+  background:var(--surface-light);
+  color:var(--text-secondary);
+  font-size:.9rem;
+  cursor:pointer;
+  transition:all .2s ease;
+  text-decoration:none;
+}
+.share-btn:hover{
+  border-color:var(--highlight);
+  color:var(--highlight);
+  background:rgba(212,175,55,.06);
+  transform:translateY(-1px);
+}
+
+/* Platform-specific hover colors */
+.share-btn.x:hover{color:#fff;border-color:#fff;}
+.share-btn.facebook:hover{color:#1877f2;border-color:#1877f2;}
+.share-btn.linkedin:hover{color:#0a66c2;border-color:#0a66c2;}
+.share-btn.reddit:hover{color:#ff4500;border-color:#ff4500;}
+.share-btn.email:hover{color:var(--teal);border-color:var(--teal);}
+.share-btn.copy:hover{color:var(--green);border-color:var(--green);}
+
+/* Copy feedback */
+.share-btn.copy.copied{
+  color:var(--green);
+  border-color:var(--green);
+  background:rgba(34,197,94,.1);
+}
+
+/* Floating variant — fixed position on right edge */
+.share-floating{
+  position:fixed;
+  right:1rem;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:50;
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
+  padding:.5rem;
+  background:rgba(15,15,15,.9);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+}
+.share-floating .share-label{
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  margin:0 0 .25rem;
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPONENT 2: COMMENT SECTION
+   Simple form that posts to Cloudflare Workers KV or D1.
+   No third-party deps. Self-hosted.
+   ══════════════════════════════════════════════════════════ */
+
+.comments-section{
+  border-top:1px solid var(--border);
+  padding:2.5rem 0;
+  margin-top:3rem;
+}
+
+.comments-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:1.5rem;
+}
+
+.comments-header h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.4rem;
+  color:white;
+}
+
+.comments-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--highlight);
+  background:rgba(212,175,55,.1);
+  padding:.25rem .6rem;
+  border-radius:.25rem;
+  border:1px solid rgba(212,175,55,.2);
+}
+
+/* Comment form */
+.comment-form{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.6rem;
+  padding:1.25rem;
+  margin-bottom:2rem;
+}
+
+.comment-form .form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.75rem;
+  margin-bottom:.75rem;
+}
+
+.comment-form input,
+.comment-form textarea{
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:.4rem;
+  padding:.6rem .8rem;
+  font-family:'Inter',sans-serif;
+  font-size:.85rem;
+  color:var(--text-primary);
+  outline:none;
+  transition:border-color .2s;
+}
+.comment-form input:focus,
+.comment-form textarea:focus{
+  border-color:var(--highlight);
+}
+.comment-form input::placeholder,
+.comment-form textarea::placeholder{
+  color:var(--text-muted);
+}
+
+.comment-form textarea{
+  min-height:100px;
+  resize:vertical;
+  margin-bottom:.75rem;
+  line-height:1.5;
+}
+
+.comment-form .form-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.comment-form .form-note{
+  font-size:.7rem;
+  color:var(--text-muted);
+}
+
+.comment-submit{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  padding:.55rem 1.25rem;
+  background:rgba(212,175,55,.12);
+  border:1px solid rgba(212,175,55,.3);
+  border-radius:.4rem;
+  color:var(--highlight);
+  font-family:'Inter',sans-serif;
+  font-size:.8rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .2s;
+}
+.comment-submit:hover{
+  background:rgba(212,175,55,.2);
+  border-color:var(--highlight);
+}
+.comment-submit:active{transform:scale(.97);}
+
+/* Individual comment */
+.comment{
+  border-left:2px solid var(--border);
+  padding:.75rem 0 .75rem 1.25rem;
+  margin-bottom:1rem;
+  transition:border-color .2s;
+}
+.comment:hover{border-color:var(--highlight);}
+
+.comment-meta{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  margin-bottom:.4rem;
+}
+
+.comment-avatar{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--surface-hover);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--highlight);
+  font-size:.65rem;
+  font-weight:700;
+  flex-shrink:0;
+}
+
+.comment-name{
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--text-primary);
+}
+
+.comment-date{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;
+  color:var(--text-muted);
+}
+
+.comment-body{
+  font-size:.88rem;
+  color:var(--text-secondary);
+  line-height:1.6;
+}
+
+/* Reply button */
+.comment-reply{
+  display:inline-flex;
+  align-items:center;
+  gap:.3rem;
+  margin-top:.4rem;
+  font-size:.7rem;
+  color:var(--text-muted);
+  background:none;
+  border:none;
+  cursor:pointer;
+  transition:color .2s;
+}
+.comment-reply:hover{color:var(--highlight);}
+
+/* Nested reply */
+.comment-replies{
+  margin-left:1.5rem;
+  border-left:1px solid rgba(255,255,255,.04);
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPONENT 3: REACTION BAR (lightweight alternative)
+   Quick emoji reactions instead of full comments.
+   ══════════════════════════════════════════════════════════ */
+
+.reaction-bar{
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  padding:.75rem 0;
+  border-top:1px solid rgba(255,255,255,.04);
+  margin-top:1.5rem;
+}
+
+.reaction-bar .reaction-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-right:.5rem;
+}
+
+.reaction-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.3rem;
+  padding:.35rem .6rem;
+  border-radius:9999px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text-secondary);
+  font-size:.8rem;
+  cursor:pointer;
+  transition:all .2s;
+  user-select:none;
+}
+.reaction-btn:hover{
+  border-color:var(--highlight);
+  background:rgba(212,175,55,.06);
+}
+.reaction-btn.active{
+  border-color:var(--highlight);
+  background:rgba(212,175,55,.1);
+  color:var(--highlight);
+}
+.reaction-btn .count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  color:var(--text-muted);
+}
+.reaction-btn.active .count{color:var(--highlight);}
+
+/* ══════════════════════════════════════════════════════════
+   DEMO STYLES
+   ══════════════════════════════════════════════════════════ */
+.demo-wrapper{max-width:780px;margin:0 auto;padding:2rem;}
+.demo-section{margin-bottom:4rem;}
+.demo-label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight);margin-bottom:.75rem;}
+.demo-section h2{font-family:'Crimson Text',serif;font-size:1.6rem;color:white;margin-bottom:.3rem;}
+.demo-section .desc{color:var(--text-secondary);font-size:.85rem;margin-bottom:1.5rem;max-width:650px;}
+.demo-divider{border:none;border-top:1px solid var(--border);margin:3rem 0;}
+</style>
+</head>
+<body>
+
+<div class="demo-wrapper">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  COMPONENT 1: SHARE BAR (inline)                  -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="demo-section">
+  <div class="demo-label">Component 1 of 3</div>
+  <h2>Share Bar — Inline</h2>
+  <p class="desc">Sits at the end of an article or under the title. Uses native Web Share API on mobile, direct links on desktop.</p>
+
+  <div class="share-bar">
+    <span class="share-label">Share</span>
+    <a class="share-btn x" href="#" title="Share on X" onclick="shareX(event)">
+      <i class="fab fa-x-twitter"></i>
+    </a>
+    <a class="share-btn facebook" href="#" title="Share on Facebook" onclick="shareFB(event)">
+      <i class="fab fa-facebook-f"></i>
+    </a>
+    <a class="share-btn linkedin" href="#" title="Share on LinkedIn" onclick="shareLI(event)">
+      <i class="fab fa-linkedin-in"></i>
+    </a>
+    <a class="share-btn reddit" href="#" title="Share on Reddit" onclick="shareReddit(event)">
+      <i class="fab fa-reddit-alien"></i>
+    </a>
+    <a class="share-btn email" href="#" title="Share via Email" onclick="shareEmail(event)">
+      <i class="fas fa-envelope"></i>
+    </a>
+    <button class="share-btn copy" title="Copy link" onclick="copyLink(this)">
+      <i class="fas fa-link"></i>
+    </button>
+  </div>
+</div>
+
+<hr class="demo-divider"/>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  COMPONENT 1b: SHARE BAR (floating)               -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="demo-section">
+  <div class="demo-label">Variant</div>
+  <h2>Share Bar — Floating Sidebar</h2>
+  <p class="desc">Fixed to the right edge of the viewport. Always accessible while reading. Hides below 1024px width.</p>
+
+  <!-- This would be position:fixed in production. Showing inline for demo -->
+  <div class="share-floating" style="position:relative;right:auto;top:auto;transform:none;display:inline-flex;flex-direction:row;">
+    <a class="share-btn x" href="#"><i class="fab fa-x-twitter"></i></a>
+    <a class="share-btn facebook" href="#"><i class="fab fa-facebook-f"></i></a>
+    <a class="share-btn linkedin" href="#"><i class="fab fa-linkedin-in"></i></a>
+    <a class="share-btn reddit" href="#"><i class="fab fa-reddit-alien"></i></a>
+    <a class="share-btn email" href="#"><i class="fas fa-envelope"></i></a>
+    <button class="share-btn copy" onclick="copyLink(this)"><i class="fas fa-link"></i></button>
+  </div>
+  <p style="font-size:.75rem;color:var(--text-muted);margin-top:.75rem;">In production this floats vertically on the right edge. Shown inline here for preview.</p>
+</div>
+
+<hr class="demo-divider"/>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  COMPONENT 2: COMMENT SECTION                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="demo-section">
+  <div class="demo-label">Component 2 of 3</div>
+  <h2>Comment Section</h2>
+  <p class="desc">Self-hosted comments via Cloudflare Workers + KV. No Disqus, no third-party tracking. Form submits to your own endpoint.</p>
+
+  <div class="comments-section" style="border-top:none;margin-top:0;padding-top:0;">
+    <div class="comments-header">
+      <h3>Discussion</h3>
+      <span class="comments-count">3 comments</span>
+    </div>
+
+    <!-- Comment form -->
+    <div class="comment-form">
+      <div class="form-row">
+        <input type="text" placeholder="Your name" />
+        <input type="email" placeholder="Email (not published)" />
+      </div>
+      <textarea placeholder="What's on your mind? Challenge the claims, ask questions, or share what this sparked..."></textarea>
+      <div class="form-footer">
+        <span class="form-note"><i class="fas fa-lock" style="margin-right:.3rem;"></i> Email never shared. Comments moderated.</span>
+        <button class="comment-submit" type="submit">
+          <i class="fas fa-paper-plane"></i> Post Comment
+        </button>
+      </div>
+    </div>
+
+    <!-- Sample comments -->
+    <div class="comment">
+      <div class="comment-meta">
+        <div class="comment-avatar">JR</div>
+        <span class="comment-name">James R.</span>
+        <span class="comment-date">2026-04-10</span>
+      </div>
+      <div class="comment-body">
+        The decoherence curve fitting is genuinely impressive. R&sup2;=0.888 on Genesis genealogies is not something I expected to see. My question: have you tested this against other ancient Near Eastern king lists (Sumerian, Egyptian) to see if the exponential+floor pattern is unique to the biblical data?
+      </div>
+      <button class="comment-reply"><i class="fas fa-reply"></i> Reply</button>
+    </div>
+
+    <div class="comment">
+      <div class="comment-meta">
+        <div class="comment-avatar">SM</div>
+        <span class="comment-name">Sarah M.</span>
+        <span class="comment-date">2026-04-09</span>
+      </div>
+      <div class="comment-body">
+        I'm a physicist and I want to push back on one thing: calling the grace floor "non-negotiable" based on the equilibrium equation. The floor depends on G>0, which is assumed, not derived. You've proven that IF grace exists, it creates a floor. That's different from proving the floor exists. The math is sound but the premise is theological.
+      </div>
+      <button class="comment-reply"><i class="fas fa-reply"></i> Reply</button>
+
+      <!-- Nested reply -->
+      <div class="comment-replies">
+        <div class="comment">
+          <div class="comment-meta">
+            <div class="comment-avatar" style="background:rgba(212,175,55,.15);color:var(--highlight);">DL</div>
+            <span class="comment-name" style="color:var(--highlight);">David Lowe</span>
+            <span class="comment-date">2026-04-09</span>
+          </div>
+          <div class="comment-body">
+            You're absolutely right, and I say so in the audit. The G>0 assumption is the load-bearing theological input. What the math does is show that IF you grant that premise, the consequences are specific, testable, and they match the data. That's the honest boundary: the framework doesn't prove God exists. It proves that IF God exists and acts the way Genesis describes, the physics works out exactly this way.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="demo-divider"/>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  COMPONENT 3: REACTION BAR                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="demo-section">
+  <div class="demo-label">Component 3 of 3</div>
+  <h2>Reaction Bar — Lightweight Alternative</h2>
+  <p class="desc">Quick reactions without the overhead of a full comment section. Good for individual sections or tangent cards.</p>
+
+  <div class="reaction-bar">
+    <span class="reaction-label">React</span>
+    <button class="reaction-btn" onclick="toggleReaction(this)">
+      <span>&#129504;</span>
+      <span class="count">12</span>
+    </button>
+    <button class="reaction-btn" onclick="toggleReaction(this)">
+      <span>&#128293;</span>
+      <span class="count">8</span>
+    </button>
+    <button class="reaction-btn active" onclick="toggleReaction(this)">
+      <span>&#128161;</span>
+      <span class="count">24</span>
+    </button>
+    <button class="reaction-btn" onclick="toggleReaction(this)">
+      <span>&#129300;</span>
+      <span class="count">5</span>
+    </button>
+    <button class="reaction-btn" onclick="toggleReaction(this)">
+      <span>&#128170;</span>
+      <span class="count">15</span>
+    </button>
+  </div>
+</div>
+
+<hr class="demo-divider"/>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  BACKEND REFERENCE                                -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="demo-section">
+  <div class="demo-label">Infrastructure</div>
+  <h2>Backend Wiring</h2>
+  <p class="desc">How to connect these components to Cloudflare Workers.</p>
+
+  <div style="font-size:.85rem;color:var(--text-secondary);line-height:1.8;">
+    <strong style="color:white;">Comments endpoint:</strong><br/>
+    <code style="color:var(--highlight);font-size:.8rem;">POST /api/comments/{paper-slug}</code> — submit a comment<br/>
+    <code style="color:var(--highlight);font-size:.8rem;">GET /api/comments/{paper-slug}</code> — load comments for an article<br/><br/>
+
+    <strong style="color:white;">Reactions endpoint:</strong><br/>
+    <code style="color:var(--highlight);font-size:.8rem;">POST /api/reactions/{paper-slug}/{reaction-type}</code> — toggle a reaction<br/>
+    <code style="color:var(--highlight);font-size:.8rem;">GET /api/reactions/{paper-slug}</code> — load reaction counts<br/><br/>
+
+    <strong style="color:white;">Storage options:</strong><br/>
+    <span style="color:var(--text-muted);">1.</span> Cloudflare KV — simplest, key-value, good for <100 comments/article<br/>
+    <span style="color:var(--text-muted);">2.</span> Cloudflare D1 — SQLite, good for full threading and search<br/>
+    <span style="color:var(--text-muted);">3.</span> Cloudflare Durable Objects — real-time, good for live discussion<br/><br/>
+
+    <strong style="color:white;">Moderation:</strong> Comments go to KV with <code style="color:var(--highlight);">status: "pending"</code>. You approve via a simple admin page or Notion webhook. Only <code style="color:var(--green);">status: "approved"</code> render on the public page.
+  </div>
+</div>
+
+</div><!-- /demo-wrapper -->
+
+<script>
+/* ═══════════════════════════════════════════════════ */
+/*  SHARE FUNCTIONS                                   */
+/* ═══════════════════════════════════════════════════ */
+
+function getShareData(){
+  const title = document.querySelector('meta[property="og:title"]')?.content || document.title;
+  const url = window.location.href;
+  const text = document.querySelector('meta[name="description"]')?.content || '';
+  return { title, url, text };
+}
+
+function shareX(e){
+  e.preventDefault();
+  const d = getShareData();
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(d.title)}&url=${encodeURIComponent(d.url)}`, '_blank', 'width=550,height=420');
+}
+
+function shareFB(e){
+  e.preventDefault();
+  const d = getShareData();
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(d.url)}`, '_blank', 'width=550,height=420');
+}
+
+function shareLI(e){
+  e.preventDefault();
+  const d = getShareData();
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(d.url)}`, '_blank', 'width=550,height=420');
+}
+
+function shareReddit(e){
+  e.preventDefault();
+  const d = getShareData();
+  window.open(`https://reddit.com/submit?url=${encodeURIComponent(d.url)}&title=${encodeURIComponent(d.title)}`, '_blank', 'width=550,height=620');
+}
+
+function shareEmail(e){
+  e.preventDefault();
+  const d = getShareData();
+  window.location.href = `mailto:?subject=${encodeURIComponent(d.title)}&body=${encodeURIComponent(d.text + '\n\n' + d.url)}`;
+}
+
+function copyLink(btn){
+  navigator.clipboard.writeText(window.location.href).then(()=>{
+    btn.classList.add('copied');
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    setTimeout(()=>{
+      btn.classList.remove('copied');
+      btn.innerHTML = '<i class="fas fa-link"></i>';
+    }, 2000);
+  });
+}
+
+/* Native Web Share API (mobile) */
+function nativeShare(){
+  if(navigator.share){
+    const d = getShareData();
+    navigator.share({ title: d.title, text: d.text, url: d.url });
+  }
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  REACTION TOGGLE                                   */
+/* ═══════════════════════════════════════════════════ */
+
+function toggleReaction(btn){
+  btn.classList.toggle('active');
+  const countEl = btn.querySelector('.count');
+  let count = parseInt(countEl.textContent);
+  countEl.textContent = btn.classList.contains('active') ? count + 1 : count - 1;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/*  COMMENT SUBMIT (stub — wire to your Workers API)  */
+/* ═══════════════════════════════════════════════════ */
+
+document.querySelector('.comment-submit')?.addEventListener('click', function(e){
+  e.preventDefault();
+  const form = this.closest('.comment-form');
+  const name = form.querySelector('input[type="text"]').value.trim();
+  const email = form.querySelector('input[type="email"]').value.trim();
+  const body = form.querySelector('textarea').value.trim();
+
+  if(!name || !body){
+    alert('Name and comment are required.');
+    return;
+  }
+
+  // TODO: POST to /api/comments/{paper-slug}
+  // For now, show confirmation
+  this.innerHTML = '<i class="fas fa-check"></i> Submitted';
+  this.style.background = 'rgba(34,197,94,.15)';
+  this.style.borderColor = 'var(--green)';
+  this.style.color = 'var(--green)';
+
+  setTimeout(()=>{
+    this.innerHTML = '<i class="fas fa-paper-plane"></i> Post Comment';
+    this.style.background = '';
+    this.style.borderColor = '';
+    this.style.color = '';
+    form.querySelector('textarea').value = '';
+  }, 3000);
+});
+</script>
+
+</body>
+</html>

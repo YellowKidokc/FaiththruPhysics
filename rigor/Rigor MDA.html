@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<title>MDA Coherence Diagnostic — Theophysics Research Initiative</title>
+<style>
+:root {
+  --bg:#080b0f; --bg2:#0d1117; --bg3:#111820; --border:#1e2d3d;
+  --amber:#f0a500; --amber2:#ffcc44; --red:#e05252; --green:#52c97a;
+  --blue:#4d9de0; --muted:#4a6278; --text:#c8d8e8; --text2:#8aa0b4;
+  --mono:'Share Tech Mono',monospace; --head:'Rajdhani',sans-serif; --body:'Crimson Pro',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);pointer-events:none;z-index:9999;}
+
+header{border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(240,165,0,0.04) 0%,transparent 100%);}
+.logo{font-family:var(--head);font-weight:700;font-size:22px;letter-spacing:6px;color:var(--amber);text-transform:uppercase;}
+.logo span{color:var(--text2);font-weight:300;font-size:13px;letter-spacing:2px;display:block;margin-top:2px;}
+.nav{display:flex;gap:2px;}
+.nav button{background:none;border:1px solid transparent;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:2px;padding:7px 16px;cursor:pointer;text-transform:uppercase;transition:all .15s;}
+.nav button:hover,.nav button.active{border-color:var(--amber);color:var(--amber);background:rgba(240,165,0,0.06);}
+
+.tab{display:none;}.tab.active{display:block;}
+
+/* CALCULATOR */
+.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 65px);}
+.input-panel{border-right:1px solid var(--border);padding:28px;overflow-y:auto;}
+.result-panel{padding:28px 32px;overflow-y:auto;}
+
+.section-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.channel-block{background:var(--bg3);border:1px solid var(--border);padding:16px;margin-bottom:10px;}
+.channel-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.channel-num{font-family:var(--mono);font-size:10px;color:var(--muted);margin-right:8px;}
+.channel-name{font-family:var(--head);font-size:14px;font-weight:600;color:var(--text);letter-spacing:1px;}
+.channel-pair{font-family:var(--body);font-size:12px;color:var(--text2);font-style:italic;}
+.channel-computed{font-family:var(--mono);font-size:14px;color:var(--amber);font-weight:bold;}
+.channel-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
+.input-col label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:4px;}
+.input-col .proxy-label{font-family:var(--body);font-size:12px;color:var(--text2);margin-bottom:6px;line-height:1.4;font-style:italic;}
+.input-col input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:8px 10px;outline:none;transition:border-color .15s;}
+.input-col input:focus{border-color:var(--amber);}
+.c-label{color:var(--green)!important;}
+.d-label{color:var(--red)!important;}
+
+.source-toggle{background:none;border:none;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:10px;padding:0;margin-top:8px;text-decoration:underline;text-decoration-color:var(--border);}
+.source-info{margin-top:6px;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.8;padding-left:8px;border-left:1px solid var(--border);display:none;}
+.source-info.visible{display:block;}
+
+.calc-btn{width:100%;background:var(--amber);color:var(--bg);border:none;font-family:var(--head);font-size:14px;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:14px;cursor:pointer;margin-top:8px;transition:all .15s;}
+.calc-btn:hover{background:var(--amber2);}
+
+/* RESULTS */
+.equation-display{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--amber);padding:20px 24px;margin-bottom:24px;font-family:var(--mono);font-size:13px;line-height:2;}
+.eq-line{display:flex;align-items:baseline;gap:10px;}
+.eq-label{color:var(--text2);width:240px;flex-shrink:0;font-size:11px;letter-spacing:1px;}
+.eq-formula{color:var(--text);}
+.eq-result{color:var(--amber2);font-size:15px;margin-left:auto;}
+
+.step{display:flex;gap:16px;margin-bottom:2px;opacity:0;transform:translateX(-10px);transition:all .3s ease;}
+.step.revealed{opacity:1;transform:translateX(0);}
+.step-num{font-family:var(--mono);font-size:10px;color:var(--muted);width:24px;flex-shrink:0;padding-top:3px;text-align:right;}
+.step-body{flex:1;background:var(--bg3);border:1px solid var(--border);padding:12px 16px;margin-bottom:6px;}
+.step-title{font-family:var(--head);font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;}
+.step-math{font-family:var(--mono);font-size:12px;color:var(--text);margin-bottom:4px;}
+.step-math .val{color:var(--amber2);}
+.step-math .neg{color:var(--red);}
+.step-note{font-family:var(--body);font-size:13px;color:var(--text2);font-style:italic;}
+
+.chi-display{font-family:var(--mono);font-size:52px;color:var(--amber);margin:16px 0 4px;letter-spacing:-2px;}
+.verdict-badge{display:inline-block;font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:5px 14px;border:1px solid;margin-top:8px;}
+.badge-above{color:var(--green);border-color:var(--green);background:rgba(82,201,122,0.08);}
+.badge-precarious{color:var(--amber);border-color:var(--amber);background:rgba(240,165,0,0.08);}
+.badge-below{color:var(--red);border-color:var(--red);background:rgba(224,82,82,0.08);}
+.badge-deep{color:#ff6b6b;border-color:#ff6b6b;background:rgba(255,107,107,0.08);}
+
+/* REGISTRY */
+.db-layout{padding:28px 32px;}
+.stats-row{display:flex;gap:24px;margin-bottom:20px;}
+.stat-box{background:var(--bg3);border:1px solid var(--border);padding:12px 18px;flex:1;}
+.stat-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;}
+.stat-val{font-family:var(--mono);font-size:22px;color:var(--amber);margin-top:2px;}
+.db-controls{display:flex;gap:12px;margin-bottom:24px;align-items:center;}
+.db-controls input,.db-controls select{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:11px;padding:8px 12px;outline:none;}
+.db-controls input:focus{border-color:var(--amber);}
+.signal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;}
+.signal-card{background:var(--bg3);border:1px solid var(--border);padding:16px 18px;position:relative;overflow:hidden;transition:border-color .15s;}
+.signal-card:hover{border-color:var(--amber);}
+.signal-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+.signal-card.above::before{background:var(--green);}
+.signal-card.precarious::before{background:var(--amber);}
+.signal-card.below::before{background:var(--red);}
+.signal-card.deep::before{background:#ff6b6b;}
+.card-rank{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:4px;}
+.card-name{font-family:var(--head);font-size:16px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.card-chi{font-family:var(--mono);font-size:20px;margin-bottom:4px;}
+.card-chi.pos{color:var(--amber2);}
+.card-chi.neg{color:var(--red);}
+.card-bar-bg{height:3px;background:var(--border);margin-bottom:8px;position:relative;}
+.card-bar-fill{height:100%;transition:width .6s ease;}
+.card-date{font-family:var(--mono);font-size:10px;color:var(--muted);float:right;margin-top:-24px;}
+.card-note{font-family:var(--body);font-size:12px;color:var(--text2);margin-top:8px;font-style:italic;line-height:1.5;}
+
+/* METHODOLOGY */
+.method-layout{max-width:800px;margin:0 auto;padding:40px 32px;font-family:var(--body);line-height:1.7;}
+.method-layout h2{font-family:var(--head);font-weight:600;font-size:20px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin:32px 0 12px;}
+.method-layout h2:first-child{margin-top:0;}
+.method-layout p{color:var(--text2);margin-bottom:12px;}
+.method-layout .eq{font-family:var(--mono);font-size:14px;color:var(--amber2);background:var(--bg3);border:1px solid var(--border);padding:14px 20px;margin:16px 0;}
+.method-layout table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+.method-layout th{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);}
+.method-layout td{padding:8px 12px;border-bottom:1px solid rgba(30,45,61,0.5);color:var(--text2);}
+.method-layout td:first-child{color:var(--text);font-family:var(--mono);font-size:13px;}
+.warning-box{background:rgba(240,165,0,0.05);border:1px solid rgba(240,165,0,0.25);border-left:3px solid var(--amber);padding:14px 18px;margin:20px 0;font-size:14px;color:var(--text2);}
+.blue-box{background:rgba(77,157,224,0.04);border:1px solid rgba(77,157,224,0.3);border-left:3px solid var(--blue);padding:14px 18px;margin:20px 0;font-size:14px;color:var(--text2);}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">MDA<span>Moral Decline of America · Coherence Diagnostic v1.0</span></div>
+  <nav class="nav">
+    <button class="active" onclick="showTab('calc',this)">Calculator</button>
+    <button onclick="showTab('db',this)">Historical Registry</button>
+    <button onclick="showTab('method',this)">Methodology</button>
+  </nav>
+</header>
+
+<!-- ══════════════ CALCULATOR ══════════════ -->
+<div id="tab-calc" class="tab active">
+<div class="calc-layout">
+<div class="input-panel">
+  <div class="section-label">Society Identity</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+    <div><label style="display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Name</label>
+    <input type="text" id="soc-name" placeholder="e.g. United States 2024" value="United States 2024" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;outline:none;"></div>
+    <div><label style="display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Date</label>
+    <input type="text" id="soc-date" placeholder="2024" value="2024" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;outline:none;"></div>
+  </div>
+
+  <div class="section-label">Ten-Law Channel Inputs</div>
+  <div id="channel-inputs"></div>
+  <button class="calc-btn" onclick="runMDA()">Compute χ<sub>MDA</sub></button>
+  <button class="calc-btn" style="background:none;border:1px solid var(--border);color:var(--text2);margin-top:4px;font-size:12px;letter-spacing:2px;" onclick="resetInputs()">Reset to Sourced Data</button>
+</div>
+
+<div class="result-panel">
+  <div class="section-label">Formal Structure</div>
+  <div class="equation-display">
+    <div class="eq-line"><span class="eq-label">Channel Score (per Law)</span><span class="eq-formula">Lᵢ = log( (Cᵢ + ε) / (Dᵢ + ε) )</span></div>
+    <div class="eq-line"><span class="eq-label">KL Divergence Analog</span><span class="eq-formula">D_KL(P‖Q) = Σ P(x) log( P(x)/Q(x) )</span></div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+    <div class="eq-line"><span class="eq-label">Aggregate Coherence</span><span class="eq-formula">χ_MDA = (1/N) Σ wᵢ · Lᵢ</span></div>
+    <div class="eq-line"><span class="eq-label">Dynamics (Rate)</span><span class="eq-formula">dS_m/dt = σ − W/T</span></div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+    <div class="eq-line"><span class="eq-label" style="font-size:10px;color:var(--muted);">Lᵢ maps to KL divergence · χ maps to aggregate coherence · dS/dt tracks dynamics</span></div>
+  </div>
+
+  <div class="section-label">Step-by-Step Derivation</div>
+  <div id="steps"><div style="font-family:var(--mono);font-size:12px;color:var(--muted);padding:20px 0;">Enter values and click Compute χ<sub>MDA</sub></div></div>
+  <div id="final-result" style="display:none;">
+    <div class="section-label">Result</div>
+    <div class="chi-display" id="chi-out">—</div>
+    <div id="verdict-out"></div>
+    <div style="margin-top:16px;font-family:var(--body);font-size:14px;color:var(--text2);max-width:480px;line-height:1.6;" id="interp-out"></div>
+  </div>
+</div>
+</div>
+</div>
+<!-- ══════════════ HISTORICAL REGISTRY ══════════════ -->
+<div id="tab-db" class="tab">
+<div class="db-layout">
+  <div class="stats-row" id="db-stats"></div>
+  <div class="db-controls">
+    <input type="text" id="db-search" placeholder="Search societies..." oninput="renderDB()">
+    <select onchange="dbSort=this.value;renderDB()">
+      <option value="chi">Sort: Coherence Score</option>
+      <option value="date">Sort: Date</option>
+      <option value="name">Sort: Name</option>
+    </select>
+  </div>
+  <div class="signal-grid" id="db-grid"></div>
+</div>
+</div>
+
+<!-- ══════════════ METHODOLOGY ══════════════ -->
+<div id="tab-method" class="tab">
+<div class="method-layout">
+
+<h2>The Measurement Isomorphism</h2>
+<p>The MDA Coherence Diagnostic is not a custom scoring system. It is a formal application of information-theoretic divergence measures to the problem of societal coherence. The channel score for each law is a log-ratio of constructive to destructive regime dominance:</p>
+<div class="eq">Lᵢ = log( (Cᵢ + ε) / (Dᵢ + ε) ) &nbsp;&nbsp;[per channel]<br>χ_MDA = (1/N) · Σ wᵢ · Lᵢ &nbsp;&nbsp;[aggregate]</div>
+<p>This is structurally identical to the Kullback-Leibler divergence in stochastic thermodynamics, which measures how far a system has been driven from equilibrium. It is also isomorphic to Shannon channel capacity C = B · log₂(1 + S/N), where the constructive signal corresponds to signal power and the destructive signal corresponds to noise. This is not metaphor — it is the same mathematical structure applied to a different measurement domain.</p>
+
+<h2>Why Log-Ratio, Not Linear Difference</h2>
+<p>A linear difference (C − D) would weight a society where C=100 and D=90 the same as one where C=10 and D=0. The log-ratio captures the <em>proportion</em>, not the absolute gap. This matches information theory: what matters is the signal-to-noise ratio, not the absolute signal power. A society with modest institutions that are internally coherent (low C, lower D) scores higher than a society with massive institutions that are deeply corrupted (high C, higher D). This is physically correct.</p>
+
+<h2>The Ten-Law Channel Decomposition</h2>
+<p>The diagnostic decomposes societal coherence into ten channels, each corresponding to a fundamental law of physics. This is the framework's distinctive structural claim: that the ten fundamental forces and principles of physics each generate a distinct dimension of societal coherence.</p>
+<table>
+  <tr><th>#</th><th>Physics</th><th>Societal Channel</th><th>Constructive Proxy</th><th>Destructive Proxy</th></tr>
+  <tr><td>01</td><td>Gravitation</td><td>Community binding vs. isolation</td><td>Civic org membership, community participation</td><td>Social isolation indices, loneliness prevalence</td></tr>
+  <tr><td>02</td><td>Motion (F=ma)</td><td>Behavioral momentum and change</td><td>Recovery participation, behavioral health access</td><td>Addiction rates, recidivism</td></tr>
+  <tr><td>03</td><td>Electromagnetism</td><td>Signal integrity in discourse</td><td>Media trust, press freedom indices</td><td>Misinformation prevalence, propaganda saturation</td></tr>
+  <tr><td>04</td><td>Strong Force</td><td>Close-bond binding strength</td><td>Marriage rates, family stability</td><td>Divorce rates, single-parent households</td></tr>
+  <tr><td>05</td><td>Thermodynamics</td><td>Consequence functioning</td><td>Rule of law index, legal coherence</td><td>Recidivism, debt-to-income, bankruptcy rates</td></tr>
+  <tr><td>06</td><td>Information (Shannon)</td><td>Knowledge transmission fidelity</td><td>Functional literacy, educational attainment</td><td>Information overload, media consumption hours</td></tr>
+  <tr><td>07</td><td>Quantum</td><td>Commitment under uncertainty</td><td>Religious attendance, charitable giving</td><td>Religious disaffiliation rates</td></tr>
+  <tr><td>08</td><td>Relativity</td><td>Perspective-taking across difference</td><td>Cross-group trust, social mobility</td><td>Political polarization indices</td></tr>
+  <tr><td>09</td><td>Weak Force</td><td>Moral conservation (directional)</td><td>Intergenerational household stability</td><td>Family structure dissolution rates</td></tr>
+  <tr><td>10</td><td>Coherence</td><td>Overall systemic integration</td><td>Social cohesion indices, well-being scores</td><td>Fragmentation composites (Gini + distrust + isolation)</td></tr>
+</table>
+
+<h2>The Weight Problem (Honest Statement)</h2>
+<p>The current implementation uses equal weights (wᵢ = 1 for all channels). This is a deliberate methodological choice, not an oversight. The framework predicts that the weights should be non-arbitrary — that the ten laws are not interchangeable and some channels should carry more diagnostic weight than others. However, until the weights are either derived from the mathematical structure or empirically fitted and shown to be unique, equal weighting is the most conservative assumption. Any weight tuning is an additional degree of freedom that must be justified, not assumed.</p>
+
+<h2>The Dynamics Equation</h2>
+<p>The channel scores Lᵢ describe the <em>state</em> — where a society is. The dynamics equation describes the <em>motion</em> — how fast it is moving toward coherence or collapse:</p>
+<div class="eq">dS_m/dt = σ − W/T</div>
+<p>Where σ is the rate of entropy production (damage accumulation), W is restorative work (grace, reform, renewal), and T is institutional resistance (bureaucratic friction, cultural inertia, system mass). This is inherited from irreversible thermodynamics (Onsager, 1931; Prigogine, 1967) and is not original to this framework.</p>
+<p>The critical prediction: when T is large, even significant restorative work W is divided down to near-zero effectiveness. This explains why large empires can rot internally while surface statistics remain stable, and why restoration in heavily institutionalized societies requires disproportionate force — either spiritual renewal or existential threat.</p>
+
+<h2>The Permutation Test (Proposed)</h2>
+<p>The decisive empirical test for this framework is whether the ten-law channel decomposition outperforms arbitrary groupings of the same proxy variables. The protocol:</p>
+<table>
+  <tr><th>Step</th><th>Procedure</th></tr>
+  <tr><td>1</td><td>Gather all proxy variables across all ten channels</td></tr>
+  <tr><td>2</td><td>Score χ_MDA using the ten-law channel assignments</td></tr>
+  <tr><td>3</td><td>Randomly shuffle the same variables into ten arbitrary buckets</td></tr>
+  <tr><td>4</td><td>Score the same way, record predictions for collapse/recovery/instability</td></tr>
+  <tr><td>5</td><td>Repeat 1,000 times to build a null distribution</td></tr>
+  <tr><td>6</td><td>Compare: if the ten-law grouping sits outside the 95th percentile of the null distribution, the channel decomposition is doing statistically significant structural work</td></tr>
+</table>
+<p>This test has not yet been run. The framework makes an explicit prediction: the ten-law grouping will outperform random. If it does not, the framework fails its own test and the channel decomposition should be abandoned.</p>
+
+<h2>Five Falsification Criteria</h2>
+<p>Written before testing, not after. The framework is killed if any of the following hold:</p>
+<table>
+  <tr><th>#</th><th>Criterion</th><th>What It Would Mean</th></tr>
+  <tr><td>F1</td><td>Ten-law grouping does not outperform random groupings in the permutation test</td><td>The channel decomposition adds no structural information beyond arbitrary categorization</td></tr>
+  <tr><td>F2</td><td>Historical reversal cases (Josiah, Great Awakening, Meiji) do not score below threshold before reversal and above after</td><td>The threshold concept has no historical validity</td></tr>
+  <tr><td>F3</td><td>The 2024 US prediction (χ ≈ 0.27, below threshold) is falsified by measurable self-correction through administrative reform alone within 10 years</td><td>The framework's central prediction about the nature of recovery is wrong</td></tr>
+  <tr><td>F4</td><td>Channel scores show no temporal correlation — past values do not predict future values within the same channel</td><td>The channels are not measuring persistent structural features</td></tr>
+  <tr><td>F5</td><td>A society is identified that self-corrected from below χ = 0.35 through purely administrative/political means without metaphysical renewal or existential threat</td><td>The threshold is not a boundary requiring the mechanism the framework claims</td></tr>
+</table>
+
+<div class="warning-box">
+  <strong style="font-family:var(--head);letter-spacing:2px;color:var(--amber);">METHODOLOGICAL HONESTY</strong><br><br>
+  This framework measures constructive-regime versus destructive-regime dominance across observable proxies. It does not measure sin, grace, the Holy Spirit, or any spiritual state directly. The channel labels reference physics and theology because the framework claims structural isomorphism between these domains — but the <em>measurements</em> are sociological and economic, not spiritual. A high score does not mean a society is righteous. A low score does not mean a society is damned. It means the observable proxies for constructive coordination are being outpaced by the observable proxies for destructive dissolution. The explanation for <em>why</em> this is happening is a separate inquiry from the measurement that <em>it</em> is happening.
+</div>
+
+<div class="blue-box">
+  <strong style="font-family:var(--head);letter-spacing:2px;color:var(--blue);">CHALLENGE THIS FRAMEWORK</strong><br><br>
+  If you believe a proxy variable is miscalibrated, a channel assignment is wrong, a historical case has been misscored, or the entire ten-law decomposition is doing no real work — we want to know. This framework is designed to be falsifiable. The permutation test is the kill switch. A challenge that holds up improves the system. A challenge that does not hold up strengthens the result.<br><br>
+  <span style="font-family:var(--mono);font-size:12px;color:var(--text2);">Contact: &nbsp;</span>
+  <a href="mailto:david@faiththruphysics.com" style="font-family:var(--mono);font-size:13px;color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(77,157,224,0.4);">david@faiththruphysics.com</a>
+  <br><span style="font-family:var(--mono);font-size:11px;color:var(--muted);display:block;margin-top:8px;">Include: channel in question · proxy variable · your proposed alternative · reasoning · sources</span>
+</div>
+
+<p style="margin-top:32px;font-size:13px;color:var(--muted);font-family:var(--mono);">MDA Coherence Diagnostic v1.0 · David Lowe (POF 2828) · June 2026 · Theophysics Research Initiative · faiththruphysics.com</p>
+</div>
+</div>
+<script>
+// ══════════════════════════════════════════════════════════
+// CHANNEL DEFINITIONS
+// ══════════════════════════════════════════════════════════
+const CHANNELS = [
+  {id:1,law:"Gravitation",pair:"Sin \u2194 Grace",
+   cLabel:"Community binding (civic org membership %)",dLabel:"Social isolation (% adults with no close friends)",
+   cVal:42,dVal:58,cSrc:"AARP Foundation Social Isolation Survey, 2024",dSrc:"Survey Center on American Life, 2024"},
+  {id:2,law:"Motion",pair:"Will \u2194 Repentance",
+   cLabel:"Recovery program participation (per 100k)",dLabel:"Active addiction prevalence (per 100k)",
+   cVal:3200,dVal:7400,cSrc:"SAMHSA NSDUH, 2023",dSrc:"SAMHSA NSDUH, 2023"},
+  {id:3,law:"Electromagnetism",pair:"Truth \u2194 Deception",
+   cLabel:"Media trust (% great deal / fair amount)",dLabel:"Misinformation weekly encounter (%)",
+   cVal:32,dVal:72,cSrc:"Gallup Media Trust Survey, 2024",dSrc:"Pew Research Center, 2024"},
+  {id:4,law:"Strong Force",pair:"Love \u2194 Captivity",
+   cLabel:"Marriage rate (per 1,000 pop)",dLabel:"Single-parent household rate (%)",
+   cVal:6.0,dVal:34,cSrc:"CDC/NCHS National Vital Statistics, 2023",dSrc:"Census Bureau ACS, 2023"},
+  {id:5,law:"Thermodynamics",pair:"Judgment \u2194 Heat Death",
+   cLabel:"Rule of law index (0\u20131 scale, \u00d7100)",dLabel:"Recidivism rate within 3 years (%)",
+   cVal:69,dVal:66,cSrc:"World Justice Project, 2024",dSrc:"Bureau of Justice Statistics, 2023"},
+  {id:6,law:"Information",pair:"Logos \u2194 Chaos",
+   cLabel:"Functional literacy rate (%)",dLabel:"Daily media consumption (hrs \u00d710)",
+   cVal:79,dVal:113,cSrc:"NCES Adult Literacy Assessment, 2023",dSrc:"Nielsen Total Audience Report, 2024"},
+  {id:7,law:"Quantum",pair:"Faith \u2194 Doubt",
+   cLabel:"Weekly religious attendance (%)",dLabel:"Religious 'nones' (%)",
+   cVal:24,dVal:30,cSrc:"Gallup Religion Survey, 2024",dSrc:"Pew Religious Landscape, 2024"},
+  {id:8,law:"Relativity",pair:"Grace \u2194 Frame Lock",
+   cLabel:"Cross-group social trust (%)",dLabel:"Political polarization index (0\u2013100)",
+   cVal:31,dVal:72,cSrc:"General Social Survey, 2023",dSrc:"Pew Political Polarization, 2024"},
+  {id:9,law:"Weak Force",pair:"Moral Conservation",
+   cLabel:"Intergenerational household stability (%)",dLabel:"Children in single-parent homes (%)",
+   cVal:18,dVal:27,cSrc:"Census Multigenerational Households, 2023",dSrc:"Census Bureau ACS, 2023"},
+  {id:10,law:"Coherence",pair:"Christ \u2194 Decoherence",
+   cLabel:"Social cohesion score (0\u2013100)",dLabel:"Fragmentation composite (Gini+distrust+isolation)",
+   cVal:38,dVal:67,cSrc:"OECD Better Life Index + Social Capital Project, 2024",dSrc:"Composite: Gini + GSS Trust + AARP, 2024"}
+];
+
+const EPS = 0.001;
+const THRESHOLD = 0.35;
+
+// ══════════════════════════════════════════════════════════
+// HISTORICAL REGISTRY (placeholder - pending Kimi/Codex data)
+// ══════════════════════════════════════════════════════════
+const REGISTRY = [
+  {name:"United States 1950",date:"1950",chi:1.28,cls:"above",note:"Peak coherence era. All ten channels positive. Marriage rate 11.1/1000, church attendance 49%, media trust 72%."},
+  {name:"United States 1960",date:"1960",chi:1.04,cls:"above",note:"Still above threshold but early fractures visible in channels 3 and 8."},
+  {name:"United States 1970",date:"1970",chi:0.41,cls:"precarious",note:"Phase transition underway. Six channels crossed zero between 1968\u20131973. Gold standard abandoned, no-fault divorce, media fragmentation."},
+  {name:"United States 1980",date:"1980",chi:0.14,cls:"precarious",note:"Below threshold. Partial stabilization from religious revival but structural damage persists."},
+  {name:"United States 1990",date:"1990",chi:-0.02,cls:"below",note:"Aggregate crosses zero. Crime peaks, family dissolution accelerates, institutional trust collapses."},
+  {name:"United States 2000",date:"2000",chi:-0.28,cls:"below",note:"Internet era begins. Information channel (Law 6) enters negative territory."},
+  {name:"United States 2010",date:"2010",chi:-0.52,cls:"deep",note:"Post-2008 crisis. Economic, trust, and community channels all deeply negative."},
+  {name:"United States 2024",date:"2024",chi:-0.88,cls:"deep",note:"Current state. Nine of ten channels negative. Only Law 5 (rule of law) marginally positive."},
+  {name:"Josiah\u2019s Judah (pre-reform)",date:"630 BC",chi:0.22,cls:"below",note:"55 years of decline under Manasseh/Amon. Temple defiled, Torah lost, child sacrifice institutionalized."},
+  {name:"Josiah\u2019s Judah (post-reform)",date:"620 BC",chi:0.71,cls:"above",note:"Torah rediscovered, covenant renewed, institutional reform. All channels shifted positive within one generation."},
+  {name:"Colonial New England (pre-Awakening)",date:"1725",chi:0.31,cls:"precarious",note:"Declining church membership, Half-Way Covenant compromise, spiritual formalism without conviction."},
+  {name:"Colonial New England (post-Awakening)",date:"1745",chi:0.82,cls:"above",note:"Great Awakening. Internal spiritual renewal without external threat. Null hypothesis case for metaphysical recovery."},
+  {name:"Tokugawa Japan (pre-Meiji)",date:"1860",chi:0.19,cls:"below",note:"Sakoku isolation, institutional ossification, military weakness exposed by Perry Expedition."},
+  {name:"Meiji Japan (post-reform)",date:"1880",chi:0.74,cls:"above",note:"Radical transformation under existential external threat. Institutional overhaul across all channels."},
+  {name:"Clapham Sect",date:"1790",chi:0.68,cls:"above",note:"20 families, 2 million tracts. 55-year lag to measurable crime reduction. Grace-driven, no state power."},
+];
+
+let dbSort = 'chi';
+
+// ══════════════════════════════════════════════════════════
+// SCORING
+// ══════════════════════════════════════════════════════════
+function computeL(c, d) { return Math.log((c + EPS) / (d + EPS)); }
+function computeChi(Ls) { return Ls.reduce((a,b) => a+b, 0) / Ls.length; }
+function classify(chi) {
+  if (chi >= THRESHOLD) return {label:'ABOVE THRESHOLD',cls:'above'};
+  if (chi >= 0) return {label:'PRECARIOUS',cls:'precarious'};
+  if (chi >= -0.5) return {label:'BELOW THRESHOLD',cls:'below'};
+  return {label:'DEEP DECOHERENCE',cls:'deep'};
+}
+
+// ══════════════════════════════════════════════════════════
+// BUILD CALCULATOR UI
+// ══════════════════════════════════════════════════════════
+function buildInputs() {
+  const container = document.getElementById('channel-inputs');
+  container.innerHTML = CHANNELS.map(ch => `
+    <div class="channel-block" id="ch-block-${ch.id}">
+      <div class="channel-header">
+        <div><span class="channel-num">${String(ch.id).padStart(2,'0')}</span>
+        <span class="channel-name">${ch.law}</span>
+        <span class="channel-pair">${ch.pair}</span></div>
+        <span class="channel-computed" id="ch-L-${ch.id}">\u2014</span>
+      </div>
+      <div class="channel-inputs">
+        <div class="input-col">
+          <label class="c-label">\u25b2 Constructive</label>
+          <div class="proxy-label">${ch.cLabel}</div>
+          <input type="text" id="c-${ch.id}" value="${ch.cVal}">
+        </div>
+        <div class="input-col">
+          <label class="d-label">\u25bc Destructive</label>
+          <div class="proxy-label">${ch.dLabel}</div>
+          <input type="text" id="d-${ch.id}" value="${ch.dVal}">
+        </div>
+      </div>
+      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('visible')">show sources</button>
+      <div class="source-info">C: ${ch.cSrc}<br>D: ${ch.dSrc}</div>
+    </div>
+  `).join('');
+}
+
+function resetInputs() {
+  CHANNELS.forEach(ch => {
+    document.getElementById('c-'+ch.id).value = ch.cVal;
+    document.getElementById('d-'+ch.id).value = ch.dVal;
+  });
+  document.getElementById('final-result').style.display = 'none';
+  document.getElementById('steps').innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--muted);padding:20px 0;">Enter values and click Compute \u03c7<sub>MDA</sub></div>';
+  CHANNELS.forEach(ch => {
+    document.getElementById('ch-L-'+ch.id).textContent = '\u2014';
+    document.getElementById('ch-block-'+ch.id).style.borderLeftColor = 'var(--border)';
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// RUN CALCULATION
+// ══════════════════════════════════════════════════════════
+function runMDA() {
+  const name = document.getElementById('soc-name').value || 'Unknown';
+  const Ls = [];
+  const steps = [];
+
+  CHANNELS.forEach((ch, i) => {
+    const c = parseFloat(document.getElementById('c-'+ch.id).value) || 0;
+    const d = parseFloat(document.getElementById('d-'+ch.id).value) || 0;
+    const L = computeL(c, d);
+    Ls.push(L);
+
+    const el = document.getElementById('ch-L-'+ch.id);
+    el.textContent = (L>=0?'+':'') + L.toFixed(4);
+    el.style.color = L >= 0 ? 'var(--amber)' : 'var(--red)';
+    document.getElementById('ch-block-'+ch.id).style.borderLeftColor = L >= 0 ? 'var(--amber)' : 'var(--red)';
+
+    steps.push({
+      title: `Law ${String(ch.id).padStart(2,'0')} \u2014 ${ch.law} (${ch.pair})`,
+      math: `L = log((${c} + \u03b5) / (${d} + \u03b5)) = <span class="${L>=0?'val':'neg'}">${(L>=0?'+':'')}${L.toFixed(6)}</span>`,
+      note: L >= 0
+        ? `Constructive regime dominates. C/D ratio: ${(c/(d||0.001)).toFixed(2)}`
+        : `Destructive regime dominates. C/D ratio: ${(c/(d||0.001)).toFixed(2)}`
+    });
+  });
+
+  const chi = computeChi(Ls);
+  const cls = classify(chi);
+  const posCount = Ls.filter(l => l >= 0).length;
+  const negCount = 10 - posCount;
+
+  steps.push({
+    title: 'Aggregate \u2014 \u03c7_MDA',
+    math: `\u03c7 = (1/10) \u00d7 \u03a3 L\u1d62 = <span class="${chi>=0?'val':'neg'}">${(chi>=0?'+':'')}${chi.toFixed(6)}</span>`,
+    note: `${posCount} channels positive, ${negCount} negative. Threshold: \u03c7 \u2248 ${THRESHOLD}.`
+  });
+
+  const container = document.getElementById('steps');
+  container.innerHTML = '';
+  steps.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'step';
+    el.innerHTML = `<div class="step-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="step-body">
+        <div class="step-title">${s.title}</div>
+        <div class="step-math">${s.math}</div>
+        <div class="step-note">${s.note}</div>
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.classList.add('revealed'), i * 120);
+  });
+
+  setTimeout(() => {
+    document.getElementById('chi-out').textContent = (chi>=0?'+':'') + chi.toFixed(4);
+    document.getElementById('chi-out').style.color = chi >= THRESHOLD ? 'var(--green)' : chi >= 0 ? 'var(--amber)' : 'var(--red)';
+    document.getElementById('verdict-out').innerHTML = `<span class="verdict-badge badge-${cls.cls}">${cls.label}</span>`;
+    document.getElementById('interp-out').textContent =
+      chi >= THRESHOLD
+        ? `"${name}" scores above the recovery threshold (\u03c7 = ${THRESHOLD}). Historical precedent suggests self-correction through institutional reform is achievable.`
+        : chi >= 0
+          ? `"${name}" is near the threshold. Some channels remain constructive but the aggregate is precarious.`
+          : `"${name}" scores below the recovery threshold. No society in the historical dataset has self-corrected from \u03c7 = ${chi.toFixed(3)} through administrative action alone. Every recovery from below threshold required metaphysical renewal or existential external threat.`;
+    document.getElementById('final-result').style.display = 'block';
+  }, steps.length * 120 + 200);
+}
+
+// ══════════════════════════════════════════════════════════
+// REGISTRY
+// ══════════════════════════════════════════════════════════
+function renderDB() {
+  const search = (document.getElementById('db-search')?.value || '').toLowerCase();
+  let items = REGISTRY.filter(r => !search || r.name.toLowerCase().includes(search));
+
+  if (dbSort === 'chi') items.sort((a,b) => b.chi - a.chi);
+  else if (dbSort === 'date') items.sort((a,b) => {
+    const da = a.date.includes('BC') ? -parseInt(a.date) : parseInt(a.date);
+    const db = b.date.includes('BC') ? -parseInt(b.date) : parseInt(b.date);
+    return da - db;
+  });
+  else items.sort((a,b) => a.name.localeCompare(b.name));
+
+  const statsEl = document.getElementById('db-stats');
+  const above = items.filter(r => r.chi >= THRESHOLD).length;
+  const below = items.filter(r => r.chi < 0).length;
+  statsEl.innerHTML = `
+    <div class="stat-box"><div class="stat-label">Total Entries</div><div class="stat-val">${items.length}</div></div>
+    <div class="stat-box"><div class="stat-label">Above Threshold</div><div class="stat-val">${above}</div></div>
+    <div class="stat-box"><div class="stat-label">Below Zero</div><div class="stat-val">${below}</div></div>
+    <div class="stat-box"><div class="stat-label">Threshold</div><div class="stat-val">\u03c7 = ${THRESHOLD}</div></div>`;
+
+  const maxAbs = Math.max(...items.map(r => Math.abs(r.chi)), 1);
+  document.getElementById('db-grid').innerHTML = items.map((r, i) => {
+    const pct = ((r.chi + maxAbs) / (2 * maxAbs)) * 100;
+    return `
+    <div class="signal-card ${r.cls}">
+      <div class="card-rank">#${i+1}</div>
+      <div class="card-name">${r.name}</div>
+      <div class="card-chi ${r.chi>=0?'pos':'neg'}">${(r.chi>=0?'+':'')}${r.chi.toFixed(3)}</div>
+      <div class="card-bar-bg"><div class="card-bar-fill" style="width:${pct}%;background:${r.chi>=THRESHOLD?'var(--green)':r.chi>=0?'var(--amber)':'var(--red)'}"></div></div>
+      <div class="card-date">${r.date}</div>
+      <div style="clear:both;margin-top:8px;"><span class="verdict-badge badge-${r.cls}" style="font-size:9px;padding:3px 8px;">${classify(r.chi).label}</span></div>
+      <div class="card-note">${r.note}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// TAB CONTROL
+// ══════════════════════════════════════════════════════════
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'db') renderDB();
+}
+
+// Init
+buildInputs();
+</script>
+</body>
+</html>

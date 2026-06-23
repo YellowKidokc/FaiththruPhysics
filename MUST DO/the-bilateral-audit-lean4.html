@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lean 4 Evidence Layer — Bilateral Audit Amendment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --void:       #080808;
+  --void-soft:  #0f0f0f;
+  --void-mid:   #161616;
+  --void-light: #1e1e1e;
+  --void-rim:   #252525;
+  --gold:       #c8a84b;
+  --gold-soft:  #a8883b;
+  --gold-dim:   rgba(200,168,75,0.15);
+  --gold-trace: rgba(200,168,75,0.06);
+  --gold-line:  rgba(200,168,75,0.3);
+  --text-primary: #e4ddd0;
+  --text-body:    #b8b0a0;
+  --text-dim:     #706860;
+  --text-ghost:   #484038;
+  --green:      #3a7a4a;
+  --green-soft: rgba(58,122,74,0.2);
+  --green-text: #6ab87a;
+  --red:        #7a3030;
+  --red-soft:   rgba(122,48,48,0.2);
+  --red-text:   #c07070;
+  --amber:      #8a6830;
+  --amber-soft: rgba(138,104,48,0.2);
+  --amber-text: #c8a050;
+  --blue:       #2a5a7a;
+  --blue-soft:  rgba(42,90,122,0.2);
+  --blue-text:  #6aaaca;
+
+  --f-display: 'Cormorant Garamond', Georgia, serif;
+  --f-body:    'Inter', system-ui, sans-serif;
+  --f-mono:    'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  background: var(--void);
+  color: var(--text-body);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--f-body);
+  line-height: 1.7;
+  background: var(--void);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  border-bottom: 1px solid var(--gold-line);
+  padding: 3rem 2rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.masthead::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.back-link {
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--gold); }
+
+.masthead-eyebrow {
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.masthead-title {
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.01em;
+}
+
+.masthead-sub {
+  font-family: var(--f-display);
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--text-dim);
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+.stats-row {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--void-rim);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stat-num {
+  font-family: var(--f-display);
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+}
+
+/* ── LAYOUT ── */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── SECTION ── */
+.section {
+  padding: 3rem 0;
+  border-bottom: 1px solid var(--void-rim);
+}
+
+.section-eyebrow {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  margin-bottom: 0.8rem;
+}
+
+.section-title {
+  font-family: var(--f-display);
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.body-text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text-body);
+  max-width: 680px;
+  margin-bottom: 1rem;
+}
+
+/* ── THEOREM CARDS ── */
+.theorem-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--void-rim);
+  border: 1px solid var(--void-rim);
+  margin: 2rem 0;
+}
+
+.theorem-card {
+  background: var(--void-soft);
+  padding: 1.4rem 1.6rem;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1.5rem;
+  transition: background 0.15s;
+}
+
+.theorem-card:hover { background: var(--void-mid); }
+
+@media (max-width: 600px) {
+  .theorem-card { grid-template-columns: 1fr; gap: 0.6rem; }
+}
+
+.theorem-id-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 0.1rem;
+}
+
+.theorem-num {
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+}
+
+.theorem-file {
+  font-family: var(--f-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.05em;
+  color: var(--text-ghost);
+  word-break: break-all;
+}
+
+.tag {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2em 0.5em;
+  border-radius: 2px;
+  margin-top: 0.3rem;
+  width: fit-content;
+}
+
+.tag-proved   { background: var(--green-soft); color: var(--green-text); border: 1px solid var(--green); }
+.tag-rejected { background: var(--red-soft);   color: var(--red-text);   border: 1px solid var(--red); }
+.tag-boundary { background: var(--amber-soft); color: var(--amber-text); border: 1px solid var(--amber); }
+.tag-gap      { background: var(--blue-soft);  color: var(--blue-text);  border: 1px solid var(--blue); }
+
+.theorem-body-col {}
+
+.theorem-name {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+.theorem-what {
+  font-size: 0.88rem;
+  color: var(--text-body);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.theorem-guard {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--void-rim);
+  font-style: italic;
+}
+
+/* ── FLAGSHIP ── */
+.flagship {
+  margin: 2rem 0;
+  background: var(--void-mid);
+  border: 1px solid var(--gold-line);
+  position: relative;
+  overflow: hidden;
+}
+
+.flagship::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.flagship-inner {
+  padding: 2rem;
+}
+
+.flagship-label {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.flagship-title {
+  font-family: var(--f-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+}
+
+.flagship-body {
+  font-size: 0.9rem;
+  color: var(--text-body);
+  line-height: 1.7;
+  max-width: 600px;
+  margin-bottom: 1.2rem;
+}
+
+.pass-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--void-rim);
+  border: 1px solid var(--void-rim);
+  margin-top: 1rem;
+}
+
+@media (max-width: 560px) { .pass-grid { grid-template-columns: 1fr; } }
+
+.pass-item {
+  padding: 0.9rem 1.1rem;
+  background: var(--void-soft);
+}
+
+.pass-label {
+  font-family: var(--f-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.pass-label.green { color: var(--green-text); }
+.pass-label.red   { color: var(--red-text); }
+
+.pass-text {
+  font-size: 0.82rem;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+/* ── THE UNIQUE RESULT ── */
+.unique-block {
+  margin: 2.5rem 0;
+  padding: 2rem;
+  background: var(--void-mid);
+  border-left: 3px solid var(--gold);
+  position: relative;
+}
+
+.unique-label {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.unique-statement {
+  font-family: var(--f-display);
+  font-size: 1.55rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: 0.8rem;
+}
+
+.unique-ref {
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--text-ghost);
+}
+
+/* ── GAP TABLE ── */
+.gap-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.85rem;
+}
+
+.gap-table th {
+  font-family: var(--f-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--void-rim);
+  background: var(--void-mid);
+}
+
+.gap-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--void-rim);
+  vertical-align: top;
+  line-height: 1.55;
+  color: var(--text-body);
+}
+
+.gap-table tr:last-child td { border-bottom: none; }
+
+.gap-id {
+  font-family: var(--f-mono);
+  font-size: 0.65rem;
+  color: var(--blue-text);
+  white-space: nowrap;
+}
+
+/* ── LAYER SCORECARD ── */
+.scorecard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--void-rim);
+  border: 1px solid var(--void-rim);
+  margin: 2rem 0;
+}
+
+@media (max-width: 580px) { .scorecard { grid-template-columns: 1fr; } }
+
+.score-item {
+  background: var(--void-soft);
+  padding: 1rem 1.2rem;
+}
+
+.score-layer {
+  font-family: var(--f-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+  margin-bottom: 0.3rem;
+}
+
+.score-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.score-body {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.score-status {
+  margin-top: 0.4rem;
+}
+
+/* ── DEPENDENCY CHAIN ── */
+.dep-chain {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 2;
+  padding: 1.5rem;
+  background: var(--void-mid);
+  border: 1px solid var(--void-rim);
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.dep-chain .node { color: var(--gold); }
+.dep-chain .arrow { color: var(--text-ghost); }
+.dep-chain .branch { color: var(--blue-text); }
+
+/* ── PULL ── */
+.pull {
+  margin: 2rem 0;
+  padding: 1.5rem 0 1.5rem 1.8rem;
+  border-left: 2px solid var(--gold-soft);
+}
+
+.pull p {
+  font-family: var(--f-display);
+  font-size: 1.25rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid var(--void-rim);
+  padding: 2rem;
+  margin-top: 4rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-left {
+  font-family: var(--f-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  line-height: 1.9;
+}
+
+.footer-right {
+  font-family: var(--f-display);
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-ghost);
+}
+
+@media (max-width: 600px) {
+  .masthead, .container { padding-left: 1.2rem; padding-right: 1.2rem; }
+  .footer { flex-direction: column; }
+  .stats-row { gap: 1.5rem; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     MASTHEAD
+     ══════════════════════════════════════════════════════════ -->
+<header class="masthead">
+  <a class="back-link" href="the-bilateral-audit.html">← The Bilateral Audit</a>
+  <div class="masthead-eyebrow">Amendment · Formal Evidence Layer</div>
+  <h1 class="masthead-title">The Lean 4<br>Evidence Layer</h1>
+  <p class="masthead-sub">What the machine checked — and what it honestly did not</p>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num">287</div>
+      <div class="stat-label">Named Theorems</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Sorry / Admit</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">16</div>
+      <div class="stat-label">Lean Files</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">70+</div>
+      <div class="stat-label">Adversarial Rejections</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">80%</div>
+      <div class="stat-label">Bridge Hit Rate</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════
+     WHAT THIS IS
+     ══════════════════════════════════════════════════════════ -->
+<div class="container">
+
+  <div class="section">
+    <div class="section-eyebrow">Context</div>
+    <h2 class="section-title">What Lean 4 Actually Proves</h2>
+    <p class="body-text">Lean 4 is an interactive theorem prover. When a theorem compiles with zero <code>sorry</code> or <code>admit</code> placeholders, it means the proof is formally complete — the machine verified every logical step. It does not mean the real world matches the model. What it proves is structural: if the definitions are correct, the conclusions follow necessarily.</p>
+    <p class="body-text">The overclaim guard runs on every theorem in this corpus. Lean proves the architecture is internally consistent. Whether that architecture correctly describes physics or theology is a separate question answered by domain judgment and empirical evidence — both of which the bilateral audit addresses independently.</p>
+    <p class="body-text">What the corpus does that nothing else in science-religion discourse has done: it makes the structural claims machine-checkable, adversarially testable, and publicly bounded by named kill conditions. The rigor monopoly that academia assumed theology could never enter — this corpus enters it.</p>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     FLAGSHIP RESULT
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Flagship Result · Layer 8</div>
+    <h2 class="section-title">Maxwell / Trinity Isomorphism</h2>
+
+    <div class="flagship">
+      <div class="flagship-inner">
+        <div class="flagship-label">⭐ Strongest Standalone Result</div>
+        <div class="flagship-title">Quaternion EM ≅ Relational Trinity</div>
+        <p class="flagship-body">Maxwell's original quaternion electromagnetic field structure and the Nicene Trinitarian relational model satisfy the same five formal conditions simultaneously. Five specific false positives were tested and rejected. Every guard is load-bearing — removing any single guard admits the corresponding false positive.</p>
+
+        <div class="pass-grid">
+          <div class="pass-item">
+            <div class="pass-label green">✅ Passed</div>
+            <div class="pass-text">Quaternion EM — all 5 ValidTriadic conditions</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label green">✅ Passed</div>
+            <div class="pass-text">Trinity relational model — all 5 ValidTriadic conditions</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label green">✅ Passed</div>
+            <div class="pass-text">Full structural isomorphism: Quaternion EM ≅ Trinity (TriadicIso)</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label green">✅ Passed</div>
+            <div class="pass-text">Coupling invariant — scalar-vector coupling that vector-only lacks</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label red">✅ Rejected</div>
+            <div class="pass-text">Heaviside vector-only EM — no coupling invariant</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label red">✅ Rejected</div>
+            <div class="pass-text">Modalism — no relational distinctness, persons collapse</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label red">✅ Rejected</div>
+            <div class="pass-text">Static single-field EM — not full dynamic triadic structure</div>
+          </div>
+          <div class="pass-item">
+            <div class="pass-label red">✅ Rejected</div>
+            <div class="pass-text">Generic 3-part system — wrong role profiles</div>
+          </div>
+        </div>
+
+        <p style="font-size:0.78rem; color:var(--text-ghost); margin-top:1.2rem; font-style:italic;">
+          Safe public wording: The Trinity bridge passes only under the relational triadic specification. Lean does not prove Nicene theology from physics; it proves the intended relational triadic structure satisfies the formal gate while nearby false positives do not. Whether the models faithfully represent historical Maxwell EM and Nicene doctrine is a domain judgment call.
+        </p>
+      </div>
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     THE UNIQUE RESULT
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Uniqueness Result · Layer 9</div>
+    <h2 class="section-title">The Cross Is the Unique Solution</h2>
+
+    <div class="unique-block">
+      <div class="unique-label">⭐ Strongest Single Result in the Package</div>
+      <div class="unique-statement">∀ c, CrossConvergence(c) → c = cross.<br>Any configuration satisfying all five conditions IS the Cross.</div>
+      <div class="unique-ref">Theorem 125 · JusticeMercyOperator.lean · exhaustive cases proof</div>
+    </div>
+
+    <p class="body-text">The Justice/Mercy operator formalizes five conditions for perfect moral repair: proportional justice, impartiality, truth-naming, victim restoration, and voluntary cost-bearing. The theorem proves not just that the Cross satisfies all five — it proves by exhaustive case elimination that the Cross is the <em>only</em> configuration that does. Every alternative fails at least one condition.</p>
+
+    <div class="theorem-grid">
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 118</div>
+          <div class="theorem-file">JusticeMercyOperator.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">cross_satisfies_convergence</div>
+          <div class="theorem-what">The Cross configuration meets all five convergence conditions simultaneously — justice, mercy, voluntariness, authority, and universality.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 119</div>
+          <div class="theorem-file">JusticeMercyOperator.lean</div>
+          <span class="tag tag-rejected">Rejected</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">offender_payment_fails_mercy_condition</div>
+          <div class="theorem-what">Offender paying their own debt satisfies justice but fails mercy. Self-payment is not mercy.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 120</div>
+          <div class="theorem-file">JusticeMercyOperator.lean</div>
+          <span class="tag tag-rejected">Rejected</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">human_third_party_fails_authority_and_capacity</div>
+          <div class="theorem-what">A human third party who volunteers to pay fails on authority and universality. Scope insufficient.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 122</div>
+          <div class="theorem-file">JusticeMercyOperator.lean</div>
+          <span class="tag tag-rejected">Rejected</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">waived_debt_fails_justice_condition</div>
+          <div class="theorem-what">Waiving the debt entirely fails justice — the cost is not paid. Cheap grace formally eliminated.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 125</div>
+          <div class="theorem-file">JusticeMercyOperator.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">cross_is_unique_solution</div>
+          <div class="theorem-what">Existence AND uniqueness: the Cross satisfies all five conditions, and any configuration satisfying all five conditions IS the Cross. The strongest single formal result in the corpus.</div>
+          <div class="theorem-guard">Uniqueness is within the model. Lean proves the repair structure is unique. Whether Jesus of Nazareth is that structure requires historical evidence tested separately.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     THE FOUNDATION THEOREMS
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">The Borrowed Foundation · Core.lean + BridgeMatrix</div>
+    <h2 class="section-title">What Science Borrowed — Formally</h2>
+
+    <p class="body-text">The bilateral audit's central claim is that science operates on a substrate it did not build and cannot ground from within. These theorems formalize that substrate structurally. They do not prove the claim metaphysically — they show the architecture that the claim requires already compiles formally and survives adversarial testing.</p>
+
+    <div class="theorem-grid">
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 4</div>
+          <div class="theorem-file">Core.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">Q_zero_collapses_chi</div>
+          <div class="theorem-what">If any single factor is zero, total coherence collapses regardless of every other factor. This is the multiplicative architecture: no compensation is possible. Remove will (Q) and coherence dies. Remove knowledge (K) and coherence dies. Every factor is load-bearing.</div>
+          <div class="theorem-guard">This formalizes why the additive scoring frameworks used by every existing cross-domain evaluation system are structurally weaker — they permit weakness in one dimension to be offset by strength in another. Theophysics does not.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 37</div>
+          <div class="theorem-file">MasterEquationInvariance.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">master_equation_invariant_under_canonical_substitution</div>
+          <div class="theorem-what">χ(physical) = χ(spiritual) under the canonical variable map. The Master Equation produces the same coherence value whether its variables are assigned physical or theological values. The equation is genuinely domain-neutral — it does not belong to either register.</div>
+          <div class="theorem-guard">This is the formal statement of the substrate claim. The equation runs the same in both worldviews. What differs is boundary conditions — and boundary conditions are where worldview enters.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 42</div>
+          <div class="theorem-file">MasterEquationInvariance.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">master_invariance_requires_signature_discipline</div>
+          <div class="theorem-what">Product alone is blind to semantic swaps — grace and faith can be exchanged and the product passes. But the signature layer catches the swap. Both product AND signature are required. Neither alone suffices. This is why the bridge is two-layer.</div>
+          <div class="theorem-guard">This theorem named an adversarial boundary inside the system before critics could. Label honesty cannot be verified by Lean alone. The guard is domain review.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 133–136</div>
+          <div class="theorem-file">SignConversionDiscipline.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">burden_sign_conversion_chain</div>
+          <div class="theorem-what">In arithmetic, (-1)×(-1) = +1. In the moral burden domain, two negatives stay negative. Accumulation does not redeem. External Christic conversion is the only operation that flips a negative burden to positive. Self-generated operations cannot change the sign.</div>
+          <div class="theorem-guard">This is the Lean-backed foundation of why the Cross is structurally necessary. It proves the arithmetic of the model. It does not prove moral self-repair is impossible in all philosophical frameworks.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">L2-Q6</div>
+          <div class="theorem-file">PolarityDiscipline.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">good_is_ontologically_prior</div>
+          <div class="theorem-what">Sign arithmetic enforces asymmetry: positive is generative, negative is parasitic. Evil has no independent vocabulary — it borrows every word from good and inverts it. Good is structurally prior, not contingently prior. You cannot corrupt what is not there.</div>
+          <div class="theorem-guard">Model asymmetry. Real-world ontological priority is a separate claim — but this is the formal demonstration that the asymmetry is not arbitrary. It is a structural requirement of the coherence architecture.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 78–87</div>
+          <div class="theorem-file">IsomorphismTest.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">richLaw4Iso — Strong Force ≅ Love</div>
+          <div class="theorem-what">At the RichLawIso level (roles AND transitions preserved), StrongForce and Love are structurally isomorphic. The basic isomorphism alone is insufficient — a coin model also passes at that level. The RichLawIso gate eliminates the coin. Love passes. Coin fails.</div>
+          <div class="theorem-guard">Second of three structural isomorphisms in the corpus. Proves the mapping at model level. Does not wire StrongForce into the χ product (GAP-02 — honestly named).</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     RESURRECTION ARCHITECTURE
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Layer 13 · MissionReturnOperator.lean</div>
+    <h2 class="section-title">Resurrection as Mission Return</h2>
+
+    <p class="body-text">The Resurrection is not resuscitation and not reset. These theorems prove the formal distinction: the substrate identity is preserved through incarnation, death, and resurrection, but the post-resurrection state carries the entropy and death contact records — making it richer than the pre-incarnate state, not identical to it.</p>
+
+    <div class="pull">
+      <p>Same substrate. Richer expression. The scar tissue is part of the proof.</p>
+    </div>
+
+    <div class="theorem-grid">
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 153–155</div>
+          <div class="theorem-file">MissionReturnOperator.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">identity_preserved_through_full_arc</div>
+          <div class="theorem-what">Substrate identity is unchanged across incarnation, death, and resurrection. The agent who entered is the agent who returned.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 158–160</div>
+          <div class="theorem-file">MissionReturnOperator.lean</div>
+          <span class="tag tag-proved">Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">entropy_and_death_contact_carried_through_resurrection</div>
+          <div class="theorem-what">The resurrection state preserves both entropy contact AND death contact records from the cross. The proof of the mission is carried in the return.</div>
+        </div>
+      </div>
+
+      <div class="theorem-card">
+        <div class="theorem-id-col">
+          <div class="theorem-num">Thm 161–162</div>
+          <div class="theorem-file">MissionReturnOperator.lean</div>
+          <span class="tag tag-rejected">Rejected / Proved</span>
+        </div>
+        <div class="theorem-body-col">
+          <div class="theorem-name">resurrection_is_not_reset</div>
+          <div class="theorem-what">Post-resurrection ≠ pre-incarnate. It is structurally richer — same substrate plus the finite record carried. This formally eliminates the interpretation of resurrection as erasure or return-to-original-state.</div>
+          <div class="theorem-guard">Architecture is formally consistent. Lean does not prove the Resurrection happened. History must be tested separately against this structure.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     LAYER SCORECARD
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Full Corpus</div>
+    <h2 class="section-title">16 Layers — What Each Proves</h2>
+
+    <div class="scorecard">
+
+      <div class="score-item">
+        <div class="score-layer">L0 · Core.lean</div>
+        <div class="score-title">Dual-Substrate Foundation</div>
+        <div class="score-body">Coupling states, irreversibility gate, χ product. The zero-collapse architecture — any single zero kills the product.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L3 · BridgeMatrix.lean</div>
+        <div class="score-title">10-Factor Signature</div>
+        <div class="score-body">All 10 canonical bridge rows valid. Wrong pairings rejected. Grace↔Faith swap caught by signature layer, not product layer.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L4 · MasterEquationInvariance.lean</div>
+        <div class="score-title">Domain Invariance</div>
+        <div class="score-body">χ(physical) = χ(spiritual) under canonical map. The equation belongs to neither register alone.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L5 · FieldBridgeControls.lean</div>
+        <div class="score-title">Laws 3, 6, 7, 8 Collapse Proofs</div>
+        <div class="score-body">EM/Truth, Information/Logos, Relativity/Frame, Quantum/Faith. Each bypass zeroes the relevant factor → zeroes χ globally.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L7 · IsomorphismTest.lean</div>
+        <div class="score-title">Strong Force ≅ Love</div>
+        <div class="score-body">Two-level isomorphism with adversarial false-positive testing. Coin model eliminated at RichLawIso level.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L8 · MaxwellTrinity.lean</div>
+        <div class="score-title">Maxwell ≅ Trinity</div>
+        <div class="score-body">5-condition structural spec. 5 false positives rejected. Every guard load-bearing. Strongest standalone result.</div>
+        <div class="score-status"><span class="tag tag-proved">⭐ Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L9 · JusticeMercyOperator.lean</div>
+        <div class="score-title">Cross Uniqueness</div>
+        <div class="score-body">The Cross is THE unique convergence configuration. Every alternative formally eliminated. Existence AND uniqueness proved.</div>
+        <div class="score-status"><span class="tag tag-proved">⭐ Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L10–L14 · Discipline Chain</div>
+        <div class="score-title">Polarity, Sign, Christ, Resurrection, Memory</div>
+        <div class="score-body">Two wrongs don't make a right. External conversion required. Identity preserved. Memory filtered at death. Heaven = coherent + eternal.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L15 · DependencyLattice.lean</div>
+        <div class="score-title">Dependency Structure</div>
+        <div class="score-body">44 edges across theology and physics lattices. Teaching order and dependency order formally diverge at justification/union.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+      <div class="score-item">
+        <div class="score-layer">L16 · HitRateDiscipline.lean</div>
+        <div class="score-title">Statistical Integrity</div>
+        <div class="score-body">Closed denominator. 8/10 bridges compiled. 90% claim blocked. All attempts and failures counted. No cherry-picking.</div>
+        <div class="score-status"><span class="tag tag-proved">Proved</span></div>
+      </div>
+
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     HONEST GAPS
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Named Gaps — Nothing Hidden</div>
+    <h2 class="section-title">What the Corpus Has Not Yet Proved</h2>
+
+    <p class="body-text">A framework that names its own gaps is more trustworthy than one that does not. Every gap here is an honest admission. The system does not claim what it has not proved. Gaps are either closable with more Lean or outside Lean's scope entirely.</p>
+
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Gap</th>
+          <th>Description</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-id">GAP-01</td>
+          <td>Laws 1, 2, 9, 10 — generic zero-collapse proved but domain-specific physical mechanisms not yet encoded. Gravity/Grace, Motion/Will, Weak Force/Moral Conservation, Coherence/Christ factor-level controls pending.</td>
+          <td><span class="tag tag-gap">Closable</span></td>
+        </tr>
+        <tr>
+          <td class="gap-id">GAP-02</td>
+          <td>Law 4 factor-level bridge wiring. StrongForce ≅ Love proved at model level but no gate wiring into χ product.</td>
+          <td><span class="tag tag-gap">Closable</span></td>
+        </tr>
+        <tr>
+          <td class="gap-id">GAP-03</td>
+          <td>Law 5 factor-level bridge wiring. Justice/Mercy operator proved independently, no formal wiring to Factor.S slot.</td>
+          <td><span class="tag tag-gap">Closable</span></td>
+        </tr>
+        <tr>
+          <td class="gap-id">GAP-04</td>
+          <td>Category-theoretic upgrade of Mapping.lean. Currently a list-map equality. A proper functor would be stronger.</td>
+          <td><span class="tag tag-gap">Closable</span></td>
+        </tr>
+        <tr>
+          <td class="gap-id">GAP-05</td>
+          <td>Cross-domain lattice coverage. Only 3 of ~20 theology edges have explicit physics witnesses.</td>
+          <td><span class="tag tag-gap">Closable</span></td>
+        </tr>
+        <tr>
+          <td class="gap-id">SPEC-01</td>
+          <td>Faithful abstraction. Do the formal models faithfully represent historical Maxwell EM and Nicene Trinitarian doctrine? Domain judgment — outside Lean's scope.</td>
+          <td><span class="tag tag-boundary">Spec Gap</span></td>
+        </tr>
+        <tr>
+          <td class="gap-id">SPEC-03</td>
+          <td>Empirical validation. The 5.7–6.35σ experimental correlations are not formalized in Lean. External data addresses this separately.</td>
+          <td><span class="tag tag-boundary">Spec Gap</span></td>
+        </tr>
+        <tr>
+          <td class="gap-id">SPEC-05</td>
+          <td>Historical claims. Lean proves the repair structure is unique. Whether Jesus of Nazareth is that structure requires historical evidence — Lean cannot answer this question.</td>
+          <td><span class="tag tag-boundary">Spec Gap</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     DEPENDENCY CHAIN
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Architecture</div>
+    <h2 class="section-title">Import Dependency Graph</h2>
+    <p class="body-text">The 16 Lean files form a dependency tree. Each layer builds on the layers it imports. Standalone files prove their claims without depending on the trunk.</p>
+
+    <div class="dep-chain">
+<span class="node">Core</span> <span class="arrow">→</span> <span class="node">BridgeMatrix</span> <span class="arrow">→</span> <span class="node">FieldBridgeControls</span> <span class="arrow">→</span> <span class="node">BridgeScoreDiscipline</span>
+  <span class="arrow">→</span> <span class="node">PolarityDiscipline</span> <span class="arrow">→</span> <span class="node">MemoryPersistence</span> <span class="arrow">→</span> <span class="node">SignConversion</span> <span class="arrow">→</span> <span class="node">ChristOperator</span>
+    <span class="branch">├──</span> <span class="node">HitRateDiscipline</span>  <span class="arrow">(statistical integrity on top of operator)</span>
+    <span class="branch">└──</span> <span class="node">MissionReturnOperator</span>  <span class="arrow">(resurrection architecture)</span>
+<span class="node">BridgeMatrix</span> <span class="arrow">→</span> <span class="node">MasterEquationInvariance</span>  <span class="arrow">(product + signature invariance)</span>
+
+<span style="color:var(--text-ghost)">Standalone (no imports):</span>
+<span class="node">StageMachine</span> · <span class="node">Mapping</span> · <span class="node">IsomorphismTest</span> · <span class="node">DependencyLattice</span>
+<span class="node">MaxwellTrinity</span> · <span class="node">JusticeMercyOperator</span>
+<span style="color:var(--text-ghost)">↑ MaxwellTrinity + JusticeMercyOperator are the strongest standalone results</span>
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     CLOSING
+     ══════════════════════════════════════════════════════════ -->
+  <div class="section" style="border-bottom:none;">
+    <div class="pull">
+      <p>The formal layer is strongest when it is rejection-first. A positive mapping does not matter until the obvious false positives have been encoded and rejected under the same gate. Where Lean verifies that adversarial controls fail and the intended structure passes, the result is not merely "this can be made to fit." It is "under these definitions, the alternatives do not fit while this structure does."</p>
+    </div>
+    <p class="body-text">287 theorems. Zero sorry. Zero admit. The compiler does not check credentials. It checks structure. And the structure holds.</p>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-left">
+    Theophysics Research Initiative · POF 2828<br>
+    David Lowe · faiththruphysics.com<br>
+    June 2026 · Lean 4 Evidence Layer · Amendment to The Bilateral Audit
+  </div>
+  <div class="footer-right">
+    287 theorems · 0 sorry · 70 domains · 5.7σ · 1 coherence · 1 question
+  </div>
+</footer>
+
+</body>
+</html>

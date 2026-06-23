@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The Constraint Argument & The Hard Problem at Scale — Theophysics Research Program</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#050505',
+                        'dark-surface': '#111111',
+                        'dark-card': '#1a1a1a',
+                        'dark-border': '#222222',
+                        'text-primary': '#e0e0e0',
+                        'text-secondary': '#999999',
+                        'text-muted': '#555555',
+                        teal: '#14b8a6',
+                        'teal-dark': '#0d9488',
+                        'teal-light': '#2dd4bf',
+                        sky: '#38bdf8',
+                        'accent-warm': '#c05621',
+                    },
+                    fontFamily: {
+                        'serif': ['Crimson Text', 'Georgia', 'serif'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'display': ['Oswald', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { background-color: #050505; color: #e0e0e0; }
+
+        /* Sticky TOC */
+        .toc-sidebar {
+            position: sticky;
+            top: 2rem;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #14b8a6 transparent;
+        }
+        .toc-sidebar::-webkit-scrollbar { width: 4px; }
+        .toc-sidebar::-webkit-scrollbar-thumb { background: #14b8a6; border-radius: 2px; }
+
+        .toc-link {
+            display: block;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: #999;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .toc-link:hover, .toc-link.active {
+            color: #14b8a6;
+            border-left-color: #14b8a6;
+            background: rgba(20, 184, 166, 0.08);
+        }
+        .toc-link.sub { padding-left: 24px; font-size: 0.75rem; }
+
+        /* Pull quote */
+        .pull-quote {
+            position: relative;
+            padding: 2rem 2.5rem;
+            margin: 2.5rem 0;
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            border-left: 4px solid #14b8a6;
+            font-family: 'Crimson Text', serif;
+            font-size: 1.25rem;
+            font-style: italic;
+            color: #e0e0e0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.06), inset 0 0 30px rgba(20, 184, 166, 0.02);
+        }
+        .pull-quote::before {
+            content: '\201C';
+            position: absolute;
+            top: -0.2rem;
+            left: 0.75rem;
+            font-size: 4rem;
+            color: #14b8a6;
+            opacity: 0.3;
+            font-family: Georgia, serif;
+        }
+
+        /* Scorecard table */
+        .scorecard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .scorecard-table thead th {
+            background: #14b8a6;
+            color: #050505;
+            padding: 10px 8px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.72rem;
+            letter-spacing: 0.02em;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .scorecard-table thead th:first-child {
+            text-align: left;
+            border-radius: 8px 0 0 0;
+        }
+        .scorecard-table thead th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+        .scorecard-table tbody td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #222;
+            color: #e0e0e0;
+        }
+        .scorecard-table tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: #14b8a6;
+        }
+        .scorecard-table tbody tr:nth-child(even) { background: rgba(20, 184, 166, 0.04); }
+        .scorecard-table tbody tr:hover { background: rgba(20, 184, 166, 0.08); }
+        .scorecard-table tbody tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+        .scorecard-table tbody tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+        .cell-yes { color: #14b8a6; font-weight: 600; }
+        .cell-no { color: #c05621; }
+        .cell-partial { color: #38bdf8; }
+        .cell-none { color: #555; }
+        .cell-special { color: #38bdf8; font-weight: 500; font-style: italic; }
+
+        /* Category cards */
+        .category-card {
+            background: #111111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 1.75rem;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: #14b8a6;
+        }
+        .category-card:hover {
+            box-shadow: 0 4px 16px rgba(20, 184, 166, 0.12);
+            border-color: #14b8a6;
+        }
+
+        /* Adversarial callout */
+        .adversarial-block {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            border: 1px solid #c05621;
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+        }
+        .adversarial-block::before {
+            content: '\f071';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #c05621;
+            color: white;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.75rem;
+        }
+
+        /* Section divider */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 3rem 0 2rem;
+        }
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #14b8a6, transparent);
+        }
+
+        /* Insight box */
+        .insight-box {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.06) 0%, rgba(20, 184, 166, 0.02) 100%);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Mobile TOC toggle */
+        .mobile-toc-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 50;
+            background: #14b8a6;
+            color: #050505;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .mobile-toc-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 40;
+        }
+        .mobile-toc-panel {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 70vh;
+            background: #111111;
+            z-index: 45;
+            border-radius: 20px 20px 0 0;
+            padding: 1.5rem;
+            overflow-y: auto;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 1023px) {
+            .mobile-toc-toggle { display: flex; align-items: center; justify-content: center; }
+            .mobile-toc-overlay.open, .mobile-toc-panel.open { display: block; }
+            .pull-quote { padding: 1.5rem; font-size: 1.1rem; }
+        }
+
+        /* Prose styling */
+        .prose-body {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.15rem;
+            line-height: 1.85;
+            color: #e0e0e0;
+        }
+        .prose-body p { margin-bottom: 1.25rem; }
+
+        /* Header numbering badges */
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: #14b8a6;
+            color: #050505;
+            border-radius: 50%;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* Binary question styling */
+        .binary-question {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: #111111;
+            border-radius: 8px;
+            border-left: 3px solid #14b8a6;
+            margin-bottom: 0.75rem;
+        }
+        .binary-number {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            color: #14b8a6;
+            font-size: 1.25rem;
+            line-height: 1.5;
+        }
+
+        /* Comparison strip */
+        .comparison-strip {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        .comparison-strip .left-col {
+            background: rgba(20, 184, 166, 0.06);
+            border-right: 2px solid #14b8a6;
+            padding: 1.5rem;
+        }
+        .comparison-strip .right-col {
+            background: rgba(192, 86, 33, 0.06);
+            padding: 1.5rem;
+        }
+        @media (max-width: 767px) {
+            .comparison-strip { grid-template-columns: 1fr; }
+            .comparison-strip .left-col { border-right: none; border-bottom: 2px solid #14b8a6; }
+        }
+
+        /* Page progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #14b8a6, #38bdf8);
+            z-index: 100;
+            transition: width 0.1s;
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* MathJax dark mode */
+        mjx-container { color: #e0e0e0 !important; }
+    </style>
+<script id="article-meta" type="application/json">
+{
+  "slug": "consciousness-constraint-argument",
+  "title": "The Constraint Argument & The Hard Problem at Scale — Theophysics Research Program",
+  "series": "faith-through-physics",
+  "classification": [
+    {
+      "tag": "theophysics",
+      "pct": 100,
+      "color": "#d4af37"
+    }
+  ],
+  "reading_levels": [
+    "story",
+    "plain"
+  ],
+  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
+}
+</script>
+</head>
+<body class="antialiased">
+<nav style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:1px solid #222;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <a href="../index.html" style="color:#999;text-decoration:none;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
+    <span style="color:#333;">|</span>
+    <a href="index.html" style="color:#14b8a6;text-decoration:none;font-weight:500;" onmouseover="this.style.color='#2dd4bf'" onmouseout="this.style.color='#14b8a6'">Consciousness</a>
+  </div>
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <span style="color:#333;">&larr; Prev</span>
+    <a href="consciousness-coherence-bridge.html" style="color:#999;text-decoration:none;" onmouseover="this.style.color='#e0e0e0'" onmouseout="this.style.color='#999'">Next &rarr;</a>
+  </div>
+</nav>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+
+    <!-- Mobile TOC -->
+    <button class="mobile-toc-toggle" id="mobileTocBtn" aria-label="Table of Contents">
+        <i class="fas fa-list"></i>
+    </button>
+    <div class="mobile-toc-overlay" id="mobileTocOverlay"></div>
+    <div class="mobile-toc-panel" id="mobileTocPanel">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-display font-bold text-teal text-lg">Contents</h3>
+            <button id="mobileTocClose" class="text-text-secondary text-xl">&times;</button>
+        </div>
+        <nav id="mobileTocNav"></nav>
+    </div>
+
+    <!-- HEADER -->
+    <header class="relative overflow-hidden" style="background: linear-gradient(170deg, #0a0a0a 0%, #111111 40%, #0a0a0a 100%);">
+        <div class="absolute inset-0 opacity-[0.04]" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, #14b8a6 40px, #14b8a6 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, #14b8a6 40px, #14b8a6 41px);"></div>
+        <div class="max-w-5xl mx-auto px-6 py-16 md:py-24 relative z-10">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="inline-block px-3 py-1 bg-teal text-dark font-sans text-xs font-semibold rounded-full tracking-wider uppercase">Consciousness Series &mdash; Page 1 of 12</span>
+                <span class="inline-block px-3 py-1 border border-teal text-teal font-sans text-xs font-semibold rounded-full tracking-wider uppercase">Theophysics Research Program</span>
+            </div>
+            <h1 class="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-text-primary leading-[1.05] mb-4 tracking-tight">
+                The Constraint Argument<br/>
+                <span class="text-teal">&amp; The Hard Problem at Scale</span>
+            </h1>
+            <p class="font-serif text-xl md:text-2xl text-text-secondary italic max-w-3xl mt-6 leading-relaxed">
+                Why 357 Theories of Consciousness All Hit the Same Wall &mdash; And What the Pattern Means
+            </p>
+            <div class="mt-10 flex flex-wrap items-center gap-6 text-sm font-sans text-text-secondary">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-user-pen text-teal"></i>
+                    <span><strong class="text-text-primary">David Lowe</strong> + Claude (Opus 4.6)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-calendar text-teal"></i>
+                    <span>April 2026</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-file-lines text-teal"></i>
+                    <span>Papers 00 &amp; 01 Combined</span>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-text-muted/20 flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-teal/10 text-teal text-xs font-sans font-medium rounded">Consciousness</span>
+                <span class="px-2 py-1 bg-teal/10 text-teal text-xs font-sans font-medium rounded">Hard Problem</span>
+                <span class="px-2 py-1 bg-teal/10 text-teal text-xs font-sans font-medium rounded">Explanatory Gap</span>
+                <span class="px-2 py-1 bg-teal/10 text-teal text-xs font-sans font-medium rounded">Qualia</span>
+                <span class="px-2 py-1 bg-teal/10 text-teal text-xs font-sans font-medium rounded">Logos Field</span>
+                <span class="px-2 py-1 bg-teal/10 text-teal text-xs font-sans font-medium rounded">357 Theories</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 py-12">
+        <div class="lg:grid lg:grid-cols-[240px_1fr] lg:gap-12">
+
+            <!-- SIDEBAR TOC (desktop) -->
+            <aside class="hidden lg:block">
+                <nav class="toc-sidebar">
+                    <p class="font-display font-bold text-teal text-sm tracking-wider uppercase mb-4 px-3">Contents</p>
+
+                    <p class="font-sans font-semibold text-xs text-text-secondary uppercase tracking-wider px-3 mt-4 mb-2">Part I: The Constraint Argument</p>
+                    <a href="#constraint-argument" class="toc-link">The Constraint Argument</a>
+                    <a href="#relational-descriptions" class="toc-link sub">Relational Descriptions</a>
+                    <a href="#moral-experience" class="toc-link sub">Moral Experience</a>
+                    <a href="#three-options" class="toc-link sub">The Three Options</a>
+                    <a href="#logos-field" class="toc-link sub">The Logos Field</a>
+                    <a href="#adversarial-notes" class="toc-link">Adversarial Notes</a>
+
+                    <p class="font-sans font-semibold text-xs text-text-secondary uppercase tracking-wider px-3 mt-6 mb-2">Part II: The Hard Problem at Scale</p>
+                    <a href="#hard-problem" class="toc-link">What the Hard Problem Actually Is</a>
+                    <a href="#why-357" class="toc-link">Why 357 Theories?</a>
+                    <a href="#ten-categories" class="toc-link">The 10 Categories</a>
+                    <a href="#scorecard" class="toc-link">The Scorecard</a>
+                    <a href="#structural-patterns" class="toc-link">Structural Patterns</a>
+                    <a href="#measurement-problem" class="toc-link sub">The Measurement Problem</a>
+                    <a href="#qualia-wall" class="toc-link sub">The Qualia Wall</a>
+                    <a href="#binding-problem" class="toc-link sub">The Binding Problem</a>
+                    <a href="#observer-problem" class="toc-link sub">The Observer Problem</a>
+                    <a href="#consciousness-of-what" class="toc-link sub">Consciousness of What?</a>
+                    <a href="#hidden-consensus" class="toc-link">The Hidden Consensus</a>
+                    <a href="#blind-spots" class="toc-link">Systematic Blind Spots</a>
+                </nav>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="max-w-3xl">
+
+                <!-- ===================== -->
+                <!-- PART I: CONSTRAINT    -->
+                <!-- ===================== -->
+
+                <div class="section-divider" id="part-i">
+                    <span class="font-display font-bold text-sm text-teal tracking-widest uppercase whitespace-nowrap">Part I</span>
+                </div>
+
+                <section id="constraint-argument" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        THE CONSTRAINT ARGUMENT
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-8">Why Material Explanation Cannot Close the Gap</p>
+
+                    <div class="prose-body">
+                        <p>The failure of 357 theories of consciousness is not significant because of their number. It is significant because of their uniformity. Across computational, neuroscientific, and information-theoretic approaches, the same pattern emerges without exception: every theory in the material tradition successfully describes structure, function, and correlation &mdash; and fails to explain why any of that structure is accompanied by experience. This is not a scattered failure across independent problems. It is the same failure, repeated, from every angle the field has tried. Repeated failure across independent approaches from a single point of breakdown is not evidence of immaturity. It is evidence of a constraint.</p>
+                    </div>
+
+                    <div class="pull-quote">
+                        Repeated failure across independent approaches from a single point of breakdown is not evidence of immaturity. It is evidence of a constraint.
+                    </div>
+                </section>
+
+                <section id="relational-descriptions" class="mb-16 fade-in">
+                    <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">The Relational Limit of Physical Description</h3>
+
+                    <div class="prose-body">
+                        <p>All physical descriptions are relational by definition. A physical state is characterized by its properties &mdash; position, charge, mass, information structure &mdash; and those properties are defined by how the state relates to other states. This is not a limitation of current science. It is what physical description is. The entire project of third-person inquiry is to characterize systems in terms of their external relations, their measurable effects, their observable behavior. That project has been extraordinarily successful at everything it attempts. It has also been consistently silent on one thing: what a state is from the inside.</p>
+
+                        <p>Consciousness is precisely and only that. It is not a relationship between states. It is the existence of experience itself &mdash; the fact that there is something it is like to be a particular system at a particular moment. This cannot be captured by relational description because it is not a relation. It is intrinsic.</p>
+                    </div>
+
+                    <div class="insight-box">
+                        <p class="font-sans font-semibold text-teal text-sm uppercase tracking-wider mb-2"><i class="fas fa-key mr-2"></i>The Core Constraint</p>
+                        <p class="font-serif text-lg text-text-primary leading-relaxed">Here is the constraint stated plainly: no accumulation of relational descriptions, however detailed, however integrated, however recursive, generates an intrinsic property. The category does not permit it. This is not a gap waiting to be closed by further research. It is a structural feature of the kind of explanation materialism can offer &mdash; a boundary condition on the type of description being attempted, not a problem within it.</p>
+                    </div>
+                </section>
+
+                <section id="moral-experience" class="mb-16 fade-in">
+                    <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">Moral Experience as the Test Case</h3>
+
+                    <div class="prose-body">
+                        <p>Moral experience sharpens this beyond philosophy into something any person can test against their own life. A materialist can describe in full detail the neural architecture of shame &mdash; the predictive models engaged, the social norm representations firing, the aversive valence assigned, the behavioral outputs produced. That description may be entirely accurate. It does not explain why shame feels binding. Not merely uncomfortable. Not merely aversive. Binding &mdash; genuinely obligating, carrying weight that points at something real. A system that simulates moral rules has no more claim to genuine obligation than a calculator has to caring about the correct answer. The felt weight of moral experience is not explained by the architecture that produces it. It is the phenomenon the architecture is supposed to explain. Calling moral weight "constraint weighting in a social-predictive system" changes the language. It leaves the phenomenon untouched.</p>
+                    </div>
+
+                    <div class="pull-quote">
+                        A system that simulates moral rules has no more claim to genuine obligation than a calculator has to caring about the correct answer.
+                    </div>
+                </section>
+
+                <section id="three-options" class="mb-16 fade-in">
+                    <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-8">The Three Options</h3>
+
+                    <p class="prose-body mb-6">This leaves the materialist with three options, and only three.</p>
+
+                    <div class="space-y-4">
+                        <div class="category-card">
+                            <div class="flex items-start gap-4">
+                                <span class="section-badge">1</span>
+                                <div>
+                                    <h4 class="font-sans font-bold text-text-primary text-lg mb-2">Deny the Hard Problem</h4>
+                                    <p class="font-serif text-base text-text-secondary leading-relaxed">Deny that the hard problem is real &mdash; claim consciousness is an illusion, a category error, or a cognitive bias in how we report on our own states. This position is philosophically available. It does not explain experience. It removes the phenomenon from inquiry, which is not the same as solving it, and it requires the one making the claim to assert that their own experience of asserting it is itself an illusion &mdash; a position that is difficult to occupy with consistency.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-card">
+                            <div class="flex items-start gap-4">
+                                <span class="section-badge">2</span>
+                                <div>
+                                    <h4 class="font-sans font-bold text-text-primary text-lg mb-2">Provide the Reduction</h4>
+                                    <p class="font-serif text-base text-text-secondary leading-relaxed">Provide the reduction &mdash; show, not assert, how a fully relational description entails intrinsic existence. Demonstrate, formally, how physical states generate the felt quality of experience. This has not been done. The 357-theory taxonomy is the documented record of that failure across every approach the field has attempted.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-card" style="border-color: #14b8a6;">
+                            <div class="flex items-start gap-4">
+                                <span class="section-badge" style="background: #0d9488;">3</span>
+                                <div>
+                                    <h4 class="font-sans font-bold text-teal text-lg mb-2">Accept a New Primitive</h4>
+                                    <p class="font-serif text-base text-text-secondary leading-relaxed">Accept that a new primitive is required &mdash; that any complete account of reality must include a substrate whose states are intrinsically defined rather than purely relational, and that this substrate is not derivable from the relational structure of physics but is prior to it.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="logos-field" class="mb-16 fade-in">
+                    <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">The Logos Field</h3>
+
+                    <div class="prose-body">
+                        <p>The framework does not assert that this primitive is God. That is the conclusion the argument reaches, not the premise it begins with. The argument begins here: if a non-relational primitive is required, then the Logos field is its candidate &mdash; a substrate whose states are intrinsically coherent rather than relationally described, whose conservation law is <span class="font-mono text-teal">&nabla;&middot;&chi; = 0</span>, and whose operation is visible in the stability of physical law, the precision of the cosmological constants, the structure of the double-slit experiment, and the universal human recognition that right and wrong are not preferences but facts. The argument is ontological before it is theological. Theology is where the argument arrives when the constraints are followed to their conclusion without flinching.</p>
+                    </div>
+
+                    <div class="pull-quote">
+                        Theology is where the argument arrives when the constraints are followed to their conclusion without flinching.
+                    </div>
+                </section>
+
+                <!-- ADVERSARIAL NOTES -->
+                <section id="adversarial-notes" class="mb-16 fade-in">
+                    <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">Adversarial Notes</h3>
+                    <p class="font-sans text-sm text-text-secondary mb-6">April 10, 2026 &mdash; GPT raised three objections against Paper 01 as a foundation for the main paper argument. All three are addressed in the structure above.</p>
+
+                    <div class="space-y-6">
+                        <div class="adversarial-block">
+                            <h4 class="font-sans font-bold text-accent-warm text-base mb-3 mt-2">Objection 1: "357 failures" proves immaturity, not non-materialism.</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">Correct that non-solution alone does not prove non-materialism. The argument does not rest on that. It rests on the structural claim that relational description cannot in principle generate intrinsic experience &mdash; not that nobody has solved it yet, but that this class of explanation is categorically blocked from solving it. Immaturity would produce scattered failures across different problems. What the field shows is the same failure from every direction at the same point. That is a constraint, not a research lag.</p>
+                        </div>
+
+                        <div class="adversarial-block">
+                            <h4 class="font-sans font-bold text-accent-warm text-base mb-3 mt-2">Objection 2: Moral consciousness is modelable as emergent social cognition.</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">The materialist can describe the architecture of moral response in full. That description leaves untouched why those states carry normative force rather than simply aversive valence. "Feels binding" is the phenomenon. "Norm-tracking in a social-predictive architecture" names the mechanism. Mechanism and phenomenon are not the same category. Describing how shame is produced does not explain why it obligates. The objection succeeds in describing what the system does. It does not touch what the system experiences.</p>
+                        </div>
+
+                        <div class="adversarial-block">
+                            <h4 class="font-sans font-bold text-accent-warm text-base mb-3 mt-2">Objection 3: The scorecard criteria may be question-begging.</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">The argument above does not depend on the scorecard. The scorecard documents the pattern of failure. The constraint argument is independent of it: the argument identifies why the class of explanation fails structurally, not merely that it has failed historically. The minimum criterion &mdash; a theory must show how a physical state entails experience, not merely correlates with it &mdash; is the definition of the problem being addressed, not a criterion designed to produce a predetermined result. Any theory that rejects this criterion is not solving the hard problem. It is redefining it away.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===================== -->
+                <!-- PART II: HARD PROBLEM -->
+                <!-- ===================== -->
+
+                <div class="section-divider" id="part-ii">
+                    <span class="font-display font-bold text-sm text-teal tracking-widest uppercase whitespace-nowrap">Part II</span>
+                </div>
+
+                <section id="hard-problem" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        THE HARD PROBLEM
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-8">What It Actually Is</p>
+
+                    <div class="prose-body">
+                        <p>The contemporary landscape of consciousness research is defined by a fundamental rift between the objective study of physical systems and the subjective nature of experience. In 1995, David Chalmers formalized this rift by distinguishing the "hard problem" of consciousness from what he termed the "easy problems". This distinction serves as the primary axis around which Robert Lawrence Kuhn's 2024 taxonomy of 357 theories is organized, as it highlights the central challenge that any theory of mind must address or circumvent.</p>
+                    </div>
+
+                    <!-- Easy vs Hard comparison -->
+                    <div class="rounded-xl overflow-hidden border border-dark-border my-8">
+                        <div class="comparison-strip">
+                            <div class="left-col">
+                                <h4 class="font-sans font-bold text-teal text-base mb-3"><i class="fas fa-check-circle mr-2"></i>The "Easy" Problems</h4>
+                                <p class="font-serif text-base text-text-secondary leading-relaxed">The easy problems are those that fall within the traditional domain of cognitive science and neuroscience. They involve explaining the functional mechanisms of the brain, such as the ability to discriminate environmental stimuli, integrate information across different sensory modalities, focus attention on specific inputs, and control behavioral responses. These problems are considered "easy" not because they are simple to solve in a technical sense, but because their solution is conceptually straightforward: if a scientist can specify a neural or computational mechanism that performs the function, the problem is effectively solved. For instance, explaining how the brain integrates visual and auditory information into a unified perception is a massive technical challenge, but it does not require a revolutionary change in our understanding of physics or biology.</p>
+                            </div>
+                            <div class="right-col">
+                                <h4 class="font-sans font-bold text-accent-warm text-base mb-3"><i class="fas fa-exclamation-circle mr-2"></i>The "Hard" Problem</h4>
+                                <p class="font-serif text-base text-text-secondary leading-relaxed">The hard problem, by contrast, is the problem of experience itself&mdash;the subjective, qualitative aspect of being. It concerns the "what it is like" for an organism to have a specific state. When an individual sees a red apple, there is a physical process involving light waves, photoreceptors, and neural firing in the visual cortex. However, there is also a subjective experience of "redness" that accompanies this physical process. The hard problem asks why these physical processes are accompanied by any experience at all. Why doesn't the brain simply process information "in the dark," like a sophisticated computer or a philosophical zombie that behaves identically to a human but has no inner life?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="prose-body">
+                        <p>The hard problem is genuinely hard because it points to an "explanatory gap" that appears unbridgeable within current scientific frameworks. In typical scientific reduction, we explain a macro-phenomenon by showing how it arises from the behavior of its micro-parts. We explain heat as molecular motion or life as complex biological metabolism. In these cases, there is a conceptual necessity: if the molecules are moving in a certain way, it must be hot. With consciousness, there is no such conceptual necessity. One can imagine a perfectly functioning physical system that lacks experience entirely, suggesting that facts about consciousness are "further facts" over and above the physical facts.</p>
+                    </div>
+
+                    <h4 class="font-display font-bold text-xl text-text-primary mt-10 mb-5">Intellectual Lineage</h4>
+
+                    <!-- Timeline -->
+                    <div class="relative pl-8 border-l-2 border-teal/30 space-y-8 mb-8">
+                        <div class="relative">
+                            <div class="absolute -left-[2.55rem] top-1 w-5 h-5 bg-teal rounded-full border-4 border-dark"></div>
+                            <p class="font-sans font-bold text-sm text-teal mb-1">1714 &mdash; Leibniz's Mill</p>
+                            <p class="font-serif text-base text-text-secondary leading-relaxed">The intellectual lineage of this problem is long and diverse. It begins with Gottfried Leibniz's mill argument in 1714, where he invited us to imagine a machine capable of thought, enlarged to the size of a mill. Leibniz argued that if we walked inside, we would see only gears and levers&mdash;mechanical parts pushing one another&mdash;and nothing that could explain a perception. This highlights the early realization that mechanical or material structure alone seems insufficient to account for the unity of subjective awareness.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[2.55rem] top-1 w-5 h-5 bg-teal rounded-full border-4 border-dark"></div>
+                            <p class="font-sans font-bold text-sm text-teal mb-1">1974 &mdash; Nagel's Bat</p>
+                            <p class="font-serif text-base text-text-secondary leading-relaxed">In 1974, Thomas Nagel's seminal paper "What Is It Like to Be a Bat?" underscored the subjective character of experience as something that cannot be captured by third-person objective descriptions. Nagel argued that while we can understand the physical mechanisms of a bat's sonar, the subjective experience of perceiving through sonar remains inaccessible to us.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[2.55rem] top-1 w-5 h-5 bg-teal rounded-full border-4 border-dark"></div>
+                            <p class="font-sans font-bold text-sm text-teal mb-1">1982 &mdash; Jackson's Knowledge Argument</p>
+                            <p class="font-serif text-base text-text-secondary leading-relaxed">This was followed by Frank Jackson's Knowledge Argument in 1982, featuring Mary, a scientist who knows all the physical facts about color but has never seen it. Jackson argued that when Mary finally sees red, she learns a new fact&mdash;the "what it is like" of redness&mdash;which proves that physicalism is incomplete.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[2.55rem] top-1 w-5 h-5 bg-teal rounded-full border-4 border-dark"></div>
+                            <p class="font-sans font-bold text-sm text-teal mb-1">1983 &mdash; Levine's Explanatory Gap</p>
+                            <p class="font-serif text-base text-text-secondary leading-relaxed">In 1983, Joseph Levine coined the term "explanatory gap" to describe our inability to explain why specific neural states produce specific qualitative experiences.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[2.55rem] top-1 w-5 h-5 bg-teal rounded-full border-4 border-dark"></div>
+                            <p class="font-sans font-bold text-sm text-teal mb-1">1995 &mdash; Chalmers' Formalization</p>
+                            <p class="font-serif text-base text-text-secondary leading-relaxed">Finally, Chalmers' 1995 formalization synthesized these threads, forcing the scientific community to acknowledge that functional explanations do not automatically yield an explanation of phenomenality.</p>
+                        </div>
+                    </div>
+
+                    <div class="insight-box">
+                        <p class="font-sans font-semibold text-teal text-sm uppercase tracking-wider mb-2"><i class="fas fa-bullseye mr-2"></i>What a Solution Requires</p>
+                        <p class="font-serif text-lg text-text-primary leading-relaxed">To "solve" the hard problem would require a theory that makes the transition from physical substrate to subjective experience intelligible, either by showing a necessary connection or by demonstrating that consciousness is a fundamental property of the universe. Redefining the question (e.g., by claiming that consciousness is just functional reportability) or "dissolving" it (e.g., by claiming experience is an illusion) does not solve the problem but rather denies its existence. A genuine solution must provide an explanatory bridge that is as rigorous as the link between molecular motion and temperature.</p>
+                    </div>
+                </section>
+
+                <!-- WHY 357 -->
+                <section id="why-357" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        WHY 357 THEORIES?
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-8">A Uniquely Fragmented Field</p>
+
+                    <div class="prose-body">
+                        <p>The existence of 357 distinct theories of consciousness, as documented in Robert Lawrence Kuhn's 2024 taxonomy, is a phenomenon unique in the history of science. While other major unsolved problems&mdash;such as the nature of dark matter, the mechanism of quantum gravity, or the origin of life&mdash;are characterized by intense debate, they typically feature only a handful of dominant theoretical frameworks with specific variations. In dark matter research, for instance, the field is largely divided between candidates like WIMPs, axions, and modified gravity models. The origin of life field focuses on "RNA world," "metabolism-first," or "vent-first" hypotheses. None of these fields exhibit the level of fragmentation seen in consciousness studies, where theories range from standard neurobiology to higher-dimensional physics and ancient mystical traditions.</p>
+
+                        <p>This proliferation is a sign of foundational confusion about the very nature of the subject matter. In most sciences, there is a consensus on what counts as data and what a successful explanation looks like. In consciousness research, there is no such agreement. Some researchers believe that mapping neural correlates (NCC) is the primary goal, while others argue that the NCC only address the easy problems and leave the hard problem untouched. The field is essentially operating without a unified paradigm, resulting in what Thomas Kuhn described as "pre-paradigmatic" science, where every researcher is forced to build the field from its foundations.</p>
+
+                        <p>Sociological and institutional factors play a critical role in this fragmentation. Consciousness is a "multidisciplinary problem" that sits at the intersection of philosophy, neuroscience, psychology, physics, and computer science. Each of these departments has its own institutional inertia, starting assumptions, and criteria for evidence.</p>
+                    </div>
+
+                    <h4 class="font-display font-bold text-xl text-text-primary mt-10 mb-5">The 5 Fundamental Binary Questions</h4>
+                    <p class="font-serif text-base text-text-secondary mb-6">The fragmentation is further driven by 3-5 fundamental binary questions where the choice of an answer leads to an entirely different branch of the taxonomy:</p>
+
+                    <div class="space-y-3 mb-8">
+                        <div class="binary-question">
+                            <span class="binary-number">1.</span>
+                            <p class="font-serif text-base text-text-primary">Is consciousness fundamental or emergent?</p>
+                        </div>
+                        <div class="binary-question">
+                            <span class="binary-number">2.</span>
+                            <p class="font-serif text-base text-text-primary">Is the physical world causally closed?</p>
+                        </div>
+                        <div class="binary-question">
+                            <span class="binary-number">3.</span>
+                            <p class="font-serif text-base text-text-primary">Is experience a real phenomenon or an illusion?</p>
+                        </div>
+                        <div class="binary-question">
+                            <span class="binary-number">4.</span>
+                            <p class="font-serif text-base text-text-primary">Is the explanatory gap ontological or merely epistemic?</p>
+                        </div>
+                        <div class="binary-question">
+                            <span class="binary-number">5.</span>
+                            <p class="font-serif text-base text-text-primary">Does consciousness require non-classical physics?</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10 CATEGORIES -->
+                <section id="ten-categories" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        THE 10 CATEGORIES
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-10">What Each Claims and Where Each Breaks</p>
+
+                    <div class="space-y-6">
+
+                        <!-- Cat 1: Materialism -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">1</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Materialism</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">161 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Consciousness is entirely a product of, or identical to, physical processes and structures within the brain.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Strongest Version</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Global Workspace Theory (GWT), developed by Bernard Baars and Stanislas Dehaene.</p>
+                            <p class="font-sans text-sm font-semibold text-teal mb-1">Explanatory Success</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Materialism excels at identifying the neural correlates of consciousness (NCC) and explaining functional states like attention, reportability, and wakefulness.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">It cannot explain why any physical process is accompanied by subjective "feeling". It describes the how of the brain's mechanism but systematically fails to address the why of phenomenality.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">Published axioms: Partial; Quantitative predictions: Yes; Defeat conditions: Yes; Empirical confirmation: High (&gt;3&sigma; for NCC correlations).</p>
+                        </div>
+
+                        <!-- Cat 2: Non-Reductive Physicalism -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">2</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Non-Reductive Physicalism</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">11 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Mental properties are real and irreducible but supervene on a physical substrate without being identical to it.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">It struggles with the "causal exclusion" problem.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">Axioms: No; Quantitative predictions: No; Defeat conditions: No; Empirical confirmation: Low.</p>
+                        </div>
+
+                        <!-- Cat 3: Quantum -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">3</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Quantum &amp; Dimensions</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">25 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Consciousness originates from quantum mechanical processes or exists within non-physical dimensions of spacetime.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Strongest Version</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Orchestrated Objective Reduction (Orch-OR) by Penrose and Hameroff.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">The "decoherence" problem.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">Axioms: Yes; Quantitative predictions: Yes; Defeat conditions: Yes; Empirical confirmation: None.</p>
+                        </div>
+
+                        <!-- Cat 4: Information -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">4</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Information</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">12 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Consciousness is a fundamental property of specific, highly integrated informational architectures.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Strongest Version</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Integrated Information Theory (IIT) by Giulio Tononi.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">The "Unfolding Argument".</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">Axioms: Yes; Quantitative predictions: Yes; Defeat conditions: Yes; Empirical confirmation: Partial.</p>
+                        </div>
+
+                        <!-- Cat 5: Panpsychism -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">5</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Panpsychism</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">17 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Consciousness is a fundamental and ubiquitous feature of all matter.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">The "Combination Problem".</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">Axioms: No; Quantitative predictions: No; Defeat conditions: No; Empirical confirmation: None.</p>
+                        </div>
+
+                        <!-- Cat 6: Monism -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">6</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Monism</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">13 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">There is only one underlying substance that is neither mental nor physical.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">It fails to define what the "neutral" substance is.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">No formal markers.</p>
+                        </div>
+
+                        <!-- Cat 7: Dualism -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">7</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Dualism</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">30 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Mind and body are two distinct substances or types of properties.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">The "Interaction Problem".</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">No formal markers.</p>
+                        </div>
+
+                        <!-- Cat 8: Idealism -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">8</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Idealism</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">30 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Consciousness is the primary, ultimate reality.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">It fails to explain why the external world behaves with mathematical consistency.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">No formal markers.</p>
+                        </div>
+
+                        <!-- Cat 9: Anomalous -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">9</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Anomalous &amp; Altered States</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">27 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Consciousness can only be understood by examining its most extreme manifestations.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Lacks rigorous, repeatable methodology.</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">Low.</p>
+                        </div>
+
+                        <!-- Cat 10: Challenge -->
+                        <div class="category-card">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="section-badge text-lg">10</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-xl text-text-primary">Challenge</h4>
+                                    <span class="font-sans text-xs font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">18 Theories</span>
+                                </div>
+                            </div>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Core Ontological Commitment</p>
+                            <p class="font-serif text-base text-text-primary mb-3">Our current frameworks are fundamentally inadequate.</p>
+                            <p class="font-sans text-sm font-semibold text-accent-warm mb-1">The Fatal Gap</p>
+                            <p class="font-serif text-base text-text-primary mb-3">It is a "science-stopper".</p>
+                            <p class="font-sans text-sm font-semibold text-text-secondary mb-1">Formal Status</p>
+                            <p class="font-serif text-sm text-text-muted">None.</p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- SCORECARD -->
+                <section id="scorecard" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        THE SCORECARD
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-8">How 357 Theories Measure Against 9 Criteria</p>
+
+                    <div class="rounded-2xl shadow-lg border border-dark-border p-4 md:p-6 overflow-x-auto" style="background: #0a0a0a;">
+                        <table class="scorecard-table">
+                            <thead>
+                                <tr>
+                                    <th style="min-width:130px;">Category</th>
+                                    <th>Formal Axioms</th>
+                                    <th>Quant. Predictions</th>
+                                    <th>Defeat Conditions</th>
+                                    <th>Empirical Confirm.</th>
+                                    <th>Handles Hard Problem</th>
+                                    <th>Binding Problem</th>
+                                    <th>Moral Consciousness</th>
+                                    <th>Complete Causal Chain</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Materialism</td>
+                                    <td class="cell-partial">Partial</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-yes">&gt;3&sigma; (NCC)</td>
+                                    <td class="cell-special">Dissolves</td>
+                                    <td class="cell-partial">Partially</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Non-Reductive Phys.</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-none">None</td>
+                                    <td class="cell-special">Acknowledges</td>
+                                    <td class="cell-partial">Partially</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Quantum &amp; Dim.</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-none">None</td>
+                                    <td class="cell-special">Acknowledges</td>
+                                    <td class="cell-partial">Partially</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Information</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-partial">&lt;3&sigma;</td>
+                                    <td class="cell-special">Acknowledges</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Panpsychism</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-none">None</td>
+                                    <td class="cell-special">Acknowledges</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Monism</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-none">None</td>
+                                    <td class="cell-special">Acknowledges</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Dualism</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-none">None</td>
+                                    <td class="cell-special">Solves (Asserts)</td>
+                                    <td class="cell-partial">Partially</td>
+                                    <td class="cell-partial">Partially</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Idealism</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-none">None</td>
+                                    <td class="cell-special">Dissolves (Reverses)</td>
+                                    <td class="cell-yes">Yes</td>
+                                    <td class="cell-partial">Partially</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Anomalous States</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-partial">Partial</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-none">Low</td>
+                                    <td class="cell-special">Ignores</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                                <tr>
+                                    <td>Challenge</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-none">None</td>
+                                    <td class="cell-special">Ignores</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                    <td class="cell-no">No</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-6 p-4 rounded-lg border" style="background: rgba(20,184,166,0.05); border-color: rgba(20,184,166,0.15);">
+                        <p class="font-sans text-sm text-text-secondary"><i class="fas fa-info-circle text-teal mr-2"></i><strong class="text-text-primary">Reading the scorecard:</strong> The final column &mdash; Complete Causal Chain &mdash; is <strong class="text-accent-warm">No</strong> for every category. No existing theory provides a complete causal account from physical substrate to subjective experience. This is the constraint made visible.</p>
+                    </div>
+                </section>
+
+                <!-- STRUCTURAL PATTERNS -->
+                <section id="structural-patterns" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        STRUCTURAL PATTERNS
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-10">Across All 357</p>
+
+                    <!-- Measurement Problem -->
+                    <div id="measurement-problem" class="mb-12">
+                        <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">The Measurement Problem and the Formalism Gap</h3>
+                        <div class="prose-body">
+                            <p>The most rigorous theories of consciousness &mdash; those with formal axioms, quantitative predictions, and defined defeat conditions &mdash; are also the ones whose empirical predictions have not been confirmed. IIT, for example, makes precise claims about the structure of consciousness (measured by &Phi;), but the measurement of &Phi; for any non-trivial system is computationally intractable. Orch-OR makes predictions about quantum coherence in microtubules, but the predicted timescales remain below the threshold of detection. The theories that are most empirically successful (like GWT within materialism) are the ones that do not address the hard problem at all.</p>
+                            <p>This creates a paradox: the more precisely a theory addresses subjective experience, the less testable it becomes; the more testable it is, the more it avoids the core question. This is not coincidence. It reflects the fundamental difficulty of formalizing a phenomenon that is, by definition, accessible only from a first-person perspective.</p>
+                        </div>
+                    </div>
+
+                    <!-- Qualia Wall -->
+                    <div id="qualia-wall" class="mb-12">
+                        <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">The Qualia Wall: Same Wall, Different Disguises</h3>
+
+                        <div class="pull-quote">
+                            Every theory that attempts a reductive explanation hits the same wall at the same point: the transition from objective description to subjective experience.
+                        </div>
+
+                        <div class="prose-body">
+                            <p>Every theory that attempts a reductive explanation hits the same wall at the same point: the transition from objective description to subjective experience. The taxonomy reveals that this wall takes different forms depending on the theoretical framework, but it is structurally identical in every case:</p>
+                        </div>
+
+                        <div class="space-y-3 my-6">
+                            <div class="flex items-start gap-3 p-4 rounded-lg border-l-3 border-teal" style="background: #111111;">
+                                <i class="fas fa-brain text-teal mt-1"></i>
+                                <p class="font-serif text-base text-text-primary"><strong class="font-sans text-sm text-teal">Materialism:</strong> "Neural correlates are not explanations of experience."</p>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 rounded-lg border-l-3 border-teal" style="background: #111111;">
+                                <i class="fas fa-atom text-teal mt-1"></i>
+                                <p class="font-serif text-base text-text-primary"><strong class="font-sans text-sm text-teal">Quantum:</strong> "Quantum states are not explanations of experience."</p>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 rounded-lg border-l-3 border-teal" style="background: #111111;">
+                                <i class="fas fa-network-wired text-teal mt-1"></i>
+                                <p class="font-serif text-base text-text-primary"><strong class="font-sans text-sm text-teal">Information:</strong> "Integrated information is not an explanation of experience."</p>
+                            </div>
+                            <div class="flex items-start gap-3 p-4 rounded-lg border-l-3 border-teal" style="background: #111111;">
+                                <i class="fas fa-circle-nodes text-teal mt-1"></i>
+                                <p class="font-serif text-base text-text-primary"><strong class="font-sans text-sm text-teal">Panpsychism:</strong> "Proto-experience is not an explanation of unified experience."</p>
+                            </div>
+                        </div>
+
+                        <div class="prose-body">
+                            <p>The common structure is: [Third-person description] + [gap] = [First-person experience]. No theory in the taxonomy provides a principled account of how to cross this gap. Those that claim to solve it either redefine the problem (eliminativism) or assert the connection without explaining it (dualism, idealism).</p>
+                        </div>
+                    </div>
+
+                    <!-- Binding Problem -->
+                    <div id="binding-problem" class="mb-12">
+                        <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">The Binding Problem and the Unity of Consciousness</h3>
+                        <div class="prose-body">
+                            <p>Only a handful of theories even attempt to address the binding problem: how the brain produces a unified experience from distributed neural processes. IIT's concept of &Phi; provides a mathematical measure of integration, and GWT's "global workspace" provides a functional model for information sharing. However, neither explains why integrated information or globally broadcast signals should produce a unified subjective experience rather than a collection of independent micro-experiences.</p>
+                            <p>The binding problem is, in a sense, the hard problem applied to the structure of experience rather than its existence. It adds an additional constraint: not only must a successful theory explain why experience exists, it must also explain why it is unified. This double constraint is not met by any theory in the taxonomy.</p>
+                        </div>
+                    </div>
+
+                    <!-- Observer Problem -->
+                    <div id="observer-problem" class="mb-12">
+                        <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">The Observer Problem: Explaining vs. Grounding</h3>
+                        <div class="prose-body">
+                            <p>Across the taxonomy, there is a persistent confusion between theories that explain consciousness (provide a causal or constitutive account of why experience arises) and theories that ground consciousness (identify it as a fundamental feature of the universe without explaining why it exists). Panpsychism and idealism, for instance, do not explain consciousness so much as assume it. This is not a criticism unique to these frameworks &mdash; physics similarly does not "explain" why gravity exists, only how it behaves. However, for consciousness, the distinction between explanation and grounding is particularly consequential because the very existence of the phenomenon is what is in question.</p>
+                            <p>A theory that merely posits consciousness as fundamental has not solved the hard problem. It has relocated it. The hard problem becomes: why does this particular type of fundamental property exist, and why does it have the specific character it does?</p>
+                        </div>
+                    </div>
+
+                    <!-- Consciousness of What? -->
+                    <div id="consciousness-of-what" class="mb-12">
+                        <h3 class="font-display font-bold text-2xl md:text-3xl text-text-primary mb-6">Consciousness of What?</h3>
+                        <div class="prose-body">
+                            <p>The taxonomy reveals a striking diversity in what theorists believe consciousness is about. For materialists, consciousness is fundamentally about neural information. For quantum theorists, it is about quantum state collapse. For panpsychists, it is about fundamental proto-experience. For idealists, it is about the fundamental nature of reality itself. This diversity reflects the pre-paradigmatic nature of the field: there is no agreement on the basic ontology of the subject matter.</p>
+                            <p>More deeply, there is a distinction between theories that address the content of consciousness (what we experience) and theories that address the existence of consciousness (that we experience). Most theories are implicitly about content &mdash; they explain how information is selected, integrated, or broadcast &mdash; while the hard problem is about existence. This category confusion is endemic and accounts for much of the "talking past each other" that characterizes debates in the field.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HIDDEN CONSENSUS -->
+                <section id="hidden-consensus" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        WHAT THEY ALL SHARE
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-8">The Hidden Consensus</p>
+
+                    <div class="prose-body mb-6">
+                        <p>Despite the apparent fragmentation, the taxonomy reveals a hidden consensus &mdash; a set of conclusions that virtually all 357 theories implicitly accept:</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-5 rounded-xl border" style="background: rgba(20,184,166,0.03); border-color: rgba(20,184,166,0.15);">
+                            <span class="section-badge flex-shrink-0">1</span>
+                            <div>
+                                <h4 class="font-sans font-bold text-text-primary mb-1">Consciousness is real</h4>
+                                <p class="font-serif text-base text-text-secondary leading-relaxed">Even eliminativists, who deny qualia, implicitly affirm that there is something to be eliminated. The debate is about what consciousness is, not whether there is a phenomenon to be explained.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-5 rounded-xl border" style="background: rgba(20,184,166,0.03); border-color: rgba(20,184,166,0.15);">
+                            <span class="section-badge flex-shrink-0">2</span>
+                            <div>
+                                <h4 class="font-sans font-bold text-text-primary mb-1">It is correlated with physical processes</h4>
+                                <p class="font-serif text-base text-text-secondary leading-relaxed">No theory denies the neural correlates of consciousness. The debate is about whether these correlates are constitutive, causal, or merely co-occurring.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-5 rounded-xl border" style="background: rgba(20,184,166,0.03); border-color: rgba(20,184,166,0.15);">
+                            <span class="section-badge flex-shrink-0">3</span>
+                            <div>
+                                <h4 class="font-sans font-bold text-text-primary mb-1">The easy problems are tractable</h4>
+                                <p class="font-serif text-base text-text-secondary leading-relaxed">There is near-universal agreement that functional accounts of attention, integration, and report are achievable through normal scientific means.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-5 rounded-xl border" style="background: rgba(20,184,166,0.03); border-color: rgba(20,184,166,0.15);">
+                            <span class="section-badge flex-shrink-0">4</span>
+                            <div>
+                                <h4 class="font-sans font-bold text-text-primary mb-1">Something about consciousness resists standard explanation</h4>
+                                <p class="font-serif text-base text-text-secondary leading-relaxed">Whether framed as the hard problem, the explanatory gap, or the knowledge argument, every major framework acknowledges that consciousness poses a unique challenge that other natural phenomena do not.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-5 rounded-xl border" style="background: rgba(20,184,166,0.03); border-color: rgba(20,184,166,0.15);">
+                            <span class="section-badge flex-shrink-0">5</span>
+                            <div>
+                                <h4 class="font-sans font-bold text-text-primary mb-1">No theory has solved the hard problem</h4>
+                                <p class="font-serif text-base text-text-secondary leading-relaxed">This is the most significant consensus. Across 357 theories, spanning every ontological commitment and methodological approach, not one provides a complete, empirically confirmed, causally explicit account of how subjective experience arises from (or relates to) the physical world.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BLIND SPOTS -->
+                <section id="blind-spots" class="mb-16 fade-in">
+                    <h2 class="font-display font-bold text-4xl md:text-5xl text-text-primary mb-2 tracking-tight leading-tight">
+                        SYSTEMATIC BLIND SPOTS
+                    </h2>
+                    <p class="font-sans text-lg text-teal font-medium mb-8">What No Theory Addresses</p>
+
+                    <div class="prose-body mb-6">
+                        <p>The taxonomy also reveals five areas that are systematically neglected across all 357 theories. These are not minor omissions &mdash; they represent fundamental aspects of consciousness that are simply not addressed by the current theoretical landscape:</p>
+                    </div>
+
+                    <div class="space-y-8">
+
+                        <div class="insight-box" id="blind-spot-1">
+                            <h4 class="font-display font-bold text-xl text-text-primary mb-3"><span class="text-teal mr-2">I.</span>The Missing Causal Chain</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">No theory provides a complete causal chain from physical substrate to subjective experience. Even the most rigorous theories (IIT, GWT, Orch-OR) identify correlates or structural features associated with consciousness, but none demonstrate, step by step, how physical states produce qualitative experience. The gap between "this neural pattern correlates with seeing red" and "this is why there is something it is like to see red" remains unbridged.</p>
+                        </div>
+
+                        <div class="insight-box" id="blind-spot-2">
+                            <h4 class="font-display font-bold text-xl text-text-primary mb-3"><span class="text-teal mr-2">II.</span>The Problem of Moral Consciousness</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">The experience of moral obligation &mdash; the felt sense that one should or should not do something &mdash; is almost entirely absent from the theoretical landscape. Most theories focus on perceptual consciousness (seeing colors, hearing sounds) and neglect the distinctively moral character of certain conscious states. The experience of guilt, moral horror, or the sense of justice is qualitatively different from the experience of seeing red, yet the theoretical tools brought to bear on consciousness rarely acknowledge this dimension.</p>
+                        </div>
+
+                        <div class="insight-box" id="blind-spot-3">
+                            <h4 class="font-display font-bold text-xl text-text-primary mb-3"><span class="text-teal mr-2">III.</span>The Specific Character of Qualia</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">Even theories that address the existence of qualia (why there is something it is like) fail to address the specificity of qualia (why seeing red feels the way it does rather than some other way). The "palette problem" &mdash; why the qualitative character of red is what it is &mdash; is a deeper version of the hard problem that no current theory even attempts to solve.</p>
+                        </div>
+
+                        <div class="insight-box" id="blind-spot-4">
+                            <h4 class="font-display font-bold text-xl text-text-primary mb-3"><span class="text-teal mr-2">IV.</span>Teleology and Meaning</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">The experience of meaning &mdash; the sense that life has purpose, that actions matter, that the universe is not merely indifferent &mdash; is a pervasive feature of human consciousness that is completely absent from theoretical treatments. This is partly because teleology has been systematically excluded from scientific explanation since the Scientific Revolution. However, meaning is a feature of consciousness, and a complete theory should account for it rather than dismissing it as an illusion produced by evolutionary pressures.</p>
+                        </div>
+
+                        <div class="insight-box" id="blind-spot-5">
+                            <h4 class="font-display font-bold text-xl text-text-primary mb-3"><span class="text-teal mr-2">V.</span>Integration of First-Person and Third-Person Methodologies</h4>
+                            <p class="font-serif text-base text-text-primary leading-relaxed">The field remains divided between third-person scientific methods (neuroscience, psychology) and first-person phenomenological methods (introspection, meditation). No theory provides a principled integration of these approaches. The result is that theories are either empirically rigorous but phenomenologically impoverished, or phenomenologically rich but empirically ungrounded. A complete theory of consciousness would need to bridge this methodological gap, but no current framework even proposes how to do so.</p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- CLOSING -->
+                <div class="section-divider">
+                    <span class="font-display font-bold text-sm text-teal tracking-widest uppercase whitespace-nowrap"><i class="fas fa-circle text-xs"></i></span>
+                </div>
+
+                <div class="text-center py-12 mb-8">
+                    <p class="font-sans text-sm text-text-secondary uppercase tracking-widest mb-3">Consciousness Series &mdash; Page 1 of 12</p>
+                    <p class="font-display font-bold text-2xl text-text-primary mb-2">Theophysics Research Program</p>
+                    <p class="font-sans text-sm text-text-secondary">David Lowe + Claude (Opus 4.6)</p>
+                    <p class="font-sans text-xs text-text-muted mt-4">Papers 00 &amp; 01 Combined &mdash; April 2026</p>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t py-8" style="background: #0a0a0a; border-color: #222;">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <p class="font-sans text-xs text-text-muted">&copy; 2026 David Lowe &mdash; Theophysics Research Program. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+        });
+
+        // Fade-in on scroll
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+        // Mobile TOC
+        const btn = document.getElementById('mobileTocBtn');
+        const overlay = document.getElementById('mobileTocOverlay');
+        const panel = document.getElementById('mobileTocPanel');
+        const closeBtn = document.getElementById('mobileTocClose');
+
+        // Clone desktop TOC links to mobile
+        const desktopNav = document.querySelector('.toc-sidebar');
+        const mobileNav = document.getElementById('mobileTocNav');
+        if (desktopNav && mobileNav) {
+            mobileNav.innerHTML = desktopNav.innerHTML;
+            mobileNav.querySelectorAll('p.font-display').forEach(p => p.remove()); // remove the "Contents" title duplicate
+        }
+
+        function openMobileToc() { overlay.classList.add('open'); panel.classList.add('open'); }
+        function closeMobileToc() { overlay.classList.remove('open'); panel.classList.remove('open'); }
+        btn.addEventListener('click', openMobileToc);
+        overlay.addEventListener('click', closeMobileToc);
+        closeBtn.addEventListener('click', closeMobileToc);
+        mobileNav.addEventListener('click', (e) => { if (e.target.tagName === 'A') closeMobileToc(); });
+
+        // Active TOC link tracking
+        const tocLinks = document.querySelectorAll('.toc-sidebar .toc-link');
+        const sections = [];
+        tocLinks.forEach(link => {
+            const id = link.getAttribute('href')?.substring(1);
+            if (id) { const el = document.getElementById(id); if (el) sections.push({ id, el, link }); }
+        });
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => {
+                const rect = s.el.getBoundingClientRect();
+                if (rect.top <= 120) current = s.id;
+            });
+            tocLinks.forEach(l => l.classList.remove('active'));
+            sections.forEach(s => { if (s.id === current) s.link.classList.add('active'); });
+        });
+    </script>
+
+<script src="/components/tp-inject.js" data-theme="dark"></script>
+</body>
+</html>

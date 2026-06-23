@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Thermodynamics of Grace — David Lowe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0a09;--surface:#131210;--surface2:#1a1916;--surface3:#22211d;
+  --border:rgba(193,127,62,.12);--border-h:rgba(193,127,62,.30);
+  --copper:#c17f3e;--copper-l:#d9a066;--copper-dim:rgba(193,127,62,.06);--copper-glow:rgba(193,127,62,.15);
+  --cream:#ede6d6;--cream-d:#a89f8b;--cream-m:#6b6456;--ink:#d4cfc3;--white:#f5f0e6;
+  --sage:#7a8c6e;--sage-dim:rgba(122,140,110,.08);
+  --slate:#6b8fbf;--slate-dim:rgba(107,143,191,.08);
+  --red:#c87070;--red-dim:rgba(200,60,60,.06);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;font-size:1.08rem;line-height:1.82;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 30% -10%,rgba(193,127,62,.04) 0%,transparent 50%),radial-gradient(ellipse at 70% 110%,rgba(193,127,62,.02) 0%,transparent 50%)}
+::selection{background:rgba(193,127,62,.25);color:var(--white)}
+.display{font-family:'Playfair Display',Georgia,serif}
+.serif{font-family:'Source Serif 4',Georgia,serif}
+.sans{font-family:'Inter',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.page{max-width:780px;margin:0 auto;padding:0 2rem}
+
+.top-bar{border-bottom:1px solid var(--border);padding:1rem 0}
+.top-bar .inner{max-width:780px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between}
+.series-mark{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--cream-m)}
+.series-mark span{color:var(--copper)}
+.top-nav{display:flex;gap:1.4rem}
+.top-nav a{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cream-m);text-decoration:none;transition:color .25s}
+.top-nav a:hover{color:var(--copper-l)}
+
+.hero{padding:6rem 0 4rem;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80px;height:1px;background:var(--copper);opacity:.4}
+.hero-number{font-family:'Playfair Display',serif;font-size:clamp(5rem,12vw,8rem);font-weight:900;color:rgba(193,127,62,.06);line-height:1;margin-bottom:-1.5rem}
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;color:var(--copper);display:block;margin-bottom:1.8rem;position:relative;z-index:1}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5.5vw,3.8rem);font-weight:700;color:var(--white);line-height:1.1;margin-bottom:.8rem;letter-spacing:-.02em;position:relative;z-index:1}
+.hero h1 em{font-style:italic;color:var(--copper-l);font-weight:400}
+.hero .subtitle{font-family:'Playfair Display',serif;font-size:1.15rem;font-style:italic;color:var(--cream-d);margin-bottom:1.5rem}
+.hero .byline{font-family:'Inter',sans-serif;font-size:.85rem;color:var(--cream-m);letter-spacing:.05em}
+
+.section{padding:3.5rem 0;position:relative}
+.section+.section{border-top:1px solid var(--border)}
+.section-num{font-family:'Playfair Display',serif;font-size:4rem;font-weight:900;color:rgba(193,127,62,.05);position:absolute;top:2rem;right:0;line-height:1;pointer-events:none}
+h2{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--white);margin-bottom:1.8rem;line-height:1.2}
+h2 .part-label{display:block;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;color:var(--copper);margin-bottom:.6rem;font-weight:400}
+p{margin-bottom:1.4rem}
+strong{color:var(--white);font-weight:600}
+em{color:var(--copper-l)}
+
+.pull-quote{border-left:3px solid var(--copper);padding:1.5rem 0 1.5rem 2rem;margin:2.5rem 0}
+.pull-quote p{font-family:'Playfair Display',serif;font-size:1.35rem;font-style:italic;color:var(--cream);line-height:1.6;margin-bottom:0}
+
+/* Thesis block */
+.thesis-block{
+  background:linear-gradient(135deg,var(--surface2),var(--surface));
+  border:2px solid var(--copper);border-radius:10px;
+  padding:2.5rem;margin:0 0 3rem;
+}
+.thesis-block .label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;color:var(--copper);margin-bottom:1rem;display:block}
+.thesis-block .problem{color:var(--cream-d);margin-bottom:1rem}
+.thesis-block .answer{color:var(--white);font-size:1.05rem}
+
+/* Law card */
+.law-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:2rem;margin:1.5rem 0;
+  border-left:3px solid var(--copper);
+}
+.law-card .tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--copper);margin-bottom:.8rem;display:block}
+.law-card h4{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--white);margin-bottom:.8rem}
+
+/* Isomorphism grid */
+.iso-grid{display:grid;grid-template-columns:1fr 60px 1fr;gap:0;margin:2rem 0;align-items:center}
+.iso-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;text-align:center}
+.iso-box .domain{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:.8rem;display:block}
+.iso-box.physics .domain{color:var(--slate)}
+.iso-box.theology .domain{color:var(--copper)}
+.iso-box p{font-size:.95rem;color:var(--cream-d);margin-bottom:0}
+.iso-box strong{color:var(--white)}
+.iso-equals{text-align:center;font-family:'Playfair Display',serif;font-size:2rem;color:var(--copper);font-weight:700}
+
+/* Heat sink visual */
+.heat-sink{
+  background:radial-gradient(ellipse at center,rgba(193,127,62,.06) 0%,var(--surface) 70%);
+  border:1px solid var(--border);border-radius:10px;
+  padding:3rem 2rem;margin:2rem 0;text-align:center;
+}
+.heat-sink h4{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--copper-l);margin-bottom:1.2rem}
+.heat-sink .exchange{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;
+  align-items:center;max-width:500px;margin:1.5rem auto;
+}
+.heat-sink .side{padding:1rem;border-radius:6px;font-size:.9rem}
+.heat-sink .entropy{background:var(--red-dim);border:1px solid rgba(200,60,60,.15);color:var(--red)}
+.heat-sink .order{background:var(--sage-dim);border:1px solid rgba(122,140,110,.2);color:var(--sage)}
+.heat-sink .arrow{font-size:1.5rem;color:var(--copper)}
+
+/* Conclusion block */
+.conclusion-block{
+  background:linear-gradient(135deg,var(--surface2),var(--surface));
+  border:2px solid var(--copper);border-radius:10px;
+  padding:2.5rem;margin:2.5rem 0;text-align:center;
+}
+.conclusion-block .final{
+  font-family:'Playfair Display',serif;font-size:1.4rem;
+  color:var(--copper-l);font-style:italic;margin-bottom:1rem;
+}
+.conclusion-block .killer{
+  font-family:'Source Serif 4',serif;font-size:1.1rem;
+  color:var(--cream-d);
+}
+
+footer{border-top:1px solid var(--border);padding:3rem 0;text-align:center}
+footer p{font-family:'Inter',sans-serif;font-size:.75rem;color:var(--cream-m);letter-spacing:.05em}
+
+@media(max-width:640px){
+  .page{padding:0 1.2rem}
+  .hero{padding:4rem 0 3rem}
+  .hero-number{font-size:4rem}
+  .section{padding:2.5rem 0}
+  .section-num{display:none}
+  .iso-grid{grid-template-columns:1fr;gap:.8rem}
+  .iso-equals{transform:rotate(90deg)}
+  .heat-sink .exchange{grid-template-columns:1fr;gap:.5rem}
+}
+</style>
+<script id="article-meta" type="application/json">
+{
+  "slug": "08-the-thermodynamics-of-grace",
+  "title": "The Thermodynamics of Grace — David Lowe",
+  "series": "faith-through-physics",
+  "classification": [
+    {
+      "tag": "theophysics",
+      "pct": 100,
+      "color": "#d4af37"
+    }
+  ],
+  "reading_levels": [
+    "story",
+    "plain"
+  ],
+  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
+}
+</script>
+</head>
+<body>
+
+<nav class="top-bar">
+  <div class="inner">
+    <div class="series-mark"><span>Cross-Domain</span> Coherence Series</div>
+    <div class="top-nav">
+      <a href="07-master-coherence-analysis.html">Prev</a>
+      <a href="#" class="on">08 of 12</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero page">
+  <div class="hero-number">08</div>
+  <span class="hero-tag">Theological Engineering · Proof 03</span>
+  <h1>The Thermodynamics of <em>Grace</em></h1>
+  <p class="subtitle">Proving Sola Gratia via Entropy</p>
+  <p class="byline"><strong>David Lowe</strong> · Theophysics Research Program</p>
+</header>
+
+<article class="page">
+
+<!-- THESIS BLOCK -->
+<div class="thesis-block">
+  <span class="label">The Argument</span>
+  <p class="problem"><strong>The Problem:</strong> Can humans earn salvation through works? (Pelagianism/Arminianism)</p>
+  <p class="answer"><strong>The Theophysical Proof:</strong> A closed system cannot decrease its own entropy (2nd Law of Thermodynamics). Sin is "Moral Entropy." Therefore, self-salvation is physically impossible. Negentropy (Salvation) <em>must</em> come from an External Operator (Grace).</p>
+</div>
+
+<!-- 1. THE CLOSED SYSTEM PROBLEM -->
+<section class="section">
+  <span class="section-num">01</span>
+  <h2><span class="part-label">Section 1</span>The Closed System Problem</h2>
+
+  <p>The Human Soul, left to itself, is a <strong>Closed System</strong>.</p>
+
+  <div class="law-card">
+    <span class="tag">Second Law of Thermodynamics</span>
+    <h4>In a closed system, entropy ($\Delta S$) always increases.</h4>
+    <p><strong>Translation:</strong> Without God, we get worse, not better. We decay.</p>
+  </div>
+
+  <div class="pull-quote">
+    <p>"Works" are internal energy expenditures. Stirring a cup of dirty water doesn't clean it; it just moves the dirt around.</p>
+  </div>
+</section>
+
+<!-- 2. THE EXTERNAL OPERATOR -->
+<section class="section">
+  <span class="section-num">02</span>
+  <h2><span class="part-label">Section 2</span>The External Operator (Grace)</h2>
+
+  <p>To lower entropy (clean the water), you need:</p>
+
+  <p>1. <strong>Open the System</strong> (Break the seal).<br>
+  2. <strong>Inject Order</strong> (Information/Energy) from Outside.</p>
+
+  <p><strong>Grace ($\mathcal{G}$)</strong> is the injection of <strong>External Negentropy</strong>.</p>
+
+  <p>It is the <em>only</em> force in the equation capable of making $\Delta S < 0$.</p>
+</section>
+
+<!-- 3. THE MATHEMATICAL IMPOSSIBILITY OF MERIT -->
+<section class="section">
+  <span class="section-num">03</span>
+  <h2><span class="part-label">Section 3</span>The Mathematical Impossibility of Merit</h2>
+
+  <p>If Salvation could be earned (Merit), it would mean the system <em>generated</em> its own Negentropy.</p>
+
+  <div class="iso-grid">
+    <div class="iso-box physics">
+      <span class="domain">Physics Says</span>
+      <p><strong>Impossible</strong><br>(Perpetual Motion Machine)</p>
+    </div>
+    <div class="iso-equals">=</div>
+    <div class="iso-box theology">
+      <span class="domain">Theology Says</span>
+      <p><strong>Impossible</strong><br>(Pelagian Heresy)</p>
+    </div>
+  </div>
+
+  <p>The physics and the theology agree perfectly.</p>
+
+  <div class="pull-quote">
+    <p>Salvation MUST be a gift. Not because God is arbitrary, but because Thermodynamics is absolute.</p>
+  </div>
+
+  <p>Only the Creator (The Surroundings) has the infinite low-entropy capacity to absorb the creature's high-entropy waste (Sin).</p>
+</section>
+
+<!-- 4. THE CROSS AS HEAT SINK -->
+<section class="section">
+  <span class="section-num">04</span>
+  <h2><span class="part-label">Section 4</span>The Cross as Heat Sink</h2>
+
+  <p>How does God remove our Entropy without violating Conservation Laws?</p>
+
+  <p>He absorbs it.</p>
+
+  <div class="heat-sink">
+    <h4>The Cross = The Universal Heat Sink</h4>
+    <p style="color:var(--cream-d);margin-bottom:1.5rem">Christ took the "Heat" (Entropy/Death) of the system into Himself,<br>allowing the "Cool" (Order/Life) to flow into us.</p>
+    <div class="exchange">
+      <div class="side entropy">Entropy / Sin / Death<br><strong>flows OUT</strong></div>
+      <div class="arrow">⇄</div>
+      <div class="side order">Order / Life / Grace<br><strong>flows IN</strong></div>
+    </div>
+    <p style="color:var(--cream-m);font-style:italic;margin-top:1.5rem;font-size:.9rem">A perfect thermodynamic exchange.</p>
+  </div>
+</section>
+
+<!-- 5. CONCLUSION -->
+<section class="section">
+  <span class="section-num">05</span>
+  <h2><span class="part-label">Section 5</span>Conclusion</h2>
+
+  <div class="conclusion-block">
+    <p class="final">"Grace Alone" is not just a nice sentiment.<br>It is the only solution to the Entropy Equation.</p>
+    <p class="killer">Any theology that adds "Works" as a requirement<br>is proposing a Perpetual Motion Machine.</p>
+  </div>
+
+  <p style="text-align:center;margin-top:2rem">
+    <span class="mono" style="font-size:.7rem;color:var(--cream-m);letter-spacing:.2em">STATUS: THEOLOGICAL PROOF · BASIS: THERMODYNAMICS / SECOND LAW</span>
+  </p>
+</section>
+
+</article>
+
+<footer>
+  <div class="page">
+    <p>Cross-Domain Coherence Series · Paper 08 of 12</p>
+    <p style="margin-top:.5rem">Theophysics Research Program · David Lowe · 2026</p>
+  </div>
+</footer>
+
+<script src="/components/tp-inject.js" data-theme="dark"></script>
+</body>
+</html>

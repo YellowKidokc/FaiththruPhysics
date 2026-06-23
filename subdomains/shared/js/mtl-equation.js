@@ -159,6 +159,16 @@
       callout.addEventListener('toggle', function() {
         callout.dataset.userToggled = 'true';
       });
+      const summary = callout.querySelector('summary');
+      if (summary) {
+        summary.addEventListener('click', function() {
+          window.setTimeout(function() {
+            if (callout.open) {
+              callout.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 0);
+        });
+      }
     });
   }
 

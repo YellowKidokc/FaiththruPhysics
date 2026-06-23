@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<title>06 — All Block Types (from GTQ-01)</title>
+<style>:root{
+  --primary:#1a1a1a;
+  --accent:#2c2c2c;
+  --text-primary:#e0e0e0;
+  --text-secondary:#a0a0a0;
+  --highlight:#d4af37;
+  --highlight-bright:#e8c547;
+  --highlight-dim:#8b7a1e;
+  --border:#333333;
+  --surface:#0a0a0a;
+  --surface-light:#1a1a1a;
+  --surface-hover:#2a2a2a;
+  --red:#ef4444;
+  --blue:#4a9eff;
+  --teal:#2dd4bf;
+  --purple:#a855f7;
+  --green:#22c55e;
+  --gold-dim:rgba(212,175,55,0.15);
+  --gold-glow:rgba(212,175,55,0.06);
+  --surface3:#1f1f1f;
+}
+*{box-sizing:border-box;}body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#e0e0e0;line-height:1.65;padding:2rem;max-width:900px;margin:0 auto;}
+.serif{font-family:'Crimson Text',serif;}.mono{font-family:'JetBrains Mono',monospace;}
+h1{font-family:'Crimson Text',serif;font-size:2rem;color:#d4af37;margin-bottom:.5rem;}
+.section-label{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:#d4af37;font-weight:700;margin:2.5rem 0 .5rem;font-family:'Oswald',sans-serif;}
+hr{border:none;border-top:1px solid #333;margin:2rem 0;}/* ─────────────── STORY ARTICLE ─────────────── */
+.story{max-width:780px;margin:0 auto;}
+.story h2{
+  font-family:'Oswald',sans-serif;
+  font-size:1.6rem;
+  font-weight:600;
+  color:#fff;
+  margin:3rem 0 1.25rem;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+  padding-bottom:.5rem;
+}
+.story h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.3rem;
+  font-weight:600;
+  color:#fff;
+  margin:2rem 0 .75rem;
+}
+.story h4{
+  font-family:'Crimson Text',serif;
+  font-size:1.1rem;
+  font-weight:600;
+  color:var(--highlight);
+  margin:1.5rem 0 .5rem;
+}
+.story p{
+  font-size:1.15rem;
+  color:#cfcfcf;
+  margin:0 0 1.5rem;
+  line-height:1.85;
+}
+.story p strong{color:#fff;}
+.story p em{color:var(--highlight);font-style:italic;}
+.story li{color:#cfcfcf;margin-bottom:.5rem;line-height:1.65;}
+.story li strong{color:#fff;}
+.story ul,.story ol{margin:0 0 1.25rem 1.5rem;}
+.story blockquote{
+  border:1px solid rgba(212,175,55,.3);
+  border-left:4px solid var(--highlight);
+  background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,rgba(212,175,55,.02) 100%);
+  padding:2.5rem 2.5rem;
+  margin:2.5rem 0;
+  border-radius:.5rem;
+  font-family:'Crimson Text',serif;
+  font-size:1.8rem;
+  font-style:italic;
+  color:#fff;
+  line-height:1.5;
+  position:relative;
+}
+.story blockquote::before{
+  content:'\201C';
+  position:absolute;
+  top:-.2rem;left:.75rem;
+  font-family:'Crimson Text',serif;
+  font-size:5rem;
+  color:var(--highlight);
+  opacity:.3;
+  line-height:1;
+}
+.story blockquote p{margin:0;font-size:1.8rem;line-height:1.5;}
+
+/* Drop cap */
+.drop-cap::first-letter{
+  font-family:'Crimson Text',serif;
+  font-size:4.5rem;
+  float:left;
+  line-height:.85;
+  padding:.4rem .6rem 0 0;
+  color:var(--highlight);
+  font-weight:600;
+}
+
+/* Insight / pull quote */
+.insight{
+  border:1px solid rgba(212,175,55,.25);
+  border-left:4px solid var(--highlight);
+  background:linear-gradient(135deg,rgba(212,175,55,.1) 0%,rgba(212,175,55,.03) 100%);
+  padding:2rem 2.5rem;
+  margin:2.5rem 0;
+  border-radius:.5rem;
+  position:relative;
+}
+.insight::after{
+  content:'';
+  position:absolute;
+  top:0;right:0;
+  width:80px;height:80px;
+  background:linear-gradient(135deg,transparent 50%,rgba(212,175,55,.06) 50%);
+  border-radius:0 .5rem 0 0;
+}
+.insight .label{
+  font-family:'Oswald',sans-serif;
+  font-style:normal;
+  color:var(--highlight);
+  font-size:.7rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:.75rem;
+  font-weight:600;
+}
+.insight p{margin:0;color:#fff;font-size:1.5rem;font-family:'Crimson Text',serif;line-height:1.5;font-style:italic;}
+
+/* Axiom callout */
+.axiom-box{
+  background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,rgba(10,10,10,.95) 100%);
+  border:1px solid rgba(212,175,55,.3);
+  padding:1.5rem 2rem;
+  margin:2rem 0;
+  border-radius:.5rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.1rem;
+  color:var(--highlight);
+  position:relative;
+  overflow:hidden;
+}
+.axiom-box::before{
+  content:'AXIOM';
+  position:absolute;
+  top:.75rem;right:1rem;
+  font-family:'Oswald',sans-serif;
+  font-size:.6rem;
+  letter-spacing:.2em;
+  color:rgba(212,175,55,.25);
+  font-weight:600;
+}
+
+/* Law box */
+.law-box{
+  background:rgba(74,158,255,.06);
+  border:1px solid rgba(74,158,255,.2);
+  border-left:4px solid var(--blue);
+  padding:1rem 1.5rem;
+  margin:1.5rem 0;
+  border-radius:0 .5rem .5rem 0;
+}
+.law-box .law-label{
+  font-family:'Oswald',sans-serif;
+  font-size:.75rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--blue);
+  margin-bottom:.35rem;
+}
+.law-box p{margin:0;color:#cfcfcf;font-size:.95rem;}
+
+/* Equation display */
+.eq-block{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  padding:1.5rem;
+  margin:1.5rem 0;
+  text-align:center;
+  overflow-x:auto;
+}
+.eq-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--highlight);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:.75rem;
+  text-align:left;
+}
+
+/* Tables */
+.data-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:1.5rem 0;
+  font-size:.875rem;
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  overflow:hidden;
+}
+.data-table thead{
+  background:var(--surface-light);
+  text-transform:uppercase;
+  font-size:.7rem;
+  letter-spacing:.06em;
+  color:var(--highlight);
+}
+.data-table th,.data-table td{
+  padding:.75rem 1rem;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tbody tr:hover{background:rgba(212,175,55,.04);}
+.data-table td{color:var(--text-secondary);}
+
+/* Kill card */
+.kill-card{
+  padding:1.25rem;
+  margin-bottom:.75rem;
+  background:rgba(239,68,68,.04);
+  border:1px solid rgba(239,68,68,.2);
+  border-radius:.5rem;
+}
+.kill-card .kill-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--red);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:.35rem;
+}
+.kill-card p{margin:.25rem 0 0;color:#cfcfcf;font-size:.9rem;}
+.kill-card .kill-detail{font-size:.8rem;color:var(--text-secondary);margin-top:.35rem;}
+
+/* Citations */
+.citation{
+  display:inline-block;
+  background:var(--highlight);
+  color:var(--primary);
+  padding:.1rem .4rem;
+  border-radius:.25rem;
+  font-size:.65rem;
+  font-weight:700;
+  text-decoration:none;
+  margin:0 .1rem;
+  vertical-align:.15em;
+  cursor:default;
+}
+
+/* Card */
+.card{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  padding:1.5rem;
+  transition:border-color .25s ease;
+}
+.card:hover{border-color:var(--highlight);}
+
+/* Part header */
+.part-header{
+  margin:3.5rem 0 1.5rem;
+  padding:1.25rem 1.5rem;
+  background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,rgba(212,175,55,.02) 100%);
+  border:1px solid rgba(212,175,55,.2);
+  border-radius:.5rem;
+}
+.part-header .part-num{
+  font-family:'Oswald',sans-serif;
+  font-size:.7rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--highlight);
+  margin-bottom:.25rem;
+}
+.part-header h2{
+  font-family:'Oswald',sans-serif;
+  font-size:1.5rem;
+  font-weight:600;
+  color:#fff;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin:0;
+  border:none;
+  padding:0;
+}
+.part-header p{
+  margin:.5rem 0 0;
+  font-size:.85rem;
+  color:var(--text-secondary);
+  font-style:italic;
+}
+
+/* Player dock — sits below tab shell, outside the paper */
+.player-dock{
+  background:rgba(15,15,15,.95);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  padding:.5rem 1.5rem;
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+}
+.player-dock .player-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--highlight);
+  white-space:nowrap;
+}
+.player-dock audio{
+  flex:1;
+  height:32px;
+  max-width:420px;
+  filter:brightness(.85);
+}
+
+/* Legacy — keep class for print */
+.tts-bar{display:none;}
+
+/* Media cards */
+.media-card{
+  background:var(--surface-light);
+  border:1px solid var(--border);
+  border-radius:.6rem;
+  padding:1.5rem;
+  margin-bottom:1.5rem;
+  transition:border-color .25s ease;
+}
+.media-card:hover{border-color:var(--highlight);}
+.media-card .media-label{
+  display:block;
+  font-size:.7rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--highlight);
+  font-weight:700;
+  margin-bottom:.5rem;
+}
+.media-card h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.5rem;
+  font-weight:600;
+  color:#fff;
+  margin:0 0 .5rem;
+}
+.media-card p.media-desc{
+  font-size:.9rem;
+  color:var(--text-secondary);
+  margin:0 0 1rem;
+}
+.media-card audio{width:100%;border-radius:.4rem;background:var(--surface);height:46px;}
+.media-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:1rem;
+  margin-top:.85rem;
+  font-size:.75rem;
+  color:var(--text-secondary);
+}
+.media-meta span i{color:var(--highlight);margin-right:.35rem;}
+
+/* Disclaimer box */
+.disclaimer-box{
+  background:rgba(212,175,55,.04);
+  border:1px solid rgba(212,175,55,.2);
+  border-radius:.5rem;
+  padding:1.25rem 1.5rem;
+  margin:2rem 0;
+}
+.disclaimer-box .disclaimer-label{
+  font-family:'Oswald',sans-serif;
+  font-size:.7rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--highlight);
+  margin-bottom:.5rem;
+}
+.disclaimer-box p{
+  font-family:'Crimson Text',serif;
+  font-size:1rem;
+  font-style:italic;
+  color:var(--text-secondary);
+  margin:0;
+  line-height:1.7;
+}
+
+/* Tangent card */
+.tangent-card{
+  background:var(--surface-light);
+  border:2px solid rgba(168,85,247,.3);
+  border-radius:.6rem;
+  padding:1.5rem;
+  margin:3rem 0 2rem;
+}
+.tangent-card .tangent-label{
+  font-family:'Oswald',sans-serif;
+  font-size:.7rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--purple);
+  margin-bottom:.5rem;
+}
+.tangent-card h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.4rem;
+  font-weight:600;
+  color:#fff;
+  margin:0 0 .75rem;
+}
+.tangent-toggle{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  cursor:pointer;
+  background:none;
+  border:none;
+  color:var(--purple);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:.5rem 0;
+  margin-bottom:.5rem;
+}
+.tangent-toggle i{transition:transform .3s ease;}
+.tangent-toggle.open i{transform:rotate(90deg);}
+.tangent-body{display:none;padding-top:1rem;border-top:1px solid var(--border);}
+.tangent-body.show{display:block;}
+.tangent-body h2{
+  font-family:'Oswald',sans-serif;
+  font-size:1.3rem;
+  font-weight:600;
+  color:#fff;
+  margin:2rem 0 1rem;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+  padding-bottom:.5rem;
+}
+.tangent-body h3{
+  font-family:'Crimson Text',serif;
+  font-size:1.15rem;
+  font-weight:600;
+  color:#fff;
+  margin:1.5rem 0 .5rem;
+}
+.tangent-body p{
+  font-size:1rem;
+  color:#cfcfcf;
+  margin:0 0 1.1rem;
+  line-height:1.7;
+}
+.tangent-body p strong{color:#fff;}
+.tangent-body p em{color:var(--purple);font-style:italic;}
+.tangent-body blockquote{
+  border-left:4px solid var(--purple);
+  background:rgba(168,85,247,.05);
+  padding:1rem 1.5rem;
+  margin:1.5rem 0;
+  border-radius:0 .5rem .5rem 0;
+  font-family:'Crimson Text',serif;
+  font-size:1.05rem;
+  font-style:italic;
+  color:#cfcfcf;
+}
+
+/* Horizontal rule */
+.story hr, .tangent-body hr{
+  border:none;
+  border-top:1px solid var(--border);
+  margin:2.5rem 0;
+}
+
+/* Footer */
+footer{
+  border-top:1px solid var(--border);
+  margin-top:5rem;
+  padding:2rem 0;
+  text-align:center;
+  color:var(--text-secondary);
+  font-size:.85rem;
+}
+.footer-eq{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;
+  color:var(--highlight);
+  margin-bottom:.75rem;
+}
+
+@media (max-width:768px){
+  .story h2{font-size:1.3rem;}
+  .story p{font-size:1rem;}
+  .tab-btn{padding:.7rem .8rem;font-size:.75rem;}
+}
+
+@media print{
+  .tab-shell,.sidebar,.sidebar-toggle{display:none;}
+  .tab-content{display:block !important;}
+  body{background:#fff;color:#000;}
+}
+
+/* ═══ SHARE & REACTIONS ═══ */
+.share-bar{display:flex;align-items:center;gap:.5rem;padding:.75rem 0;}
+.share-bar .share-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-right:.25rem;}
+.share-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:.4rem;border:1px solid var(--border);background:var(--surface-light);color:var(--text-secondary);font-size:.9rem;cursor:pointer;transition:all .2s ease;text-decoration:none;}
+.share-btn:hover{border-color:var(--highlight);color:var(--highlight);background:rgba(212,175,55,.06);transform:translateY(-1px);}
+.share-btn.x:hover{color:#fff;border-color:#fff;}
+.share-btn.facebook:hover{color:#1877f2;border-color:#1877f2;}
+.share-btn.linkedin:hover{color:#0a66c2;border-color:#0a66c2;}
+.share-btn.reddit:hover{color:#ff4500;border-color:#ff4500;}
+.share-btn.email:hover{color:var(--teal,#2dd4bf);border-color:var(--teal,#2dd4bf);}
+.share-btn.copy:hover{color:var(--green,#22c55e);border-color:var(--green,#22c55e);}
+.share-btn.copy.copied{color:var(--green,#22c55e);border-color:var(--green,#22c55e);background:rgba(34,197,94,.1);}
+.share-floating{position:fixed;right:1rem;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:.4rem;padding:.5rem;background:rgba(15,15,15,.9);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:.5rem;}
+@media(max-width:1024px){.share-floating{display:none;}}
+.reaction-bar{display:flex;align-items:center;gap:.4rem;padding:.75rem 0;border-top:1px solid rgba(255,255,255,.04);margin-top:1.5rem;}
+.reaction-bar .reaction-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-right:.5rem;}
+.reaction-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .6rem;border-radius:9999px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-size:.8rem;cursor:pointer;transition:all .2s;user-select:none;}
+.reaction-btn:hover{border-color:var(--highlight);background:rgba(212,175,55,.06);}
+.reaction-btn.active{border-color:var(--highlight);background:rgba(212,175,55,.1);color:var(--highlight);}
+.reaction-btn .count{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-muted);}
+.reaction-btn.active .count{color:var(--highlight);}
+.share-section{max-width:780px;margin:0 auto;padding:2rem 1.5rem;border-top:1px solid var(--border);}
+.share-section h3{font-family:'Crimson Text',serif;font-size:1.3rem;color:white;margin-bottom:.75rem;}
+
+
+/* ─────────────── BLOCK LAYOUTS ─────────────── */
+.block-grid{display:grid;gap:1rem;margin:2.5rem 0;}
+.block-grid-2{grid-template-columns:1fr 1fr;}
+.block-grid-3{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:768px){.block-grid-2,.block-grid-3{grid-template-columns:1fr;}}
+.block-stat{background:var(--surface3);text-align:center;padding:2rem;border-radius:.5rem;border:1px solid var(--border);}
+.block-stat .number{font-family:'Crimson Text',serif;font-size:3rem;font-weight:600;color:var(--highlight);line-height:1;}
+.block-stat .label{font-size:.7rem;color:var(--text-secondary);margin-top:.35rem;letter-spacing:.1em;text-transform:uppercase;}
+.block-accent{border-top:3px solid var(--highlight);background:var(--surface3);padding:1.5rem;border-radius:0 0 .5rem .5rem;border:1px solid var(--border);border-top:3px solid var(--highlight);}
+.block-accent h3{font-family:'Oswald',sans-serif;color:white;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;}
+.block-accent p{font-size:.9rem;color:var(--text-secondary);line-height:1.6;}
+.block-split{display:grid;grid-template-columns:60px 1fr;gap:1rem;align-items:center;background:var(--surface3);padding:1.5rem;border-radius:.5rem;border:1px solid var(--border);}
+.block-split .icon{width:48px;height:48px;border-radius:8px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--highlight);font-size:1.1rem;}
+.block-split .text-title{font-size:.9rem;color:white;font-weight:600;margin-bottom:.25rem;}
+.block-split .text-desc{font-size:.8rem;color:var(--text-secondary);line-height:1.5;}
+.block-hero{position:relative;min-height:160px;border-radius:.5rem;overflow:hidden;background:linear-gradient(135deg,var(--surface3) 0%,rgba(212,175,55,.08) 100%);border:1px solid var(--border);padding:2rem;display:flex;flex-direction:column;justify-content:flex-end;}
+.block-hero h3{font-family:'Crimson Text',serif;font-size:1.4rem;color:white;margin-bottom:.3rem;}
+.block-hero p{font-size:.85rem;color:var(--text-secondary);}
+
+.eq-block{background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.2);border-radius:.5rem;padding:2rem;margin:2rem 0;text-align:center;}
+.eq-label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:#d4af37;margin-bottom:.75rem;}
+.insight{border:1px solid rgba(212,175,55,.25);border-left:4px solid #d4af37;background:linear-gradient(135deg,rgba(212,175,55,.1) 0%,rgba(212,175,55,.03) 100%);padding:2rem 2.5rem;margin:2.5rem 0;border-radius:.5rem;}
+.insight .label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#d4af37;display:block;margin-bottom:.75rem;}
+.axiom-box{background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.2);border-radius:.5rem;padding:1.5rem 2rem;margin:2rem 0;font-family:'Crimson Text',serif;font-size:1.15rem;color:#fff;text-align:center;}
+.law-box{background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.2);border-radius:.5rem;padding:1.5rem 2rem;margin:2rem 0;}
+.law-label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#2dd4bf;margin-bottom:.5rem;}
+.disclaimer-box{background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.2);border-radius:.5rem;padding:1.5rem 2rem;margin:2rem 0;}
+.disclaimer-label{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#a855f7;margin-bottom:.5rem;}
+.data-table{width:100%;border-collapse:collapse;margin:1.5rem 0;}
+.data-table th,.data-table td{border:1px solid #333;padding:.75rem 1rem;text-align:left;font-size:.9rem;color:#cfcfcf;}
+.data-table th{background:rgba(212,175,55,.06);color:#d4af37;font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;}
+.drop-cap::first-letter{font-family:'Crimson Text',serif;font-size:4.5rem;float:left;line-height:.85;padding:.4rem .6rem 0 0;color:#d4af37;font-weight:600;}
+</style></head><body>
+<h1>06 — All Block Types</h1>
+<p style="color:#a0a0a0;">Every visual block component extracted from GTQ-01, the gold standard article.</p>
+<hr>
+
+<div class="section-label">1. Stat Blocks</div>
+<div class="block-grid block-grid-3">
+<div class="block-stat"><div class="number">6.35&sigma;</div><div class="label">PEAR-LAB Correlation</div></div>
+<div class="block-stat"><div class="number">10</div><div class="label">Super-Factors</div></div>
+<div class="block-stat"><div class="number">R&sup2;=.888</div><div class="label">Lifespan Decoherence</div></div>
+</div>
+
+<div class="section-label">2. Insight Box</div>
+<div class="insight">
+<span class="label">&mdash; Key Observation</span>
+<p>This is the quantum ground state of creation. Coherent. Ordered. Fully coupled to the Logos. And profoundly unstable in precisely one way: the measurement apparatus exists within the system, waiting.</p>
+</div>
+
+<div class="section-label">3. Axiom Box</div>
+<div class="axiom-box">
+The observation is confirmed. The mechanism is not.
+</div>
+
+<div class="section-label">4. Law Box</div>
+<div class="law-box">
+<div class="law-label">Framework Principle</div>
+<p>Grace is anti-entropic: it is the only force in the Master Equation that drives the system <em>away</em> from maximum entropy and <em>toward</em> coherence.</p>
+</div>
+
+<div class="section-label">5. Equation Block</div>
+<div class="eq-block">
+<div class="eq-label">Master Equation</div>
+$$\chi = \iiint (G \cdot M \cdot E \cdot S \cdot T \cdot K \cdot R \cdot Q \cdot F \cdot C) \, dx \, dy \, dt$$
+<p style="margin:.75rem 0 0;font-size:.85rem;color:#a0a0a0;font-style:italic;">Ten Super-Factors integrated across space and time. The complete physical-spiritual state of reality.</p>
+</div>
+
+<div class="section-label">6. Step Cards</div>
+<div style="margin:1.5rem 0;">
+<div style="background:linear-gradient(135deg,rgba(212,175,55,0.05) 0%,rgba(10,10,10,0.98) 100%);border:1px solid #222;border-left:4px solid #d4af37;border-radius:.5rem;padding:2rem 2.5rem;margin-bottom:1rem;">
+<div style="font-family:'Oswald',sans-serif;font-size:2rem;font-weight:700;color:#d4af37;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem;">Step 1</div>
+<div style="font-family:'Crimson Text',serif;font-size:1.6rem;color:#fff;font-weight:600;line-height:1.3;margin-bottom:.75rem;">Distort the system specification.</div>
+<p style="font-size:1.05rem;color:#bbb;line-height:1.7;">"Did God actually say?" &mdash; noise injection into the signal, degrading fidelity.</p>
+</div>
+<div style="background:linear-gradient(135deg,rgba(212,175,55,0.05) 0%,rgba(10,10,10,0.98) 100%);border:1px solid #222;border-left:4px solid #d4af37;border-radius:.5rem;padding:2rem 2.5rem;margin-bottom:1rem;">
+<div style="font-family:'Oswald',sans-serif;font-size:2rem;font-weight:700;color:#d4af37;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem;">Step 2</div>
+<div style="font-family:'Crimson Text',serif;font-size:1.6rem;color:#fff;font-weight:600;line-height:1.3;margin-bottom:.75rem;">Contradict the Designer's stated outcome.</div>
+<p style="font-size:1.05rem;color:#bbb;line-height:1.7;">"You will not surely die" &mdash; direct negation of the boundary condition.</p>
+</div>
+</div>
+
+<div class="section-label">7. Comparison Grid</div>
+<div class="block-grid block-grid-2">
+<div class="block-accent">
+<h3><i class="fas fa-wave-square" style="margin-right:.4rem;color:#d4af37;"></i> Eve's Measurement</h3>
+<p>She ate the fruit. Nothing happened. Superposition held. No collapse.</p>
+</div>
+<div class="block-accent">
+<h3><i class="fas fa-bolt" style="margin-right:.4rem;color:#d4af37;"></i> Adam's Measurement</h3>
+<p>He ate. Immediate total collapse. Both observers' eyes opened simultaneously.</p>
+</div>
+</div>
+
+<div class="section-label">8. Candidate Cards</div>
+<div style="display:grid;grid-template-columns:1fr;gap:1rem;margin:1.5rem 0;">
+<div style="background:#1f1f1f;border:1px solid #333;border-left:4px solid #4a9eff;border-radius:.5rem;padding:1.5rem 2rem;">
+<div style="font-family:'Oswald',sans-serif;font-size:1.3rem;color:#4a9eff;font-weight:600;">Candidate 1: Wigner's Friend</div>
+<p style="font-size:1rem;color:#cfcfcf;line-height:1.7;margin:.5rem 0 0;">Eve is an internal observer. From the system's perspective, her measurement is incomplete.</p>
+</div>
+<div style="background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,#1f1f1f 100%);border:1px solid rgba(212,175,55,.3);border-left:4px solid #d4af37;border-radius:.5rem;padding:1.5rem 2rem;">
+<div style="font-family:'Oswald',sans-serif;font-size:1.3rem;color:#d4af37;font-weight:600;"><i class="fas fa-star" style="margin-right:.4rem;font-size:1rem;"></i>Candidate 3: Federal Observer Authority</div>
+<p style="font-size:1rem;color:#cfcfcf;line-height:1.7;margin:.5rem 0 0;">Adam is the federal head. His choices carry systemic, cosmic-scale consequences. <strong style="color:#d4af37;">Load-bearing.</strong></p>
+</div>
+</div>
+
+<div class="section-label">9. Pullquote / Blockquote</div>
+<blockquote style="border:1px solid rgba(212,175,55,.3);border-left:4px solid #d4af37;background:linear-gradient(135deg,rgba(212,175,55,.08) 0%,rgba(212,175,55,.02) 100%);padding:2rem 2.5rem;margin:1.5rem 0;border-radius:.5rem;font-family:'Crimson Text',serif;font-size:1.6rem;font-style:italic;color:#fff;line-height:1.5;position:relative;">
+<span style="position:absolute;top:-.2rem;left:.75rem;font-family:'Crimson Text',serif;font-size:4rem;color:#d4af37;opacity:.3;">&ldquo;</span>
+<p style="margin:0;font-size:1.6rem;">"She took of its fruit and ate, and she also gave some to her husband who was with her, and he ate. Then the eyes of both of them were opened."</p>
+</blockquote>
+
+<div class="section-label">10. Disclaimer Box</div>
+<div class="disclaimer-box">
+<div class="disclaimer-label"><i class="fas fa-cross" style="margin-right:.4rem;"></i>The Disclaimer</div>
+<p style="color:#cfcfcf;">We are finite minds reasoning about infinite God. Every model is projection of higher-dimensional reality onto lower-dimensional surface we can comprehend. We offer this work as worship, not as containment.</p>
+</div>
+
+<div class="section-label">11. Falsification Criteria (Red Gradient)</div>
+<div style="background:linear-gradient(180deg,rgba(201,64,64,0.08) 0%,rgba(201,64,64,0.02) 60%,transparent 100%);border-top:3px solid #c94040;border-radius:.75rem;padding:2rem;margin:1.5rem 0;">
+<h2 style="color:#ef4444;margin:0 0 1rem;font-family:'Oswald',sans-serif;font-size:1.3rem;text-transform:uppercase;letter-spacing:.06em;">Falsification Criteria</h2>
+<div style="background:rgba(201,64,64,0.06);border:1px solid rgba(201,64,64,0.25);border-left:4px solid #ef4444;border-radius:.5rem;padding:1.5rem;margin-bottom:1rem;">
+<div style="font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:700;color:#ef4444;text-transform:uppercase;margin-bottom:.4rem;">Claim 1</div>
+<p style="font-size:1rem;color:#ccc;margin:0;">If the Eve-Adam measurement asymmetry has no structural parallels in physics, the mapping is merely metaphorical.</p>
+</div>
+<div style="background:rgba(201,64,64,0.04);border:1px solid rgba(201,64,64,0.15);border-left:4px solid rgba(239,68,68,0.5);border-radius:.5rem;padding:1.5rem;">
+<div style="font-family:'Oswald',sans-serif;font-size:1.5rem;font-weight:700;color:rgba(239,68,68,0.6);text-transform:uppercase;margin-bottom:.4rem;">Claim 2</div>
+<p style="font-size:1rem;color:#aaa;margin:0;">If the entire mapping is wrong, the isomorphism should break under rigorous testing.</p>
+</div>
+</div>
+
+<div class="section-label">12. Split Icon Box</div>
+<div class="block-grid block-grid-2">
+<div class="block-split"><div class="icon"><i class="fas fa-atom"></i></div><div><div class="text-title">Law 1: Gravity &harr; Grace</div><div class="text-desc">Grace couples consciousness to the Logos field. Same structure as gravitational attraction.</div></div></div>
+<div class="block-split"><div class="icon"><i class="fas fa-fire"></i></div><div><div class="text-title">Law 2: Entropy &harr; Judgment</div><div class="text-desc">The second law is the physical expression of moral decay.</div></div></div>
+</div>
+
+<div class="section-label">13. Image Embed with Caption</div>
+<div style="margin:1.5rem 0;border-radius:.5rem;overflow:hidden;border:1px solid #222;">
+<div style="width:100%;height:200px;background:linear-gradient(135deg,#1a1a1a,rgba(212,175,55,0.1));display:flex;align-items:center;justify-content:center;color:#555;font-size:1rem;"><i class="fas fa-image" style="margin-right:.5rem;"></i> BLK_ Diagram Image</div>
+<div style="padding:.75rem 1rem;font-size:.8rem;color:#a0a0a0;background:#1f1f1f;">Figure: Born Rule decomposed into three irreducible operations &mdash; Father, Son, Spirit</div>
+</div>
+
+<div class="section-label">14. Data Table</div>
+<table class="data-table">
+<thead><tr><th>Property</th><th>Quantum Superposition</th><th>Eden / Fall</th></tr></thead>
+<tbody>
+<tr><td><strong style="color:#fff;">Multiple states coexist</strong></td><td>All eigenstates simultaneously real</td><td>Both trees present; both moral eigenstates available</td></tr>
+<tr><td><strong style="color:#fff;">Irreversibility</strong></td><td>Post-collapse does not restore</td><td>No return to Eden; cherubim guard the way</td></tr>
+</tbody>
+</table>
+
+<div class="section-label">15. Drop Cap</div>
+<p class="drop-cap" style="font-size:1.15rem;color:#cfcfcf;line-height:1.85;">Two observers. Same quantum system. Same measurement apparatus. Same physical interaction. Observer 1 engages the system. She takes. She eats. Result: Nothing. Superposition maintained.</p>
+
+<div class="section-label">16. Glossary Link (hover for tooltip)</div>
+<p style="font-size:1.15rem;color:#cfcfcf;line-height:1.85;">The system undergoes <a href="#" class="gl" data-def="Loss of quantum coherence; when a system's internal connections weaken and it stops behaving as a unified whole." style="color:#d4af37;text-decoration:none;border-bottom:1px dotted rgba(212,175,55,0.4);cursor:help;position:relative;">decoherence</a> when the <a href="#" class="gl" data-def="The Logos field (&Lambda;) — the coherence-structuring principle that maintains order across all domains." style="color:#d4af37;text-decoration:none;border-bottom:1px dotted rgba(212,175,55,0.4);cursor:help;position:relative;">Logos</a> coupling fractures.</p>
+<style>.gl:hover::after{content:attr(data-def);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid #d4af37;color:#e0e0e0;padding:.75rem 1rem;border-radius:.4rem;font-size:.85rem;max-width:320px;width:max-content;white-space:normal;z-index:1000;box-shadow:0 4px 16px rgba(0,0,0,.6);line-height:1.5;}</style>
+
+<hr>
+<p style="text-align:center;color:#555;font-size:.8rem;margin-top:2rem;">POF 2828 &middot; Theophysics Component Library &middot; April 2026</p>
+</body></html>

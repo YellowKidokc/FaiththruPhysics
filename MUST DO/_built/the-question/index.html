@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Question - Faith Through Physics</title>
+<style>
+:root{
+  --bg:#050505;
+  --panel:#0f0f0f;
+  --card:#131313;
+  --line:#232323;
+  --text:#e7e2d7;
+  --muted:#9c9688;
+  --gold:#d4af37;
+  --gold-soft:rgba(212,175,55,.12);
+  --gold-line:rgba(212,175,55,.28);
+  --ok:#59c56d;
+  --warn:#e2b93b;
+  --bad:#d06a5f;
+  --radius:18px;
+  --radius-sm:12px;
+  --shadow:0 24px 60px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:
+  radial-gradient(circle at top, rgba(212,175,55,.08), transparent 38%),
+  linear-gradient(180deg,#080808 0%,#040404 100%);
+  color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body{min-height:100vh;line-height:1.65}
+a{color:inherit}
+.shell-top{
+  position:sticky;top:0;z-index:50;
+  background:rgba(5,5,5,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--gold-line);
+}
+.shell-top-inner,.shell-bar-inner,.shell-footer-inner,.shell-bottom-inner{
+  max-width:1180px;margin:0 auto;padding:0 1rem;
+}
+.shell-top-inner{
+  min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.brand{
+  display:flex;align-items:center;gap:.6rem;text-decoration:none;
+  font-family:Cinzel,Georgia,serif;font-size:.84rem;letter-spacing:.06em;color:var(--gold);
+}
+.brand-badge{
+  width:11px;height:11px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 12px rgba(212,175,55,.4);
+}
+.path-tabs{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center}
+.path-tab{
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.52);border-radius:999px;padding:.4rem .7rem;
+  font:600 .62rem/1 JetBrains Mono,ui-monospace,monospace;
+  letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+}
+.path-tab.active{color:var(--gold);background:var(--gold-soft);border-color:var(--gold-line)}
+.path-tab.disabled{opacity:.38;cursor:not-allowed;text-decoration:line-through}
+.nav-arrows{display:flex;gap:.5rem;align-items:center}
+.nav-arrows a,.nav-arrows span{
+  font:600 .62rem/1 Oswald,system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;padding:.35rem .55rem;border-radius:999px;
+}
+.nav-arrows a:hover{color:var(--gold);background:var(--gold-soft)}
+.bar{
+  border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.015);
+}
+.bar-inner{padding:.8rem 1rem}
+.bar-label{
+  font:500 .52rem/1 JetBrains Mono,ui-monospace,monospace;letter-spacing:.12em;
+  text-transform:uppercase;color:#777;margin-bottom:.45rem
+}
+.segments{display:flex;overflow:hidden;border-radius:999px;height:8px;background:rgba(255,255,255,.05)}
+.seg{height:100%}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.45rem}
+.tag{
+  display:inline-flex;align-items:center;gap:.35rem;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);
+  border-radius:999px;padding:.18rem .5rem;font:400 .56rem/1 JetBrains Mono,ui-monospace,monospace;
+  color:#888
+}
+.dot{width:7px;height:7px;border-radius:50%}
+.article{
+  max-width:880px;margin:0 auto;padding:2.2rem 1.1rem 1rem;
+}
+.eyebrow{
+  font:600 .62rem/1 JetBrains Mono,ui-monospace,monospace;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:.7rem
+}
+h1{
+  margin:0;font-family:Cinzel,Georgia,serif;font-size:clamp(2.1rem,5vw,3.8rem);
+  line-height:1.06;font-weight:600;color:#f4e9c6;
+}
+.subtitle{
+  margin:.8rem 0 1.6rem;font-family:"Crimson Text",Georgia,serif;font-size:1.15rem;
+  font-style:italic;color:var(--muted)
+}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;margin-bottom:1.4rem;
+  font:400 .72rem/1.2 JetBrains Mono,ui-monospace,monospace;color:#8b8678
+}
+.meta-pill{
+  display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .55rem;border-radius:999px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)
+}
+.reader-panes{margin-top:1.7rem}
+.reader-pane{display:none}
+.reader-pane.active{display:block}
+.path-head{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  margin:0 0 1rem;padding-bottom:.55rem;border-bottom:1px solid rgba(212,175,55,.18)
+}
+.path-name{
+  font:600 .74rem/1 JetBrains Mono,ui-monospace,monospace;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold)
+}
+.path-desc{font-size:.86rem;color:var(--muted)}
+.content{
+  background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.05);
+  border-radius:var(--radius);padding:1.2rem 1.1rem;box-shadow:var(--shadow)
+}
+.content :is(p,li){font-size:1rem;color:#d4cec1}
+.content h1,.content h2,.content h3,.content h4{color:#f2e8ca}
+.content h2{
+  margin-top:1.5rem;padding-bottom:.35rem;border-bottom:1px solid rgba(212,175,55,.14);
+  font:600 1.05rem/1.2 Oswald,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.06em
+}
+.content blockquote{
+  margin:1rem 0;padding:.85rem 1rem;border-left:3px solid var(--gold);
+  background:var(--gold-soft);border-radius:0 var(--radius-sm) var(--radius-sm) 0;color:#f2e8ca
+}
+.content code{background:rgba(255,255,255,.05);padding:.1rem .25rem;border-radius:5px}
+.content pre{
+  overflow:auto;padding:1rem;background:#0b0b0b;border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius-sm)
+}
+.media-card,.rigor-card,.note-card{
+  margin-top:1.1rem;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.05);
+  border-radius:var(--radius);padding:1rem 1.05rem
+}
+.card-label{
+  font:600 .62rem/1 JetBrains Mono,ui-monospace,monospace;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:.65rem
+}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem}
+.kv{display:flex;flex-direction:column;gap:.2rem}
+.kv span:first-child{font:500 .58rem/1 JetBrains Mono,ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:#8b846f}
+.kv span:last-child{color:#ddd6c4;font-size:.92rem}
+.list{margin:.45rem 0 0;padding-left:1.2rem}
+.list li{margin:.25rem 0;color:#d4cec1}
+.audio-dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(8,8,8,.98);
+  border-top:1px solid var(--gold-line);backdrop-filter:blur(12px)
+}
+.audio-inner{
+  max-width:1180px;margin:0 auto;padding:.55rem 1rem;display:flex;flex-wrap:wrap;
+  align-items:center;gap:.6rem
+}
+.audio-tabs{display:flex;flex-wrap:wrap;gap:.25rem}
+.audio-tab{
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:#aaa;
+  border-radius:999px;padding:.34rem .6rem;font:600 .58rem/1 JetBrains Mono,ui-monospace,monospace;
+  text-transform:uppercase;letter-spacing:.08em;cursor:pointer
+}
+.audio-tab.active{color:var(--gold);background:var(--gold-soft);border-color:var(--gold-line)}
+.audio-play,.audio-min{
+  border:1px solid var(--gold-line);background:transparent;color:var(--gold);
+  width:32px;height:32px;border-radius:999px;cursor:pointer
+}
+.audio-play:hover,.audio-min:hover{background:var(--gold-soft)}
+.audio-track{flex:1;min-width:160px;height:4px;border-radius:999px;background:#242424;overflow:hidden}
+.audio-fill{width:0;height:100%;background:var(--gold)}
+.audio-time{font:400 .56rem/1 JetBrains Mono,ui-monospace,monospace;color:#7d7769;white-space:nowrap}
+.audio-link{
+  font:600 .62rem/1 JetBrains Mono,ui-monospace,monospace;letter-spacing:.08em;
+  text-transform:uppercase;color:#8f8a7b;text-decoration:none;padding:.2rem .35rem;border-radius:6px
+}
+.audio-link:hover{color:var(--gold);background:var(--gold-soft)}
+.audio-dock.minimized{transform:translateY(calc(100% - 42px))}
+.audio-mini{
+  position:fixed;right:14px;bottom:14px;z-index:61;display:none;align-items:center;justify-content:center;
+  width:42px;height:42px;border-radius:999px;background:#090909;border:1px solid var(--gold-line);
+  color:var(--gold);box-shadow:var(--shadow);cursor:pointer
+}
+.audio-mini.visible{display:flex}
+.bottom-shell{
+  margin:1.25rem auto 0;padding:0 1rem 1.1rem;max-width:1180px
+}
+.subdomains{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.35rem .65rem;padding:0 0 .7rem;
+  border-top:1px solid rgba(255,255,255,.05);margin-top:1rem
+}
+.subdomains a{
+  font:400 .56rem/1 JetBrains Mono,ui-monospace,monospace;text-transform:uppercase;letter-spacing:.08em;
+  color:rgba(255,255,255,.38);text-decoration:none;padding:.28rem .38rem;border-radius:6px
+}
+.subdomains a:hover{color:var(--gold);background:var(--gold-soft)}
+.footer{
+  padding:.35rem 0 4.5rem;text-align:center;font:400 .52rem/1.5 JetBrains Mono,ui-monospace,monospace;
+  color:rgba(255,255,255,.2)
+}
+@media (max-width:760px){
+  .shell-top-inner{flex-wrap:wrap;justify-content:center;padding:.75rem 1rem}
+  .nav-arrows{width:100%;justify-content:center}
+  .grid-2{grid-template-columns:1fr}
+  .article{padding-top:1.4rem}
+}
+</style>
+</head>
+<body>
+<header class="shell-top">
+  <div class="shell-top-inner">
+    <a class="brand" href="/">
+      <span class="brand-badge" aria-hidden="true"></span>
+      Faith Through Physics
+    </a>
+    <div class="path-tabs" role="tablist" aria-label="Reading levels">
+      <button type="button" class="path-tab active" data-reader-path="story">Story Path</button><button type="button" class="path-tab" data-reader-path="plain">Plain Path</button><button type="button" class="path-tab" data-reader-path="test">Test Path</button><button type="button" class="path-tab" data-reader-path="proof">Proof Path</button>
+    </div>
+    <div class="nav-arrows">
+      <span>Prev</span>
+      <a href="/one-page-stories/">Series Home</a>
+      <a href="../the-floor/index.html">Next</a>
+    </div>
+  </div>
+</header>
+
+<section class="bar">
+  <div class="shell-bar-inner bar-inner">
+    <div class="bar-label">Article Classification</div>
+    <div class="segments"><div class="seg" style="width:25.00%;background:#c87050" title="theology 25%"></div><div class="seg" style="width:20.00%;background:#8fe6b0" title="psychology 20%"></div><div class="seg" style="width:20.00%;background:#e2725b" title="cross-domain 20%"></div><div class="seg" style="width:15.00%;background:#ff7d90" title="ethics 15%"></div><div class="seg" style="width:12.00%;background:#2dd4bf" title="evidence 12%"></div><div class="seg" style="width:8.00%;background:#f5d0a9" title="story 8%"></div></div>
+    <div class="tags"><span class="tag"><span class="dot" style="background:#c87050"></span>theology 25%</span><span class="tag"><span class="dot" style="background:#8fe6b0"></span>psychology 20%</span><span class="tag"><span class="dot" style="background:#e2725b"></span>cross-domain 20%</span><span class="tag"><span class="dot" style="background:#ff7d90"></span>ethics 15%</span><span class="tag"><span class="dot" style="background:#2dd4bf"></span>evidence 12%</span><span class="tag"><span class="dot" style="background:#f5d0a9"></span>story 8%</span></div>
+  </div>
+</section>
+
+<main class="article">
+  <div class="eyebrow">Cross-Domain Analysis</div>
+  <h1>The Question</h1>
+  <div class="subtitle">When Two Worlds Define the Same Word Differently</div>
+  <div class="meta-row">
+    <span class="meta-pill">David Lowe</span>
+    <span class="meta-pill">2026-06-21</span>
+    <span class="meta-pill">draft</span>
+    <span class="meta-pill">the-question</span>
+  </div>
+
+  <section class="media-card" hidden>
+    <div class="card-label">Media</div>
+    <div class="grid-2">
+      <div class="kv">
+        <span>Hero</span>
+        <span>No hero image supplied.</span>
+      </div>
+      <div class="kv">
+        <span>Figures</span>
+        <span>No figures supplied.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="reader-panes">
+    <section class="reader-pane active" data-reader-pane="story"><div class="path-head"><div class="path-name">Story Path</div><div class="path-desc">Narrative, human-first, image-rich.</div></div><div class="content"><h1>THE QUESTION</h1>
+<h3>When Belief and Biology Collide, Who Decides the Truth of a Person?</h3>
+<hr>
+<blockquote>
+<p><strong>NOTE:</strong> Full Story Path content is in the outputs folder: paper1_v2_the_question.md
+Copy the complete paper here. This is the narrative, human-first version.
+It opens with Christine Jorgensen and Thomas, presents both cases
+with full empathy, and ends without declaring a winner.</p>
+</blockquote>
+<hr>
+<h2>Content Summary (for build reference)</h2>
+<ul>
+<li>Opens with the Definition Principle (debates are won at definitions)</li>
+<li>Christine Jorgensen's real story (1952 trans pioneer)</li>
+<li>Thomas (composite) — quiet Kentucky believer, 67 years, 80 people at funeral</li>
+<li>Trans evidence presented at full strength (ENIGMA, clinical data, philosophical frameworks)</li>
+<li>Christian evidence presented as familiar but structurally deep</li>
+<li>Four layers: Ontology, Authority, Recognition, Embodiment</li>
+<li>Honest ending: winning the definition doesn't win the person</li>
+<li>Inconclusive — no winner declared</li>
+</ul></div></section><section class="reader-pane" data-reader-pane="plain"><div class="path-head"><div class="path-name">Plain Path</div><div class="path-desc">Clear explanation without the technical load.</div></div><div class="content"><h1>The Question — Plain Path</h1>
+<p>This paper examines a structural symmetry between two identity claims: transgender identity and Christian faith.</p>
+<p>Both make claims that go beyond what can be directly observed. A trans woman says she is a woman despite male biology. A Christian says he is born again despite no visible change. Both ask society to accept the claim. Both say refusal causes harm.</p>
+<p>The paper compares these claims across four dimensions: what each claims about reality (ontology), where each gets its authority, what each asks others to do (recognition), and what each says about the body (embodiment).</p>
+<h2>Key findings</h2>
+<p>The claims share the same logical structure but differ in three critical ways.</p>
+<p>First, the harm vector is inverted. The trans claim says your refusal harms me. The Christian claim says your rejection harms you, and the Christian response is pursuit, not punishment.</p>
+<p>Second, the historical anchor differs. Christianity operated for centuries before it was named (Acts 11:26). The modern concept of gender as separate from sex was defined academically in 1949 (Simone de Beauvoir) before it became operational.</p>
+<p>Third, the authority source differs. The Christian claim points to an external author (Scripture, Christ). The trans claim is internally sourced — the individual is the final authority on their own identity.</p>
+<h2>The DSM question</h2>
+<p>The DSM-5 classifies persistent belief in being a king as grandiose delusion requiring treatment, but persistent belief in being the opposite sex as gender dysphoria requiring affirmation. Same diagnostic structure — different treatment protocols. The only stated distinction is duration and sincerity.</p>
+<h2>Brain evidence</h2>
+<p>The ENIGMA consortium study (Mueller et al. 2021, N=803) does not show that trans women have female brains. It shows a unique neurological phenotype matching neither sex. The neuroplasticity literature shows that deeply held beliefs reshape brain structure across domains (London taxi drivers, meditators, political ideologues). The same brain data supports both "innate" and "adapted to belief" interpretations. The evidence is underdetermined.</p>
+<h2>What the paper does not do</h2>
+<p>It does not declare a winner. It presents both cases at their strongest and lets the structural comparison speak for itself. The companion papers (The Floor, Two Worlds) take the analysis further.</p></div></section><section class="reader-pane" data-reader-pane="test"><div class="path-head"><div class="path-name">Test Path</div><div class="path-desc">Claims, objections, evidence, kill conditions.</div></div><div class="content"><h1>The Question — Test Path</h1>
+<h2>Claims Made</h2>
+<ol>
+<li>
+<p><strong>Both identity claims exceed empirical observation.</strong> Trans identity claims internal gender despite external biology. Christian identity claims spiritual rebirth despite no physical change.</p>
+</li>
+<li>
+<p><strong>The definition controls the outcome.</strong> Whoever controls the definition of "woman" or "truth" wins the debate before arguments begin.</p>
+</li>
+<li>
+<p><strong>The DSM applies inconsistent diagnostic criteria.</strong> Persistent belief contrary to evidence is treated as delusion in one case and affirmed in another, with no principled distinction beyond duration/sincerity.</p>
+</li>
+<li>
+<p><strong>Brain evidence is underdetermined.</strong> ENIGMA (2021) shows a unique trans neurological phenotype, not a "female brain in a male body." Neuroplasticity research shows all deeply held beliefs reshape brain structure.</p>
+</li>
+<li>
+<p><strong>The harm vector is inverted between the two claims.</strong> Trans: "your refusal harms me." Christian: "your rejection harms you."</p>
+</li>
+<li>
+<p><strong>Historical anchoring differs.</strong> Christianity was operational before definitional (1st century practice, named in Acts 11:26). Trans identity went definitional before operational (de Beauvoir 1949 academic theory → later clinical implementation).</p>
+</li>
+</ol>
+<h2>Strongest Objections (Steelmanned)</h2>
+<ul>
+<li><strong>Against the comparison itself:</strong> These are categorically different claims — one is about gender, one is about metaphysics. Comparing them is a category error.</li>
+<li>
+<p><em>Response:</em> The comparison is structural, not moral. Both make invisible identity claims requiring external recognition. The structure is identical even if the domains differ.</p>
+</li>
+<li>
+<p><strong>Against the DSM critique:</strong> Gender dysphoria and grandiose delusion involve different phenomenology and clinical presentations.</p>
+</li>
+<li>
+<p><em>Response:</em> The diagnostic STRUCTURE is the same (persistent conviction contrary to evidence, resistant to contradictory evidence). The distinction in treatment must be principled, not just asserted.</p>
+</li>
+<li>
+<p><strong>Against the brain evidence critique:</strong> Adolescent studies show sex-atypical brain patterns before any social transition.</p>
+</li>
+<li><em>Response:</em> Pre-transition adolescent studies are the strongest counter, but still cannot rule out early experiential neuroplasticity. Cross-sectional designs cannot establish causation.</li>
+</ul>
+<h2>Kill Conditions</h2>
+<ul>
+<li>Find a stable society that functions without shared definitions</li>
+<li>Find a case where redefining a foundational category had no downstream cultural effects</li>
+<li>Show that the DSM treats persistent belief contrary to evidence consistently across all diagnoses</li>
+<li>Produce a longitudinal (not cross-sectional) brain study that rules out neuroplasticity</li>
+</ul></div></section><section class="reader-pane" data-reader-pane="proof"><div class="path-head"><div class="path-name">Proof Path</div><div class="path-desc">Formal references, equations, and rigor artifacts.</div></div><div class="content"><h1>The Question — Proof Path</h1>
+<h2>Formal Framework Connections</h2>
+<p>This paper operates at the epistemological level rather than the mathematical level.
+No Lean 4 theorems are directly invoked. No equations are central to the argument.</p>
+<h3>Connection to Coherence Framework</h3>
+<p>The definition crisis analyzed in this paper is a specific measurement of the
+Shared Meaning domain (domain 8 of 9 in the Coherence Framework):</p>
+<ul>
+<li>Shared Meaning (Σ): 0.90 (1900) → 0.18 (2024), decline of 80%</li>
+<li>The inability to agree on "woman" is Σ approaching zero at the naming level</li>
+</ul>
+<h3>Connection to F = E - TS</h3>
+<p>The trans/Christian comparison maps onto the Helmholtz free energy diagnostic:
+- F = E - TS where E = Justice (what's owed) and TS = Mercy (what's released)
+- Trans advocacy: maximize TS (affirm, release all constraints) while minimizing E
+- Christian theology: both E and TS at maximum simultaneously (the Cross)</p>
+<h3>Connection to Semantic Entropy</h3>
+<p>Google Ngram data confirms virtue vocabulary decline since the 1960s.
+"Thick" moral concepts (duty, sin, honor) thinned into "values" and "preferences."
+This paper's definition analysis is a specific case of that broader semantic collapse.</p>
+<h2>Data Sources</h2>
+<ul>
+<li>Mueller et al. 2021 (ENIGMA consortium), N=803, 8 sites</li>
+<li>Curry et al. 2019, 60 societies, 7 cooperative behaviors</li>
+<li>DSM-5 diagnostic criteria for Gender Dysphoria (302.85) and Delusional Disorder (297.1)</li>
+<li>Maguire et al. 2000 (London taxi driver hippocampal changes)</li>
+<li>Luders et al. 2004, 2009 (meditation and cortical thickness)</li>
+</ul>
+<h2>Status</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Story Path</td>
+<td>Complete (v2)</td>
+</tr>
+<tr>
+<td>Plain Path</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>Test Path</td>
+<td>Complete</td>
+</tr>
+<tr>
+<td>Proof Path</td>
+<td>Partial — no formal proofs invoked</td>
+</tr>
+<tr>
+<td>GPT Review</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>Jim Review</td>
+<td>Pending (300-claim registry)</td>
+</tr>
+<tr>
+<td>Audio</td>
+<td>Not generated</td>
+</tr>
+</tbody>
+</table></div></section>
+  </div>
+
+  <section class="rigor-card" >
+    <div class="card-label">Rigor Card</div>
+    <div class="grid-2">
+      <div class="kv">
+        <span>Formal refs</span>
+        <span>No formal refs supplied.</span>
+      </div>
+      <div class="kv">
+        <span>Reading levels</span>
+        <span>Story / Plain / Test / Proof</span>
+      </div>
+    </div>
+    <ul class="list">
+      <li>Find a stable society that functions without shared definitions</li><li>Find a case where redefining a foundational category had no downstream cultural effects</li><li>Show that the DSM treats persistent belief contrary to evidence consistently across diagnoses</li>
+    </ul>
+  </section>
+
+  <section class="note-card" >
+    <div class="card-label">Build Notes</div>
+    <div class="kv">
+      <span>Package source</span>
+      <span>D:\GitHub\faiththruphysics-site\MUST DO\ARTICLE_PACKAGES\the-question</span>
+    </div>
+    <div class="kv" style="margin-top:.65rem">
+      <span>Build output</span>
+      <span>D:\GitHub\faiththruphysics-site\MUST DO\_built\the-question\index.html</span>
+    </div>
+  </section>
+</main>
+
+<div class="bottom-shell">
+  <nav class="subdomains">
+    <a href="/">Home</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/master-equation/">Master Equation</a>
+    <a href="/Axiom%20Layer/">Axiom Layer</a>
+    <a href="/proof-explorer/">Proof Explorer</a>
+    <a href="/the-bilateral-audit/">Bilateral Audit</a>
+    <a href="/isomorphism/">Isomorphisms</a>
+    <a href="/lean4/">Lean 4</a>
+  </nav>
+  <div class="footer">Copyright 2024-2026 David Lowe - Faith Through Physics</div>
+</div>
+
+<script id="article-meta" type="application/json">{&quot;slug&quot;: &quot;the-question&quot;, &quot;title&quot;: &quot;The Question&quot;, &quot;subtitle&quot;: &quot;When Two Worlds Define the Same Word Differently&quot;, &quot;author&quot;: &quot;David Lowe&quot;, &quot;date&quot;: &quot;2026-06-21&quot;, &quot;series&quot;: &quot;cross-domain&quot;, &quot;series_title&quot;: &quot;Cross-Domain Analysis&quot;, &quot;series_order&quot;: 1, &quot;prev&quot;: null, &quot;next&quot;: &quot;the-floor&quot;, &quot;status&quot;: &quot;draft&quot;, &quot;classification&quot;: [{&quot;tag&quot;: &quot;theology&quot;, &quot;pct&quot;: 25, &quot;color&quot;: &quot;#c87050&quot;}, {&quot;tag&quot;: &quot;psychology&quot;, &quot;pct&quot;: 20, &quot;color&quot;: &quot;#8fe6b0&quot;}, {&quot;tag&quot;: &quot;cross-domain&quot;, &quot;pct&quot;: 20, &quot;color&quot;: &quot;#e2725b&quot;}, {&quot;tag&quot;: &quot;ethics&quot;, &quot;pct&quot;: 15, &quot;color&quot;: &quot;#ff7d90&quot;}, {&quot;tag&quot;: &quot;evidence&quot;, &quot;pct&quot;: 12, &quot;color&quot;: &quot;#2dd4bf&quot;}, {&quot;tag&quot;: &quot;story&quot;, &quot;pct&quot;: 8, &quot;color&quot;: &quot;#f5d0a9&quot;}], &quot;audio&quot;: {&quot;podcast&quot;: null, &quot;read_aloud&quot;: null, &quot;debate&quot;: null, &quot;critique&quot;: null}, &quot;options&quot;: {&quot;mtl_equations&quot;: false, &quot;rigor_card&quot;: true, &quot;glossary_links&quot;: true, &quot;show_classification&quot;: true, &quot;show_audio_dock&quot;: true, &quot;reading_levels&quot;: [&quot;story&quot;, &quot;plain&quot;, &quot;test&quot;, &quot;proof&quot;]}, &quot;formal_refs&quot;: {&quot;axioms&quot;: [], &quot;theorems&quot;: [], &quot;isomorphisms&quot;: [], &quot;kill_conditions&quot;: [&quot;Find a stable society that functions without shared definitions&quot;, &quot;Find a case where redefining a foundational category had no downstream cultural effects&quot;, &quot;Show that the DSM treats persistent belief contrary to evidence consistently across diagnoses&quot;]}}</script>
+<script>
+(function(){
+  const meta = JSON.parse(document.getElementById('article-meta').textContent);
+  const availablePanes = Array.from(document.querySelectorAll('.reader-pane'));
+  const tabs = Array.from(document.querySelectorAll('[data-reader-path]'));
+  const audioMeta = meta.audio || {};
+  const audioMap = Array.from(document.querySelectorAll('[data-audio-mode]')).reduce((acc, btn) => {
+    acc[btn.dataset.audioMode] = btn.dataset.audioSrc || '';
+    return acc;
+  }, {});
+  const dock = document.getElementById('audioDock');
+  const playBtn = document.getElementById('audioPlay');
+  const audioMiniBtn = document.getElementById('audioMiniBtn');
+  const audioMin = document.getElementById('audioMin');
+  const audioTrack = document.getElementById('audioTrack');
+  const audioFill = document.getElementById('audioFill');
+  const audioTime = document.getElementById('audioTime');
+  const audioOpen = document.getElementById('audioOpen');
+  const audio = new Audio();
+  audio.preload = 'metadata';
+  let currentMode = audioMap.podcast ? 'podcast' : (audioMap.read_aloud ? 'read_aloud' : (audioMap.debate ? 'debate' : (audioMap.critique ? 'critique' : '')));
+
+  function formatTime(value){
+    if (!isFinite(value) || value < 0) return '0:00';
+    const mins = Math.floor(value / 60);
+    const secs = Math.floor(value % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+  }
+
+  function setTab(path){
+    const available = tabs.find(btn => btn.dataset.readerPath === path && !btn.classList.contains('disabled'));
+    if (!available) return;
+    tabs.forEach(btn => btn.classList.toggle('active', btn === available));
+    availablePanes.forEach(pane => pane.classList.toggle('active', pane.dataset.readerPane === path));
+    localStorage.setItem('ftp-reader-mode', path);
+  }
+
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('disabled')) return;
+      setTab(btn.dataset.readerPath);
+    });
+  });
+
+  const storedPane = localStorage.getItem('ftp-reader-mode');
+  if (storedPane && tabs.some(btn => btn.dataset.readerPath === storedPane && !btn.classList.contains('disabled'))) {
+    setTab(storedPane);
+  } else {
+    const firstPane = tabs.find(btn => !btn.classList.contains('disabled'));
+    if (firstPane) setTab(firstPane.dataset.readerPath);
+  }
+
+  function setAudioMode(mode){
+    currentMode = mode;
+    document.querySelectorAll('[data-audio-mode]').forEach(btn => btn.classList.toggle('active', btn.dataset.audioMode === mode));
+    const src = audioMap[mode];
+    if (!src) return;
+    audio.src = src;
+    audioOpen.href = src;
+    audio.load();
+  }
+
+  document.querySelectorAll('[data-audio-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.audioSrc) setAudioMode(btn.dataset.audioMode);
+    });
+  });
+
+  if (currentMode) setAudioMode(currentMode);
+  if (!currentMode) {
+    dock.style.display = 'none';
+    audioMiniBtn.style.display = 'none';
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (!audio.src) return;
+    if (audio.paused) audio.play();
+    else audio.pause();
+  });
+
+  audio.addEventListener('play', () => playBtn.textContent = 'Pause');
+  audio.addEventListener('pause', () => playBtn.textContent = 'Play');
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration && isFinite(audio.duration)) {
+      audioFill.style.width = `${Math.min(100, (audio.currentTime / audio.duration) * 100)}%`;
+      audioTime.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+    }
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    audioTime.textContent = `0:00 / ${formatTime(audio.duration)}`;
+  });
+  audio.addEventListener('ended', () => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+
+  audioTrack.addEventListener('click', (event) => {
+    if (!audio.duration || !isFinite(audio.duration)) return;
+    const rect = audioTrack.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    audio.currentTime = audio.duration * pct;
+  });
+
+  audioMin.addEventListener('click', () => {
+    dock.classList.add('minimized');
+    audioMiniBtn.classList.add('visible');
+  });
+  audioMiniBtn.addEventListener('click', () => {
+    dock.classList.remove('minimized');
+    audioMiniBtn.classList.remove('visible');
+  });
+})();
+</script>
+</body>
+</html>

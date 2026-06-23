@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Master Coherence Analysis — David Lowe</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<!-- MathJax -->
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' } };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════
+   MANUSCRIPT NOIR — Cross-Domain Coherence Series
+   Design: Claude Opus · Theophysics Research Program
+   ═══════════════════════════════════════════════════ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:        #0b0a09;
+  --surface:   #131210;
+  --surface2:  #1a1916;
+  --surface3:  #22211d;
+  --border:    rgba(193,127,62,.12);
+  --border-h:  rgba(193,127,62,.30);
+  --copper:    #c17f3e;
+  --copper-l:  #d9a066;
+  --copper-dim:rgba(193,127,62,.06);
+  --copper-glow:rgba(193,127,62,.15);
+  --cream:     #ede6d6;
+  --cream-d:   #a89f8b;
+  --cream-m:   #6b6456;
+  --ink:       #d4cfc3;
+  --white:     #f5f0e6;
+  --sage:      #7a8c6e;
+  --sage-dim:  rgba(122,140,110,.08);
+  --slate:     #6b8fbf;
+  --slate-dim: rgba(107,143,191,.08);
+  --red:       #c87070;
+  --red-dim:   rgba(200,60,60,.06);
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Source Serif 4',Georgia,serif;
+  font-size:1.08rem;
+  line-height:1.82;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Ambient glow */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 30% -10%,rgba(193,127,62,.04) 0%,transparent 50%),
+    radial-gradient(ellipse at 70% 110%,rgba(193,127,62,.02) 0%,transparent 50%);
+}
+
+::selection{background:rgba(193,127,62,.25);color:var(--white)}
+
+/* ── TYPOGRAPHY ── */
+.display{font-family:'Playfair Display',Georgia,serif}
+.serif{font-family:'Source Serif 4',Georgia,serif}
+.sans{font-family:'Inter',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ── LAYOUT ── */
+.page{max-width:780px;margin:0 auto;padding:0 2rem}
+.wide{max-width:920px}
+
+/* ── TOP BAR ── */
+.top-bar{
+  border-bottom:1px solid var(--border);
+  padding:1rem 0;
+}
+.top-bar .inner{
+  max-width:780px;margin:0 auto;padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.series-mark{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--cream-m);
+}
+.series-mark span{color:var(--copper)}
+.top-nav{display:flex;gap:1.4rem}
+.top-nav a{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--cream-m);text-decoration:none;transition:color .25s;
+}
+.top-nav a:hover{color:var(--copper-l)}
+
+/* ── HERO ── */
+.hero{
+  padding:6rem 0 4rem;
+  text-align:center;
+  position:relative;
+}
+.hero::after{
+  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:80px;height:1px;background:var(--copper);opacity:.4;
+}
+.hero-number{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(5rem,12vw,8rem);
+  font-weight:900;
+  color:rgba(193,127,62,.06);
+  line-height:1;
+  margin-bottom:-1.5rem;
+  position:relative;
+  z-index:0;
+}
+.hero-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--copper);
+  display:block;margin-bottom:1.8rem;
+  position:relative;z-index:1;
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.4rem,5.5vw,3.8rem);
+  font-weight:700;
+  color:var(--white);
+  line-height:1.1;
+  margin-bottom:1.5rem;
+  letter-spacing:-.02em;
+  position:relative;z-index:1;
+}
+.hero h1 em{
+  font-style:italic;
+  color:var(--copper-l);
+  font-weight:400;
+}
+.hero .byline{
+  font-family:'Inter',sans-serif;
+  font-size:.85rem;
+  color:var(--cream-m);
+  letter-spacing:.05em;
+}
+.hero .byline strong{color:var(--cream-d);font-weight:500}
+.hero .meta-stats{
+  display:flex;gap:2rem;justify-content:center;
+  margin-top:1.5rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;letter-spacing:.1em;
+  color:var(--cream-m);
+}
+.hero .meta-stats span{color:var(--copper)}
+
+/* ── SECTIONS ── */
+.section{
+  padding:3.5rem 0;
+  position:relative;
+}
+.section + .section{
+  border-top:1px solid var(--border);
+}
+.section-num{
+  font-family:'Playfair Display',serif;
+  font-size:4rem;font-weight:900;
+  color:rgba(193,127,62,.05);
+  position:absolute;top:2rem;right:0;
+  line-height:1;pointer-events:none;
+}
+
+h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.6rem,3vw,2.2rem);
+  font-weight:700;
+  color:var(--white);
+  margin-bottom:1.8rem;
+  line-height:1.2;
+}
+h2 .part-label{
+  display:block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--copper);
+  margin-bottom:.6rem;
+  font-weight:400;
+}
+
+h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.3rem;font-weight:700;
+  color:var(--white);
+  margin:2.5rem 0 1rem;
+}
+
+p{margin-bottom:1.4rem}
+p + p{margin-top:0}
+
+strong{color:var(--white);font-weight:600}
+
+em{color:var(--copper-l)}
+
+/* ── PULL QUOTE ── */
+.pull-quote{
+  border-left:3px solid var(--copper);
+  padding:1.5rem 0 1.5rem 2rem;
+  margin:2.5rem 0;
+  position:relative;
+}
+.pull-quote p{
+  font-family:'Playfair Display',serif;
+  font-size:1.35rem;
+  font-style:italic;
+  color:var(--cream);
+  line-height:1.6;
+  margin-bottom:0;
+}
+.pull-quote .attr{
+  font-family:'Inter',sans-serif;
+  font-size:.75rem;
+  color:var(--copper);
+  margin-top:.8rem;
+  display:block;
+}
+
+/* ── VOICE BLOCK (raw voice vs. written) ── */
+.voice-block{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:2rem;
+  margin:2rem 0;
+}
+.voice-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--copper);
+  margin-bottom:1rem;display:block;
+}
+
+/* ── AI SPEAKER ── */
+.ai-voice{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--sage);
+  border-radius:0 8px 8px 0;
+  padding:2rem 2rem 2rem 2.5rem;
+  margin:2.5rem 0;
+}
+.ai-voice.gemini{border-left-color:var(--slate)}
+.ai-voice .speaker{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--sage);
+  margin-bottom:1rem;display:block;
+}
+.ai-voice.gemini .speaker{color:var(--slate)}
+
+/* ── AXIOM CARDS ── */
+.axiom-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:2rem;
+  margin:1.5rem 0;
+  transition:border-color .25s, transform .25s;
+}
+.axiom-card:hover{
+  border-color:var(--border-h);
+  transform:translateY(-1px);
+}
+.axiom-card .num{
+  font-family:'Playfair Display',serif;
+  font-size:2.5rem;font-weight:900;
+  color:rgba(193,127,62,.10);
+  float:left;
+  margin-right:1.2rem;
+  line-height:1;
+  margin-top:.2rem;
+}
+.axiom-card h4{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;font-weight:700;
+  color:var(--white);
+  margin-bottom:.8rem;
+}
+.axiom-card p{
+  font-size:.95rem;
+  color:var(--cream-d);
+  margin-bottom:.8rem;
+}
+.axiom-card .veto{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--copper);
+  padding:.4rem .8rem;
+  background:var(--copper-dim);
+  border-radius:4px;
+  display:inline-block;
+  margin-top:.5rem;
+}
+
+/* ── EQUATION STAGE ── */
+.eq-stage{
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:2.5rem 2rem;
+  margin:2.5rem 0;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.eq-stage::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(193,127,62,.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.eq-stage .label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--copper);
+  margin-bottom:1.2rem;display:block;
+  position:relative;
+}
+.eq-stage .mjx-math{font-size:1.3em}
+.eq-stage .caption{
+  font-family:'Inter',sans-serif;
+  font-size:.85rem;
+  color:var(--cream-m);
+  margin-top:1.2rem;
+  position:relative;
+}
+
+/* ── TRANSLATION CARDS ── */
+.term-card{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:1.5rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:1.8rem;
+  margin:1.2rem 0;
+  align-items:start;
+}
+.term-card .symbol{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;font-weight:700;
+  color:var(--copper-l);
+  min-width:80px;
+  text-align:center;
+  padding-top:.2rem;
+}
+.term-card .meaning h4{
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem;font-style:italic;
+  color:var(--white);
+  margin-bottom:.6rem;
+}
+.term-card .meaning p{
+  font-size:.95rem;
+  color:var(--cream-d);
+  margin-bottom:.5rem;
+}
+.term-card .force-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:.3rem .7rem;border-radius:4px;
+  display:inline-block;margin-top:.3rem;
+}
+.force-tag.order{background:var(--sage-dim);color:var(--sage);border:1px solid rgba(122,140,110,.2)}
+.force-tag.chaos{background:rgba(200,60,60,.06);color:#c87070;border:1px solid rgba(200,60,60,.15)}
+.force-tag.outside{background:var(--copper-dim);color:var(--copper);border:1px solid rgba(193,127,62,.2)}
+
+/* ── CHALLENGE BOX ── */
+.challenge{
+  background:linear-gradient(135deg,var(--surface2),var(--surface));
+  border:2px solid var(--copper);
+  border-radius:10px;
+  padding:2.5rem;
+  margin:3rem 0;
+  text-align:center;
+}
+.challenge h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;
+  color:var(--copper-l);
+  margin-bottom:1rem;
+  margin-top:0;
+}
+.challenge p{
+  max-width:560px;margin:0 auto 1rem;
+  color:var(--cream-d);
+}
+.challenge .final{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;font-style:italic;
+  color:var(--white);
+  margin-top:1.5rem;
+}
+
+/* ── DIVIDER ── */
+.divider{
+  text-align:center;
+  padding:2rem 0;
+  color:var(--copper);
+  opacity:.3;
+  font-size:.8rem;
+  letter-spacing:1em;
+}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:3rem 0;
+  text-align:center;
+}
+footer p{
+  font-family:'Inter',sans-serif;
+  font-size:.75rem;
+  color:var(--cream-m);
+  letter-spacing:.05em;
+}
+footer a{color:var(--copper);text-decoration:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .page{padding:0 1.2rem}
+  .hero{padding:4rem 0 3rem}
+  .hero-number{font-size:4rem}
+  .section{padding:2.5rem 0}
+  .section-num{display:none}
+  .term-card{grid-template-columns:1fr;gap:.8rem}
+  .term-card .symbol{text-align:left;font-size:1.6rem}
+  .pull-quote{padding-left:1.2rem}
+  .ai-voice{padding:1.5rem}
+  .project-grid{grid-template-columns:1fr !important}
+  .rec-card{padding:1.5rem !important}
+}
+
+/* ═══════════════════════════════════════════════════
+   PAPER 07 — DATA TABLES & PROJECT CARDS
+   ═══════════════════════════════════════════════════ */
+
+/* ── DATA TABLES ── */
+.data-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:1.5rem 0;
+  font-family:'Inter',sans-serif;
+  font-size:.9rem;
+}
+.data-table thead th{
+  background:var(--copper);
+  color:var(--bg);
+  font-weight:600;
+  text-align:left;
+  padding:.75rem 1rem;
+  font-size:.8rem;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.data-table thead th:first-child{border-radius:6px 0 0 0}
+.data-table thead th:last-child{border-radius:0 6px 0 0}
+.data-table tbody td{
+  padding:.65rem 1rem;
+  border-bottom:1px solid var(--border);
+  color:var(--cream-d);
+}
+.data-table tbody tr:nth-child(even){
+  background:var(--surface);
+}
+.data-table tbody tr:nth-child(odd){
+  background:var(--surface2);
+}
+.data-table tbody tr:hover{
+  background:var(--copper-dim);
+  transition:background .2s;
+}
+.data-table tbody tr:last-child td:first-child{border-radius:0 0 0 6px}
+.data-table tbody tr:last-child td:last-child{border-radius:0 0 6px 0}
+
+/* Highlighted row (Combined score) */
+.data-table tbody tr.highlight{
+  background:var(--copper-glow) !important;
+  border:1px solid var(--border-h);
+}
+.data-table tbody tr.highlight td{
+  color:var(--white);
+  font-weight:600;
+}
+
+/* Rank numbers in copper */
+.rank-num{
+  font-family:'Playfair Display',serif;
+  font-weight:900;
+  color:var(--copper);
+  font-size:1.1rem;
+}
+
+/* Combined score bold */
+.score-combined{
+  color:var(--white);
+  font-weight:700;
+}
+
+/* ── PROJECT CARDS ── */
+.project-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:2.2rem;
+  margin:2rem 0;
+  transition:border-color .25s;
+}
+.project-card:hover{
+  border-color:var(--border-h);
+}
+.project-card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:1.5rem;
+  flex-wrap:wrap;
+  gap:1rem;
+}
+.project-card-header h3{
+  margin:0;
+  font-family:'Playfair Display',serif;
+  font-size:1.25rem;
+  color:var(--white);
+}
+.project-card-header .project-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--copper);
+  display:block;
+  margin-bottom:.3rem;
+  font-weight:400;
+}
+.score-badge{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;
+  font-weight:900;
+  color:var(--copper-l);
+  background:var(--copper-dim);
+  border:1px solid var(--border-h);
+  border-radius:8px;
+  padding:.4rem 1rem;
+  line-height:1.2;
+  text-align:center;
+  white-space:nowrap;
+}
+.score-badge small{
+  display:block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.5rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--cream-m);
+  font-weight:400;
+}
+
+/* Side-by-side tables */
+.project-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.2rem;
+  margin-bottom:1.2rem;
+}
+.project-grid .data-table{
+  margin:0;
+  font-size:.85rem;
+}
+
+/* Interpretation text */
+.interpretation{
+  font-size:.95rem;
+  color:var(--cream-d);
+  padding-top:.8rem;
+  border-top:1px solid var(--border);
+  margin-top:.5rem;
+  margin-bottom:0;
+}
+
+/* ── FRUIT ANALYSIS TABLES ── */
+.fruit-strength .data-table thead th{
+  background:var(--sage);
+}
+.fruit-weakness .data-table thead th{
+  background:var(--red);
+}
+
+/* ── COHERENCE HIERARCHY (vertical flow) ── */
+.hierarchy-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  margin:2rem 0;
+}
+.hierarchy-box{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:1rem 2rem;
+  text-align:center;
+  width:100%;
+  max-width:480px;
+  transition:border-color .25s;
+}
+.hierarchy-box:hover{
+  border-color:var(--border-h);
+}
+.hierarchy-box .h-label{
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem;
+  font-weight:700;
+  color:var(--white);
+}
+.hierarchy-box .h-score{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.85rem;
+  color:var(--copper);
+  margin-left:.6rem;
+}
+.hierarchy-box .h-note{
+  font-family:'Inter',sans-serif;
+  font-size:.7rem;
+  color:var(--cream-m);
+  display:block;
+  margin-top:.2rem;
+  letter-spacing:.05em;
+}
+.hierarchy-arrow{
+  font-size:1.4rem;
+  color:var(--copper);
+  opacity:.5;
+  line-height:1;
+  padding:.3rem 0;
+}
+
+/* ── RECOMMENDATION CARDS ── */
+.rec-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:2rem;
+  margin:1.5rem 0;
+  transition:border-color .25s, transform .25s;
+}
+.rec-card:hover{
+  border-color:var(--border-h);
+  transform:translateY(-1px);
+}
+.rec-card-header{
+  display:flex;
+  align-items:flex-start;
+  gap:1rem;
+  margin-bottom:1rem;
+}
+.rec-num{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;
+  font-weight:900;
+  color:rgba(193,127,62,.15);
+  line-height:1;
+  min-width:40px;
+}
+.rec-card h4{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;
+  font-weight:700;
+  color:var(--white);
+  margin:0;
+  padding-top:.3rem;
+}
+.rec-card p{
+  font-size:.95rem;
+  color:var(--cream-d);
+  margin-bottom:.8rem;
+}
+.action-item{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  color:var(--copper);
+  padding:.5rem 1rem;
+  background:var(--copper-dim);
+  border-radius:6px;
+  border-left:3px solid var(--copper);
+  margin-top:.5rem;
+}
+.action-item strong{color:var(--copper-l);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase}
+
+/* ── CONCLUSION LIST ── */
+.conclusion-list{
+  list-style:none;
+  padding:0;
+  margin:1.5rem 0;
+}
+.conclusion-list li{
+  padding:.6rem 0 .6rem 1.8rem;
+  position:relative;
+  color:var(--cream-d);
+}
+.conclusion-list li strong{color:var(--white)}
+.conclusion-list li::before{
+  content:attr(data-num);
+  position:absolute;
+  left:0;
+  font-family:'Playfair Display',serif;
+  font-weight:900;
+  color:var(--copper);
+  font-size:1rem;
+}
+</style>
+<script id="article-meta" type="application/json">
+{
+  "slug": "07-master-coherence-analysis",
+  "title": "Master Coherence Analysis — David Lowe",
+  "series": "faith-through-physics",
+  "classification": [
+    {
+      "tag": "theophysics",
+      "pct": 100,
+      "color": "#d4af37"
+    }
+  ],
+  "reading_levels": [
+    "story",
+    "plain"
+  ],
+  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
+}
+</script>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<nav class="top-bar">
+  <div class="inner">
+    <div class="series-mark"><span>Cross-Domain</span> Coherence Series</div>
+    <div class="top-nav">
+      <a href="06-the-scientific-method-redux.html">Prev</a>
+      <a href="#">Index</a>
+      <a href="#" class="on">07 of 12</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero page">
+  <div class="hero-number">07</div>
+  <span class="hero-tag">Cross-Domain Coherence Project &middot; Paper 07</span>
+  <h1>Master <em>Coherence</em> Analysis</h1>
+  <p class="byline"><strong>David Lowe</strong> &middot; Cross-Project Structural Evaluation Report</p>
+  <div class="meta-stats">
+    <div>Generated <span>Dec 31, 2025</span></div>
+    <div>Documents <span>99</span></div>
+    <div>Projects <span>8</span></div>
+  </div>
+</header>
+
+<!-- ═══ CONTENT ═══ -->
+<article class="page">
+
+<!-- ── EXECUTIVE SUMMARY ── -->
+<section class="section">
+  <span class="section-num">I</span>
+  <h2><span class="part-label">Section I</span>Executive Summary</h2>
+
+  <p>This report presents a unified coherence analysis across all Theophysics publication projects using two complementary evaluation frameworks:</p>
+
+  <ol style="list-style:none;padding:0;margin:1.2rem 0 1.8rem">
+    <li style="padding:.4rem 0 .4rem 1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper);font-weight:700">1.</span> <strong>UTDGS (Universal Theory Defense Grading System)</strong> &mdash; Measures horizontal defense depth</li>
+    <li style="padding:.4rem 0 .4rem 1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper);font-weight:700">2.</span> <strong>Fruits (Structural Coherence Invariants)</strong> &mdash; Measures long-term survivability properties</li>
+  </ol>
+
+  <h3>Overall Scores</h3>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Metric</th><th>Score</th><th>Grade</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>UTDGS (Defense)</td><td>53.9/100</td><td>C</td></tr>
+      <tr><td>Fruits (Coherence)</td><td>66.3/100</td><td>B-</td></tr>
+      <tr class="highlight"><td><strong>Combined</strong></td><td><strong>60.1/100</strong></td><td><strong>C+</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── PROJECT RANKINGS ── -->
+<section class="section">
+  <span class="section-num">II</span>
+  <h2><span class="part-label">Section II</span>Project Rankings</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Rank</th><th>Project</th><th>Docs</th><th>UTDGS</th><th>Fruits</th><th>Combined</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="rank-num">1</span></td><td>Layer 3: Metrics</td><td>2</td><td>60.2</td><td>76.6</td><td class="score-combined">68.4</td></tr>
+      <tr><td><span class="rank-num">2</span></td><td>Scientific Method</td><td>13</td><td>65.9</td><td>64.7</td><td class="score-combined">65.3</td></tr>
+      <tr><td><span class="rank-num">3</span></td><td>Layer 2: Method</td><td>4</td><td>65.8</td><td>58.3</td><td class="score-combined">62.1</td></tr>
+      <tr><td><span class="rank-num">4</span></td><td>The Moral Decay of America</td><td>52</td><td>50.1</td><td>71.1</td><td class="score-combined">60.6</td></tr>
+      <tr><td><span class="rank-num">5</span></td><td>Psychology &amp; Mental Health</td><td>15</td><td>55.6</td><td>61.4</td><td class="score-combined">58.5</td></tr>
+      <tr><td><span class="rank-num">6</span></td><td>Layer 1: Logic</td><td>2</td><td>53.9</td><td>60.5</td><td class="score-combined">57.2</td></tr>
+      <tr><td><span class="rank-num">7</span></td><td>Layer 4: Applications</td><td>8</td><td>51.8</td><td>54.4</td><td class="score-combined">53.1</td></tr>
+      <tr><td><span class="rank-num">8</span></td><td>Theological Engineering</td><td>3</td><td>46.1</td><td>52.8</td><td class="score-combined">49.4</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── STRUCTURAL ANALYSIS BY PROJECT ── -->
+<section class="section">
+  <span class="section-num">III</span>
+  <h2><span class="part-label">Section III</span>Structural Analysis by Project</h2>
+
+  <!-- Project 1 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 1 &middot; Highest-Scoring Project</span>
+        <h3>Layer 3: Metrics</h3>
+      </div>
+      <div class="score-badge">68.4<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Self-Control</td><td>+1.000</td></tr>
+            <tr><td>Peace</td><td>+1.000</td></tr>
+            <tr><td>Grace</td><td>+0.800</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Joy</td><td>0.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> The Metrics layer demonstrates perfect boundary integrity (Self-Control) and internal consistency (Peace). This is expected&mdash;metrics documents define clear boundaries and maintain logical coherence by nature.</p>
+  </div>
+
+  <!-- Project 2 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 2 &middot; Strongest Defense Architecture</span>
+        <h3>Scientific Method</h3>
+      </div>
+      <div class="score-badge">65.3<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Truth</td><td>+0.991</td></tr>
+            <tr><td>Self-Control</td><td>+0.692</td></tr>
+            <tr><td>Peace</td><td>+0.410</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Hope</td><td>-0.082</td></tr>
+            <tr><td>Humility</td><td>-0.077</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> Near-perfect Truth score indicates extremely high empirical grounding. The negative Hope score suggests the scientific method papers focus on diagnosis over prescription&mdash;they identify what's broken without always providing recovery paths.</p>
+  </div>
+
+  <!-- Project 3 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 3 &middot; Strong Defense, Moderate Coherence</span>
+        <h3>Layer 2: Method</h3>
+      </div>
+      <div class="score-badge">62.1<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Truth</td><td>+1.000</td></tr>
+            <tr><td>Faithfulness</td><td>+0.500</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Peace</td><td>-0.250</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> Perfect Truth but negative Peace indicates internal tensions in methodology&mdash;expected during active development where different approaches are being reconciled.</p>
+  </div>
+
+  <!-- Project 4 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 4 &middot; Largest Project, Highest Fruits Score</span>
+        <h3>The Moral Decay of America</h3>
+      </div>
+      <div class="score-badge">60.6<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Truth</td><td>+0.797</td></tr>
+            <tr><td>Self-Control</td><td>+0.746</td></tr>
+            <tr><td>Love</td><td>+0.723</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Joy</td><td>+0.097</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> The 52-document corpus demonstrates strong empirical grounding and positive-sum orientation. The low Joy score is appropriate&mdash;documenting civilizational collapse is not a joyful task. The high Love score indicates the analysis is oriented toward restoration, not condemnation.</p>
+  </div>
+
+  <!-- Project 5 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 5 &middot; Excellent Truth, Struggling with Joy</span>
+        <h3>Psychology &amp; Mental Health</h3>
+      </div>
+      <div class="score-badge">58.5<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Truth</td><td>+0.933</td></tr>
+            <tr><td>Grace</td><td>+0.920</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Joy</td><td>-0.133</td></tr>
+            <tr><td>Peace</td><td>-0.067</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> The highest Grace score of any project indicates strong repair mechanisms. However, negative Joy suggests burnout patterns&mdash;the psychology content absorbs damage but doesn't generate positive feedback loops.</p>
+  </div>
+
+  <!-- Project 6 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 6 &middot; Foundation Layer, Balanced Structure</span>
+        <h3>Layer 1: Logic</h3>
+      </div>
+      <div class="score-badge">57.2<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Goodness</td><td>+1.000</td></tr>
+            <tr><td>Truth</td><td>+0.500</td></tr>
+            <tr><td>Faithfulness</td><td>+0.500</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Grace</td><td>0.000</td></tr>
+            <tr><td>Hope</td><td>0.000</td></tr>
+            <tr><td>Patience</td><td>0.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> Perfect Goodness indicates generative surplus&mdash;the logic layer creates value rather than extracting it. The zero scores in Grace, Hope, and Patience suggest the foundational logic is presented as given rather than developed iteratively.</p>
+  </div>
+
+  <!-- Project 7 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 7 &middot; Applied Content, Mixed Signals</span>
+        <h3>Layer 4: Applications</h3>
+      </div>
+      <div class="score-badge">53.1<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Grace</td><td>+0.417</td></tr>
+            <tr><td>Truth</td><td>+0.417</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Patience</td><td>-0.375</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> Moderate across all metrics. The negative Patience suggests application documents may force conclusions rather than allowing iterative emergence&mdash;common in applied work that needs to deliver actionable content.</p>
+  </div>
+
+  <!-- Project 8 -->
+  <div class="project-card">
+    <div class="project-card-header">
+      <div>
+        <span class="project-num">Project 8 &middot; Lowest-Scoring &mdash; Requires Strengthening</span>
+        <h3>Theological Engineering</h3>
+      </div>
+      <div class="score-badge">49.4<small>Combined</small></div>
+    </div>
+    <div class="project-grid">
+      <div class="fruit-strength">
+        <table class="data-table">
+          <thead><tr><th>Strength</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Grace</td><td>+0.667</td></tr>
+            <tr><td>Truth</td><td>+0.333</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fruit-weakness">
+        <table class="data-table">
+          <thead><tr><th>Weakness</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Patience</td><td>-0.667</td></tr>
+            <tr><td>Hope</td><td>-0.333</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="interpretation"><strong>Interpretation:</strong> Strong Grace (entropy absorption) but negative Patience and Hope. The theological proofs may be pushing too hard toward conclusions rather than allowing understanding to develop iteratively. Needs more non-terminal failure states.</p>
+  </div>
+
+</section>
+
+<!-- ── CROSS-PROJECT FRUIT ANALYSIS ── -->
+<section class="section">
+  <span class="section-num">IV</span>
+  <h2><span class="part-label">Section IV</span>Cross-Project Fruit Analysis</h2>
+
+  <h3>Universal Strengths</h3>
+  <div class="fruit-strength">
+    <table class="data-table">
+      <thead>
+        <tr><th>Fruit</th><th>Cross-Project Average</th><th>Interpretation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Truth</strong></td><td>0.707</td><td>Highest across all projects&mdash;empirical grounding is the foundation</td></tr>
+        <tr><td><strong>Self-Control</strong></td><td>0.534</td><td>Strong boundary definition&mdash;claims are properly scoped</td></tr>
+        <tr><td><strong>Faithfulness</strong></td><td>0.363</td><td>Structural consistency maintained</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Universal Weaknesses</h3>
+  <div class="fruit-weakness">
+    <table class="data-table">
+      <thead>
+        <tr><th>Fruit</th><th>Cross-Project Average</th><th>Interpretation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Joy</strong></td><td>-0.002</td><td>Negative average&mdash;burnout attractor present</td></tr>
+        <tr><td><strong>Patience</strong></td><td>-0.012</td><td>Slightly negative&mdash;forced optimization detected</td></tr>
+        <tr><td><strong>Hope</strong></td><td>0.042</td><td>Near-zero&mdash;recovery paths underdeveloped</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── RECOMMENDATIONS ── -->
+<section class="section">
+  <span class="section-num">V</span>
+  <h2><span class="part-label">Section V</span>Recommendations</h2>
+
+  <div class="rec-card">
+    <div class="rec-card-header">
+      <span class="rec-num">01</span>
+      <h4>Strengthen Joy Across All Projects</h4>
+    </div>
+    <p>Joy is negative or zero in 7 of 8 projects. This indicates the corpus accurately diagnoses problems but lacks positive feedback amplification.</p>
+    <div class="action-item"><strong>Action:</strong> Add explicit celebration of what works, success stories, and regenerative patterns.</div>
+  </div>
+
+  <div class="rec-card">
+    <div class="rec-card-header">
+      <span class="rec-num">02</span>
+      <h4>Develop Hope Architecture</h4>
+    </div>
+    <p>Hope averages near-zero, meaning failure states are often presented as terminal.</p>
+    <div class="action-item"><strong>Action:</strong> Every problem diagnosis should include at least one recovery pathway, even if that pathway requires external intervention (Grace).</div>
+  </div>
+
+  <div class="rec-card">
+    <div class="rec-card-header">
+      <span class="rec-num">03</span>
+      <h4>Increase Patience in Applied Content</h4>
+    </div>
+    <p>Theological Engineering and Layer 4 Applications show negative Patience&mdash;forced conclusions.</p>
+    <div class="action-item"><strong>Action:</strong> Allow conclusions to emerge iteratively. Add stepping stones between premises and conclusions.</div>
+  </div>
+
+  <div class="rec-card">
+    <div class="rec-card-header">
+      <span class="rec-num">04</span>
+      <h4>Expand Theological Engineering</h4>
+    </div>
+    <p>The lowest-scoring project (49.4) needs the most work. The Grace score is good (0.667), but the framework needs more iterative development and non-terminal failure states.</p>
+    <div class="action-item"><strong>Action:</strong> Develop intermediate proof stages and allow theological conclusions to build incrementally rather than arriving fully formed.</div>
+  </div>
+</section>
+
+<!-- ── COHERENCE HIERARCHY ── -->
+<section class="section">
+  <span class="section-num">VI</span>
+  <h2><span class="part-label">Section VI</span>The Coherence Hierarchy</h2>
+
+  <p>Based on this analysis, the Theophysics corpus exhibits a coherent structural hierarchy:</p>
+
+  <div class="hierarchy-stack">
+    <div class="hierarchy-box">
+      <span class="h-label">Layer 3: Metrics</span><span class="h-score">(68.4)</span>
+      <span class="h-note">Highest coherence &mdash; boundary-defining</span>
+    </div>
+    <div class="hierarchy-arrow">&darr;</div>
+    <div class="hierarchy-box">
+      <span class="h-label">Layer 2: Method</span><span class="h-score">(65.3)</span>
+      <span class="h-note">Strong defense architecture</span>
+    </div>
+    <div class="hierarchy-arrow">&darr;</div>
+    <div class="hierarchy-box">
+      <span class="h-label">Layer 1: Logic</span><span class="h-score">(57.2)</span>
+      <span class="h-note">Foundational, balanced</span>
+    </div>
+    <div class="hierarchy-arrow">&darr;</div>
+    <div class="hierarchy-box">
+      <span class="h-label">Layer 4: Applications</span><span class="h-score">(53.1)</span>
+      <span class="h-note">Applied content &mdash; needs iteration</span>
+    </div>
+    <div class="hierarchy-arrow">&darr;</div>
+    <div class="hierarchy-box">
+      <span class="h-label">Theological Engineering</span><span class="h-score">(49.4)</span>
+      <span class="h-note">Needs development</span>
+    </div>
+  </div>
+
+  <p>The pattern is clear: <strong>the more a document defines boundaries and maintains internal consistency, the higher it scores.</strong> Application and proof documents score lower because they must extend beyond boundaries&mdash;this is expected and not necessarily a problem.</p>
+</section>
+
+<!-- ── CONCLUSION ── -->
+<section class="section">
+  <span class="section-num">VII</span>
+  <h2><span class="part-label">Section VII</span>Conclusion</h2>
+
+  <p>The Theophysics corpus demonstrates:</p>
+
+  <ul class="conclusion-list">
+    <li data-num="1."><strong>Strong Truth foundation</strong> (0.707 average)&mdash;empirically grounded</li>
+    <li data-num="2."><strong>Good boundary discipline</strong> (Self-Control: 0.534)&mdash;claims properly scoped</li>
+    <li data-num="3."><strong>Joy deficit</strong> (-0.002)&mdash;diagnosis exceeds prescription</li>
+    <li data-num="4."><strong>Layer coherence</strong>&mdash;higher layers score higher, as expected</li>
+  </ul>
+
+  <p>The overall Combined Score of <strong>60.1/100</strong> indicates a viable, partially stable framework that would benefit from:</p>
+
+  <ul style="list-style:none;padding:0;margin:1.2rem 0">
+    <li style="padding:.3rem 0 .3rem 1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Amplification of regenerative (Joy) mechanisms</li>
+    <li style="padding:.3rem 0 .3rem 1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Development of recovery pathways (Hope)</li>
+    <li style="padding:.3rem 0 .3rem 1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Iterative elaboration of applied content (Patience)</li>
+  </ul>
+
+  <p><strong>This is not a failing framework. This is a diagnostic framework that has not yet fully developed its prescriptive complement.</strong></p>
+
+  <div class="divider">· · ·</div>
+
+  <div class="pull-quote">
+    <p>Truth persists by coherence, not popularity.</p>
+  </div>
+
+  <div class="pull-quote">
+    <p>The same physics that governs entropy in thermodynamic systems governs entropy in social systems.</p>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+  <p style="text-align:center;color:var(--cream-m);font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;margin-top:2rem">End of Report</p>
+
+</section>
+
+</article>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="page">
+    <p>Cross-Domain Coherence Series &middot; Paper 07 of 12</p>
+    <p style="margin-top:.5rem">Theophysics Research Program &middot; David Lowe &middot; 2025</p>
+  </div>
+</footer>
+
+<script src="/components/tp-inject.js" data-theme="dark"></script>
+</body>
+</html>

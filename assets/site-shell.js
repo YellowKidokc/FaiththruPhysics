@@ -2,14 +2,16 @@
   if(document.querySelector("[data-site-shell]")) return;
 
   const sections = [
-    {label:"Easy", href:"#easy", mode:"easy"},
-    {label:"Academic", href:"#academic", mode:"academic"},
-    {label:"Math Translation Layer", href:"#math-translation-layer", mode:"math"},
-    {label:"Proof-Claims", href:"#proof-claims", mode:"proof"}
+    {label:"Story", href:"/index.html#master-story", mode:"easy"},
+    {label:"Plain", href:"/index.html#start", mode:"academic"},
+    {label:"Deep", href:"/index.html#ladder", mode:"math"},
+    {label:"Proof", href:"/index.html#all", mode:"proof"}
   ];
 
   const subdomains = [
     {label:"Home", href:"/"},
+    {label:"MDA", href:"/mda/"},
+    {label:"Isomorphism", href:"/isomorphism/"},
     {label:"Convergence Series", href:"/convergence-series/"},
     {label:"Convergence Deep", href:"/convergence-deep/"},
     {label:"Blue Series", href:"/blue/"},
@@ -93,6 +95,30 @@
       </div>
     `;
 
+    const audit = document.createElement("section");
+    audit.className = "site-audit-footer";
+    audit.setAttribute("data-site-shell", "audit");
+    audit.innerHTML = `
+      <div class="site-audit-inner">
+        <div class="site-audit-title">Audit Layer</div>
+        <div class="site-audit-note">Every page should end with the same three-part check: what we got right, what we overstated, and what we got wrong. Use it as the bright end cap, even when the page style changes.</div>
+        <div class="site-audit-grid">
+          <article class="site-audit-card is-green">
+            <h3>What We Got Right</h3>
+            <p>Load-bearing claims, clean definitions, and the parts that clearly survived the check.</p>
+          </article>
+          <article class="site-audit-card is-amber">
+            <h3>What We Overstated</h3>
+            <p>Strong direction, but the language ran ahead of the evidence, the mechanism, or the proof available on the page.</p>
+          </article>
+          <article class="site-audit-card is-red">
+            <h3>What We Got Wrong</h3>
+            <p>Claims that need correction, tightening, or a weaker formulation before publication.</p>
+          </article>
+        </div>
+      </div>
+    `;
+
     const credit = document.createElement("div");
     credit.className = "site-shell-credit";
     credit.setAttribute("data-site-shell", "credit");
@@ -101,9 +127,10 @@
     const footer = document.querySelector("footer");
     if(footer){
       footer.parentNode.insertBefore(nav, footer);
+      footer.parentNode.insertBefore(audit, footer);
       footer.insertAdjacentElement("afterend", credit);
     }else{
-      document.body.append(nav, credit);
+      document.body.append(nav, audit, credit);
     }
   }
 
@@ -156,6 +183,69 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("site-shell-enabled");
+    if(!document.getElementById("site-audit-footer-styles")){
+      const style = document.createElement("style");
+      style.id = "site-audit-footer-styles";
+      style.textContent = `
+        .site-audit-footer {
+          padding: 1.1rem 1rem 1.3rem;
+          background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+          border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .site-audit-inner {
+          max-width: 1100px;
+          margin: 0 auto;
+          display: grid;
+          gap: 0.8rem;
+        }
+        .site-audit-title {
+          font: 600 0.62rem 'JetBrains Mono', ui-monospace, monospace;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.38);
+        }
+        .site-audit-note {
+          color: rgba(255,255,255,0.28);
+          font-size: 0.72rem;
+          line-height: 1.6;
+          max-width: 74ch;
+        }
+        .site-audit-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 0.75rem;
+        }
+        .site-audit-card {
+          padding: 0.95rem 1rem;
+          border-radius: 0.85rem;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03);
+          min-height: 92px;
+        }
+        .site-audit-card h3 {
+          margin: 0 0 0.35rem;
+          font: 600 0.74rem 'JetBrains Mono', ui-monospace, monospace;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+        .site-audit-card p {
+          margin: 0;
+          color: rgba(255,255,255,0.42);
+          font-size: 0.78rem;
+          line-height: 1.55;
+        }
+        .site-audit-card.is-green { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
+        .site-audit-card.is-green h3 { color: #22c55e; }
+        .site-audit-card.is-amber { border-color: rgba(212,175,55,0.22); background: rgba(212,175,55,0.04); }
+        .site-audit-card.is-amber h3 { color: #d4af37; }
+        .site-audit-card.is-red { border-color: rgba(239,68,68,0.2); background: rgba(239,68,68,0.04); }
+        .site-audit-card.is-red h3 { color: #ef4444; }
+        @media (max-width: 780px) {
+          .site-audit-grid { grid-template-columns: 1fr; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
     renderTop();
     renderPlayer();
     renderBottom();

@@ -35,6 +35,8 @@
 
   const SUBDOMAINS = [
     { label: 'Home', href: '/' },
+    { label: 'MDA', href: '/mda/' },
+    { label: 'Isomorphism', href: '/isomorphism/' },
     { label: 'Convergence Series', href: '/convergence-series/' },
     { label: 'Convergence Deep', href: '/convergence-deep/' },
     { label: 'Blue Series', href: '/blue/' },
@@ -49,10 +51,10 @@
   ];
 
   const LAYERS = [
-    { id: 'easy', label: 'Easy' },
-    { id: 'academic', label: 'Academic' },
-    { id: 'math', label: 'Math Translation Layer' },
-    { id: 'proof', label: 'Proof-Claims' },
+    { id: 'easy', label: 'Story' },
+    { id: 'academic', label: 'Plain' },
+    { id: 'math', label: 'Deep' },
+    { id: 'proof', label: 'Proof' },
   ];
 
   const STYLES = `
@@ -104,6 +106,62 @@
     .ftp-footer-credit {
       text-align: center; padding: 0.8rem 1rem; font-family: 'JetBrains Mono', ui-monospace, monospace;
       font-size: 0.56rem; color: rgba(255,255,255,0.22); background: #050505;
+    }
+    .ftp-audit-footer {
+      padding: 1.2rem 1rem 1.4rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .ftp-audit-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 0.8rem;
+    }
+    .ftp-audit-title {
+      font: 600 0.62rem 'JetBrains Mono', ui-monospace, monospace;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+    }
+    .ftp-audit-note {
+      color: rgba(255,255,255,0.28);
+      font-size: 0.72rem;
+      line-height: 1.6;
+      max-width: 74ch;
+    }
+    .ftp-audit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .ftp-audit-card {
+      padding: 0.95rem 1rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      min-height: 92px;
+    }
+    .ftp-audit-card h3 {
+      margin: 0 0 0.35rem;
+      font: 600 0.74rem 'JetBrains Mono', ui-monospace, monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .ftp-audit-card p {
+      margin: 0;
+      color: rgba(255,255,255,0.42);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+    .ftp-audit-card.is-green { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
+    .ftp-audit-card.is-green h3 { color: #22c55e; }
+    .ftp-audit-card.is-amber { border-color: rgba(212,175,55,0.22); background: rgba(212,175,55,0.04); }
+    .ftp-audit-card.is-amber h3 { color: #d4af37; }
+    .ftp-audit-card.is-red { border-color: rgba(239,68,68,0.2); background: rgba(239,68,68,0.04); }
+    .ftp-audit-card.is-red h3 { color: #ef4444; }
+    @media (max-width: 780px) {
+      .ftp-audit-grid { grid-template-columns: 1fr; }
     }
     .ftp-coming-soon-overlay { display: flex; align-items: center; justify-content: center; min-height: 300px; padding: 3rem; }
     .ftp-coming-soon-box {
@@ -212,6 +270,33 @@
     return footer;
   }
 
+  function buildAuditFooter() {
+    const footer = document.createElement('section');
+    footer.className = 'ftp-audit-footer';
+    footer.setAttribute('data-site-shell', 'audit');
+    footer.innerHTML = `
+      <div class="ftp-audit-inner">
+        <div class="ftp-audit-title">Final Audit</div>
+        <div class="ftp-audit-note">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong. Keep it bright, readable, and honest, even when the page style changes.</div>
+        <div class="ftp-audit-grid">
+          <article class="ftp-audit-card is-green">
+            <h3>What We Got Right</h3>
+            <p>Load-bearing claims, clean definitions, and the parts that clearly survived the check.</p>
+          </article>
+          <article class="ftp-audit-card is-amber">
+            <h3>What We Overstated</h3>
+            <p>Strong direction, but the language ran ahead of the evidence, the mechanism, or the proof available on the page.</p>
+          </article>
+          <article class="ftp-audit-card is-red">
+            <h3>What We Got Wrong</h3>
+            <p>Claims that need correction, tightening, or a weaker formulation before publication.</p>
+          </article>
+        </div>
+      </div>
+    `;
+    return footer;
+  }
+
   function buildPlayer() {
     if (cfg.hidePlayer || document.querySelector('.tp-pill-player, .tp-pill-bar')) return null;
 
@@ -225,7 +310,9 @@
     if (cfg.audioApi) player.setAttribute('data-audio-api', cfg.audioApi);
     player.innerHTML = `
       <div class="tp-pill-strip">
-        <button class="tp-pill active" data-mode="deep" data-src="" data-label="Podcast"><span class="dot"></span>Podcast</button>
+        <button class="tp-pill active" data-mode="deep" data-src="" data-label="Deep Dive"><span class="dot"></span>Deep Dive</button>
+        <button class="tp-pill" data-mode="debate" data-src="" data-label="Debate"><span class="dot"></span>Debate</button>
+        <button class="tp-pill" data-mode="critique" data-src="" data-label="Critique"><span class="dot"></span>Critique</button>
         <button class="tp-pill" data-mode="tts" data-src="" data-label="TTS"><span class="dot"></span>TTS</button>
         <button class="tp-pill" data-mode="web" data-src="" data-label="Browser"><span class="dot"></span>Browser</button>
       </div>
@@ -271,7 +358,15 @@
     const player = buildPlayer();
     if (player) document.body.insertBefore(player, document.querySelector('[data-site-shell="top"]')?.nextSibling || document.body.firstChild);
     document.body.appendChild(buildSubdomainStrip());
-    document.body.appendChild(buildFooter());
+    const pageFooter = document.querySelector('footer');
+    const auditFooter = buildAuditFooter();
+    if (pageFooter) {
+      pageFooter.parentNode.insertBefore(auditFooter, pageFooter);
+      pageFooter.insertAdjacentElement('afterend', buildFooter());
+    } else {
+      document.body.appendChild(auditFooter);
+      document.body.appendChild(buildFooter());
+    }
     processComingSoon();
 
     if (window.TPPillPlayer?.initAll) window.TPPillPlayer.initAll();

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layer Implementation Demo</title>
+<style>
+:root{
+  --bg:#060607;
+  --panel:#101114;
+  --panel-2:#16181d;
+  --line:rgba(255,255,255,.08);
+  --text:#e8e4db;
+  --muted:#a6a09a;
+  --faint:#6e6962;
+  --gold:#d7b15c;
+  --green:#4cc38a;
+  --amber:#e2b54a;
+  --red:#df6d6d;
+  --blue:#7cb7ff;
+  --violet:#b58cff;
+  --shadow:0 22px 70px rgba(0,0,0,.45);
+  --radius:20px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+  radial-gradient(circle at 20% 0%, rgba(215,177,92,.08), transparent 30%),
+  radial-gradient(circle at 80% 10%, rgba(92,141,255,.06), transparent 26%),
+  linear-gradient(180deg,#050506 0%, #08090b 100%);
+  color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+body{padding:28px}
+.wrap{max-width:1280px;margin:0 auto;display:grid;gap:20px}
+.hero,.card,.panel,.pipeline,.legend{background:rgba(16,17,20,.88);backdrop-filter:blur(18px);border:1px solid var(--line);box-shadow:var(--shadow)}
+.hero{border-radius:28px;padding:26px 28px}
+.eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700}
+h1{margin:10px 0 8px;font-size:clamp(28px,4vw,50px);line-height:1.05}
+.sub{max-width:900px;color:var(--muted);line-height:1.7;font-size:15px}
+.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;align-items:start}
+.card,.panel,.pipeline,.legend{border-radius:var(--radius)}
+.card{padding:18px}
+.card h2,.panel h2,.pipeline h2{margin:0 0 14px;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.claim-list{display:grid;gap:10px}
+.claim-btn{
+  width:100%;text-align:left;border:1px solid var(--line);background:var(--panel-2);
+  color:var(--text);padding:14px 14px;border-radius:16px;cursor:pointer;transition:.18s ease;
+}
+.claim-btn:hover{transform:translateY(-1px);border-color:rgba(215,177,92,.35)}
+.claim-btn.active{border-color:rgba(215,177,92,.7);box-shadow:0 0 0 1px rgba(215,177,92,.2) inset;background:linear-gradient(180deg,rgba(215,177,92,.12),rgba(255,255,255,.02))}
+.claim-btn .top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
+.claim-id{font:700 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold);letter-spacing:.14em}
+.state{font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.16em;padding:5px 8px;border-radius:999px}
+.state.good{background:rgba(76,195,138,.12);color:var(--green);border:1px solid rgba(76,195,138,.22)}
+.state.soft{background:rgba(226,181,74,.12);color:var(--amber);border:1px solid rgba(226,181,74,.22)}
+.state.risk{background:rgba(223,109,109,.12);color:var(--red);border:1px solid rgba(223,109,109,.22)}
+.claim-title{font-size:14px;font-weight:650;line-height:1.4}
+.claim-short{font-size:12px;color:var(--muted);line-height:1.55}
+.panel{padding:18px}
+.tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.tab{
+  border:1px solid var(--line);background:var(--panel-2);color:var(--muted);
+  padding:10px 12px;border-radius:999px;cursor:pointer;font:700 11px/1 Inter,Arial,sans-serif;
+  letter-spacing:.12em;text-transform:uppercase
+}
+.tab.active{color:var(--bg);background:var(--gold);border-color:transparent}
+.view{display:grid;gap:16px}
+.view-box{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));border-radius:18px;padding:18px}
+.label{font:700 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.headline{font-size:28px;line-height:1.1;margin:0 0 12px}
+.body{color:var(--muted);line-height:1.75;font-size:15px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mini{background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:14px}
+.mini h3{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.mini p{margin:0;color:var(--muted);line-height:1.6;font-size:13px}
+.mini.good h3{color:var(--green)} .mini.soft h3{color:var(--amber)} .mini.risk h3{color:var(--red)}
+.math-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.math-chip{border:1px solid rgba(181,140,255,.18);background:rgba(181,140,255,.06);border-radius:16px;padding:14px}
+.math-chip .sym{font:700 20px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--violet);margin-bottom:6px}
+.math-chip .name{font-weight:700;margin-bottom:4px}
+.math-chip .meta{font-size:12px;color:var(--muted);line-height:1.55}
+.pipeline,.legend{padding:18px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.step{position:relative;background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:14px}
+.step:after{content:"";position:absolute;right:-8px;top:50%;width:14px;height:14px;border-top:2px solid rgba(255,255,255,.18);border-right:2px solid rgba(255,255,255,.18);transform:translateY(-50%) rotate(45deg)}
+.step:last-child:after{display:none}
+.step h3{margin:0 0 8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.step p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.code{
+  margin-top:14px;background:#0a0b0d;border:1px solid var(--line);border-radius:16px;
+  padding:14px;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d9d5cc;white-space:pre-wrap
+}
+.legend-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.legend-item{border:1px solid var(--line);background:var(--panel-2);border-radius:16px;padding:12px}
+.legend-item strong{display:block;margin-bottom:5px}
+.legend-item span{color:var(--muted);font-size:12px;line-height:1.5}
+@media (max-width: 980px){.layout{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.step:after{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow">layer implementation demo</div>
+    <h1>One claim registry, three renderings.</h1>
+    <div class="sub">Click a claim on the left. Then switch between the acclaim layer, the audit layer, and the math translation layer. The key idea is that the page does not hold three separate copies of the truth. It holds one claim object, and the layers render from that object.</div>
+  </section>
+
+  <section class="layout">
+    <aside class="card">
+      <h2>Claims</h2>
+      <div id="claimList" class="claim-list"></div>
+    </aside>
+
+    <main class="panel">
+      <div class="tabs">
+        <button class="tab active" data-layer="acclaim">Acclaim</button>
+        <button class="tab" data-layer="audit">Audit</button>
+        <button class="tab" data-layer="math">Math</button>
+      </div>
+      <div id="view" class="view"></div>
+    </main>
+  </section>
+
+  <section class="pipeline">
+    <h2>How The Button Works</h2>
+    <div class="steps">
+      <div class="step">
+        <h3>1. Select claim</h3>
+        <p>The click sets the active `claimId` in state.</p>
+      </div>
+      <div class="step">
+        <h3>2. Choose layer</h3>
+        <p>The layer button swaps the renderer: acclaim, audit, or math.</p>
+      </div>
+      <div class="step">
+        <h3>3. Render from registry</h3>
+        <p>The UI reads the same claim object and maps it to the chosen layer.</p>
+      </div>
+      <div class="step">
+        <h3>4. Build output</h3>
+        <p>The HTML is generated from the registry, so the copy stays aligned.</p>
+      </div>
+    </div>
+    <div class="code" id="code"></div>
+  </section>
+
+  <section class="legend">
+    <h2>Implementation Rules</h2>
+    <div class="legend-items">
+      <div class="legend-item"><strong>Acclaim</strong><span>What we want the reader to understand and feel.</span></div>
+      <div class="legend-item"><strong>Audit</strong><span>What holds, what is overstated, what is wrong, what needs evidence.</span></div>
+      <div class="legend-item"><strong>Math</strong><span>Which symbol or formal structure each phrase maps to, and how exact that mapping is.</span></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const claims = [
+  {
+    id: "claim-01",
+    title: "Lean verification proves the internal structure compiles cleanly.",
+    short: "The proof layer is real, but it has a narrower job than the surrounding prose.",
+    state: "good",
+    acclaim: "Lean gives us a machine-checked internal backbone. It verifies the architecture, the dependency structure, and the formal constraints without hand-waving.",
+    audit: {
+      right: "The structure compiles, and that is meaningful.",
+      overstated: "Compilation does not equal total world-truth.",
+      wrong: "Any claim that Lean alone settles physics, theology, or history is too strong."
+    },
+    math: [
+      {sym:"χ", name:"coherence function", meta:"formal system backbone; exact inside the model"},
+      {sym:"G", name:"grace", meta:"operator mapping; exact only if defined in the registry"},
+      {sym:"F", name:"faith", meta:"state/input term; may be formal or analogical"}
+    ],
+    code: `registry.claims["claim-01"] = {
+  public: "Lean verifies the internal structure.",
+  audit: "Formal proof is narrower than domain proof.",
+  math: { chi: "coherence function" }
+}`
+  },
+  {
+    id: "claim-02",
+    title: "Grace comes from outside a closed system.",
+    short: "This is the repair logic page: closed systems decay unless outside input enters.",
+    state: "soft",
+    acclaim: "Grace is not self-generated. The system needs external input to escape pure decay and restore coherence.",
+    audit: {
+      right: "The closed-system logic is strong and teachable.",
+      overstated: "Calling it a full proof of a theological doctrine may be too much without extra support.",
+      wrong: "Do not present the model as if it eliminates all alternative readings."
+    },
+    math: [
+      {sym:"dC/dt", name:"coherence change", meta:"dynamic update rule for system state"},
+      {sym:"O", name:"outside input", meta:"external source term"},
+      {sym:"S", name:"self-loss", meta:"decay / drift term"}
+    ],
+    code: `registry.claims["claim-02"] = {
+  public: "Grace enters from outside.",
+  audit: "This is a model of repair, not a rhetorical flourish.",
+  math: { dCdt: "coherence change equation" }
+}`
+  },
+  {
+    id: "claim-03",
+    title: "The mapping between prose and symbols must preserve claim weight.",
+    short: "This is where the math translation layer gets disciplined.",
+    state: "risk",
+    acclaim: "The math translation layer pins words to symbols, and it labels whether the mapping is formal, structural, or speculative.",
+    audit: {
+      right: "A claim registry can keep the layers aligned.",
+      overstated: "Not every metaphor deserves exact symbolic equivalence.",
+      wrong: "If a loose analogy is styled as a proof, the layer is lying."
+    },
+    math: [
+      {sym:"EXACT", name:"formal match", meta:"same structure, same rules"},
+      {sym:"STRUCT", name:"structural analogy", meta:"same pattern, weaker identity"},
+      {sym:"SPEC", name:"speculative projection", meta:"candidate mapping that needs evidence"}
+    ],
+    code: `registry.claims["claim-03"] = {
+  public: "Every symbol must carry a mapping strength.",
+  audit: "Exact, structural, or speculative.",
+  math: { strength: ["EXACT", "STRUCT", "SPEC"] }
+}`
+  }
+];
+
+const state = { claimId: claims[0].id, layer: "acclaim" };
+const claimList = document.getElementById("claimList");
+const view = document.getElementById("view");
+const code = document.getElementById("code");
+
+function setActiveClaim(id){
+  state.claimId = id;
+  render();
+}
+function setLayer(layer){
+  state.layer = layer;
+  document.querySelectorAll(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.layer === layer));
+  render();
+}
+function activeClaim(){
+  return claims.find(c => c.id === state.claimId) || claims[0];
+}
+
+function renderClaimButtons(){
+  claimList.innerHTML = claims.map(c => `
+    <button class="claim-btn ${c.id === state.claimId ? "active" : ""}" data-id="${c.id}">
+      <div class="top">
+        <span class="claim-id">${c.id}</span>
+        <span class="state ${c.state}">${c.state}</span>
+      </div>
+      <div class="claim-title">${c.title}</div>
+      <div class="claim-short">${c.short}</div>
+    </button>
+  `).join("");
+  claimList.querySelectorAll(".claim-btn").forEach(btn => btn.addEventListener("click", () => setActiveClaim(btn.dataset.id)));
+}
+
+function renderView(){
+  const claim = activeClaim();
+  if(state.layer === "audit"){
+    view.innerHTML = `
+      <div class="view-box">
+        <div class="label">Audit layer</div>
+        <h2 class="headline">${claim.title}</h2>
+        <div class="body">${claim.short}</div>
+      </div>
+      <div class="grid-3">
+        <div class="mini good"><h3>What We Got Right</h3><p>${claim.audit.right}</p></div>
+        <div class="mini soft"><h3>What We Overstated</h3><p>${claim.audit.overstated}</p></div>
+        <div class="mini risk"><h3>What We Got Wrong</h3><p>${claim.audit.wrong}</p></div>
+      </div>
+    `;
+  } else if(state.layer === "math"){
+    view.innerHTML = `
+      <div class="view-box">
+        <div class="label">Math translation layer</div>
+        <h2 class="headline">${claim.title}</h2>
+        <div class="body">This layer does not repeat the prose. It encodes the claim into the formal vocabulary and marks how exact the mapping is.</div>
+      </div>
+      <div class="math-grid">
+        ${claim.math.map(item => `
+          <div class="math-chip">
+            <div class="sym">${item.sym}</div>
+            <div class="name">${item.name}</div>
+            <div class="meta">${item.meta}</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  } else {
+    view.innerHTML = `
+      <div class="view-box">
+        <div class="label">Acclaim layer</div>
+        <h2 class="headline">${claim.title}</h2>
+        <div class="body">${claim.acclaim}</div>
+      </div>
+      <div class="view-box">
+        <div class="label">How it renders</div>
+        <div class="body">The claim registry fills the public page copy, the audit cards, and the math map from the same record. That keeps the layers synchronized.</div>
+      </div>
+    `;
+  }
+}
+
+function renderCode(){
+  const claim = activeClaim();
+  code.textContent = claim.code;
+}
+
+function render(){
+  renderClaimButtons();
+  renderView();
+  renderCode();
+}
+
+document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => setLayer(btn.dataset.layer)));
+render();
+</script>
+</body>
+</html>
