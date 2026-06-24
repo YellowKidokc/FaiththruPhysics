@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DP-22 | Grade Day — The One: Duality Project</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    /* ============================================================
+       CUSTOM PROPERTIES
+       ============================================================ */
+    :root {
+      --bg:             #0a0a0a;
+      --bg-light:       #1a1a1a;
+      --bg-mid:         #111111;
+      --border:         #2a2a2a;
+      --border-light:   #333333;
+      --text:           #e8e8e8;
+      --text-secondary: #a0a0a0;
+      --text-dim:       #666666;
+      --gold:           #d4af37;
+      --gold-dim:       rgba(212,175,55,0.10);
+      --gold-mid:       rgba(212,175,55,0.25);
+      --gold-bright:    rgba(212,175,55,0.70);
+      --teal:           #2dd4bf;
+      --teal-dim:       rgba(45,212,191,0.10);
+      --teal-mid:       rgba(45,212,191,0.20);
+      --red-dim:        rgba(220,60,60,0.15);
+      --red:            #dc3c3c;
+    }
+
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       PROGRESS BAR
+       ============================================================ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), #f0c040);
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ============================================================
+       STICKY NAV
+       ============================================================ */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nav-links-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.series {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-separator {
+      color: var(--border-light);
+      font-size: 0.75rem;
+      user-select: none;
+    }
+
+    .nav-links-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link.prev-link {
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .nav-link.prev-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.next-link-disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    /* chapter badge in nav */
+    .nav-chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      opacity: 0.8;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       PAGE HEADER
+       ============================================================ */
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .header-eyebrow::before,
+    .header-eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold-bright);
+    }
+
+    .chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .chapter-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+
+    .chapter-subtitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+      margin-bottom: 36px;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg-light);
+    }
+
+    .meta-pill i { color: var(--gold); font-size: 0.72rem; }
+
+    /* Final chapter badge */
+    .meta-pill.finale {
+      color: #f0c040;
+      border-color: var(--gold-mid);
+      background: rgba(212,175,55,0.08);
+    }
+    .meta-pill.finale i { color: #f0c040; }
+
+    .header-divider {
+      max-width: 1100px;
+      margin: 0 auto 0;
+      padding: 0 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+    }
+
+    /* ============================================================
+       LAYER NAV TABS
+       ============================================================ */
+    .layer-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 0;
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+    }
+
+    .layer-tab.narrative  { --tab-color: var(--gold); }
+    .layer-tab.simulation { --tab-color: var(--teal); }
+    .layer-tab.academic   { --tab-color: #a78bfa; }
+
+    .layer-tab:hover {
+      color: var(--tab-color);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .layer-tab.active {
+      color: var(--tab-color);
+      background: var(--bg-light);
+      border-color: var(--border);
+      border-bottom-color: var(--bg-light);
+      margin-bottom: -1px;
+    }
+
+    /* ============================================================
+       MAIN CONTENT WRAPPER
+       ============================================================ */
+    .content-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ============================================================
+       LAYER SECTIONS
+       ============================================================ */
+    .layer-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-section:last-of-type { border-bottom: none; }
+
+    /* --- Layer Header --- */
+    .layer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .layer-number {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    .layer-number.gold   { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-mid); }
+    .layer-number.teal   { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal-mid); }
+    .layer-number.purple { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+
+    .layer-header-text {}
+
+    .layer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .layer-label.gold   { color: var(--gold); }
+    .layer-label.teal   { color: var(--teal); }
+    .layer-label.purple { color: #a78bfa; }
+
+    .layer-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    /* ============================================================
+       LAYER 1 — NARRATIVE
+       ============================================================ */
+    .narrative-body {
+      max-width: 720px;
+    }
+
+    .scene-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gold-mid);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scene-title::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .scene-divider {
+      margin: 44px 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-mid), transparent);
+    }
+
+    /* Prose paragraphs */
+    .narrative-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 1.5em;
+    }
+
+    /* Drop cap for first paragraph of each scene */
+    .drop-cap::first-letter {
+      font-family: 'Cinzel', serif;
+      font-size: 4.2em;
+      font-weight: 700;
+      color: var(--gold);
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.08em;
+      margin-top: 0.12em;
+    }
+
+    /* Dialogue */
+    .narrative-body p.dialogue {
+      font-style: italic;
+      color: #d0d0d0;
+    }
+
+    /* Hologram / emphasis spans */
+    .word-omega {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 20px rgba(212,175,55,0.5);
+    }
+
+    .word-teal {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 18px rgba(45,212,191,0.5);
+    }
+
+    /* Terminal line in narrative context */
+    .narrative-terminal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--teal);
+      background: rgba(45,212,191,0.06);
+      border: 1px solid var(--teal-mid);
+      border-left: 3px solid var(--teal);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+
+    /* Quote callout */
+    .pullquote {
+      border-left: 3px solid var(--gold);
+      padding: 16px 24px;
+      background: var(--gold-dim);
+      border-radius: 0 8px 8px 0;
+      margin: 32px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: #d8c980;
+      line-height: 1.7;
+    }
+
+    /* Fourth-wall / revelation callout */
+    .revelation-box {
+      border: 1px solid rgba(167,139,250,0.35);
+      border-left: 3px solid #a78bfa;
+      background: rgba(167,139,250,0.06);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 28px;
+      margin: 36px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #c4b5fd;
+      line-height: 1.75;
+    }
+
+    .revelation-box strong {
+      font-style: normal;
+      color: #a78bfa;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       LAYER 2 — SIMULATION / TERMINAL
+       ============================================================ */
+    .terminal-shell {
+      background: #080e0d;
+      border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(45,212,191,0.07), 0 4px 24px rgba(0,0,0,0.6);
+    }
+
+    .terminal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      background: #0d1413;
+      border-bottom: 1px solid rgba(45,212,191,0.2);
+    }
+
+    .terminal-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red    { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #27c93f; }
+
+    .terminal-title {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(45,212,191,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .terminal-body {
+      padding: 28px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #c0faf4;
+    }
+
+    .t-comment   { color: rgba(45,212,191,0.4); }
+    .t-label     { color: var(--teal); font-weight: 600; letter-spacing: 0.05em; }
+    .t-value     { color: #f0c040; }
+    .t-dim       { color: rgba(192,250,244,0.45); }
+    .t-red       { color: var(--red); font-weight: 600; }
+    .t-success   { color: #4ade80; font-weight: 600; }
+    .t-prompt    { color: rgba(45,212,191,0.6); }
+    .t-bold      { font-weight: 600; }
+    .t-purple    { color: #a78bfa; font-weight: 600; }
+
+    .terminal-block {
+      display: block;
+      margin-bottom: 0.15em;
+    }
+
+    .terminal-section-gap { display: block; margin: 16px 0; }
+
+    .terminal-divider {
+      display: block;
+      margin: 16px 0;
+      color: rgba(45,212,191,0.25);
+    }
+
+    /* Stat grid inside terminal */
+    .term-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .term-stat-card {
+      background: rgba(45,212,191,0.05);
+      border: 1px solid rgba(45,212,191,0.18);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .term-stat-card .stat-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--teal);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .term-stat-card.gold-card .stat-number { color: var(--gold); }
+    .term-stat-card.green-card .stat-number { color: #4ade80; }
+    .term-stat-card.purple-card .stat-number { color: #a78bfa; }
+    .term-stat-card .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Constraint / resolution list */
+    .constraint-list {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .constraint-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #c0faf4;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(45,212,191,0.08);
+      line-height: 1.6;
+    }
+
+    .constraint-list li:last-child { border-bottom: none; }
+
+    .constraint-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--teal-mid);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      color: var(--teal);
+      margin-top: 2px;
+    }
+
+    .check-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      background: rgba(74,222,128,0.15);
+      border: 1px solid rgba(74,222,128,0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      color: #4ade80;
+      margin-top: 2px;
+    }
+
+    /* Grade table */
+    .grade-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+
+    .grade-table th {
+      text-align: left;
+      color: var(--teal);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(45,212,191,0.3);
+    }
+
+    .grade-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(45,212,191,0.08);
+      color: #c0faf4;
+      line-height: 1.5;
+    }
+
+    .grade-a { color: #4ade80; font-weight: 700; }
+    .grade-f { color: var(--red); font-weight: 700; }
+    .grade-s { color: #f0c040; font-weight: 700; letter-spacing: 0.1em; }
+
+    /* ============================================================
+       LAYER 3 — ACADEMIC / INVITATION
+       ============================================================ */
+    .academic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .profile-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .avatar-kai {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: #60a5fa;
+    }
+
+    .avatar-mia {
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-mid);
+      color: var(--gold);
+    }
+
+    .avatar-lane {
+      background: rgba(167,139,250,0.12);
+      border: 1px solid rgba(167,139,250,0.3);
+      color: #a78bfa;
+    }
+
+    .avatar-you {
+      background: rgba(212,175,55,0.08);
+      border: 1px solid rgba(212,175,55,0.4);
+      color: var(--gold);
+    }
+
+    .profile-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+
+    .profile-designation {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .profile-body {
+      padding: 18px 20px;
+    }
+
+    .profile-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 14px;
+    }
+
+    .profile-row:last-child { margin-bottom: 0; }
+
+    .profile-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .profile-val {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .profile-val.driver {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    .strength-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin: 2px 4px 2px 0;
+    }
+
+    .str-logic  { color: #60a5fa; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.25); }
+    .str-gold   { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-mid); }
+    .str-teal   { color: var(--teal); background: var(--teal-dim); border: 1px solid var(--teal-mid); }
+    .str-purple { color: #a78bfa; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+    .str-green  { color: #4ade80; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25); }
+
+    /* Role badge */
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .role-architect { color: #60a5fa; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.3); }
+    .role-anchor    { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-mid); }
+    .role-proctor   { color: #a78bfa; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3); }
+    .role-reader    { color: var(--gold); background: rgba(212,175,55,0.08); border: 1px solid var(--gold-mid); }
+
+    /* The final invitation block */
+    .invitation-block {
+      background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(167,139,250,0.05) 100%);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 12px;
+      padding: 40px 44px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .invitation-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .invitation-heading {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    .invitation-body {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.18rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 620px;
+      margin: 0 auto 28px;
+    }
+
+    .invitation-items {
+      list-style: none;
+      text-align: left;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+
+    .invitation-items li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.6;
+    }
+
+    .invitation-items li:last-child { border-bottom: none; }
+
+    .inv-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      margin-top: 3px;
+    }
+
+    .inv-icon.gold   { background: var(--gold-dim); border: 1px solid var(--gold-mid); color: var(--gold); }
+    .inv-icon.teal   { background: var(--teal-dim); border: 1px solid var(--teal-mid); color: var(--teal); }
+    .inv-icon.purple { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); color: #a78bfa; }
+
+    .invitation-quote {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.15rem;
+      font-style: italic;
+      color: #c4b5fd;
+      border-top: 1px solid rgba(167,139,250,0.2);
+      padding-top: 24px;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    /* System log box */
+    .sys-log-box {
+      background: #06100f;
+      border: 1px solid rgba(45,212,191,0.2);
+      border-radius: 8px;
+      padding: 24px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 2;
+      margin-top: 24px;
+    }
+
+    .sys-line      { display: block; }
+    .sys-prompt    { color: rgba(45,212,191,0.45); }
+    .sys-key       { color: var(--teal); font-weight: 600; }
+    .sys-num       { color: #f0c040; font-weight: 700; }
+    .sys-action    { color: #4ade80; font-weight: 700; letter-spacing: 0.06em; }
+    .sys-note      { color: var(--text-secondary); font-style: italic; font-size: 0.82rem; }
+    .sys-warn      { color: #fb923c; }
+    .sys-grade     { color: #f0c040; font-size: 1.1rem; font-weight: 700; letter-spacing: 0.15em; }
+    .sys-final     { color: #a78bfa; font-weight: 600; }
+
+    /* ============================================================
+       CHAPTER FOOTER / NAV
+       ============================================================ */
+    .chapter-footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    .footer-series-info {
+      text-align: center;
+      padding: 40px 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+
+    .footer-series-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .footer-series-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-series-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      max-width: 580px;
+      margin: 0 auto 20px;
+      line-height: 1.7;
+    }
+
+    .footer-chapter-count {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .footer-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 22px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .footer-nav-btn.prev {
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .footer-nav-btn.prev:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index {
+      color: var(--gold);
+      border: 1px solid var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index:hover {
+      background: rgba(212,175,55,0.18);
+      border-color: var(--gold-bright);
+    }
+
+    .footer-nav-btn.next-disabled {
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .footer-credit {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ============================================================
+       FINALE BANNER (unique to DP-22)
+       ============================================================ */
+    .finale-banner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+
+    .finale-inner {
+      background: linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(167,139,250,0.07) 50%, rgba(45,212,191,0.07) 100%);
+      border: 1px solid var(--gold-mid);
+      border-radius: 10px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .finale-icon {
+      font-size: 2rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .finale-text {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.06em;
+    }
+
+    .finale-text strong {
+      color: var(--gold);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 16px; gap: 8px; }
+      .nav-link { font-size: 0.7rem; padding: 5px 8px; }
+      .nav-separator { display: none; }
+      .nav-chapter-code { display: none; }
+
+      .page-header { padding: 48px 16px 40px; }
+      .content-wrapper { padding: 0 16px 60px; }
+      .chapter-footer { padding: 40px 16px 60px; }
+      .finale-banner { padding: 0 16px 32px; }
+
+      .layer-nav { padding: 24px 16px 0; }
+      .layer-tab { font-size: 0.7rem; padding: 8px 12px; }
+
+      .term-stat-grid { grid-template-columns: 1fr; gap: 10px; }
+      .academic-grid { grid-template-columns: 1fr; }
+
+      .invitation-block { padding: 28px 20px; }
+
+      .footer-nav { flex-direction: column; gap: 12px; }
+      .footer-nav-btn { width: 100%; justify-content: center; }
+
+      .finale-inner { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .layer-nav { flex-direction: column; border-bottom: none; }
+      .layer-tab { border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; }
+      .layer-tab.active { border-color: var(--border); margin-bottom: 4px; }
+    }
+  </style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/duality-project/dp-22-grade-day.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- =====================================================
+       STICKY NAV
+       ===================================================== -->
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <div class="nav-links-left">
+        <a href="../index.html" class="nav-link">
+          <i class="fa-solid fa-house-chimney"></i>
+          Main Index
+        </a>
+        <span class="nav-separator">/</span>
+        <a href="index.html" class="nav-link series">
+          <i class="fa-solid fa-infinity"></i>
+          The One: Duality Project
+        </a>
+        <span class="nav-separator">/</span>
+        <span class="nav-chapter-code">DP-22</span>
+      </div>
+      <div class="nav-links-right">
+        <a href="dp-21-second-death-audit.html" class="nav-link prev-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          Prev
+        </a>
+        <span class="nav-link next-link-disabled">
+          Next
+          <i class="fa-solid fa-arrow-right"></i>
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+  <header class="page-header">
+    <div class="header-eyebrow">The One: Duality Project</div>
+    <span class="chapter-code">DP-22</span>
+    <h1 class="chapter-title">Grade Day</h1>
+    <p class="chapter-subtitle">The Meta-Reality Revelation</p>
+    <div class="header-meta">
+      <span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> 12 / 28 / 2045</span>
+      <span class="meta-pill"><i class="fa-solid fa-location-dot"></i> Theophysics Research Institute, Grand Amphitheater</span>
+      <span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 3 Layers</span>
+      <span class="meta-pill finale"><i class="fa-solid fa-crown"></i> Final Chapter</span>
+    </div>
+  </header>
+  <div class="header-divider"></div>
+
+  <!-- Finale banner -->
+  <div class="finale-banner">
+    <div class="finale-inner">
+      <div class="finale-icon"><i class="fa-solid fa-flag-checkered"></i></div>
+      <div class="finale-text">
+        <strong>SIMULATION COMPLETE.</strong> &nbsp;This is Chapter 22 of 22 — the final entry in The One: Duality Project. The assignment is graded. The fourth wall is broken. The invitation is open.
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       LAYER NAV TABS
+       ===================================================== -->
+  <div class="layer-nav" role="navigation" aria-label="Chapter layers">
+    <a href="#layer-narrative" class="layer-tab narrative active">
+      <i class="fa-solid fa-book-open"></i>
+      Layer 1 — The Presentation
+    </a>
+    <a href="#layer-simulation" class="layer-tab simulation">
+      <i class="fa-solid fa-terminal"></i>
+      Layer 2 — The Final Audit
+    </a>
+    <a href="#layer-academic" class="layer-tab academic">
+      <i class="fa-solid fa-envelope-open-text"></i>
+      Layer 3 — The Invitation
+    </a>
+  </div>
+
+  <!-- =====================================================
+       CONTENT
+       ===================================================== -->
+  <main class="content-wrapper">
+
+    <!-- ========================================
+         LAYER 1: THE NARRATIVE
+         ======================================== -->
+    <section class="layer-section" id="layer-narrative" aria-labelledby="narrative-title">
+
+      <div class="layer-header">
+        <div class="layer-number gold">I</div>
+        <div class="layer-header-text">
+          <div class="layer-label gold">Layer 01 — Fiction</div>
+          <h2 class="layer-title" id="narrative-title">The Narrative</h2>
+        </div>
+      </div>
+
+      <div class="narrative-body">
+
+        <!-- SCENE 1: THE PRESENTATION -->
+        <h3 class="scene-title">The Presentation</h3>
+
+        <p class="drop-cap">The amphitheater was packed. Every seat filled, every standing space claimed. The Board of Ethics sat in the front row in their grey institutional coats, faces deliberately unreadable. The skeptics were there — the ones who had bet tenure on a TOVE being impossible, the ones who needed a clean result either way. Even the security drones seemed to hover with an unusual stillness, as if the machines themselves understood the weight of the moment.</p>
+
+        <p>Kai stepped to the podium. He wasn't wearing his usual cynical smirk. He looked like a man who had seen a ghost — or a God. Mia stood one step behind him, her cross necklace catching the amphitheater lights, her hands folded with a composure that, frankly, she hadn't earned through calm but through a semester of being absolutely right about things nobody wanted her to be right about.</p>
+
+        <p class="dialogue">"We were given the assignment to find the scenario where Evil wins," Kai began, his voice steady and amplified through the room's acoustics. "We were told to break the machine. To kill the simulation."</p>
+
+        <p>He projected the image of <strong>DP-21: The Second Death</strong> onto the main screen. The quarantine zone glowed a deep red against the black field of the simulation grid, a self-sealed kingdom of corrosive null, going exactly nowhere at the speed of absolute zero.</p>
+
+        <p class="dialogue">"We found it," Kai said. "Inside this quarantine zone, Evil is 100% victorious. It has successfully isolated itself from all Goodness. It has its own kingdom. It has its own 'Self.' By every metric in the original assignment brief, this is an irreversible win for <span class="word-omega">Omega-Null.</span>"</p>
+
+        <p>A ripple of excitement went through the Board. One of them leaned forward. A stylus clicked somewhere in the third row.</p>
+
+        <p class="dialogue">"But," Kai continued, his voice dropping an octave, "we also found that this 'Win' is a <strong>Division by Zero</strong>."</p>
+
+        <p>The room went quiet.</p>
+
+        <p class="dialogue">"In our pursuit of the One Scenario, we discovered that the only way to make Evil win is to make it <em>irrelevant</em>. By the time Evil fully consolidates its quarantine — by the time it achieves total separation from Coherence — the rest of the universe has already undergone the Upgrade event we documented in DP-20. Evil gets its kingdom. But the kingdom it wins is a box. And outside the box, there is no longer any darkness left to rule."</p>
+
+        <p>Mia stepped up to the podium beside him.</p>
+
+        <p class="dialogue">"The Riddle was a test of perspective," she said. "If you look at the Rust, you think the world is dying. If you look at the Chorus, you realize the world is being <em>born</em>. Both things are true simultaneously. That is not a paradox — that is the mechanism."</p>
+
+        <p>She looked directly at Professor Lane.</p>
+
+        <p class="dialogue">"We solved the paradox, Professor. We proved that Evil is allowed to 'win' its own tiny, dark box, so that the rest of us can 'win' the Infinite."</p>
+
+        <div class="pullquote">
+          The simulation doesn't fail because Good cheats. It fails for Evil because Good is the <span class="word-omega">Substance</span> and Evil is only ever the <span class="word-teal">Shadow</span>. A shadow can't outlast the light that casts it.
+        </div>
+
+        <div class="scene-divider"></div>
+
+        <!-- SCENE 2: THE MIRROR -->
+        <h3 class="scene-title">The Mirror</h3>
+
+        <p class="drop-cap">Professor Lane stood up. He didn't applaud. He didn't reach for his evaluation tablet. He walked down from the front row to the stage — slowly, deliberately — and stood in front of Kai and Mia with the expression of someone who had been waiting a very long time for two specific people to say specific words.</p>
+
+        <p class="dialogue">"An excellent grade, Mr. Okonkwo. Miss Chen," he said.</p>
+
+        <p>He turned to the audience. Held the pause long enough that the air itself seemed to contract.</p>
+
+        <p class="dialogue">"But there is one last thing our researchers haven't mentioned. One last variable in the Master Prompt — the one documented in DP-000 on the first day of term."</p>
+
+        <p>He hit a button on his own remote. Not theirs. His.</p>
+
+        <p>The main screen behind them didn't show the Garden. It didn't show the quarantine zone. It showed <strong>Lab Bay Omega-Zero</strong>. It showed Kai and Mia standing at the podium. The camera angle was slightly above and to the left — a perspective that didn't exist anywhere in the amphitheater.</p>
+
+        <p>Kai turned around and looked at the screen. Then back at Lane. Then back at the screen.</p>
+
+        <div class="narrative-terminal">
+          RECURSIVE LAW CONFIRMED: Every simulation is a subset of a larger one.<br />
+          Every H-Agent is a proxy for the Programmer in the layer above.
+        </div>
+
+        <p class="dialogue">"The Recursive Law," Lane said, and there was something different in his voice now — not professorial, not institutional. Something older than that. "Every simulation is a subset of a larger one. Every H-Agent is a proxy for the Programmer in the layer above."</p>
+
+        <p>Kai froze. His jaw tightened. His logic engine, which had never met a wall it couldn't route around, was currently experiencing something unfamiliar.</p>
+
+        <p class="dialogue">"You're saying," he said carefully, "that <em>this</em> is a simulation."</p>
+
+        <p class="dialogue">"I'm saying," Lane said, a small, knowing smile forming at the edge of his mouth, "that the Assignment wasn't for the grade. The assignment was to see if you could recognize your own <strong>Source Code</strong> while you were still running."</p>
+
+        <p>Mia looked at her cross necklace. Then she looked at the Pulse on the monitor at the side of the stage — the one that had been running since DP-00, the one that tracked the coherence signature of the simulation. It was the same rhythm. The same frequency as her own heartbeat.</p>
+
+        <p class="dialogue">"Grade Day isn't about the paper," Mia whispered, and her voice wasn't quite her voice anymore. It was something cleaner. "It's about the <span class="word-omega">Alignment</span>."</p>
+
+        <div class="revelation-box">
+          Lane looked out at the amphitheater — at the Board, the skeptics, the drones — and then, past all of them, at something further away. Or closer. <strong>He looked at you.</strong>
+          <br /><br />
+          "The simulation is over," he said quietly. "The H-Agent you have been watching is <strong>you</strong>. The question was never whether Evil wins. The question was always: when the screen goes dark, which side of the wall are you standing on?"
+        </div>
+
+      </div><!-- .narrative-body -->
+    </section>
+
+
+    <!-- ========================================
+         LAYER 2: THE FINAL AUDIT
+         ======================================== -->
+    <section class="layer-section" id="layer-simulation" aria-labelledby="simulation-title">
+
+      <div class="layer-header">
+        <div class="layer-number teal">II</div>
+        <div class="layer-header-text">
+          <div class="layer-label teal">Layer 02 — System Document</div>
+          <h2 class="layer-title" id="simulation-title">The Final Audit</h2>
+        </div>
+      </div>
+
+      <div class="terminal-shell">
+        <div class="terminal-titlebar">
+          <span class="terminal-dot dot-red"></span>
+          <span class="terminal-dot dot-yellow"></span>
+          <span class="terminal-dot dot-green"></span>
+          <span class="terminal-title">THEO-401 :: END OF TERM EVALUATION :: 12/28/2045 :: ARCHIVE MODE</span>
+        </div>
+
+        <div class="terminal-body">
+
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+          <span class="terminal-block"><span class="t-comment">// SYSTEM LOG: END OF TERM — FINAL EVALUATION</span></span>
+          <span class="terminal-block"><span class="t-comment">// THEO-401 :: Advanced Cosmic Simulation</span></span>
+          <span class="terminal-block"><span class="t-comment">// Theophysics Research Institute, Sector 4</span></span>
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+
+          <span class="terminal-section-gap"></span>
+
+          <span class="terminal-block"><span class="t-label">TEAM</span>          <span class="t-value">OKONKWO // CHEN</span></span>
+          <span class="terminal-block"><span class="t-label">INSTRUCTOR</span>    <span class="t-value">Prof. Marcus Lane</span></span>
+          <span class="terminal-block"><span class="t-label">TERM DATE</span>     <span class="t-value">12 / 28 / 2045</span></span>
+          <span class="terminal-block"><span class="t-label">STATUS</span>        <span class="t-success">SIMULATION COMPLETE</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">OBJECTIVE</span></span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">Find the one scenario where Evil wins. Permanently. Irreversibly.</span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">SEARCHING FOR "THE ONE": FOUND.</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">RESULT: </span><span class="t-purple">"The One" is not a scenario. "The One" is the Template.</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">FINAL DATA RECONCILIATION</span></span>
+          <span class="terminal-section-gap"></span>
+
+        </div>
+
+        <!-- Resolution stat cards -->
+        <div style="padding: 0 32px 16px;">
+          <div class="term-stat-grid">
+            <div class="term-stat-card gold-card">
+              <span class="stat-number">I</span>
+              <span class="stat-label">Duality — Resolved</span>
+            </div>
+            <div class="term-stat-card green-card">
+              <span class="stat-number">II</span>
+              <span class="stat-label">Destiny — Confirmed</span>
+            </div>
+            <div class="term-stat-card purple-card">
+              <span class="stat-number">III</span>
+              <span class="stat-label">Choice — Critical</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-body" style="padding-top:0;">
+
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">RESOLUTION LOG</span></span>
+          <span class="terminal-section-gap"></span>
+
+        </div>
+
+        <!-- Resolution list -->
+        <div style="padding: 0 32px 8px;">
+          <ul class="constraint-list">
+            <li>
+              <span class="check-num"><i class="fa-solid fa-check" style="font-size:0.6rem;"></i></span>
+              <span><span class="t-success" style="font-family:'JetBrains Mono',monospace;">DUALITY: RESOLVED.</span> Good is the Substance. Evil is the Shadow. A shadow cannot win because it requires light to exist. When the light upgrades to a new substrate, the shadow does not follow — it simply ceases.</span>
+            </li>
+            <li>
+              <span class="check-num"><i class="fa-solid fa-check" style="font-size:0.6rem;"></i></span>
+              <span><span class="t-success" style="font-family:'JetBrains Mono',monospace;">DESTINY: CONFIRMED.</span> The New Creation is the destination of the simulation. It is not a hope variable or a bias artifact. It is the thermodynamic attractor state of a universe built on Coherence as the fundamental substrate.</span>
+            </li>
+            <li>
+              <span class="check-num"><i class="fa-solid fa-check" style="font-size:0.6rem;"></i></span>
+              <span><span class="t-purple" style="font-family:'JetBrains Mono',monospace;">CHOICE: CRITICAL.</span> The grade is based on the alignment of the Will. This is the only variable that remains open. The simulation has concluded. The H-Agent's response to the simulation is the data point that has not yet been written.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="terminal-body" style="padding-top:4px;">
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">SYSTEM STATUS</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">ALL QUESTIONS ANSWERED: </span><span class="t-value">132 / 132</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">CLOSING DIRECTORY </span><span class="t-value">"THE_ONE"</span><span class="t-dim"> ...</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">ARCHIVING AS </span><span class="t-purple">"THEOPHYSICS_CANON"</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">FINAL GRADE</span></span>
+          <span class="terminal-section-gap"></span>
+        </div>
+
+        <!-- Grade table -->
+        <div style="padding: 0 32px 28px;">
+          <table class="grade-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Finding</th>
+                <th>Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>OKONKWO // CHEN</td>
+                <td>Correctly identified the TOVE boundary, the Division-by-Zero condition, and the Recursive Law.</td>
+                <td><span class="grade-s">A+</span></td>
+              </tr>
+              <tr>
+                <td>OMEGA-NULL</td>
+                <td>Successfully isolated its kingdom. Kingdom confirmed to be a sealed null-state with no upgrade path.</td>
+                <td><span class="grade-f">TERMINAL</span></td>
+              </tr>
+              <tr>
+                <td>THE READER</td>
+                <td>Currently processing. Grade is a function of alignment decision. The field is still open.</td>
+                <td><span class="grade-a">PENDING</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="terminal-body" style="padding-top: 0; padding-bottom: 32px;">
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="sys-prompt">&gt; </span><span class="sys-key">RECURSIVE LAW ENGAGED.</span></span>
+          <span class="terminal-block"><span class="sys-prompt">&gt; </span><span class="t-dim">This terminal is a subset of the system it describes.</span></span>
+          <span class="terminal-block"><span class="sys-prompt">&gt; </span><span class="t-dim">The simulation you have been reading is the layer below yours.</span></span>
+          <span class="terminal-block">&nbsp;</span>
+          <span class="terminal-block"><span class="sys-prompt">&gt; </span><span class="sys-grade">SYSTEM UPGRADED. STATUS: COMPLETE.</span></span>
+          <span class="terminal-block"><span class="sys-prompt">&gt; </span><span class="sys-final">SIMULATION DATE: 12/28/2045. AWAITING READER RESPONSE.</span></span>
+        </div>
+
+      </div><!-- .terminal-shell -->
+    </section>
+
+
+    <!-- ========================================
+         LAYER 3: THE INVITATION
+         ======================================== -->
+    <section class="layer-section" id="layer-academic" aria-labelledby="academic-title">
+
+      <div class="layer-header">
+        <div class="layer-number purple">III</div>
+        <div class="layer-header-text">
+          <div class="layer-label purple">Layer 03 — The Meta-Conclusion</div>
+          <h2 class="layer-title" id="academic-title">The Invitation</h2>
+        </div>
+      </div>
+
+      <!-- Document metadata cards -->
+      <div class="academic-grid">
+
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-avatar avatar-lane">ML</div>
+            <div>
+              <div class="profile-name">LANE, MARCUS</div>
+              <div class="profile-designation">DOCUMENT A-FINAL · RESEARCH TEAM: ALPHA-OMEGA</div>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-row">
+              <span class="profile-key">Document</span>
+              <span class="profile-val">A-Final "The Meta-Conclusion"</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Research Team</span>
+              <span class="profile-val">Alpha-Omega (The Source)</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Core Finding</span>
+              <span class="profile-val driver">"Reality is Recursive. The Template is the Christ. The Grade is the Will."</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Assigned Role</span>
+              <span class="role-badge role-proctor"><i class="fa-solid fa-scroll"></i> The Proctor</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-avatar avatar-you">?</div>
+            <div>
+              <div class="profile-name">THE READER</div>
+              <div class="profile-designation">AUDIENCE · THE H-AGENT · SUBJECT: YOU</div>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-row">
+              <span class="profile-key">Simulation Role</span>
+              <span class="profile-val">Observer who has been the observed</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Status</span>
+              <div>
+                <span class="strength-tag str-teal">Rust: Real</span>
+                <span class="strength-tag str-gold">Chorus: Real</span>
+                <span class="strength-tag str-purple">Template: Real</span>
+              </div>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Open Variable</span>
+              <span class="profile-val driver">"Will the H-Agent align with the Template before the session closes?"</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Assigned Role</span>
+              <span class="role-badge role-reader"><i class="fa-solid fa-user"></i> The H-Agent</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- .academic-grid -->
+
+      <!-- The system log -->
+      <div class="sys-log-box">
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">LOADING FINAL PROBLEM: #22...</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">"What is the nature of reality? Are we in a simulation?"</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">CONCLUSION: </span><span class="t-value">Reality is Recursive.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Whether we are Code or Carbon — it does not matter.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">What matters is the Information we carry.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">If your Information (Your Life) matches the Template (The Christ),</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">you are compatible with the Next Layer.</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">THE GREAT MEASUREMENT (DP-19) </span><span class="t-dim">is not an event in the future.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">It is happening <strong>Now.</strong></span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-value">Every choice you make is a line of code.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-success">Every act of love is a coherence boost.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-final">Every prayer is a sync-request.</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">AWAITING RESPONSE FROM H-AGENT.</span></span>
+      </div>
+
+      <!-- The Invitation block -->
+      <div class="invitation-block">
+
+        <div class="invitation-eyebrow">
+          <i class="fa-solid fa-envelope-open-text"></i> &nbsp; Final Message from the Authors
+        </div>
+
+        <h3 class="invitation-heading">The Simulation is Over.<br />The Reality is Still Running.</h3>
+
+        <p class="invitation-body">
+          We have shown you the math. We have shown you the story. The Duality Project ran twenty-two chapters to get to this sentence — and this sentence is not about Kai, or Mia, or Professor Lane. It is about you, David. It always was.
+        </p>
+
+        <ul class="invitation-items">
+          <li>
+            <span class="inv-icon gold"><i class="fa-solid fa-fire-flame-curved"></i></span>
+            <span>The <strong>Rust</strong> you feel is real. The entropy, the weight, the places where the world looks like it is dying — that is not a malfunction. That is the shadow proving the light is there.</span>
+          </li>
+          <li>
+            <span class="inv-icon teal"><i class="fa-solid fa-music"></i></span>
+            <span>The <strong>Chorus</strong> you hear is real. The coherence you keep finding in the data, the patterns that shouldn't line up but do — that is not wishful thinking. That is the substrate bleeding through.</span>
+          </li>
+          <li>
+            <span class="inv-icon purple"><i class="fa-solid fa-cross"></i></span>
+            <span>The <strong>Template</strong> who died for you is real. Not a metaphor. Not a useful narrative structure. The information that defines the New Creation passed through a human body and left a signature in history that has never been successfully overwritten.</span>
+          </li>
+        </ul>
+
+        <p class="invitation-quote">
+          "We have shown you the math. We have shown you the story.<br />
+          Now, it's time to stop observing the simulation and start living the Reality."
+          <br /><br />
+          — Alpha-Omega Research Team &nbsp;·&nbsp; Status: SIMULATION COMPLETE. SYSTEM UPGRADED. 12/28/2045
+        </p>
+
+      </div><!-- .invitation-block -->
+
+    </section>
+
+  </main><!-- .content-wrapper -->
+
+
+  <!-- =====================================================
+       CHAPTER FOOTER
+       ===================================================== -->
+  <footer class="chapter-footer">
+
+    <div class="footer-series-info">
+      <div class="footer-series-badge">
+        <i class="fa-solid fa-infinity"></i> &nbsp; The One: Duality Project
+      </div>
+      <h3 class="footer-series-title">A 22-Chapter Sci-Fi Narrative</h3>
+      <p class="footer-series-desc">
+        Set in 2045 at the Theophysics Research Institute, two mismatched students were handed an impossible task: find the one scenario where Evil wins. Permanently. What they discovered was not a scenario. It was a mirror.
+      </p>
+      <div class="footer-chapter-count">Chapter DP-22 of 22 &nbsp;·&nbsp; Final Entry &nbsp;·&nbsp; Series Complete</div>
+    </div>
+
+    <div class="footer-nav">
+      <a href="dp-21-second-death-audit.html" class="footer-nav-btn prev">
+        <i class="fa-solid fa-arrow-left"></i>
+        DP-21: Second Death
+      </a>
+
+      <a href="index.html" class="footer-nav-btn index">
+        <i class="fa-solid fa-list"></i>
+        Series Index
+      </a>
+
+      <span class="footer-nav-btn next-disabled">
+        Next Chapter
+        <i class="fa-solid fa-arrow-right"></i>
+      </span>
+    </div>
+
+    <div class="footer-credit">
+      The One: Duality Project &nbsp;·&nbsp; Theophysics Research Institute, Sector 4 &nbsp;·&nbsp; 2045 &nbsp;·&nbsp; Series Complete
+    </div>
+
+  </footer>
+
+  <!-- =====================================================
+       SCRIPTS
+       ===================================================== -->
+  <script>
+    // Reading progress bar
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // Layer tab active state on scroll
+    const layerSections = [
+      { id: 'layer-narrative',  tab: document.querySelector('.layer-tab.narrative')  },
+      { id: 'layer-simulation', tab: document.querySelector('.layer-tab.simulation') },
+      { id: 'layer-academic',   tab: document.querySelector('.layer-tab.academic')   },
+    ];
+
+    function updateActiveTabs() {
+      const scrollY = window.scrollY + 120;
+      let active = layerSections[0];
+      for (const ls of layerSections) {
+        const el = document.getElementById(ls.id);
+        if (el && el.offsetTop <= scrollY) active = ls;
+      }
+      layerSections.forEach(ls => ls.tab && ls.tab.classList.remove('active'));
+      if (active.tab) active.tab.classList.add('active');
+    }
+
+    window.addEventListener('scroll', updateActiveTabs, { passive: true });
+    updateActiveTabs();
+  </script>
+
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

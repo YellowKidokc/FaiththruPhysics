@@ -1,27 +1,25 @@
 (function(){
   if(document.querySelector("[data-site-shell]")) return;
 
+  const currentPath = decodeURIComponent(window.location.pathname).replace(/\/index\.html$/i, "/");
+  const isHomePage = currentPath === "/";
+
   const sections = [
     {label:"Story", href:"/index.html#master-story", mode:"easy"},
     {label:"Plain", href:"/index.html#start", mode:"academic"},
     {label:"Deep", href:"/index.html#ladder", mode:"math"},
-    {label:"Proof", href:"/index.html#all", mode:"proof"}
+    {label:"Proof", href:"/index.html#proof-structure", mode:"proof"}
   ];
 
   const subdomains = [
     {label:"Home", href:"/"},
-    {label:"MDA", href:"/mda/"},
+    {label:"Master Story", href:"/master_story_index.html"},
+    {label:"Master Equation", href:"/equation/"},
     {label:"Isomorphism", href:"/isomorphism/"},
-    {label:"Convergence Series", href:"/convergence-series/"},
-    {label:"Convergence Deep", href:"/convergence-deep/"},
-    {label:"Blue Series", href:"/blue/"},
-    {label:"One-Page Stories", href:"/one-page-stories/"},
-    {label:"Master Equation", href:"/master-equation/"},
-    {label:"Moral Decline", href:"/moral-decline/"},
-    {label:"Genesis to Quantum", href:"/genesis-to-quantum/"},
     {label:"Axiom Layer", href:"/Axiom%20Layer/axioms-layer-0-core.html"},
-    {label:"Proof Explorer", href:"/proof-explorer/"},
+    {label:"Proof Architecture", href:"/proof-architecture/"},
     {label:"Lean 4 Corpus", href:"/lean4/"},
+    {label:"Rigor", href:"/rigor/"},
     {label:"Bidirectional Audit", href:"/the-bidirectional-audit/"}
   ];
 
@@ -84,7 +82,6 @@
     nav.className = "site-shell-subdomains";
     nav.setAttribute("data-site-shell", "bottom");
     nav.setAttribute("aria-label", "Faith Through Physics network");
-    const currentPath = decodeURIComponent(window.location.pathname).replace(/\/index\.html$/i, "/");
     nav.innerHTML = `
       <div class="site-shell-subdomain-inner">
         ${subdomains.map(item => {
@@ -102,6 +99,7 @@
       <div class="site-audit-inner">
         <div class="site-audit-title">Audit Layer</div>
         <div class="site-audit-note">Every page should end with the same three-part check: what we got right, what we overstated, and what we got wrong. Use it as the bright end cap, even when the page style changes.</div>
+        <div class="site-audit-note"><strong>Epistemic covenant:</strong> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked; the mechanisms can be challenged; the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is yours. We think the pattern is worth believing, but we will not hide where faith begins.</div>
         <div class="site-audit-grid">
           <article class="site-audit-card is-green">
             <h3>What We Got Right</h3>
@@ -210,6 +208,10 @@
           line-height: 1.6;
           max-width: 74ch;
         }
+        .site-audit-note strong {
+          color: #d4af37;
+          font-weight: 600;
+        }
         .site-audit-grid {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -246,7 +248,7 @@
       `;
       document.head.appendChild(style);
     }
-    renderTop();
+    if(!isHomePage) renderTop();
     renderPlayer();
     renderBottom();
     setReaderMode(currentSection().mode);

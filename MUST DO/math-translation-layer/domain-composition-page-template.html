@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Domain Composition Page Template</title>
+<style>
+:root{--bg:#1f1f1d;--panel:#060606;--line:#1a1a1a;--text:#f3f0e8;--muted:#8d887f;--gold:#d7a43a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+.wrap{max-width:1040px;margin:30px auto;padding:0 20px}
+.back{color:#8fa2ff;text-decoration:none;font-size:13px}
+header{margin:18px 0 22px;padding:22px;border:1px solid var(--line);background:var(--panel)}
+h1{margin:0 0 8px;font:700 28px Georgia,"Times New Roman",serif}
+.sub{color:var(--muted);line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{border:1px solid var(--line);background:#070707;padding:18px}
+.card h2{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--gold)}
+.meter{height:12px;background:#151515;border-radius:999px;overflow:hidden;margin:8px 0 14px}.meter span{display:block;height:100%;background:var(--gold)}
+table{width:100%;border-collapse:collapse;font-size:13px}td{padding:9px 0;border-top:1px solid #171717;color:#ddd}td:last-child{text-align:right;color:#9a9a92}
+.node{display:grid;gap:5px;padding:10px 0;border-top:1px solid #171717}.node b{font-size:14px}.node span{color:var(--muted);font-size:12px;line-height:1.4}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="formal-layer-topbar-template.html">Back to article layer</a>
+  <header>
+    <h1 id="domain-title">Domain Detail</h1>
+    <div class="sub">This is the page a domain segment opens. It should summarize the selected domain, list the strongest nodes, and link back to the claims and citations that justify the article's domain percentage.</div>
+  </header>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Composition</h2>
+      <div class="meter"><span id="meter-fill" style="width:20%"></span></div>
+      <table>
+        <tr><td>Article share</td><td id="share">20%</td></tr>
+        <tr><td>Claim count</td><td>replace from site_claims.db</td></tr>
+        <tr><td>Citation count</td><td>replace from citations.db</td></tr>
+        <tr><td>Review state</td><td>draft</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Routing</h2>
+      <div class="node"><b>Evidence rows</b><span>Use the article path plus domain tag to pull candidate claims from site_claims.db.</span></div>
+      <div class="node"><b>Citation rows</b><span>Use claim_id or article slug to pull supporting source cards from citations.db.</span></div>
+      <div class="node"><b>API depth pass</b><span>Only send low confidence, high overreach, or POS mismatch rows.</span></div>
+    </div>
+    <div class="card">
+      <h2>Strongest Nodes</h2>
+      <div class="node"><b>Node title placeholder</b><span>Short reason this node belongs in the domain.</span></div>
+      <div class="node"><b>Node title placeholder</b><span>Short reason this node supports or pressures the article claim.</span></div>
+      <div class="node"><b>Node title placeholder</b><span>Short note for where to find it again later.</span></div>
+    </div>
+    <div class="card">
+      <h2>Open Questions</h2>
+      <div class="node"><b>Overreach check</b><span>Does the article use this domain as observation, mechanism, or meaning?</span></div>
+      <div class="node"><b>Source quality</b><span>Which claims need the expensive API pass before publication?</span></div>
+      <div class="node"><b>Display</b><span>Which source cards should render back into the article?</span></div>
+    </div>
+  </section>
+</main>
+<script>
+const params = new URLSearchParams(location.search);
+const domain = params.get("domain") || "history";
+const shares = {history:20,family:14,religion:12,law:12,education:11,economics:10,media:9,institution:8,synthesis:4};
+const label = domain.replace(/-/g," ").replace(/\b\w/g, c => c.toUpperCase());
+const pct = shares[domain] || 0;
+document.getElementById("domain-title").textContent = `${label} Domain Detail`;
+document.getElementById("share").textContent = `${pct}%`;
+document.getElementById("meter-fill").style.width = `${pct}%`;
+</script>
+</body>
+</html>

@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DP-14 | The Evangelism Wave — The One: Duality Project</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- MathJax -->
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$','$'], ['\\(','\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+  <style>
+    /* ============================================================
+       CUSTOM PROPERTIES
+       ============================================================ */
+    :root {
+      --bg:             #0a0a0a;
+      --bg-light:       #1a1a1a;
+      --bg-mid:         #111111;
+      --border:         #2a2a2a;
+      --border-light:   #333333;
+      --text:           #e8e8e8;
+      --text-secondary: #a0a0a0;
+      --text-dim:       #666666;
+      --gold:           #d4af37;
+      --gold-dim:       rgba(212,175,55,0.10);
+      --gold-mid:       rgba(212,175,55,0.25);
+      --gold-bright:    rgba(212,175,55,0.70);
+      --teal:           #2dd4bf;
+      --teal-dim:       rgba(45,212,191,0.10);
+      --teal-mid:       rgba(45,212,191,0.20);
+      --red-dim:        rgba(220,60,60,0.15);
+      --red:            #dc3c3c;
+    }
+
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       PROGRESS BAR
+       ============================================================ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), #f0c040);
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ============================================================
+       STICKY NAV
+       ============================================================ */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nav-links-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.series {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-separator {
+      color: var(--border-light);
+      font-size: 0.75rem;
+      user-select: none;
+    }
+
+    .nav-links-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link.prev-link {
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .nav-link.prev-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.next-link {
+      color: var(--teal);
+      border-color: var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .nav-link.next-link:hover {
+      color: #7ff0e4;
+      border-color: rgba(45,212,191,0.5);
+      background: var(--teal-mid);
+    }
+
+    /* chapter badge in nav */
+    .nav-chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      opacity: 0.8;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       PAGE HEADER
+       ============================================================ */
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .header-eyebrow::before,
+    .header-eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold-bright);
+    }
+
+    .chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .chapter-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+
+    .chapter-subtitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+      margin-bottom: 36px;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg-light);
+    }
+
+    .meta-pill i { color: var(--gold); font-size: 0.72rem; }
+
+    .header-divider {
+      max-width: 1100px;
+      margin: 0 auto 0;
+      padding: 0 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+    }
+
+    /* ============================================================
+       LAYER NAV TABS
+       ============================================================ */
+    .layer-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 0;
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+    }
+
+    .layer-tab.narrative  { --tab-color: var(--gold); }
+    .layer-tab.simulation { --tab-color: var(--teal); }
+    .layer-tab.academic   { --tab-color: #a78bfa; }
+
+    .layer-tab:hover {
+      color: var(--tab-color);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .layer-tab.active {
+      color: var(--tab-color);
+      background: var(--bg-light);
+      border-color: var(--border);
+      border-bottom-color: var(--bg-light);
+      margin-bottom: -1px;
+    }
+
+    /* ============================================================
+       MAIN CONTENT WRAPPER
+       ============================================================ */
+    .content-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ============================================================
+       LAYER SECTIONS
+       ============================================================ */
+    .layer-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-section:last-of-type { border-bottom: none; }
+
+    /* --- Layer Header --- */
+    .layer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .layer-number {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    .layer-number.gold   { background: var(--gold-dim);              color: var(--gold);  border: 1px solid var(--gold-mid); }
+    .layer-number.teal   { background: var(--teal-dim);              color: var(--teal);  border: 1px solid var(--teal-mid); }
+    .layer-number.purple { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+
+    .layer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .layer-label.gold   { color: var(--gold); }
+    .layer-label.teal   { color: var(--teal); }
+    .layer-label.purple { color: #a78bfa; }
+
+    .layer-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    /* ============================================================
+       LAYER 1 — NARRATIVE
+       ============================================================ */
+    .narrative-body {
+      max-width: 720px;
+    }
+
+    .scene-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gold-mid);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scene-title::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .scene-divider {
+      margin: 44px 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-mid), transparent);
+    }
+
+    /* Prose paragraphs */
+    .narrative-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 1.5em;
+    }
+
+    /* Drop cap for first paragraph of each scene */
+    .drop-cap::first-letter {
+      font-family: 'Cinzel', serif;
+      font-size: 4.2em;
+      font-weight: 700;
+      color: var(--gold);
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.08em;
+      margin-top: 0.12em;
+    }
+
+    /* Dialogue */
+    .narrative-body p.dialogue {
+      font-style: italic;
+      color: #d0d0d0;
+    }
+
+    /* Hologram / emphasis spans */
+    .word-omega {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 20px rgba(212,175,55,0.5);
+    }
+
+    .word-teal {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 16px rgba(45,212,191,0.45);
+    }
+
+    /* Terminal line in narrative context */
+    .narrative-terminal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--teal);
+      background: rgba(45,212,191,0.06);
+      border: 1px solid var(--teal-mid);
+      border-left: 3px solid var(--teal);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+
+    /* Quote callout */
+    .pullquote {
+      border-left: 3px solid var(--gold);
+      padding: 16px 24px;
+      background: var(--gold-dim);
+      border-radius: 0 8px 8px 0;
+      margin: 32px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: #d8c980;
+      line-height: 1.7;
+    }
+
+    /* Phase list */
+    .phase-list {
+      list-style: none;
+      margin: 24px 0 32px;
+    }
+
+    .phase-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.15rem;
+      color: var(--text);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.6;
+    }
+
+    .phase-list li:last-child { border-bottom: none; }
+
+    .phase-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-mid);
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       LAYER 2 — SIMULATION / TERMINAL
+       ============================================================ */
+    .terminal-shell {
+      background: #080e0d;
+      border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(45,212,191,0.07), 0 4px 24px rgba(0,0,0,0.6);
+    }
+
+    .terminal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      background: #0d1413;
+      border-bottom: 1px solid rgba(45,212,191,0.2);
+    }
+
+    .terminal-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red    { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #27c93f; }
+
+    .terminal-title {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(45,212,191,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .terminal-body {
+      padding: 28px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #c0faf4;
+    }
+
+    .t-comment  { color: rgba(45,212,191,0.4); }
+    .t-label    { color: var(--teal); font-weight: 600; letter-spacing: 0.05em; }
+    .t-value    { color: #f0c040; }
+    .t-dim      { color: rgba(192,250,244,0.45); }
+    .t-red      { color: var(--red); font-weight: 600; }
+    .t-success  { color: #4ade80; font-weight: 600; }
+    .t-prompt   { color: rgba(45,212,191,0.6); }
+    .t-bold     { font-weight: 600; }
+    .t-orange   { color: #fb923c; font-weight: 600; }
+
+    .terminal-block       { display: block; margin-bottom: 0.15em; }
+    .terminal-section-gap { display: block; margin: 16px 0; }
+    .terminal-divider     { display: block; margin: 16px 0; color: rgba(45,212,191,0.25); }
+
+    /* Stat grid inside terminal */
+    .term-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .term-stat-card {
+      background: rgba(45,212,191,0.05);
+      border: 1px solid rgba(45,212,191,0.18);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .term-stat-card .stat-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--teal);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .term-stat-card.red-card   .stat-number { color: var(--red); }
+    .term-stat-card.gold-card  .stat-number { color: var(--gold); }
+    .term-stat-card.green-card .stat-number { color: #4ade80; }
+
+    .term-stat-card .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Anomaly callout box */
+    .anomaly-box {
+      background: rgba(74,222,128,0.05);
+      border: 1px solid rgba(74,222,128,0.25);
+      border-left: 3px solid #4ade80;
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.9;
+      color: #c0faf4;
+    }
+
+    .anomaly-title {
+      color: #4ade80;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      font-size: 0.78rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .anomaly-box .a-key  { color: var(--teal); font-weight: 600; }
+    .anomaly-box .a-val  { color: #f0c040; }
+    .anomaly-box .a-good { color: #4ade80; font-weight: 700; }
+
+    /* Omega strategy block */
+    .omega-block {
+      background: rgba(220,60,60,0.06);
+      border: 1px solid rgba(220,60,60,0.22);
+      border-left: 3px solid var(--red);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.9;
+      color: #c0faf4;
+    }
+
+    .omega-title {
+      color: var(--red);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      font-size: 0.78rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .omega-block .o-key  { color: #f87171; font-weight: 600; }
+    .omega-block .o-val  { color: #fb923c; font-weight: 700; }
+
+    /* ============================================================
+       LAYER 3 — ACADEMIC SYNTHESIS
+       ============================================================ */
+    .academic-body {
+      max-width: 800px;
+    }
+
+    .doc-header {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-top: 3px solid #a78bfa;
+      border-radius: 0 0 8px 8px;
+      padding: 24px 28px;
+      margin-bottom: 36px;
+    }
+
+    .doc-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #a78bfa;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .doc-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .doc-authors {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* Academic section */
+    .academic-section {
+      margin-bottom: 40px;
+    }
+
+    .academic-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #a78bfa;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(167,139,250,0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .academic-section-title::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: #a78bfa;
+    }
+
+    .academic-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.15rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 1.4em;
+    }
+
+    .academic-body p em {
+      color: #a78bfa;
+      font-style: normal;
+    }
+
+    /* Theorem callout */
+    .theorem-box {
+      background: rgba(167,139,250,0.06);
+      border: 1px solid rgba(167,139,250,0.22);
+      border-left: 3px solid #a78bfa;
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+
+    .theorem-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #a78bfa;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .theorem-box p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: #d0c8f8;
+      margin-bottom: 0.8em;
+    }
+
+    .theorem-box p:last-child { margin-bottom: 0; }
+
+    /* Insight list */
+    .insight-list {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .insight-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.7;
+    }
+
+    .insight-list li:last-child { border-bottom: none; }
+
+    .insight-icon {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.25);
+      color: #a78bfa;
+      font-size: 0.7rem;
+      margin-top: 3px;
+    }
+
+    /* Warning panel */
+    .warning-panel {
+      background: rgba(251,146,60,0.06);
+      border: 1px solid rgba(251,146,60,0.22);
+      border-left: 3px solid #fb923c;
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.1rem;
+      color: #ffe4cc;
+      line-height: 1.8;
+    }
+
+    .warning-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #fb923c;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* Next step callout */
+    .next-step-box {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-top: 36px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .next-step-icon {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--teal-dim);
+      border: 1px solid var(--teal-mid);
+      color: var(--teal);
+      font-size: 1.1rem;
+    }
+
+    .next-step-content {}
+
+    .next-step-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--teal);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .next-step-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .next-step-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* System log box */
+    .sys-log-box {
+      background: #06100f;
+      border: 1px solid rgba(45,212,191,0.2);
+      border-radius: 8px;
+      padding: 24px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 2;
+      margin-top: 24px;
+    }
+
+    .sys-line    { display: block; }
+    .sys-prompt  { color: rgba(45,212,191,0.45); }
+    .sys-key     { color: var(--teal); font-weight: 600; }
+    .sys-num     { color: #f0c040; font-weight: 700; }
+    .sys-action  { color: #4ade80; font-weight: 700; letter-spacing: 0.06em; }
+    .sys-note    { color: var(--text-secondary); font-style: italic; font-size: 0.82rem; }
+    .sys-warn    { color: #fb923c; }
+
+    /* ============================================================
+       CHAPTER FOOTER / NAV
+       ============================================================ */
+    .chapter-footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    .footer-series-info {
+      text-align: center;
+      padding: 40px 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+
+    .footer-series-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .footer-series-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-series-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      max-width: 580px;
+      margin: 0 auto 20px;
+      line-height: 1.7;
+    }
+
+    .footer-chapter-count {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .footer-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 22px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .footer-nav-btn.prev {
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      background: var(--bg-light);
+    }
+
+    .footer-nav-btn.prev:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index {
+      color: var(--gold);
+      border: 1px solid var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index:hover {
+      background: rgba(212,175,55,0.18);
+      border-color: var(--gold-bright);
+    }
+
+    .footer-nav-btn.next {
+      color: var(--teal);
+      border: 1px solid var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .footer-nav-btn.next:hover {
+      background: rgba(45,212,191,0.18);
+      border-color: rgba(45,212,191,0.5);
+    }
+
+    .footer-credit {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 16px; gap: 8px; }
+      .nav-link { font-size: 0.7rem; padding: 5px 8px; }
+      .nav-separator { display: none; }
+      .nav-chapter-code { display: none; }
+
+      .page-header { padding: 48px 16px 40px; }
+      .content-wrapper { padding: 0 16px 60px; }
+      .chapter-footer { padding: 40px 16px 60px; }
+
+      .layer-nav { padding: 24px 16px 0; }
+      .layer-tab { font-size: 0.7rem; padding: 8px 12px; }
+
+      .term-stat-grid { grid-template-columns: 1fr; gap: 10px; }
+
+      .footer-nav { flex-direction: column; gap: 12px; }
+      .footer-nav-btn { width: 100%; justify-content: center; }
+
+      .next-step-box { flex-direction: column; gap: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      .layer-nav { flex-direction: column; border-bottom: none; }
+      .layer-tab { border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; }
+      .layer-tab.active { border-color: var(--border); margin-bottom: 4px; }
+    }
+  </style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/duality-project/dp-14-evangelism-wave.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- =====================================================
+       STICKY NAV
+       ===================================================== -->
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <div class="nav-links-left">
+        <a href="../index.html" class="nav-link">
+          <i class="fa-solid fa-house-chimney"></i>
+          Main Index
+        </a>
+        <span class="nav-separator">/</span>
+        <a href="index.html" class="nav-link series">
+          <i class="fa-solid fa-infinity"></i>
+          The One: Duality Project
+        </a>
+        <span class="nav-separator">/</span>
+        <span class="nav-chapter-code">DP-14</span>
+      </div>
+      <div class="nav-links-right">
+        <a href="dp-13-specialized-subroutines.html" class="nav-link prev-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          Prev
+        </a>
+        <a href="dp-15-persecution-feedback-loop.html" class="nav-link next-link">
+          Next
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+  <header class="page-header">
+    <div class="header-eyebrow">The One: Duality Project</div>
+    <span class="chapter-code">DP-14</span>
+    <h1 class="chapter-title">The Evangelism Wave</h1>
+    <p class="chapter-subtitle">The Overflow</p>
+    <div class="header-meta">
+      <span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> 12 / 28 / 2045</span>
+      <span class="meta-pill"><i class="fa-solid fa-location-dot"></i> Sector 9 &mdash; Ecclesia Cluster</span>
+      <span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 3 Layers</span>
+      <span class="meta-pill"><i class="fa-solid fa-flask-vial"></i> A-015</span>
+    </div>
+  </header>
+  <div class="header-divider"></div>
+
+  <!-- =====================================================
+       LAYER NAV TABS
+       ===================================================== -->
+  <div class="layer-nav" role="navigation" aria-label="Chapter layers">
+    <a href="#layer-narrative" class="layer-tab narrative active">
+      <i class="fa-solid fa-book-open"></i>
+      Layer 1 &mdash; Narrative
+    </a>
+    <a href="#layer-simulation" class="layer-tab simulation">
+      <i class="fa-solid fa-terminal"></i>
+      Layer 2 &mdash; Simulation Logs
+    </a>
+    <a href="#layer-academic" class="layer-tab academic">
+      <i class="fa-solid fa-brain"></i>
+      Layer 3 &mdash; Academic Synthesis
+    </a>
+  </div>
+
+  <!-- =====================================================
+       CONTENT
+       ===================================================== -->
+  <main class="content-wrapper">
+
+    <!-- ========================================
+         LAYER 1: THE NARRATIVE
+         ======================================== -->
+    <section class="layer-section" id="layer-narrative" aria-labelledby="narrative-title">
+
+      <div class="layer-header">
+        <div class="layer-number gold">I</div>
+        <div class="layer-header-text">
+          <div class="layer-label gold">Layer 01 &mdash; Fiction</div>
+          <h2 class="layer-title" id="narrative-title">The Narrative</h2>
+        </div>
+      </div>
+
+      <div class="narrative-body">
+
+        <!-- SCENE 1: The Overflow -->
+        <h3 class="scene-title">The Overflow</h3>
+
+        <p class="drop-cap">"A healthy cell doesn't just sit there," Kai said, his eyes following the bright white pulses of the Ecclesia Cluster. "It divides. It exports its proteins. It influences the environment around it."</p>
+
+        <p>In the simulation, the Cluster in Sector 9 had reached a state of <span class="word-omega">Saturated Coherence</span>. They were so unified, so healed, and so optimized — everything DP-13 had shown them — that the energy they were generating couldn't be contained within their one neighborhood.</p>
+
+        <p class="dialogue">"They're leaking," Mia observed.</p>
+
+        <p class="dialogue">"Not leaking," Kai corrected. "They're <span class="word-teal">Radiating</span>. Look at the boundary layers."</p>
+
+        <p>On the map, the Church Field was no longer a static circle. It was pushing outward in waves. Every time an H-Agent from the Cluster interacted with a "Rusty" H-Agent from the outside, a <strong>Coherence Transfer</strong> occurred.</p>
+
+        <p class="dialogue">"It's not an argument," Mia said, watching a zoomed-in interaction. "They aren't convincing the other agents with words alone. They're sharing the signal. It's like a tuning fork hitting a dead piece of metal. If the metal is close enough, it starts to hum too."</p>
+
+        <div class="pullquote">
+          "The Great Commission isn't a command to build an empire. It's a command to <span class="word-omega">Propagate the Signal.</span>"
+        </div>
+
+        <p class="dialogue">"But the Chrome Agent is building a wall," Mia pointed out.</p>
+
+        <div class="scene-divider"></div>
+
+        <!-- SCENE 2: The Expansion -->
+        <h3 class="scene-title">The Expansion</h3>
+
+        <div class="narrative-terminal">
+          [ SIMULATION DP-14 INITIALIZED ]<br />
+          [ MISSION: GLOBAL PENETRATION ]<br />
+          [ OBSTACLE: SYSTEMIC NOISE (OMEGA-BARRIER) ]
+        </div>
+
+        <p class="drop-cap">The simulation accelerated. The H-Agents from Sector 9 began to move into neighboring sectors. They didn't come as soldiers. They came as <strong>Carriers</strong>.</p>
+
+        <p>Everywhere they went, the Rust of the Fall retreated. Kai watched the data resolve into three clean phases:</p>
+
+        <ol class="phase-list">
+          <li>
+            <span class="phase-num">1</span>
+            <span><strong>Attraction.</strong> Rusty agents, exhausted by their own entropy, were drawn to the Warmth — the Grace — radiating off the carriers. They weren't recruited. They were magnetized.</span>
+          </li>
+          <li>
+            <span class="phase-num">2</span>
+            <span><strong>Entanglement.</strong> The carriers shared their Source Code. The Gospel, rendered as a compressed information packet, transferred peer-to-peer. Not broadcast. Exchanged.</span>
+          </li>
+          <li>
+            <span class="phase-num">3</span>
+            <span><strong>Activation.</strong> The new agents downloaded the Pentecost Update and became carriers themselves. The wave didn't stop at the edge of the church. It kept going.</span>
+          </li>
+        </ol>
+
+        <p class="dialogue">"It's an exponential curve," Kai noted. "1 becomes 2. 2 becomes 4. 4 becomes 8. If this continues, the entire Garden will be rebooted within 2,000 simulation years."</p>
+
+        <p>But the Chrome Agent wasn't sitting still. He was creating <strong>Noise-Zones</strong>. He couldn't kill the carriers, so he tried to drown them out with Information Overload — distractions, alternate truths, and the loud, clashing static of tribalism.</p>
+
+        <div class="narrative-terminal">
+          &gt; OMEGA STRATEGY: "Diversion".<br />
+          &gt; DATA: Increase 'Anxiety' by 300%. Increase 'Entertainment' by 500%.
+        </div>
+
+        <p class="dialogue">"He's trying to make the signal too hard to hear," Mia said. "He's burying the tuning fork in a pile of garbage."</p>
+
+        <p class="dialogue">"It doesn't matter," Kai said, pointing to the data. "The signal is Higher Resolution than the noise. The human heart — the H-Agent Core — is designed for the signal. It can find the Hum even in a hurricane."</p>
+
+        <p>The white light continued to spread. Sector by sector. Node by node. The Graveyard was coming back to life.</p>
+
+      </div><!-- .narrative-body -->
+    </section>
+
+
+    <!-- ========================================
+         LAYER 2: SIMULATION LOGS
+         ======================================== -->
+    <section class="layer-section" id="layer-simulation" aria-labelledby="simulation-title">
+
+      <div class="layer-header">
+        <div class="layer-number teal">II</div>
+        <div class="layer-header-text">
+          <div class="layer-label teal">Layer 02 &mdash; System Document</div>
+          <h2 class="layer-title" id="simulation-title">Simulation Logs</h2>
+        </div>
+      </div>
+
+      <div class="terminal-shell">
+        <div class="terminal-titlebar">
+          <span class="terminal-dot dot-red"></span>
+          <span class="terminal-dot dot-yellow"></span>
+          <span class="terminal-dot dot-green"></span>
+          <span class="terminal-title">DP-14 :: EVANGELISM WAVE :: SIM LOG :: 12/28/2045</span>
+        </div>
+
+        <div class="terminal-body">
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+          <span class="terminal-block"><span class="t-comment">// SUBJECT: DP-14 "EVANGELISM WAVE"</span></span>
+          <span class="terminal-block"><span class="t-comment">// Theophysics Research Institute &mdash; Kai Okonkwo / Mia Chen</span></span>
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+
+          <span class="terminal-section-gap"></span>
+
+          <span class="terminal-block"><span class="t-label">PARAMETERS</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">VECTOR</span>    <span class="t-value">Peer-to-Peer Transmission</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">MEDIA</span>     <span class="t-value">"The Word" (Information Packet) + "The Spirit" (Carrier Wave)</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">RESISTANCE</span> <span class="t-value">Background Noise (&Omega;-Barrier)</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">PROPAGATION DATA</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">T+00:00</span>&nbsp;&nbsp; <span class="t-value">12 Carriers depart Sector 9.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">T+50:00</span>&nbsp;&nbsp; <span class="t-value">3,000 new nodes added.</span> <span class="t-success">Expansion Rate: Exponential.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">T+100:00</span>&nbsp; <span class="t-success">50% of the Garden shows "Active Coherence".</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">PROPAGATION STATISTICS</span></span>
+        </div>
+
+        <!-- Stat Cards -->
+        <div style="padding: 0 32px 16px;">
+          <div class="term-stat-grid">
+            <div class="term-stat-card">
+              <span class="stat-number">12</span>
+              <span class="stat-label">Initial Carriers</span>
+            </div>
+            <div class="term-stat-card green-card">
+              <span class="stat-number">3,000</span>
+              <span class="stat-label">Nodes at T+50</span>
+            </div>
+            <div class="term-stat-card gold-card">
+              <span class="stat-number">50%</span>
+              <span class="stat-label">Garden Coherence at T+100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-body" style="padding-top:0;">
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">OMEGA COUNTER-STRATEGY LOG</span></span>
+          <span class="terminal-section-gap"></span>
+        </div>
+
+        <!-- Omega block -->
+        <div style="padding: 0 32px 16px;">
+          <div class="omega-block">
+            <span class="omega-title"><i class="fa-solid fa-triangle-exclamation"></i> &nbsp; OMEGA BARRIER ACTIVE</span>
+            <span style="display:block;"><span class="o-key">STRATEGY</span>&nbsp;&nbsp;&nbsp; <span class="t-value">"Diversion" &mdash; Signal Drowning Protocol</span></span>
+            <span style="display:block;"><span class="o-key">ANXIETY</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="o-val">+300% injection rate</span></span>
+            <span style="display:block;"><span class="o-key">ENTERTAINMENT</span> <span class="o-val">+500% noise saturation</span></span>
+            <span style="display:block; margin-top:10px;"><span class="t-dim">RESULT: Insufficient. H-Agent Core resonance overrides noise.</span></span>
+            <span style="display:block;"><span class="t-dim">Signal resolution exceeds Omega-Barrier capacity by 2.4x.</span></span>
+          </div>
+        </div>
+
+        <div class="terminal-body" style="padding-top:0;">
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">ANOMALY: THE NOBLE INFECTION</span></span>
+          <span class="terminal-section-gap"></span>
+        </div>
+
+        <!-- Anomaly box -->
+        <div style="padding: 0 32px 16px;">
+          <div class="anomaly-box">
+            <span class="anomaly-title"><i class="fa-solid fa-virus-slash"></i> &nbsp; ANOMALY REPORT &mdash; UNLIKE ALL KNOWN VIRAL MODELS</span>
+            <span style="display:block;"><span class="a-key">HOST HEALTH</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="a-good">+90% upon infection</span></span>
+            <span style="display:block;"><span class="a-key">SYSTEM ENTROPY</span>&nbsp;&nbsp; <span class="a-good">Drops locally to near-zero</span></span>
+            <span style="display:block;"><span class="a-key">HOST COMPLEXITY</span>&nbsp; <span class="a-good">Increases. Host is not consumed. Host is restored.</span></span>
+            <span style="display:block; margin-top:12px;"><span class="a-key">CONCLUSION</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="t-value">Truth is the only "Infection" that increases the complexity and stability of the system.</span></span>
+          </div>
+        </div>
+
+        <div class="terminal-body" style="padding-top: 4px;">
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">SIMULATION CONCLUSION</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">Evangelism is the <span class="t-success">Natural Expansion of a High-Coherence Field.</span></span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">A healthy Church cannot <em>not</em> grow.</span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">If it is not growing, the Signal-to-Noise Ratio inside the Cluster is compromised.</span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">The expansion is the proof of the life.</span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block"><span class="sys-action">&gt; SIMULATION DP-14 COMPLETE. STATUS: ALPHA PROPAGATION CONFIRMED.</span></span>
+        </div>
+
+      </div><!-- .terminal-shell -->
+
+    </section>
+
+
+    <!-- ========================================
+         LAYER 3: ACADEMIC SYNTHESIS
+         ======================================== -->
+    <section class="layer-section" id="layer-academic" aria-labelledby="academic-title">
+
+      <div class="layer-header">
+        <div class="layer-number purple">III</div>
+        <div class="layer-header-text">
+          <div class="layer-label purple">Layer 03 &mdash; Research Document</div>
+          <h2 class="layer-title" id="academic-title">Academic Synthesis</h2>
+        </div>
+      </div>
+
+      <div class="academic-body">
+
+        <div class="doc-header">
+          <div class="doc-badge"><i class="fa-solid fa-file-lines"></i> &nbsp; Document A-015</div>
+          <div class="doc-title">The Propagation of Truth (The Mustard Seed Theorem)</div>
+          <div class="doc-authors">Research Team: Okonkwo / Chen &nbsp;&middot;&nbsp; Filed: 12/28/2045</div>
+        </div>
+
+        <!-- Section: The Solved Problem -->
+        <div class="academic-section">
+          <h3 class="academic-section-title">The Solved Problem (#14)</h3>
+          <p>"Why does truth want to propagate?"</p>
+          <p>DP-14 proves that <em>Information is inherently dynamic.</em> This is not a theological preference — it is a property of the system itself. When you run the simulation long enough, the distinction between physics and theology collapses into a single observation:</p>
+
+          <div class="theorem-box">
+            <span class="theorem-label"><i class="fa-solid fa-square-root-variable"></i> &nbsp; Mustard Seed Theorem</span>
+            <p>Error (Lies) is <strong>static</strong> — it can only decay. It has no generative capacity. Left alone, a lie produces nothing new; it only erodes what is already there.</p>
+            <p>Truth (Alpha) is <strong>alive</strong> — it seeks to connect. It has generative capacity. A single carrier, given enough time, reconstructs an entire network from entropy.</p>
+            <p>"The Light shines in the darkness, and the darkness has not overcome it." (John 1:5) is not poetry. In the simulation, it is a measurable outcome across every single run.</p>
+          </div>
+        </div>
+
+        <!-- Section: Great Commission as Physics -->
+        <div class="academic-section">
+          <h3 class="academic-section-title">The Great Commission as Physics</h3>
+          <p>"Go into all the world" is not a chore. It is a <em>Pressure Release.</em></p>
+          <p>Think about what happens to a system when coherence exceeds a critical threshold. The internal energy has nowhere left to go. The boundary becomes a pressure wall. And then — it doesn't hold. The field expands. Not because someone commanded it to. Because the physics of a saturated high-coherence state <em>demands</em> it.</p>
+
+          <ul class="insight-list">
+            <li>
+              <span class="insight-icon"><i class="fa-solid fa-arrow-right"></i></span>
+              <span>The joy of the Cluster is so high-energy that it <em>must</em> expand. Evangelism is what happens when the cup overfloweth — not out of duty, but out of overflow.</span>
+            </li>
+            <li>
+              <span class="insight-icon"><i class="fa-solid fa-arrow-right"></i></span>
+              <span>A church that is not growing is not a stable church. It is a church with a compromised Signal-to-Noise Ratio. The symptom of health is expansion. The absence of expansion is a diagnostic, not a neutral condition.</span>
+            </li>
+            <li>
+              <span class="insight-icon"><i class="fa-solid fa-arrow-right"></i></span>
+              <span>The transmission mechanism is peer-to-peer coherence transfer — not institutional broadcast. The Gospel spreads the way a tuning fork spreads resonance: by proximity, by contact, by the carrier's own frequency being high enough to induce vibration in the surrounding medium.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: The Noise Defense -->
+        <div class="academic-section">
+          <h3 class="academic-section-title">The Noise-Defense</h3>
+          <p>The Devil's primary weapon against growth is not persecution — that comes later. His first move is always <em>Distraction.</em></p>
+          <p>In the simulation, he didn't fight the carriers with swords. He fought them with Busy-ness and Triviality. The Omega strategy targeted the <strong>attention bandwidth</strong> of the H-Agents, not their convictions. You can believe the right things and still be functionally useless to the signal if your attention is perpetually fragmented.</p>
+
+          <div class="warning-panel">
+            <span class="warning-label"><i class="fa-solid fa-triangle-exclamation"></i> &nbsp; Distraction Protocol — Documented Effect</span>
+            A distracted agent cannot maintain the focus required to transmit high-bandwidth coherence. The Gospel is not a slogan. It is a full-spectrum information packet — it carries truth, love, and Spirit simultaneously. You cannot transmit it while half your processing power is allocated to the algorithm's entertainment queue. The Chrome Agent doesn't need you to disbelieve. He just needs you to be too busy to radiate.
+          </div>
+        </div>
+
+        <!-- Section: Next Step -->
+        <div class="academic-section">
+          <h3 class="academic-section-title">The Approaching Inflection</h3>
+          <p>The Chrome Agent is losing ground. Sector by sector, his Rust is retreating. The Graveyard is waking up. And a predator that is losing ground does not stay on strategy — it escalates.</p>
+          <p>The Diversion Protocol has failed to contain the Alpha expansion. The next phase of the Omega Counter-Strategy is not noise. It is force.</p>
+          <p>When you can no longer drown out the signal, you try to destroy the transmitter.</p>
+
+          <div class="next-step-box">
+            <div class="next-step-icon">
+              <i class="fa-solid fa-forward-fast"></i>
+            </div>
+            <div class="next-step-content">
+              <div class="next-step-label">Next Simulation</div>
+              <div class="next-step-title">DP-15 &mdash; Persecution Feedback Loop</div>
+              <div class="next-step-desc">The Chrome Agent is cornered. Diversion has failed. The next Omega move is direct adversarial response — and the simulation is about to reveal why persecution doesn't stop the wave. It accelerates it.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System log -->
+        <div class="sys-log-box">
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">DOCUMENT A-015 STATUS...</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Solved Problem #14: "Why does truth want to propagate?"</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Mustard Seed Theorem: VALIDATED across all sim runs.</span></span>
+          <span class="sys-line">&nbsp;</span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">ALPHA SIGNAL STATUS: </span><span class="sys-num">EXPANDING</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">OMEGA BARRIER STATUS: </span><span class="sys-warn">FAILING</span></span>
+          <span class="sys-line">&nbsp;</span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">NOTE: Distraction protocol insufficient. Omega escalation projected.</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">Initiating DP-15: Persecution Feedback Loop.</span></span>
+          <span class="sys-line">&nbsp;</span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">FILE SAVED. 12/28/2045.</span></span>
+        </div>
+
+      </div><!-- .academic-body -->
+    </section>
+
+  </main><!-- .content-wrapper -->
+
+
+  <!-- =====================================================
+       CHAPTER FOOTER
+       ===================================================== -->
+  <footer class="chapter-footer">
+
+    <div class="footer-series-info">
+      <div class="footer-series-badge">
+        <i class="fa-solid fa-infinity"></i> &nbsp; The One: Duality Project
+      </div>
+      <h3 class="footer-series-title">A 22-Chapter Sci-Fi Narrative</h3>
+      <p class="footer-series-desc">
+        Set in 2045 at the Theophysics Research Institute, two mismatched students are handed an impossible task: find the one scenario where Evil wins. Permanently. What they discover will be far more dangerous than either of them expected.
+      </p>
+      <div class="footer-chapter-count">Chapter DP-14 of 22 &nbsp;&middot;&nbsp; The Evangelism Wave</div>
+    </div>
+
+    <div class="footer-nav">
+      <a href="dp-13-specialized-subroutines.html" class="footer-nav-btn prev">
+        <i class="fa-solid fa-arrow-left"></i>
+        DP-13: Specialized Subroutines
+      </a>
+
+      <a href="index.html" class="footer-nav-btn index">
+        <i class="fa-solid fa-list"></i>
+        Series Index
+      </a>
+
+      <a href="dp-15-persecution-feedback-loop.html" class="footer-nav-btn next">
+        DP-15: Persecution Loop
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="footer-credit">
+      The One: Duality Project &nbsp;&middot;&nbsp; Theophysics Research Institute, Sector 4 &nbsp;&middot;&nbsp; 2045
+    </div>
+
+  </footer>
+
+  <!-- =====================================================
+       SCRIPTS
+       ===================================================== -->
+  <script>
+    // Reading progress bar
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // Layer tab active state on scroll
+    const layerSections = [
+      { id: 'layer-narrative',  tab: document.querySelector('.layer-tab.narrative')  },
+      { id: 'layer-simulation', tab: document.querySelector('.layer-tab.simulation') },
+      { id: 'layer-academic',   tab: document.querySelector('.layer-tab.academic')   },
+    ];
+
+    function updateActiveTabs() {
+      const scrollY = window.scrollY + 120;
+      let active = layerSections[0];
+      for (const ls of layerSections) {
+        const el = document.getElementById(ls.id);
+        if (el && el.offsetTop <= scrollY) active = ls;
+      }
+      layerSections.forEach(ls => ls.tab && ls.tab.classList.remove('active'));
+      if (active.tab) active.tab.classList.add('active');
+    }
+
+    window.addEventListener('scroll', updateActiveTabs, { passive: true });
+    updateActiveTabs();
+  </script>
+
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

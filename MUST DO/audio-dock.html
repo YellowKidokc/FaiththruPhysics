@@ -22,7 +22,7 @@
   --c-critique: #2dd4bf;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--surface); color: var(--text-primary); font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+body { background: var(--surface); color: var(--text-primary); font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 160vh; padding: 2rem; }
 
 /* ═══════════════ AUDIO DOCK ═══════════════ */
 .audio-dock {
@@ -101,9 +101,87 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
 .dock-times { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: .5rem; color: var(--text-secondary); }
 .dock-vol { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: .75rem; flex-shrink: 0; padding: 2px; transition: color .2s; }
 .dock-vol:hover { color: var(--text-primary); }
+.dock-speed {
+  flex-shrink: 0;
+  height: 28px;
+  min-width: 64px;
+  border: 1px solid var(--border);
+  border-radius: .35rem;
+  background: #111;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .58rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  padding: 0 .35rem;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.dock-speed:hover,
+.dock-speed:focus {
+  border-color: rgba(212,175,55,.35);
+  color: var(--text-primary);
+  background: #151515;
+}
+.dock-mini {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .55rem .7rem;
+  border: 1px solid rgba(212,175,55,.28);
+  border-radius: .55rem;
+  background: rgba(15,15,15,.94);
+  box-shadow: 0 16px 40px rgba(0,0,0,.38);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.dock-mini.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.mini-play {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid var(--highlight);
+  background: transparent;
+  color: var(--highlight);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .2s, background .2s;
+}
+.mini-play:hover { transform: scale(1.05); background: rgba(212,175,55,.1); }
+.mini-label {
+  max-width: 92px;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .52rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
 .dock-empty { display: none; align-items: center; justify-content: center; padding: .85rem; font-family: 'JetBrains Mono', monospace; font-size: .55rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); opacity: .5; font-style: italic; }
 .dock-body.hidden { display: none; }
 .dock-empty.visible { display: flex; }
+@media (max-width: 520px) {
+  body { padding: 1rem; align-items: flex-start; padding-top: 5rem; }
+  .dock-pills { flex-wrap: wrap; }
+  .dock-pill { flex-basis: 50%; min-height: 40px; }
+  .dock-body { flex-wrap: wrap; }
+  .dock-track-wrap { flex-basis: calc(100% - 46px); }
+  .dock-speed { margin-left: 46px; }
+  .dock-mini { right: .75rem; bottom: .75rem; }
+}
 </style>
 </head>
 <body>
@@ -124,17 +202,17 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
 
 <div class="audio-dock" id="audioDock">
   <div class="dock-pills">
-    <button class="dock-pill active" data-src="deep"
-            data-url="https://r2.faiththruphysics.com/GTQ-02/audio/deep-dive.mp3">
-      <span class="pill-dot"></span>Deep Dive
-    </button>
-    <button class="dock-pill" data-src="read"
+    <button class="dock-pill active" data-src="read"
             data-url="https://r2.faiththruphysics.com/GTQ-02/audio/read-aloud.mp3">
       <span class="pill-dot"></span>Read Aloud
     </button>
     <button class="dock-pill" data-src="debate"
             data-url="https://r2.faiththruphysics.com/GTQ-02/audio/debate.mp3">
       <span class="pill-dot"></span>Debate
+    </button>
+    <button class="dock-pill" data-src="deep"
+            data-url="https://r2.faiththruphysics.com/GTQ-02/audio/deep-dive.mp3">
+      <span class="pill-dot"></span>Deep Dive
     </button>
     <button class="dock-pill" data-src="critique">
       <span class="pill-dot"></span>Critique
@@ -157,11 +235,26 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
     <button class="dock-vol" id="dockVol" onclick="dockMute()">
       <i class="fas fa-volume-up"></i>
     </button>
+    <select class="dock-speed" id="dockSpeed" aria-label="Playback speed">
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="1.75">1.75x</option>
+      <option value="2">2x</option>
+    </select>
   </div>
 
   <div class="dock-empty" id="dockEmpty">
     <i class="fas fa-clock" style="margin-right:.5rem;"></i> Coming soon
   </div>
+</div>
+
+<div class="dock-mini" id="dockMini" aria-hidden="true">
+  <button class="mini-play" id="dockMiniPlay" type="button" onclick="dockToggle()" aria-label="Play or pause audio">
+    <i class="fas fa-play" id="dockMiniIcon"></i>
+  </button>
+  <div class="mini-label" id="dockMiniLabel">Audio</div>
 </div>
 
 <script>
@@ -175,7 +268,11 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
   const curEl  = document.getElementById('dockCurrent');
   const durEl  = document.getElementById('dockDuration');
   const volBtn = document.getElementById('dockVol');
+  const speedEl= document.getElementById('dockSpeed');
   const track  = document.getElementById('dockTrack');
+  const mini   = document.getElementById('dockMini');
+  const miniIcon = document.getElementById('dockMiniIcon');
+  const miniLabel= document.getElementById('dockMiniLabel');
   const pills  = dock.querySelectorAll('.dock-pill');
 
   let audio = new Audio();
@@ -196,6 +293,25 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
     return m+':'+(sec<10?'0':'')+sec;
   }
 
+  function activePill(){
+    return dock.querySelector('.dock-pill.active');
+  }
+
+  function applySpeed(){
+    audio.playbackRate = parseFloat(speedEl.value) || 1;
+  }
+
+  function updateMiniLabel(){
+    const pill = activePill();
+    miniLabel.textContent = pill ? pill.textContent.trim() : 'Audio';
+  }
+
+  function setIcons(paused){
+    icon.className = paused ? 'fas fa-play' : 'fas fa-pause';
+    miniIcon.className = paused ? 'fas fa-play' : 'fas fa-pause';
+    playBtn.classList.toggle('playing', !paused);
+  }
+
   pills.forEach(p=>{ if(!p.dataset.url) p.classList.add('unavailable'); });
 
   pills.forEach(p=>{
@@ -206,6 +322,7 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
       if(key === activeKey){ if(audio.paused) audio.play(); else audio.pause(); return; }
       audio.pause();
       audio.src = url;
+      applySpeed();
       activeKey = key;
       pills.forEach(q=> q.classList.remove('active'));
       p.classList.add('active');
@@ -214,6 +331,7 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
       playBtn.style.setProperty('--active-c', c);
       playBtn.style.borderColor = c;
       playBtn.style.color = c;
+      updateMiniLabel();
       body.classList.remove('hidden');
       empty.classList.remove('visible');
       audio.play();
@@ -224,11 +342,14 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
   if(firstAvail){
     const key = firstAvail.dataset.src;
     audio.src = firstAvail.dataset.url;
+    applySpeed();
     activeKey = key;
     const c = colors[key] || colors.read;
     fill.style.background = c;
     playBtn.style.borderColor = c;
     playBtn.style.color = c;
+    firstAvail.classList.add('active');
+    updateMiniLabel();
   } else {
     body.classList.add('hidden');
     empty.classList.add('visible');
@@ -238,9 +359,10 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
     if(!audio.src) return;
     if(audio.paused) audio.play(); else audio.pause();
   };
-  audio.addEventListener('play', ()=>{ icon.className='fas fa-pause'; playBtn.classList.add('playing'); });
-  audio.addEventListener('pause', ()=>{ icon.className='fas fa-play'; playBtn.classList.remove('playing'); });
-  audio.addEventListener('ended', ()=>{ icon.className='fas fa-play'; playBtn.classList.remove('playing'); fill.style.width='0%'; curEl.textContent='0:00'; });
+  speedEl.addEventListener('change', applySpeed);
+  audio.addEventListener('play', ()=>{ setIcons(false); updateMiniLabel(); });
+  audio.addEventListener('pause', ()=>{ setIcons(true); });
+  audio.addEventListener('ended', ()=>{ setIcons(true); fill.style.width='0%'; curEl.textContent='0:00'; });
   audio.addEventListener('timeupdate', ()=>{ if(!audio.duration) return; fill.style.width=(audio.currentTime/audio.duration*100)+'%'; curEl.textContent=fmt(audio.currentTime); });
   audio.addEventListener('loadedmetadata', ()=>{ durEl.textContent=fmt(audio.duration); });
 
@@ -254,6 +376,13 @@ body { background: var(--surface); color: var(--text-primary); font-family: 'Int
     muted=!muted; audio.muted=muted;
     volBtn.innerHTML=muted?'<i class="fas fa-volume-mute"></i>':'<i class="fas fa-volume-up"></i>';
   };
+  const observer = new IntersectionObserver((entries)=>{
+    const entry = entries[0];
+    const shouldShow = !entry.isIntersecting && !!audio.src;
+    mini.classList.toggle('visible', shouldShow);
+    mini.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+  }, { threshold: 0 });
+  observer.observe(dock);
 })();
 </script>
 </body>

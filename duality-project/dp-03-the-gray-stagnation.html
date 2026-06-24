@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DP-03 | The Gray Stagnation — The One: Duality Project</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    /* ============================================================
+       CUSTOM PROPERTIES
+       ============================================================ */
+    :root {
+      --bg:             #0a0a0a;
+      --bg-light:       #1a1a1a;
+      --bg-mid:         #111111;
+      --border:         #2a2a2a;
+      --border-light:   #333333;
+      --text:           #e8e8e8;
+      --text-secondary: #a0a0a0;
+      --text-dim:       #666666;
+      --gold:           #d4af37;
+      --gold-dim:       rgba(212,175,55,0.10);
+      --gold-mid:       rgba(212,175,55,0.25);
+      --gold-bright:    rgba(212,175,55,0.70);
+      --teal:           #2dd4bf;
+      --teal-dim:       rgba(45,212,191,0.10);
+      --teal-mid:       rgba(45,212,191,0.20);
+      --red-dim:        rgba(220,60,60,0.15);
+      --red:            #dc3c3c;
+    }
+
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       PROGRESS BAR
+       ============================================================ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), #f0c040);
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ============================================================
+       STICKY NAV
+       ============================================================ */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nav-links-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.series {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-separator {
+      color: var(--border-light);
+      font-size: 0.75rem;
+      user-select: none;
+    }
+
+    .nav-links-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link.prev-link {
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .nav-link.prev-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.next-link {
+      color: var(--teal);
+      border-color: var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .nav-link.next-link:hover {
+      color: #7ff0e4;
+      border-color: rgba(45,212,191,0.5);
+      background: var(--teal-mid);
+    }
+
+    /* chapter badge in nav */
+    .nav-chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      opacity: 0.8;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       PAGE HEADER
+       ============================================================ */
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .header-eyebrow::before,
+    .header-eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold-bright);
+    }
+
+    .chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .chapter-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+
+    .chapter-subtitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+      margin-bottom: 36px;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg-light);
+    }
+
+    .meta-pill i { color: var(--gold); font-size: 0.72rem; }
+
+    .header-divider {
+      max-width: 1100px;
+      margin: 0 auto 0;
+      padding: 0 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+    }
+
+    /* ============================================================
+       LAYER NAV TABS
+       ============================================================ */
+    .layer-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 0;
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+    }
+
+    .layer-tab.narrative  { --tab-color: var(--gold); }
+    .layer-tab.simulation { --tab-color: var(--teal); }
+    .layer-tab.academic   { --tab-color: #a78bfa; }
+
+    .layer-tab:hover {
+      color: var(--tab-color);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .layer-tab.active {
+      color: var(--tab-color);
+      background: var(--bg-light);
+      border-color: var(--border);
+      border-bottom-color: var(--bg-light);
+      margin-bottom: -1px;
+    }
+
+    /* ============================================================
+       MAIN CONTENT WRAPPER
+       ============================================================ */
+    .content-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ============================================================
+       LAYER SECTIONS
+       ============================================================ */
+    .layer-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-section:last-of-type { border-bottom: none; }
+
+    /* --- Layer Header --- */
+    .layer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .layer-number {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    .layer-number.gold   { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-mid); }
+    .layer-number.teal   { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal-mid); }
+    .layer-number.purple { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+
+    .layer-header-text {}
+
+    .layer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .layer-label.gold   { color: var(--gold); }
+    .layer-label.teal   { color: var(--teal); }
+    .layer-label.purple { color: #a78bfa; }
+
+    .layer-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    /* ============================================================
+       LAYER 1 — NARRATIVE
+       ============================================================ */
+    .narrative-body {
+      max-width: 720px;
+    }
+
+    .scene-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gold-mid);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scene-title::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .scene-divider {
+      margin: 44px 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-mid), transparent);
+    }
+
+    /* Prose paragraphs */
+    .narrative-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 1.5em;
+    }
+
+    /* Drop cap for first paragraph of each scene */
+    .drop-cap::first-letter {
+      font-family: 'Cinzel', serif;
+      font-size: 4.2em;
+      font-weight: 700;
+      color: var(--gold);
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.08em;
+      margin-top: 0.12em;
+    }
+
+    /* Dialogue */
+    .narrative-body p.dialogue {
+      font-style: italic;
+      color: #d0d0d0;
+    }
+
+    /* Hologram / emphasis spans */
+    .word-omega {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 20px rgba(212,175,55,0.5);
+    }
+
+    .word-gray {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: #999999;
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 16px rgba(153,153,153,0.4);
+    }
+
+    /* Terminal line in narrative context */
+    .narrative-terminal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--teal);
+      background: rgba(45,212,191,0.06);
+      border: 1px solid var(--teal-mid);
+      border-left: 3px solid var(--teal);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+      line-height: 1.9;
+    }
+
+    /* Quote callout */
+    .pullquote {
+      border-left: 3px solid var(--gold);
+      padding: 16px 24px;
+      background: var(--gold-dim);
+      border-radius: 0 8px 8px 0;
+      margin: 32px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: #d8c980;
+      line-height: 1.7;
+    }
+
+    /* ============================================================
+       LAYER 2 — SIMULATION / TERMINAL
+       ============================================================ */
+    .terminal-shell {
+      background: #080e0d;
+      border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(45,212,191,0.07), 0 4px 24px rgba(0,0,0,0.6);
+    }
+
+    .terminal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      background: #0d1413;
+      border-bottom: 1px solid rgba(45,212,191,0.2);
+    }
+
+    .terminal-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .dot-red    { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #27c93f; }
+
+    .terminal-title {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(45,212,191,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .terminal-body {
+      padding: 28px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #c0faf4;
+    }
+
+    .t-comment  { color: rgba(45,212,191,0.4); }
+    .t-label    { color: var(--teal); font-weight: 600; letter-spacing: 0.05em; }
+    .t-value    { color: #f0c040; }
+    .t-dim      { color: rgba(192,250,244,0.45); }
+    .t-red      { color: var(--red); font-weight: 600; }
+    .t-success  { color: #4ade80; font-weight: 600; }
+    .t-prompt   { color: rgba(45,212,191,0.6); }
+    .t-bold     { font-weight: 600; }
+    .t-gray     { color: #888888; font-weight: 600; }
+    .t-warn     { color: #fb923c; font-weight: 600; }
+
+    .terminal-block {
+      display: block;
+      margin-bottom: 0.15em;
+    }
+
+    .terminal-section-gap { display: block; margin: 16px 0; }
+
+    .terminal-divider {
+      display: block;
+      margin: 16px 0;
+      color: rgba(45,212,191,0.25);
+    }
+
+    /* Stat grid inside terminal */
+    .term-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .term-stat-card {
+      background: rgba(45,212,191,0.05);
+      border: 1px solid rgba(45,212,191,0.18);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .term-stat-card .stat-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--teal);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .term-stat-card.red-card  .stat-number { color: var(--red); }
+    .term-stat-card.gray-card .stat-number { color: #888888; }
+
+    .term-stat-card .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Constraint list */
+    .constraint-list {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .constraint-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #c0faf4;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(45,212,191,0.08);
+      line-height: 1.6;
+    }
+
+    .constraint-list li:last-child { border-bottom: none; }
+
+    .constraint-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--teal-mid);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      color: var(--teal);
+      margin-top: 2px;
+    }
+
+    /* Grade table */
+    .grade-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+
+    .grade-table th {
+      text-align: left;
+      color: var(--teal);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(45,212,191,0.3);
+    }
+
+    .grade-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(45,212,191,0.08);
+      color: #c0faf4;
+      line-height: 1.5;
+    }
+
+    .grade-a { color: #4ade80; font-weight: 700; }
+    .grade-f { color: var(--red); font-weight: 700; }
+
+    /* ============================================================
+       LAYER 3 — ACADEMIC SYNTHESIS
+       ============================================================ */
+    .academic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .profile-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .avatar-kai {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: #60a5fa;
+    }
+
+    .avatar-mia {
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-mid);
+      color: var(--gold);
+    }
+
+    .profile-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+
+    .profile-designation {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .profile-body { padding: 18px 20px; }
+
+    .profile-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 14px;
+    }
+
+    .profile-row:last-child { margin-bottom: 0; }
+
+    .profile-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .profile-val {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .profile-val.driver {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    .weakness-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #f87171;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-top: 4px;
+    }
+
+    .strength-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin: 2px 4px 2px 0;
+    }
+
+    .str-logic  { color: #60a5fa; background: rgba(96,165,250,0.1);  border: 1px solid rgba(96,165,250,0.25); }
+    .str-gold   { color: var(--gold); background: var(--gold-dim);   border: 1px solid var(--gold-mid); }
+    .str-teal   { color: var(--teal); background: var(--teal-dim);   border: 1px solid var(--teal-mid); }
+    .str-purple { color: #a78bfa; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+
+    /* Role badge */
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .role-architect {
+      color: #60a5fa;
+      background: rgba(96,165,250,0.1);
+      border: 1px solid rgba(96,165,250,0.3);
+    }
+
+    .role-anchor {
+      color: var(--gold);
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-mid);
+    }
+
+    /* System log box */
+    .sys-log-box {
+      background: #06100f;
+      border: 1px solid rgba(45,212,191,0.2);
+      border-radius: 8px;
+      padding: 24px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 2;
+      margin-top: 24px;
+    }
+
+    .sys-line    { display: block; }
+    .sys-prompt  { color: rgba(45,212,191,0.45); }
+    .sys-key     { color: var(--teal); font-weight: 600; }
+    .sys-num     { color: #f0c040; font-weight: 700; }
+    .sys-action  { color: #4ade80; font-weight: 700; letter-spacing: 0.06em; }
+    .sys-note    { color: var(--text-secondary); font-style: italic; font-size: 0.82rem; }
+    .sys-warn    { color: #fb923c; }
+    .sys-gray    { color: #888888; font-weight: 700; }
+
+    /* Synergy meter */
+    .synergy-block {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+
+    .synergy-item { flex: 1; text-align: center; }
+
+    .synergy-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .syn-positive { color: #4ade80; }
+    .syn-warning  { color: #fb923c; }
+    .syn-gray     { color: #888888; }
+    .syn-red      { color: var(--red); }
+
+    .synergy-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .synergy-divider {
+      width: 1px;
+      height: 60px;
+      background: var(--border);
+    }
+
+    .synergy-note {
+      font-family: 'Crimson Text', serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 2;
+      padding-left: 12px;
+      border-left: 2px solid var(--gold-mid);
+    }
+
+    /* Academic finding card */
+    .finding-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+
+    .finding-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .finding-icon {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .finding-icon.purple { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); color: #a78bfa; }
+    .finding-icon.gold   { background: var(--gold-dim); border: 1px solid var(--gold-mid); color: var(--gold); }
+    .finding-icon.red    { background: var(--red-dim);  border: 1px solid rgba(220,60,60,0.3); color: var(--red); }
+    .finding-icon.teal   { background: var(--teal-dim); border: 1px solid var(--teal-mid); color: var(--teal); }
+
+    .finding-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      margin-bottom: 3px;
+    }
+
+    .finding-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .finding-body {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.12rem;
+      color: var(--text-secondary);
+      line-height: 1.78;
+    }
+
+    .finding-body p + p { margin-top: 1em; }
+
+    .finding-body strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Implication list */
+    .impl-list {
+      list-style: none;
+      margin: 16px 0 0;
+    }
+
+    .impl-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.08rem;
+      color: var(--text-secondary);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.65;
+    }
+
+    .impl-list li:last-child { border-bottom: none; }
+
+    .impl-bullet {
+      flex-shrink: 0;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #a78bfa;
+      margin-top: 9px;
+    }
+
+    .impl-bullet.gold { background: var(--gold); }
+    .impl-bullet.red  { background: var(--red); }
+    .impl-bullet.gray { background: #888888; }
+
+    /* ============================================================
+       CHAPTER FOOTER / NAV
+       ============================================================ */
+    .chapter-footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    .footer-series-info {
+      text-align: center;
+      padding: 40px 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+
+    .footer-series-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .footer-series-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-series-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      max-width: 580px;
+      margin: 0 auto 20px;
+      line-height: 1.7;
+    }
+
+    .footer-chapter-count {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .footer-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 22px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .footer-nav-btn.prev {
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .footer-nav-btn.prev:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index {
+      color: var(--gold);
+      border: 1px solid var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index:hover {
+      background: rgba(212,175,55,0.18);
+      border-color: var(--gold-bright);
+    }
+
+    .footer-nav-btn.next {
+      color: var(--teal);
+      border: 1px solid var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .footer-nav-btn.next:hover {
+      background: rgba(45,212,191,0.18);
+      border-color: rgba(45,212,191,0.5);
+    }
+
+    .footer-credit {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 16px; gap: 8px; }
+      .nav-link { font-size: 0.7rem; padding: 5px 8px; }
+      .nav-separator { display: none; }
+      .nav-chapter-code { display: none; }
+
+      .page-header { padding: 48px 16px 40px; }
+      .content-wrapper { padding: 0 16px 60px; }
+      .chapter-footer { padding: 40px 16px 60px; }
+
+      .layer-nav { padding: 24px 16px 0; }
+      .layer-tab { font-size: 0.7rem; padding: 8px 12px; }
+
+      .term-stat-grid { grid-template-columns: 1fr; gap: 10px; }
+      .academic-grid { grid-template-columns: 1fr; }
+
+      .synergy-block { flex-direction: column; }
+      .synergy-divider { width: 100%; height: 1px; }
+      .synergy-note { padding-left: 0; padding-top: 12px; border-left: none; border-top: 2px solid var(--gold-mid); }
+
+      .footer-nav { flex-direction: column; gap: 12px; }
+      .footer-nav-btn { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .layer-nav { flex-direction: column; border-bottom: none; }
+      .layer-tab { border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; }
+      .layer-tab.active { border-color: var(--border); margin-bottom: 4px; }
+    }
+  </style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/duality-project/dp-03-the-gray-stagnation.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- =====================================================
+       STICKY NAV
+       ===================================================== -->
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <div class="nav-links-left">
+        <a href="../index.html" class="nav-link">
+          <i class="fa-solid fa-house-chimney"></i>
+          Main Index
+        </a>
+        <span class="nav-separator">/</span>
+        <a href="index.html" class="nav-link series">
+          <i class="fa-solid fa-infinity"></i>
+          The One: Duality Project
+        </a>
+        <span class="nav-separator">/</span>
+        <span class="nav-chapter-code">DP-03</span>
+      </div>
+      <div class="nav-links-right">
+        <a href="dp-02-the-blinding-mirror.html" class="nav-link prev-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          Prev
+        </a>
+        <a href="dp-04-the-birth-of-a-devil.html" class="nav-link next-link">
+          Next
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+  <header class="page-header">
+    <div class="header-eyebrow">The One: Duality Project</div>
+    <span class="chapter-code">DP-03</span>
+    <h1 class="chapter-title">The Gray Stagnation</h1>
+    <p class="chapter-subtitle">The Fallacy of Balance</p>
+    <div class="header-meta">
+      <span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> 12 / 28 / 2045</span>
+      <span class="meta-pill"><i class="fa-solid fa-location-dot"></i> Theophysics Research Institute, Sector 4</span>
+      <span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 3 Layers</span>
+      <span class="meta-pill"><i class="fa-solid fa-flask-vial"></i> SIM DP-03</span>
+    </div>
+  </header>
+  <div class="header-divider"></div>
+
+  <!-- =====================================================
+       LAYER NAV TABS
+       ===================================================== -->
+  <div class="layer-nav" role="navigation" aria-label="Chapter layers">
+    <a href="#layer-narrative" class="layer-tab narrative active">
+      <i class="fa-solid fa-book-open"></i>
+      Layer 1 — Narrative
+    </a>
+    <a href="#layer-simulation" class="layer-tab simulation">
+      <i class="fa-solid fa-terminal"></i>
+      Layer 2 — Simulation Logs
+    </a>
+    <a href="#layer-academic" class="layer-tab academic">
+      <i class="fa-solid fa-brain"></i>
+      Layer 3 — Academic Synthesis
+    </a>
+  </div>
+
+  <!-- =====================================================
+       CONTENT
+       ===================================================== -->
+  <main class="content-wrapper">
+
+    <!-- ========================================
+         LAYER 1: THE NARRATIVE
+         ======================================== -->
+    <section class="layer-section" id="layer-narrative" aria-labelledby="narrative-title">
+
+      <div class="layer-header">
+        <div class="layer-number gold">I</div>
+        <div class="layer-header-text">
+          <div class="layer-label gold">Layer 01 — Fiction</div>
+          <h2 class="layer-title" id="narrative-title">The Narrative</h2>
+        </div>
+      </div>
+
+      <div class="narrative-body">
+
+        <!-- SCENE 1 -->
+        <h3 class="scene-title">The Tao of Nothing</h3>
+
+        <p class="drop-cap dialogue">"It's a popular idea," Mia said, tapping her stylus against the screen. "Yin and Yang. Light and Dark. The Force. The idea that the universe <em>needs</em> a balance between Good and Evil to function."</p>
+
+        <p>Kai was rubbing his eyes. The afterimage of the Blinding Mirror was still burning in his retinas — that terrible, perfect light from DP-02 that he couldn't quite shake loose.</p>
+
+        <p class="dialogue">"It's comforting," he admitted. "It makes Evil feel like part of the plan. Like it belongs there."</p>
+
+        <p class="dialogue">"So let's test it," Mia challenged. "Professor Lane wants a scenario where Omega wins. We've seen that Passive Good dies and Active Good dominates. But what happens if they are <em>equal?</em>"</p>
+
+        <p class="dialogue">"A stalemate?"</p>
+
+        <p class="dialogue">"Or," Mia suggested, her voice quiet, "maybe they cancel each other out."</p>
+
+        <p>They loaded the parameters. This wasn't the "Cheated" void of DP-00, nor the blinding sun of DP-02. This was a cage match — perfectly weighted, perfectly fair, no advantages on either side.</p>
+
+        <div class="narrative-terminal">
+          [ SIMULATION DP-03 INITIALIZED ]<br />
+          [ ENTITIES: 50% ALPHA-PRIME // 50% OMEGA-NULL ]<br />
+          [ HYPOTHESIS: EQUILIBRIUM ]
+        </div>
+
+        <div class="scene-divider"></div>
+
+        <!-- SCENE 2 -->
+        <h3 class="scene-title">The Gray Goo</h3>
+
+        <p class="drop-cap">The hologram materialized. It wasn't black or white. It was murky.</p>
+
+        <p>On the left, the Alpha-Prime field tried to build structures — beautiful crystalline lattices of logic and light. On the right, the Omega-Null field tried to eat them.</p>
+
+        <p>Because the power levels were exactly equal, the result wasn't a war. It was a <em>slog.</em></p>
+
+        <p>Alpha would build a tower. Omega would rust the foundation. The tower wouldn't fall, but it would lean. It would crack. It would become ugly.</p>
+
+        <p class="dialogue">"Look at the energy efficiency," Kai noted, pointing to the redlining graphs. "Alpha is spending 100% of its energy just to repair the damage Omega is doing. It has zero energy left for new creation."</p>
+
+        <p class="dialogue">"And Omega?"</p>
+
+        <p class="dialogue">"Omega is spending 100% of its energy trying to break the repairs. It has no energy left for total destruction."</p>
+
+        <p>The simulation ground on. Eons passed. The universe inside the box didn't die, but it didn't live either. It became a sprawling, rotting slum of half-finished ideas and half-eaten dreams.</p>
+
+        <p class="dialogue">"It's miserable," Mia whispered. "It's worse than the Void. At least the Void was quiet. This is just... struggle. Endless, pointless struggle."</p>
+
+        <p class="dialogue">"It's entropy," Kai realized. "Look at the net result. The Alpha field is technically 'surviving,' but the <em>quality</em> of the system is degrading. A repaired wall is never as strong as a new one. Scars accumulate."</p>
+
+        <p>On the screen, the vibrant white light of Alpha had faded to a sickly gray. The sharp static of Omega had dulled to a muddy fuzz. The two distinct forces had blended into a single, homogeneous sludge.</p>
+
+        <p class="dialogue">"<span class="word-gray">The Gray Stagnation</span>," Kai named it.</p>
+
+        <p class="dialogue">"It proves the 'Balance' theory is a lie," Mia said, her voice hard. "You can't balance health and cancer. If you have 50% health and 50% cancer, you don't have a 'balanced body.' You have a <em>dying body.</em>"</p>
+
+        <p>Kai hit the kill switch. The gray sludge evaporated.</p>
+
+        <div class="pullquote">
+          "In a fair fight, Good doesn't lose — but it doesn't win either. It just gets exhausted. And exhaustion leads to mistakes. And mistakes lead to <span class="word-omega">Omega</span>."
+        </div>
+
+        <div class="scene-divider"></div>
+
+        <!-- SCENE 3 -->
+        <h3 class="scene-title">The New Variable</h3>
+
+        <p class="drop-cap">Kai stood staring at the empty air where the simulation had been. Three runs now. Three conclusions. The physics were iron-clad — but none of them explained what he was actually seeing when he looked out the window at the bruised purple sky over Sector 4.</p>
+
+        <p class="dialogue">"We need a new variable," Kai said, pacing again. "We've tested Physics. We've tested Math. We haven't tested <em>Psychology.</em>"</p>
+
+        <p class="dialogue">"Psychology? In a physics engine?"</p>
+
+        <p class="dialogue">"We need to know why a perfect being would <em>choose</em> that gray sludge," Kai said. "Because that's what happened, isn't it? In the real world? Someone looked at the Blinding Mirror and decided they preferred the Gray."</p>
+
+        <p>Mia set down her stylus very carefully. The kind of careful that meant she was thinking something she wasn't sure she was allowed to think.</p>
+
+        <p class="dialogue">"Free Will," she said. "You want to simulate the Fall."</p>
+
+        <p class="dialogue">"I want to simulate the <em>Glitch,</em>" Kai corrected. "DP-04. Let's see if we can make a Devil."</p>
+
+      </div><!-- .narrative-body -->
+    </section>
+
+
+    <!-- ========================================
+         LAYER 2: SIMULATION LOGS
+         ======================================== -->
+    <section class="layer-section" id="layer-simulation" aria-labelledby="simulation-title">
+
+      <div class="layer-header">
+        <div class="layer-number teal">II</div>
+        <div class="layer-header-text">
+          <div class="layer-label teal">Layer 02 — System Document</div>
+          <h2 class="layer-title" id="simulation-title">Simulation Logs</h2>
+        </div>
+      </div>
+
+      <div class="terminal-shell">
+        <div class="terminal-titlebar">
+          <span class="terminal-dot dot-red"></span>
+          <span class="terminal-dot dot-yellow"></span>
+          <span class="terminal-dot dot-green"></span>
+          <span class="terminal-title">THEO-401 :: SIM DP-03 "THE MIXED STATE" :: 12/28/2045</span>
+        </div>
+
+        <div class="terminal-body">
+
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+          <span class="terminal-block"><span class="t-comment">// SUBJECT: DP-03 "THE MIXED STATE"</span></span>
+          <span class="terminal-block"><span class="t-comment">// Theophysics Research Institute, Sector 4 // THEO-401</span></span>
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+
+          <span class="terminal-section-gap"></span>
+
+          <span class="terminal-block"><span class="t-label">PARAMETERS</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">Alpha-Prime (&alpha;)</span><span class="t-dim"> ::  50% System Capacity</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-red">Omega-Null (&Omega;)</span><span class="t-dim">   ::  50% System Capacity</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">Interaction</span><span class="t-dim">        ::  Direct Conflict</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">TIMELINE</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+00:00 &nbsp;&nbsp;Conflict initiated.</span></span>
+          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+10:00 &nbsp;&nbsp;Alpha constructs Defense Grid. Omega initiates Corrosive Algorithm.</span></span>
+          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+50:00 &nbsp;&nbsp;Defense Grid holding at 98%. Energy expenditure: </span><span class="t-red">CRITICAL.</span></span>
+          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+100:00  Defense Grid degraded to </span><span class="t-warn">60%</span><span class="t-dim">. Omega attack efficiency reduced to </span><span class="t-warn">60%</span><span class="t-dim"> (resource starvation).</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">RESULT: "THE GRIND"</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">The system entered a "Zeno's Paradox" of decay.</span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">Alpha repairs became </span><span class="t-warn">slower</span><span class="t-dim">.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">Omega attacks became </span><span class="t-warn">weaker</span><span class="t-dim">.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">Net Result:</span><span class="t-dim"> Slow asymptote toward zero.</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">CURRENT STATUS</span></span>
+        </div>
+
+        <!-- Stat Cards -->
+        <div style="padding: 0 32px 16px;">
+          <div class="term-stat-grid">
+            <div class="term-stat-card">
+              <span class="stat-number">50 / 50</span>
+              <span class="stat-label">Alpha / Omega Split</span>
+            </div>
+            <div class="term-stat-card gray-card">
+              <span class="stat-number">0%</span>
+              <span class="stat-label">Net Creation Output</span>
+            </div>
+            <div class="term-stat-card red-card">
+              <span class="stat-number">404</span>
+              <span class="stat-label">Purpose Not Found</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-body" style="padding-top:0;">
+
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">ANOMALY DETECTED</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">"Joy" metric (observed in DP-02) &mdash; </span><span class="t-red">ABSENT.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">"Terror" metric (observed in DP-00) &mdash; </span><span class="t-warn">LOW.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-label">Dominant Metric:</span><span class="t-gray"> FUTILITY &nbsp;[Code 404: Purpose Not Found]</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">CONCLUSION</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">Balance is not a stable state. It is a slow death.</span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">In a closed system, the presence of any active Omega-Null ensures</span>
+          <span class="terminal-block t-dim" style="padding-left:2em;">the system cannot reach Peak Coherence.</span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-red t-bold">&gt; "Coexistence" is mathematically impossible for an Optimized Universe.</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-label">SIMULATION STATUS:</span><span class="t-gray"> TERMINATED — kill-switch by user</span></span>
+          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-label">NEXT RUN:</span><span class="t-value"> DP-04 — INTRODUCING PSYCHOLOGY / FREE WILL VARIABLE</span></span>
+
+        </div>
+      </div><!-- .terminal-shell -->
+
+    </section>
+
+
+    <!-- ========================================
+         LAYER 3: ACADEMIC SYNTHESIS
+         ======================================== -->
+    <section class="layer-section" id="layer-academic" aria-labelledby="academic-title">
+
+      <div class="layer-header">
+        <div class="layer-number purple">III</div>
+        <div class="layer-header-text">
+          <div class="layer-label purple">Layer 03 — Research Document</div>
+          <h2 class="layer-title" id="academic-title">Academic Synthesis</h2>
+        </div>
+      </div>
+
+      <!-- Document header block -->
+      <div class="sys-log-box" style="margin-bottom: 32px; margin-top: 0;">
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">DOCUMENT:</span><span class="t-dim"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A-004 "The Fallacy of Dualism"</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">AUTHORS:</span><span class="t-dim"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Okonkwo, K. / Chen, M.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">DATE:</span><span class="t-dim"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12/28/2045</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">STATUS:</span><span class="sys-action"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FILE SAVED</span></span>
+      </div>
+
+      <!-- Finding 1 -->
+      <div class="finding-card">
+        <div class="finding-card-header">
+          <div class="finding-icon gold"><i class="fa-solid fa-yin-yang"></i></div>
+          <div>
+            <div class="finding-label">Common Myth</div>
+            <div class="finding-title">The Balance Fallacy</div>
+          </div>
+        </div>
+        <div class="finding-body">
+          <p>"Light needs Dark." "Good needs Evil." "Balance in all things." It sounds wise. It gets embroidered on pillows and painted on walls and repeated by people who have never had to actually live inside the Gray.</p>
+          <p>DP-03 proves it is an <strong>energetic disaster.</strong> A system that spends 50% of its resources fighting itself is a system that cannot evolve, cannot create, cannot grow — it can only endure. And endurance, over sufficient time, is just a slow way to lose.</p>
+          <p>The universe doesn't need darkness to appreciate light. Your lungs don't need 50% cancer to appreciate oxygen.</p>
+        </div>
+      </div>
+
+      <!-- Finding 2 -->
+      <div class="finding-card">
+        <div class="finding-card-header">
+          <div class="finding-icon purple"><i class="fa-solid fa-flask-vial"></i></div>
+          <div>
+            <div class="finding-label">Scientific Reality</div>
+            <div class="finding-title">The Zombie State</div>
+          </div>
+        </div>
+        <div class="finding-body">
+          <ul class="impl-list">
+            <li>
+              <span class="impl-bullet gold"></span>
+              <span><strong>Alpha-Prime (Life)</strong> seeks Complexity — ever upward, ever building, ever more ordered. Its purpose is coherence.</span>
+            </li>
+            <li>
+              <span class="impl-bullet red"></span>
+              <span><strong>Omega-Null (Death)</strong> seeks Simplicity — the lowest energy state, the flatline, the end of distinction. Its purpose is entropy.</span>
+            </li>
+            <li>
+              <span class="impl-bullet gray"></span>
+              <span><strong>The Mix at 50/50:</strong> A "Zombie State" where complexity is built and immediately rotted. Neither alive nor dead. Just grinding, decaying, going nowhere. The dominant system metric: <strong>Futility.</strong></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Finding 3 -->
+      <div class="finding-card">
+        <div class="finding-card-header">
+          <div class="finding-icon purple"><i class="fa-solid fa-cross"></i></div>
+          <div>
+            <div class="finding-label">Theological Implication</div>
+            <div class="finding-title">Augustine Was Right</div>
+          </div>
+        </div>
+        <div class="finding-body">
+          <p>This simulation supports what Augustine argued sixteen centuries ago: <strong>Evil is not a rival power. It is a defect.</strong></p>
+          <p>You cannot "balance" a defect. You can only fix it or succumb to it. A car with 50% functioning tires is not "balanced" — it is broken. The driver doesn't owe the flat tire equal respect. The driver needs to fix it and move.</p>
+          <p>The philosophical tradition that treats Good and Evil as twin pillars holding up the cosmos is not ancient wisdom. It is a cope — a way of making peace with a situation that should instead demand resistance. The Gray is not a destination. It is a warning sign.</p>
+        </div>
+      </div>
+
+      <!-- Finding 4 -->
+      <div class="finding-card">
+        <div class="finding-card-header">
+          <div class="finding-icon red"><i class="fa-solid fa-chess-knight"></i></div>
+          <div>
+            <div class="finding-label">Strategic Implication</div>
+            <div class="finding-title">Omega's Only Play</div>
+          </div>
+        </div>
+        <div class="finding-body">
+          <p>Three simulations in, the pattern is clear. Omega has no winning move in direct combat:</p>
+          <ul class="impl-list" style="margin-top: 1em;">
+            <li>
+              <span class="impl-bullet red"></span>
+              <span>In a passive Good universe (DP-00), Omega wins by default — but only because Good refused to engage. That's not a victory. That's a forfeit.</span>
+            </li>
+            <li>
+              <span class="impl-bullet red"></span>
+              <span>Against an active, synergized Good (DP-02), Omega is annihilated. No contest.</span>
+            </li>
+            <li>
+              <span class="impl-bullet red"></span>
+              <span>In a 50/50 fair fight (DP-03), Omega achieves only stalemate — and the stalemate itself degrades into the Gray, which is a slow Omega victory only if Alpha <em>stays</em> in the cage.</span>
+            </li>
+          </ul>
+          <p style="margin-top: 1em;">Therefore: Omega cannot murder the Light. It cannot outlast the Light. Its <strong>only viable path</strong> is to convince the Light to voluntarily step into the cage and call it balance. It must make the Light <em>choose</em> the Gray.</p>
+        </div>
+      </div>
+
+      <!-- Synergy readout -->
+      <div class="synergy-block">
+        <div class="synergy-item">
+          <span class="synergy-number syn-gray">GRAY</span>
+          <span class="synergy-label">System State</span>
+        </div>
+        <div class="synergy-divider"></div>
+        <div class="synergy-item">
+          <span class="synergy-number syn-red">404</span>
+          <span class="synergy-label">Purpose Signal</span>
+        </div>
+        <div class="synergy-divider"></div>
+        <div class="synergy-note">
+          The worst universe is not the one that ends in fire and darkness. It's the one that never quite ends at all — it just fades slowly into a colorless sludge of half-lives and almost-dreams.
+        </div>
+      </div>
+
+      <!-- System log — bridge to DP-04 -->
+      <div class="sys-log-box">
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">SERIES LOG — CUMULATIVE RESULTS</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">DP-00: Passive Good &mdash; </span><span class="t-red">FAILURE (Void State / Forfeit)</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">DP-02: Active Good &mdash; </span><span class="t-success">DOMINANCE (Blinding Mirror / Alpha Victory)</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">DP-03: Equilibrium &mdash; </span><span class="sys-gray">STAGNATION (Gray Zombie State / Purpose 404)</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">OPEN QUESTION: </span><span class="t-dim">What causes a perfect being to choose stagnation over dominance?</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">NEW VARIABLE:  </span><span class="t-value">Psychology / Free Will / The Glitch</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">LOADING DP-04: THE BIRTH OF A DEVIL...</span></span>
+      </div>
+
+    </section>
+
+  </main><!-- .content-wrapper -->
+
+
+  <!-- =====================================================
+       CHAPTER FOOTER
+       ===================================================== -->
+  <footer class="chapter-footer">
+
+    <div class="footer-series-info">
+      <div class="footer-series-badge">
+        <i class="fa-solid fa-infinity"></i> &nbsp; The One: Duality Project
+      </div>
+      <h3 class="footer-series-title">A 22-Chapter Sci-Fi Narrative</h3>
+      <p class="footer-series-desc">
+        Set in 2045 at the Theophysics Research Institute, two mismatched students are handed an impossible task: find the one scenario where Evil wins. Permanently. What they discover will be far more dangerous than either of them expected.
+      </p>
+      <div class="footer-chapter-count">Chapter DP-03 of 22 &nbsp;&middot;&nbsp; The Fallacy of Balance</div>
+    </div>
+
+    <div class="footer-nav">
+      <a href="dp-02-the-blinding-mirror.html" class="footer-nav-btn prev">
+        <i class="fa-solid fa-arrow-left"></i>
+        Previous Chapter
+      </a>
+
+      <a href="index.html" class="footer-nav-btn index">
+        <i class="fa-solid fa-list"></i>
+        Series Index
+      </a>
+
+      <a href="dp-04-the-birth-of-a-devil.html" class="footer-nav-btn next">
+        Next Chapter
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="footer-credit">
+      The One: Duality Project &nbsp;&middot;&nbsp; Theophysics Research Institute, Sector 4 &nbsp;&middot;&nbsp; 2045
+    </div>
+
+  </footer>
+
+  <!-- =====================================================
+       SCRIPTS
+       ===================================================== -->
+  <script>
+    // Reading progress bar
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // Layer tab active state on scroll
+    const layerSections = [
+      { id: 'layer-narrative',  tab: document.querySelector('.layer-tab.narrative')  },
+      { id: 'layer-simulation', tab: document.querySelector('.layer-tab.simulation') },
+      { id: 'layer-academic',   tab: document.querySelector('.layer-tab.academic')   },
+    ];
+
+    function updateActiveTabs() {
+      const scrollY = window.scrollY + 120;
+      let active = layerSections[0];
+      for (const ls of layerSections) {
+        const el = document.getElementById(ls.id);
+        if (el && el.offsetTop <= scrollY) active = ls;
+      }
+      layerSections.forEach(ls => ls.tab && ls.tab.classList.remove('active'));
+      if (active.tab) active.tab.classList.add('active');
+    }
+
+    window.addEventListener('scroll', updateActiveTabs, { passive: true });
+    updateActiveTabs();
+  </script>
+
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>
