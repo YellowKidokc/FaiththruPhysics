@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>χ / Qi v5 Dashboard Contract Snippet</title>
+<style>
+:root{--bg:#050505;--line:#242424;--gold:#d4af37;--red:#dc2626;--blue:#38bdf8;--text:#e5e3df;--muted:#9a9a9a}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;margin:0;padding:2rem}
+.chi-v5-ribbon{border:1px solid var(--line);background:#0a0a0a;border-radius:10px;overflow:hidden;max-width:1050px}
+.chi-v5-head{display:flex;justify-content:space-between;gap:1rem;padding:.8rem 1rem;border-bottom:1px solid var(--line)}
+.chi-v5-title{font-family:monospace;color:var(--gold);font-size:.75rem;text-transform:uppercase;letter-spacing:.12em}
+.chi-v5-stack{height:10px;display:flex;background:#171717;margin:1rem;border-radius:999px;overflow:hidden;border:1px solid #222}
+.chi-v5-seg{height:100%;min-width:4px}
+.chi-v5-tags{display:flex;flex-wrap:wrap;gap:.35rem;padding:0 1rem 1rem}
+.chi-v5-tag{--tag:#888;display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:.2rem .48rem;font-family:monospace;font-size:.62rem;color:#aaa}
+.chi-v5-dot{width:7px;height:7px;border-radius:50%;background:var(--tag)}
+.chi-v5-panel{display:none;border-top:1px solid var(--line);padding:1rem}
+.chi-v5-panel.open{display:block}
+.chi-v5-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem}
+.chi-v5-card{background:#050505;border:1px solid #222;border-radius:6px;padding:.75rem}
+.chi-v5-card b{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="chi-v5-ribbon" id="chi-v5-profile">
+  <div class="chi-v5-head">
+    <div class="chi-v5-title">χ / Qi v5 Paper Profile</div>
+    <button id="chi-v5-toggle">Details</button>
+  </div>
+  <div class="chi-v5-stack" id="chi-v5-stack" aria-label="Normalized domain composition"></div>
+  <div class="chi-v5-tags" id="chi-v5-tags"></div>
+  <div class="chi-v5-panel" id="chi-v5-panel">
+    <div class="chi-v5-grid" id="chi-v5-panel-grid"></div>
+  </div>
+</div>
+
+<script>
+/*
+  Populate this object from the .chi sidecar or article JSON.
+  Percentages should be normalized to 100 per family.
+*/
+window.CHI_QI_V5_PROFILE = window.CHI_QI_V5_PROFILE || {
+  article_id: "mda-010-pre-modern-baseline",
+  domain_vector: [
+    {tag:"history", label:"History", pct:20, color:"#8aa1ff", score:71, confidence:76},
+    {tag:"family", label:"Family", pct:14, color:"#8fe6b0", score:62, confidence:69},
+    {tag:"religion", label:"Religion", pct:12, color:"#d6aa45", score:54, confidence:64},
+    {tag:"law_order", label:"Law/Order", pct:12, color:"#ff7d90", score:51, confidence:61},
+    {tag:"education", label:"Education", pct:11, color:"#7cc7ff", score:48, confidence:58},
+    {tag:"economy", label:"Economy", pct:10, color:"#ffb86b", score:44, confidence:55},
+    {tag:"media", label:"Media", pct:9, color:"#c79bff", score:39, confidence:51},
+    {tag:"institutions", label:"Institutions", pct:8, color:"#aeb8d6", score:36, confidence:49},
+    {tag:"synthesis", label:"Synthesis", pct:4, color:"#f59e0b", score:25, confidence:42}
+  ],
+  chi_vector: {E:0.42,K:0.35,C:0.28,F:0.21,R:0.09},
+  routing: {deep_audit:true, reasons:["unsupported citation spans","high history/evidence density"]}
+};
+(function(){
+  const p = window.CHI_QI_V5_PROFILE || {};
+  const v = (p.domain_vector || []).filter(x => x && Number(x.pct) > 0);
+  const total = v.reduce((a,b)=>a+Number(b.pct||0),0) || 100;
+  const stack = document.getElementById("chi-v5-stack");
+  const tags = document.getElementById("chi-v5-tags");
+  const grid = document.getElementById("chi-v5-panel-grid");
+  stack.innerHTML = v.map(x => `<span class="chi-v5-seg" title="${x.label} ${x.pct}%" style="width:${(x.pct/total*100).toFixed(2)}%;background:${x.color}"></span>`).join("");
+  tags.innerHTML = v.slice(0,10).map(x => `<span class="chi-v5-tag" style="--tag:${x.color}"><span class="chi-v5-dot"></span>${x.label} <b>${x.pct}%</b></span>`).join("");
+  grid.innerHTML = v.map(x => `<div class="chi-v5-card"><b>${x.label}</b><br/>pct: ${x.pct}%<br/>score: ${x.score}<br/>confidence: ${x.confidence}</div>`).join("");
+  document.getElementById("chi-v5-toggle").onclick = () => document.getElementById("chi-v5-panel").classList.toggle("open");
+})();
+</script>
+</body>
+</html>
