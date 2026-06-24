@@ -35,19 +35,23 @@
 
   const SUBDOMAINS = [
     { label: 'Home', href: '/' },
+    { label: 'Audio Library', href: '/audio/' },
+    { label: 'Podcast', href: '/podcast/' },
+    { label: 'Glossary', href: '/glossary/' },
+    { label: 'Master Equation', href: '/master-equation/' },
+    { label: 'Axiom Layer', href: '/Axiom%20Layer/axioms.html' },
+    { label: 'Proof Explorer', href: '/proof-explorer/' },
+    { label: 'Rigor', href: '/rigor/' },
+    { label: 'Lean 4 Corpus', href: '/lean4/lean4-index.html' },
+    { label: 'Bidirectional Audit', href: '/the-bidirectional-audit/' },
     { label: 'MDA', href: '/mda/' },
     { label: 'Isomorphism', href: '/isomorphism/' },
     { label: 'Convergence Series', href: '/convergence-series/' },
     { label: 'Convergence Deep', href: '/convergence-deep/' },
     { label: 'Blue Series', href: '/blue/' },
     { label: 'One-Page Stories', href: '/one-page-stories/' },
-    { label: 'Master Equation', href: '/master-equation/' },
     { label: 'Moral Decline', href: '/moral-decline/' },
     { label: 'Genesis to Quantum', href: '/genesis-to-quantum/' },
-    { label: 'Axiom Layer', href: '/Axiom%20Layer/axioms-layer-0-core.html' },
-    { label: 'Proof Explorer', href: '/proof-explorer/' },
-    { label: 'Lean 4 Corpus', href: '/lean4/' },
-    { label: 'Bidirectional Audit', href: '/the-bidirectional-audit/' },
   ];
 
   const LAYERS = [

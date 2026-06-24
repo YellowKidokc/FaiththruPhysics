@@ -1,11 +1,24 @@
 (function () {
   "use strict";
 
+  const LEVEL_ALIASES = {
+    simple: "simple",
+    story: "simple",
+    easy: "simple",
+    readable: "readable",
+    plain: "readable",
+    standard: "readable",
+    scholarly: "scholarly",
+    test: "scholarly",
+    academic: "scholarly",
+    proof: "proof"
+  };
+
   const LEVELS = [
-    { key: "story", label: "Story path" },
-    { key: "plain", label: "Plain path" },
-    { key: "test", label: "Test path" },
-    { key: "proof", label: "Proof path" }
+    { key: "simple", label: "Simple", aliases: ["story", "easy"] },
+    { key: "readable", label: "Readable", aliases: ["plain", "standard"] },
+    { key: "scholarly", label: "Scholarly", aliases: ["test", "academic"] },
+    { key: "proof", label: "Proof", aliases: [] }
   ];
 
   function slugUrl(slug) {
@@ -37,25 +50,58 @@
     }));
   }
 
+  function normalizeLevel(level) {
+    const key = String(level || "").trim().toLowerCase();
+    return LEVEL_ALIASES[key] || null;
+  }
+
+  function readingPanels() {
+    return Array.from(document.querySelectorAll("[data-reading-level], [data-reader-mode]"))
+      .filter((panel) => !panel.matches("button, a, input, select, textarea, option"))
+      .filter((panel) => !panel.classList.contains("tp-reading-tab"))
+      .filter((panel) => !panel.classList.contains("mtl-reader-tab"))
+      .filter((panel) => !panel.classList.contains("site-shell-tab"))
+      .filter((panel) => !panel.classList.contains("ftp-layer-tab"))
+      .filter((panel) => !panel.classList.contains("mda-tb-tab"));
+  }
+
   function availableLevels(meta) {
-    if (Array.isArray(meta.reading_levels)) return new Set(meta.reading_levels);
-    const panels = document.querySelectorAll("[data-reading-level]");
-    return new Set(Array.from(panels).map((panel) => panel.dataset.readingLevel));
+    const levels = new Set();
+    if (Array.isArray(meta.reading_levels)) {
+      meta.reading_levels.forEach((level) => {
+        const normalized = normalizeLevel(level);
+        if (normalized) levels.add(normalized);
+      });
+    }
+
+    readingPanels().forEach((panel) => {
+      const raw = panel.dataset.readingLevel || panel.dataset.readerMode;
+      String(raw || "").split(/\s+/).forEach((level) => {
+        const normalized = normalizeLevel(level);
+        if (normalized) levels.add(normalized);
+      });
+    });
+
+    return levels;
   }
 
   function setActiveLevel(root, level) {
+    const normalizedLevel = normalizeLevel(level) || "readable";
     root.querySelectorAll(".tp-reading-tab").forEach((tab) => {
-      const selected = tab.dataset.level === level;
+      const selected = tab.dataset.level === normalizedLevel;
       tab.setAttribute("aria-selected", selected ? "true" : "false");
       tab.tabIndex = selected ? 0 : -1;
     });
 
-    document.querySelectorAll("[data-reading-level]").forEach((panel) => {
-      panel.hidden = panel.dataset.readingLevel !== level;
+    readingPanels().forEach((panel) => {
+      const raw = panel.dataset.readingLevel || panel.dataset.readerMode || "";
+      const panelLevels = String(raw).split(/\s+/).map(normalizeLevel).filter(Boolean);
+      panel.hidden = !panelLevels.includes(normalizedLevel);
       panel.classList.add("tp-reading-panel");
     });
 
-    document.dispatchEvent(new CustomEvent("tp:reading-level-change", { detail: { level } }));
+    document.documentElement.dataset.tpReadingLevel = normalizedLevel;
+    document.dispatchEvent(new CustomEvent("tp:reading-level-change", { detail: { level: normalizedLevel } }));
   }
 
   function render(target, meta) {
@@ -71,7 +117,7 @@
 
     const classification = normalizeClassification(data.classification);
     const levelSet = availableLevels(data);
-    const firstEnabled = LEVELS.find((level) => levelSet.has(level.key)) || LEVELS[0];
+    const firstEnabled = LEVELS.find((level) => levelSet.has(level.key)) || LEVELS[1] || LEVELS[0];
 
     const main = document.createElement("div");
     main.className = "tp-top-main";

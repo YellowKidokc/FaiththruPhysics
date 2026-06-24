@@ -18,19 +18,23 @@
 
   const COMPONENT_BASE = document.currentScript?.dataset.componentBase || "/components/";
   const CSS_FILES = ["tp-theme.css", "tp-top-bar.css", "tp-bottom-bar.css"];
-  const JS_FILES = ["tp-sticky-player.js", "tp-top-bar.js", "tp-bottom-bar.js"];
+  const JS_FILES = ["tp-sticky-player.js", "tp-top-bar.js", "tp-domain-ribbon.js", "tp-bottom-bar.js"];
   const SUBDOMAINS = [
     { label: "Home", href: "/" },
+    { label: "Audio Library", href: "/audio/" },
+    { label: "Podcast", href: "/podcast/" },
+    { label: "Glossary", href: "/glossary/" },
+    { label: "Master Equation", href: "/master-equation/" },
+    { label: "Axiom Layer", href: "/Axiom%20Layer/axioms.html" },
+    { label: "Proof Explorer", href: "/proof-explorer/" },
+    { label: "Rigor", href: "/rigor/" },
+    { label: "Lean 4", href: "/lean4/lean4-index.html" },
+    { label: "Bidirectional Audit", href: "/the-bidirectional-audit/" },
     { label: "Convergence", href: "/convergence-series/" },
     { label: "Blue Series", href: "/blue/" },
     { label: "One-Page Stories", href: "/one-page-stories/" },
-    { label: "Master Equation", href: "/master-equation/" },
     { label: "Moral Decline", href: "/moral-decline/" },
     { label: "Genesis to Quantum", href: "/genesis-to-quantum/" },
-    { label: "Axiom Layer", href: "/Axiom%20Layer/" },
-    { label: "Proof Explorer", href: "/proof-explorer/" },
-    { label: "Lean 4", href: "/lean4/" },
-    { label: "Bidirectional Audit", href: "/the-bidirectional-audit/" },
     { label: "Isomorphisms", href: "/isomorphism/" }
   ];
 
@@ -52,6 +56,7 @@
       const ns = file.replace(/\.js$/, "").replace(/-/g, "");
       const global = ns === "tpstickyplayer" ? "TPStickyPlayer"
         : ns === "tptopbar" ? "TPTopBar"
+        : ns === "tpdomainribbon" ? "TPDomainRibbon"
         : ns === "tpbottombar" ? "TPBottomBar"
         : null;
       if (global && window[global]) return resolve();
@@ -203,6 +208,7 @@
     document.body.appendChild(bottom);
 
     if (window.TPTopBar) window.TPTopBar.render(top, { ...enriched, theme });
+    if (window.TPDomainRibbon) window.TPDomainRibbon.render(top, { ...enriched, theme });
     if (window.TPBottomBar) window.TPBottomBar.render(bottom, { ...enriched, theme });
   }
 
