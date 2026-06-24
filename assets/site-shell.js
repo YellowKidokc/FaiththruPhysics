@@ -1,6 +1,9 @@
 (function(){
   if(document.querySelector("[data-site-shell]")) return;
 
+  const currentPath = decodeURIComponent(window.location.pathname).replace(/\/index\.html$/i, "/");
+  const isHomePage = currentPath === "/";
+
   const sections = [
     {label:"Story", href:"/index.html#master-story", mode:"easy"},
     {label:"Plain", href:"/index.html#start", mode:"academic"},
@@ -79,7 +82,6 @@
     nav.className = "site-shell-subdomains";
     nav.setAttribute("data-site-shell", "bottom");
     nav.setAttribute("aria-label", "Faith Through Physics network");
-    const currentPath = decodeURIComponent(window.location.pathname).replace(/\/index\.html$/i, "/");
     nav.innerHTML = `
       <div class="site-shell-subdomain-inner">
         ${subdomains.map(item => {
@@ -246,7 +248,7 @@
       `;
       document.head.appendChild(style);
     }
-    renderTop();
+    if(!isHomePage) renderTop();
     renderPlayer();
     renderBottom();
     setReaderMode(currentSection().mode);
