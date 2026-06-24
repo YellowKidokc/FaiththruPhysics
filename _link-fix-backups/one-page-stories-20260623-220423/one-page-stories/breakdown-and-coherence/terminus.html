@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminus Sui — Five Proofs of Incompleteness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site-shell.css">
+<script defer src="/assets/site-shell.js"></script>
+<style>
+:root {
+  --void: #0a0a0f; --deep: #0f1019; --surface: #161622; --border: #1e1e32;
+  --muted: #4a4a6a; --text: #c8c8e0; --light: #e8e8f4;
+  --gold: #d4a853; --gold-dim: #a07830; --gold-glow: #d4a85344;
+  --accent: #6b8aff; --red: #ff6b6b; --green: #6bffb8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--void); color:var(--text); font-family:'Outfit',sans-serif; font-weight:300; line-height:1.7; }
+.back-nav { position:fixed; top:24px; left:24px; z-index:100; }
+.back-nav a { font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.15em; color:var(--muted); text-decoration:none; }
+.back-nav a:hover { color:var(--gold); }
+
+.page-hero { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:120px 24px 80px; }
+.page-label { font-family:'JetBrains Mono',monospace; font-size:0.65rem; letter-spacing:0.5em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:24px; }
+.page-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.2rem,5vw,4rem); font-weight:300; color:var(--light); line-height:1.15; margin-bottom:24px; }
+.page-subtitle { font-size:1.1rem; color:var(--muted); max-width:580px; line-height:1.8; }
+
+.content { max-width:800px; margin:0 auto; padding:0 24px 120px; }
+.content h2 { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:400; color:var(--light); margin:64px 0 24px; padding-top:32px; border-top:1px solid var(--border); }
+.content h3 { font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:500; color:var(--gold); margin:40px 0 16px; }
+.content p { margin-bottom:20px; font-size:1.05rem; line-height:1.9; }
+.hl { color:var(--gold); }
+.eq { font-family:'JetBrains Mono',monospace; font-size:0.85em; color:var(--accent); background:#6b8aff0a; padding:2px 8px; border-radius:3px; }
+
+/* --- PROOF CARDS --- */
+.proof-card {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px;
+  margin: 32px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.proof-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+}
+
+.proof-card.logic::before { background: #8b5cf6; }
+.proof-card.language::before { background: #06b6d4; }
+.proof-card.computation::before { background: #f59e0b; }
+.proof-card.physics::before { background: #ef4444; }
+.proof-card.information::before { background: #10b981; }
+
+.proof-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.proof-card.logic .proof-number { color: #8b5cf6; }
+.proof-card.language .proof-number { color: #06b6d4; }
+.proof-card.computation .proof-number { color: #f59e0b; }
+.proof-card.physics .proof-number { color: #ef4444; }
+.proof-card.information .proof-number { color: #10b981; }
+
+.proof-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  color: var(--light);
+  margin-bottom: 4px;
+}
+
+.proof-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.proof-formal {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  background: #0a0a18;
+  padding: 16px 20px;
+  border-radius: 4px;
+  margin: 16px 0;
+  border: 1px solid #1a1a30;
+  line-height: 1.6;
+}
+
+.proof-plain {
+  font-size: 1rem;
+  color: var(--text);
+  margin-top: 12px;
+}
+
+.proof-plain strong { color: var(--light); }
+
+/* --- CONVERGENCE TABLE --- */
+.convergence {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 40px 0;
+}
+
+.convergence th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 12px 12px;
+  border-bottom: 2px solid var(--border);
+  text-align: left;
+}
+
+.convergence td {
+  padding: 12px;
+  border-bottom: 1px solid #1a1a2a;
+  font-size: 0.9rem;
+}
+
+.convergence tr:hover { background: #0d0d1a; }
+
+.callout {
+  background: var(--deep);
+  border-left: 3px solid var(--gold-dim);
+  padding: 24px 28px;
+  margin: 32px 0;
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom:8px; font-size:0.95rem; }
+.callout strong { color:var(--gold); }
+
+.rabbit-hole { display:block; padding:20px 24px; margin:12px 0; background:var(--deep); border:1px solid var(--border); border-left:3px solid var(--gold-dim); border-radius:0 6px 6px 0; color:var(--text); text-decoration:none; transition:all 0.35s cubic-bezier(0.16,1,0.3,1); position:relative; }
+.rabbit-hole:hover { border-left-color:var(--gold); transform:translateX(6px); background:#0f1024; }
+.rabbit-hole-title { font-weight:500; font-size:0.95rem; color:var(--gold); margin-bottom:4px; }
+.rabbit-hole-desc { font-size:0.85rem; color:var(--muted); }
+.rabbit-hole-arrow { position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:1.2rem; color:var(--gold-dim); }
+.rabbit-hole:hover .rabbit-hole-arrow { color:var(--gold); transform:translateY(-50%) translateX(4px); }
+
+.footer-nav { text-align:center; padding:60px 24px; border-top:1px solid var(--border); }
+.footer-nav a { font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--muted); text-decoration:none; margin:0 16px; }
+.footer-nav a:hover { color:var(--gold); }
+
+/* ═══════════════ SITE NAVIGATION BAR ═══════════════ */
+.site-nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: rgba(8, 8, 12, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid #1a1a2a;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.site-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  min-height: 52px;
+}
+.site-nav-prev, .site-nav-next {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  color: #888; text-decoration: none;
+  font-size: 0.78rem; transition: all 0.2s;
+  white-space: nowrap; min-width: 0;
+}
+.site-nav-prev:hover, .site-nav-next:hover {
+  color: #d4af37; background: rgba(212,175,55,0.06);
+}
+.site-nav-prev i, .site-nav-next i { font-size: 0.65rem; flex-shrink: 0; }
+.site-nav-prev .snl, .site-nav-next .snl {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;
+}
+.site-nav-center {
+  flex: 1; display: flex; align-items: center;
+  justify-content: center; gap: 0.15rem;
+}
+.site-nav-center a {
+  display: flex; align-items: center; gap: 0.35rem;
+  padding: 0.5rem 0.8rem; color: #666;
+  text-decoration: none; font-size: 0.65rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 500; transition: all 0.2s; border-radius: 4px;
+}
+.site-nav-center a:hover { color: #d4af37; background: rgba(212,175,55,0.08); }
+.site-nav-center a.sn-home { color: #d4af37; }
+.site-nav-center a.sn-home:hover { color: #fff; }
+.site-nav-center a i { font-size: 0.6rem; }
+.site-nav-center .sns { width: 1px; height: 18px; background: #1a1a2a; }
+.site-nav-disabled { opacity: 0.25; pointer-events: none; }
+body { padding-bottom: 60px !important; }
+@media (max-width: 640px) {
+  .site-nav-prev .snl, .site-nav-next .snl { display: none; }
+  .site-nav-center a span { display: none; }
+  .site-nav-center a { padding: 0.5rem 0.6rem; }
+  .site-nav-center .sns { height: 14px; }
+}
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+
+<div class="back-nav"><a href="../index.html">← Back to The Unavoidable Conclusion</a></div>
+
+<div class="page-hero">
+  <div class="page-label">Truth One · Deep Dive</div>
+  <h1 class="page-title">Terminus Sui</h1>
+  <p class="page-subtitle">
+    Five theorems from five fields. Same structure. Same conclusion. No system can save itself.
+  </p>
+</div>
+
+<div class="content">
+
+  <p>
+    The Latin means <span class="hl">"the end of the self"</span> — the boundary where any system, no matter how powerful, hits the wall of its own limitations. Five independent fields discovered this wall. None of them were talking to each other. That's what makes the convergence so devastating.
+  </p>
+
+  <!-- PROOF 1 -->
+  <div class="proof-card logic">
+    <div class="proof-number">Proof I · Mathematical Logic</div>
+    <div class="proof-name">Gödel's Second Incompleteness Theorem</div>
+    <div class="proof-year">Kurt Gödel, 1931</div>
+    <div class="proof-formal">
+      Any consistent formal system F capable of expressing<br>
+      basic arithmetic cannot prove its own consistency<br>
+      using only its own axioms and rules of inference.
+    </div>
+    <div class="proof-plain">
+      <strong>In plain language:</strong> If a system works and doesn't contradict itself, it cannot prove that it doesn't contradict itself from the inside. Self-validation is logically impossible. The smarter the system, the more true this becomes — it applies to every formal system powerful enough to do basic math.
+    </div>
+  </div>
+
+  <!-- PROOF 2 -->
+  <div class="proof-card language">
+    <div class="proof-number">Proof II · Formal Language Theory</div>
+    <div class="proof-name">Tarski's Undefinability Theorem</div>
+    <div class="proof-year">Alfred Tarski, 1936</div>
+    <div class="proof-formal">
+      No sufficiently powerful formal language can define<br>
+      its own truth predicate without generating paradox.
+    </div>
+    <div class="proof-plain">
+      <strong>In plain language:</strong> A system can't even <em>define</em> what "true" means using only its own resources. If you try, you get the Liar's Paradox — "This sentence is false." Truth requires a reference point outside itself.
+    </div>
+  </div>
+
+  <!-- PROOF 3 -->
+  <div class="proof-card computation">
+    <div class="proof-number">Proof III · Computer Science</div>
+    <div class="proof-name">Turing's Halting Problem</div>
+    <div class="proof-year">Alan Turing, 1936</div>
+    <div class="proof-formal">
+      No algorithm can determine, for all possible<br>
+      program-input pairs, whether the program will<br>
+      halt or run forever.
+    </div>
+    <div class="proof-plain">
+      <strong>In plain language:</strong> A system cannot fully predict its own behavior. No matter how sophisticated the computer, it cannot look at an arbitrary program and determine whether it will stop or loop forever. Self-prediction is computationally impossible.
+    </div>
+  </div>
+
+  <!-- PROOF 4 -->
+  <div class="proof-card physics">
+    <div class="proof-number">Proof IV · Thermodynamics</div>
+    <div class="proof-name">The Second Law of Thermodynamics</div>
+    <div class="proof-year">Clausius, 1850 / Boltzmann, 1877</div>
+    <div class="proof-formal">
+      In any closed system, total entropy S can only<br>
+      increase or remain constant over time:<br>
+      dS/dt ≥ 0
+    </div>
+    <div class="proof-plain">
+      <strong>In plain language:</strong> Everything falls apart. Every closed system moves toward maximum disorder. Your coffee cools. Stars burn out. Information degrades. No physical system can reverse this using only its own resources. Maintenance requires external input.
+    </div>
+  </div>
+
+  <!-- PROOF 5 -->
+  <div class="proof-card information">
+    <div class="proof-number">Proof V · Information Physics</div>
+    <div class="proof-name">Landauer's Principle</div>
+    <div class="proof-year">Rolf Landauer, 1961</div>
+    <div class="proof-formal">
+      Erasing one bit of information releases a minimum<br>
+      of kT·ln(2) joules of heat into the environment.<br>
+      Information processing has irreducible thermodynamic cost.
+    </div>
+    <div class="proof-plain">
+      <strong>In plain language:</strong> Information is physical. Thought costs energy. You cannot process, store, or erase information without paying a price in entropy. This bridges the abstract (logic, computation) to the concrete (physics, heat). There is no free lunch — not even for thinking itself.
+    </div>
+  </div>
+
+  <h2>The Convergence</h2>
+  <p>
+    Five fields. Five proofs. One structure:
+  </p>
+
+  <table class="convergence">
+    <thead>
+      <tr>
+        <th>Theorem</th>
+        <th>Domain</th>
+        <th>What it proves</th>
+        <th>Self-limit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:#8b5cf6">Gödel</td>
+        <td>Logic</td>
+        <td>Can't prove own consistency</td>
+        <td>Self-validation impossible</td>
+      </tr>
+      <tr>
+        <td style="color:#06b6d4">Tarski</td>
+        <td>Language</td>
+        <td>Can't define own truth</td>
+        <td>Self-reference generates paradox</td>
+      </tr>
+      <tr>
+        <td style="color:#f59e0b">Turing</td>
+        <td>Computation</td>
+        <td>Can't predict own behavior</td>
+        <td>Self-simulation impossible</td>
+      </tr>
+      <tr>
+        <td style="color:#ef4444">Second Law</td>
+        <td>Physics</td>
+        <td>Can't maintain own order</td>
+        <td>Self-sustaining impossible</td>
+      </tr>
+      <tr>
+        <td style="color:#10b981">Landauer</td>
+        <td>Information</td>
+        <td>Can't process without cost</td>
+        <td>Self-computing has entropy price</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><strong>The unified statement:</strong></p>
+    <p>Any sufficiently complex closed system cannot: prove its own consistency, define its own truth, predict its own behavior, maintain its own order, or process information without irreversible cost.</p>
+    <p style="margin-top:16px;"><strong>This is not controversial.</strong> Every line above is established mathematics or physics. No serious academic disputes any of them individually.</p>
+  </div>
+
+  <h2>The Question They Can't Escape</h2>
+  <p>
+    If closed systems necessarily fail on all five counts — and no serious physicist or mathematician disputes this — then:
+  </p>
+  <p>
+    <span class="hl">How do you explain the persistence of order, truth, consistency, and coherent information in the universe?</span>
+  </p>
+  <p>
+    The universe has maintained extraordinary order for 13.8 billion years. It exhibits truth (physical laws hold). It maintains consistency (mathematics works). It processes information (you're reading this). And it does all of this despite five proven theorems saying closed systems can't.
+  </p>
+
+  <h3>There are only three options:</h3>
+  <p>
+    <strong>Option 1: Infinite regress.</strong> Each grounding layer needs another grounding layer beneath it, forever. Nothing is ever actually grounded. This means nothing is actually true, ordered, or consistent — which contradicts observation.
+  </p>
+  <p>
+    <strong>Option 2: Brute fact.</strong> "It just is." The universe simply happens to maintain order for no reason. This violates the Principle of Sufficient Reason and amounts to saying "I don't know and I've stopped asking." It's intellectually lazy and unfalsifiable.
+  </p>
+  <p>
+    <strong>Option 3: Self-grounding terminus.</strong> Something that grounds itself — that IS its own consistency, its own truth, its own order. Something necessary, self-existent, eternal, and the source of all coherence.
+  </p>
+  <p>
+    Only Option 3 is logically coherent. And the required properties of a self-grounding terminus are precisely the classical attributes of God: necessary existence, self-existence (<em>aseity</em>), simplicity, eternality, and the ground of all being.
+  </p>
+
+  <div class="callout">
+    <p><strong>Note what happened:</strong> We didn't start from theology. We started from five mathematical proofs. The theology emerged from the math, not the other way around.</p>
+  </div>
+
+  <h2>Go Deeper</h2>
+
+  <a href="the-floor-beneath-the-floor.html" class="rabbit-hole">
+    <div class="rabbit-hole-title">Gödel's Incompleteness — The Full Proof in Plain Language</div>
+    <div class="rabbit-hole-desc">The most important theorem of the 20th century, explained without jargon.</div>
+    <span class="rabbit-hole-arrow">→</span>
+  </a>
+
+  <a href="irony.html" class="rabbit-hole">
+    <div class="rabbit-hole-title">The Divine Irony — Gödel's Gift</div>
+    <div class="rabbit-hole-desc">God gave us math powerful enough to describe Him but not to prove Him with it. That's not a bug.</div>
+    <span class="rabbit-hole-arrow">→</span>
+  </a>
+
+  <a href="dictionary.html" class="rabbit-hole">
+    <div class="rabbit-hole-title">The Moral-Physical Dictionary</div>
+    <div class="rabbit-hole-desc">If these systems need external coherence to survive, what does coherence look like across every domain?</div>
+    <span class="rabbit-hole-arrow">→</span>
+  </a>
+
+  <a href="character-of-adversary-from-physics.html" class="rabbit-hole">
+    <div class="rabbit-hole-title">The Second Law — Deep Dive</div>
+    <div class="rabbit-hole-desc">Everything dies. Unless something holds it open. The physics of grace.</div>
+    <span class="rabbit-hole-arrow">→</span>
+  </a>
+
+</div>
+
+<div class="footer-nav">
+  <a href="../index.html">← Home</a>
+  <a href="dictionary.html">Moral Dictionary →</a>
+  <a href="prehumanmath.html">Pre-Human Math →</a>
+</div>
+
+
+<!-- ═══════════════ SITE NAVIGATION ═══════════════ -->
+<div class="site-nav-bar">
+  <div class="site-nav-inner">
+    <div class="site-nav-center">
+      <a href="../index.html"><i class="fas fa-home"></i><span>Home</span></a>
+      <div class="sns"></div>
+      <a href="../genesis-to-quantum/index.html"><i class="fas fa-atom"></i><span>GTQ Series</span></a>
+      <div class="sns"></div>
+      <a href="we-ran-the-tests.html"><i class="fas fa-flask"></i><span>Tests</span></a>
+      <div class="sns"></div>
+      <a href="https://faiththruphysics.com" class="sn-home"><i class="fas fa-cross"></i><span>Faith Through Physics</span></a>
+    </div>
+  </div>
+</div>
+
+<script src="/components/site-shell.js" data-active-tab="academic" data-series-href="/one-page-stories/" data-audio-slug="terminus" data-shell-accent="var(--gold)"></script>
+</body>
+</html>
