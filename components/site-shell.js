@@ -130,6 +130,10 @@
       line-height: 1.6;
       max-width: 74ch;
     }
+    .ftp-audit-note strong {
+      color: #d4af37;
+      font-weight: 600;
+    }
     .ftp-audit-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -278,6 +282,7 @@
       <div class="ftp-audit-inner">
         <div class="ftp-audit-title">Final Audit</div>
         <div class="ftp-audit-note">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong. Keep it bright, readable, and honest, even when the page style changes.</div>
+        <div class="ftp-audit-note"><strong>Epistemic covenant:</strong> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked; the mechanisms can be challenged; the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is yours. We think the pattern is worth believing, but we will not hide where faith begins.</div>
         <div class="ftp-audit-grid">
           <article class="ftp-audit-card is-green">
             <h3>What We Got Right</h3>

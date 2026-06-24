@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DP-09 | The Prototype Resurrection — The One: Duality Project</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- MathJax -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+
+  <style>
+    /* ============================================================
+       CUSTOM PROPERTIES
+       ============================================================ */
+    :root {
+      --bg:             #0a0a0a;
+      --bg-light:       #1a1a1a;
+      --bg-mid:         #111111;
+      --border:         #2a2a2a;
+      --border-light:   #333333;
+      --text:           #e8e8e8;
+      --text-secondary: #a0a0a0;
+      --text-dim:       #666666;
+      --gold:           #d4af37;
+      --gold-dim:       rgba(212,175,55,0.10);
+      --gold-mid:       rgba(212,175,55,0.25);
+      --gold-bright:    rgba(212,175,55,0.70);
+      --teal:           #2dd4bf;
+      --teal-dim:       rgba(45,212,191,0.10);
+      --teal-mid:       rgba(45,212,191,0.20);
+      --red-dim:        rgba(220,60,60,0.15);
+      --red:            #dc3c3c;
+    }
+
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       PROGRESS BAR
+       ============================================================ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), #f0c040);
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ============================================================
+       STICKY NAV
+       ============================================================ */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nav-links-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.series {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-separator {
+      color: var(--border-light);
+      font-size: 0.75rem;
+      user-select: none;
+    }
+
+    .nav-links-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link.prev-link {
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .nav-link.prev-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.next-link {
+      color: var(--teal);
+      border-color: var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .nav-link.next-link:hover {
+      color: #7ff0e4;
+      border-color: rgba(45,212,191,0.5);
+      background: var(--teal-mid);
+    }
+
+    .nav-chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      opacity: 0.8;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       PAGE HEADER
+       ============================================================ */
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .header-eyebrow::before,
+    .header-eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold-bright);
+    }
+
+    .chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .chapter-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+
+    .chapter-subtitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+      margin-bottom: 36px;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg-light);
+    }
+
+    .meta-pill i { color: var(--gold); font-size: 0.72rem; }
+
+    .header-divider {
+      max-width: 1100px;
+      margin: 0 auto 0;
+      padding: 0 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+    }
+
+    /* ============================================================
+       LAYER NAV TABS
+       ============================================================ */
+    .layer-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 0;
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+    }
+
+    .layer-tab.narrative  { --tab-color: var(--gold); }
+    .layer-tab.simulation { --tab-color: var(--teal); }
+    .layer-tab.academic   { --tab-color: #a78bfa; }
+
+    .layer-tab:hover {
+      color: var(--tab-color);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .layer-tab.active {
+      color: var(--tab-color);
+      background: var(--bg-light);
+      border-color: var(--border);
+      border-bottom-color: var(--bg-light);
+      margin-bottom: -1px;
+    }
+
+    /* ============================================================
+       MAIN CONTENT WRAPPER
+       ============================================================ */
+    .content-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ============================================================
+       LAYER SECTIONS
+       ============================================================ */
+    .layer-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-section:last-of-type { border-bottom: none; }
+
+    .layer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .layer-number {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    .layer-number.gold   { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-mid); }
+    .layer-number.teal   { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal-mid); }
+    .layer-number.purple { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+
+    .layer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .layer-label.gold   { color: var(--gold); }
+    .layer-label.teal   { color: var(--teal); }
+    .layer-label.purple { color: #a78bfa; }
+
+    .layer-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    /* ============================================================
+       LAYER 1 — NARRATIVE
+       ============================================================ */
+    .narrative-body { max-width: 720px; }
+
+    .scene-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gold-mid);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scene-title::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .scene-divider {
+      margin: 44px 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-mid), transparent);
+    }
+
+    .narrative-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 1.5em;
+    }
+
+    .drop-cap::first-letter {
+      font-family: 'Cinzel', serif;
+      font-size: 4.2em;
+      font-weight: 700;
+      color: var(--gold);
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.08em;
+      margin-top: 0.12em;
+    }
+
+    .narrative-body p.dialogue {
+      font-style: italic;
+      color: #d0d0d0;
+    }
+
+    .word-omega {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 20px rgba(212,175,55,0.5);
+    }
+
+    .word-teal {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 18px rgba(45,212,191,0.45);
+    }
+
+    .narrative-terminal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--teal);
+      background: rgba(45,212,191,0.06);
+      border: 1px solid var(--teal-mid);
+      border-left: 3px solid var(--teal);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+
+    .narrative-alert {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #f0c040;
+      background: rgba(240,192,64,0.07);
+      border: 1px solid rgba(240,192,64,0.25);
+      border-left: 3px solid #f0c040;
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin: 24px 0;
+      line-height: 1.8;
+    }
+
+    .pullquote {
+      border-left: 3px solid var(--gold);
+      padding: 16px 24px;
+      background: var(--gold-dim);
+      border-radius: 0 8px 8px 0;
+      margin: 32px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: #d8c980;
+      line-height: 1.7;
+    }
+
+    /* Before / After comparison block */
+    .compare-block {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 28px 0;
+    }
+
+    .compare-block-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: 12px 18px;
+      background: var(--gold-dim);
+      border-bottom: 1px solid var(--gold-mid);
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-row:last-child { border-bottom: none; }
+
+    .compare-cell {
+      padding: 12px 18px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .compare-cell.old { border-right: 1px solid var(--border); }
+    .compare-cell.new { color: var(--teal); }
+
+    .compare-cell-header {
+      padding: 8px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-cell-header.old { color: var(--red); border-right: 1px solid var(--border); }
+    .compare-cell-header.new { color: #4ade80; }
+
+    /* ============================================================
+       LAYER 2 — SIMULATION / TERMINAL
+       ============================================================ */
+    .terminal-shell {
+      background: #080e0d;
+      border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(45,212,191,0.07), 0 4px 24px rgba(0,0,0,0.6);
+    }
+
+    .terminal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      background: #0d1413;
+      border-bottom: 1px solid rgba(45,212,191,0.2);
+    }
+
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #27c93f; }
+
+    .terminal-title {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(45,212,191,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .terminal-body {
+      padding: 28px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #c0faf4;
+    }
+
+    .t-comment { color: rgba(45,212,191,0.4); }
+    .t-label   { color: var(--teal); font-weight: 600; letter-spacing: 0.05em; }
+    .t-value   { color: #f0c040; }
+    .t-dim     { color: rgba(192,250,244,0.45); }
+    .t-red     { color: var(--red); font-weight: 600; }
+    .t-success { color: #4ade80; font-weight: 600; }
+    .t-prompt  { color: rgba(45,212,191,0.6); }
+    .t-bold    { font-weight: 600; }
+    .t-orange  { color: #fb923c; font-weight: 600; }
+    .t-purple  { color: #a78bfa; font-weight: 600; }
+
+    .terminal-block        { display: block; margin-bottom: 0.15em; }
+    .terminal-section-gap  { display: block; margin: 16px 0; }
+    .terminal-divider      { display: block; margin: 16px 0; color: rgba(45,212,191,0.25); }
+
+    .term-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .term-stat-card {
+      background: rgba(45,212,191,0.05);
+      border: 1px solid rgba(45,212,191,0.18);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .term-stat-card .stat-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--teal);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .term-stat-card.gold-card   .stat-number { color: var(--gold); }
+    .term-stat-card.green-card  .stat-number { color: #4ade80; }
+    .term-stat-card.purple-card .stat-number { color: #a78bfa; }
+
+    .term-stat-card .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .capability-list { list-style: none; margin: 20px 0; }
+
+    .capability-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #c0faf4;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(45,212,191,0.08);
+      line-height: 1.6;
+    }
+
+    .capability-list li:last-child { border-bottom: none; }
+
+    .cap-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--teal-mid);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      color: var(--teal);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       LAYER 3 — ACADEMIC SYNTHESIS
+       ============================================================ */
+    .academic-body { max-width: 820px; }
+
+    .academic-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #a78bfa;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(167,139,250,0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .academic-section-title::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: #a78bfa;
+    }
+
+    .academic-section-gap { margin-top: 44px; }
+
+    .academic-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.15rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 1.4em;
+    }
+
+    .academic-body .drop-cap::first-letter {
+      font-family: 'Cinzel', serif;
+      font-size: 4.2em;
+      font-weight: 700;
+      color: #a78bfa;
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.08em;
+      margin-top: 0.12em;
+    }
+
+    .doc-header-card {
+      background: var(--bg-light);
+      border: 1px solid rgba(167,139,250,0.2);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .doc-field { display: flex; flex-direction: column; gap: 3px; }
+
+    .doc-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.67rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .doc-val {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: #a78bfa;
+      font-weight: 500;
+    }
+
+    .solved-callout {
+      background: rgba(167,139,250,0.07);
+      border: 1px solid rgba(167,139,250,0.25);
+      border-left: 3px solid #a78bfa;
+      border-radius: 0 8px 8px 0;
+      padding: 18px 22px;
+      margin: 28px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.15rem;
+      color: #c4b5fd;
+      font-style: italic;
+      line-height: 1.7;
+    }
+
+    .solved-callout .solved-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      font-style: normal;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .theory-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 28px 0;
+    }
+
+    .theory-card-header {
+      padding: 14px 20px;
+      background: rgba(167,139,250,0.07);
+      border-bottom: 1px solid rgba(167,139,250,0.2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #a78bfa;
+    }
+
+    .theory-card-body { padding: 20px 22px; }
+
+    .theory-card-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 1em;
+    }
+
+    .theory-card-body p:last-child { margin-bottom: 0; }
+
+    .bullet-list { list-style: none; margin: 14px 0; padding: 0; }
+
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.6;
+    }
+
+    .bullet-list li:last-child { border-bottom: none; }
+
+    .bullet-list .bullet-marker {
+      flex-shrink: 0;
+      color: #a78bfa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .physics-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 28px 0;
+    }
+
+    .phys-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .phys-card-header {
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phys-card-header.old-header { color: var(--red); background: var(--red-dim); }
+    .phys-card-header.new-header { color: #4ade80; background: rgba(74,222,128,0.07); }
+
+    .phys-card-body {
+      padding: 14px 16px;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .next-sim-card {
+      background: var(--bg-light);
+      border: 1px solid var(--teal-mid);
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .next-sim-icon {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--teal-dim);
+      border: 1px solid var(--teal-mid);
+      border-radius: 50%;
+      color: var(--teal);
+      font-size: 1.2rem;
+    }
+
+    .next-sim-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+
+    .next-sim-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .next-sim-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .sys-log-box {
+      background: #06100f;
+      border: 1px solid rgba(45,212,191,0.2);
+      border-radius: 8px;
+      padding: 24px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 2;
+      margin-top: 24px;
+    }
+
+    .sys-line    { display: block; }
+    .sys-prompt  { color: rgba(45,212,191,0.45); }
+    .sys-key     { color: var(--teal); font-weight: 600; }
+    .sys-num     { color: #f0c040; font-weight: 700; }
+    .sys-action  { color: #4ade80; font-weight: 700; letter-spacing: 0.06em; }
+    .sys-note    { color: var(--text-secondary); font-style: italic; font-size: 0.82rem; }
+    .sys-warn    { color: #fb923c; }
+
+    /* ============================================================
+       CHAPTER FOOTER / NAV
+       ============================================================ */
+    .chapter-footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    .footer-series-info {
+      text-align: center;
+      padding: 40px 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+
+    .footer-series-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .footer-series-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-series-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      max-width: 580px;
+      margin: 0 auto 20px;
+      line-height: 1.7;
+    }
+
+    .footer-chapter-count {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .footer-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 22px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .footer-nav-btn.prev {
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .footer-nav-btn.prev:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index {
+      color: var(--gold);
+      border: 1px solid var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index:hover {
+      background: rgba(212,175,55,0.18);
+      border-color: var(--gold-bright);
+    }
+
+    .footer-nav-btn.next {
+      color: var(--teal);
+      border: 1px solid var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .footer-nav-btn.next:hover {
+      background: rgba(45,212,191,0.18);
+      border-color: rgba(45,212,191,0.5);
+    }
+
+    .footer-credit {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 16px; gap: 8px; }
+      .nav-link { font-size: 0.7rem; padding: 5px 8px; }
+      .nav-separator { display: none; }
+      .nav-chapter-code { display: none; }
+
+      .page-header { padding: 48px 16px 40px; }
+      .content-wrapper { padding: 0 16px 60px; }
+      .chapter-footer { padding: 40px 16px 60px; }
+
+      .layer-nav { padding: 24px 16px 0; }
+      .layer-tab { font-size: 0.7rem; padding: 8px 12px; }
+
+      .term-stat-grid { grid-template-columns: 1fr; gap: 10px; }
+      .physics-compare { grid-template-columns: 1fr; }
+      .compare-row { grid-template-columns: 1fr; }
+
+      .footer-nav { flex-direction: column; gap: 12px; }
+      .footer-nav-btn { width: 100%; justify-content: center; }
+
+      .next-sim-card { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .layer-nav { flex-direction: column; border-bottom: none; }
+      .layer-tab { border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; }
+      .layer-tab.active { border-color: var(--border); margin-bottom: 4px; }
+    }
+  </style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/duality-project/dp-09-the-prototype-resurrection.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- =====================================================
+       STICKY NAV
+       ===================================================== -->
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <div class="nav-links-left">
+        <a href="../index.html" class="nav-link">
+          <i class="fa-solid fa-house-chimney"></i>
+          Main Index
+        </a>
+        <span class="nav-separator">/</span>
+        <a href="index.html" class="nav-link series">
+          <i class="fa-solid fa-infinity"></i>
+          The One: Duality Project
+        </a>
+        <span class="nav-separator">/</span>
+        <span class="nav-chapter-code">DP-09</span>
+      </div>
+      <div class="nav-links-right">
+        <a href="dp-08-the-atonement-paradox.html" class="nav-link prev-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          Prev
+        </a>
+        <a href="dp-10-the-ascension-update.html" class="nav-link next-link">
+          Next
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+  <header class="page-header">
+    <div class="header-eyebrow">The One: Duality Project</div>
+    <span class="chapter-code">DP-09</span>
+    <h1 class="chapter-title">The Prototype Resurrection</h1>
+    <p class="chapter-subtitle">Negentropy</p>
+    <div class="header-meta">
+      <span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> 12 / 28 / 2045</span>
+      <span class="meta-pill"><i class="fa-solid fa-location-dot"></i> Theophysics Research Institute, Sector 4</span>
+      <span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 3 Layers</span>
+      <span class="meta-pill"><i class="fa-solid fa-dna"></i> THEO-409</span>
+    </div>
+  </header>
+  <div class="header-divider"></div>
+
+  <!-- =====================================================
+       LAYER NAV TABS
+       ===================================================== -->
+  <div class="layer-nav" role="navigation" aria-label="Chapter layers">
+    <a href="#layer-narrative" class="layer-tab narrative active">
+      <i class="fa-solid fa-book-open"></i>
+      Layer 1 &mdash; Narrative
+    </a>
+    <a href="#layer-simulation" class="layer-tab simulation">
+      <i class="fa-solid fa-terminal"></i>
+      Layer 2 &mdash; Simulation Logs
+    </a>
+    <a href="#layer-academic" class="layer-tab academic">
+      <i class="fa-solid fa-brain"></i>
+      Layer 3 &mdash; Academic Synthesis
+    </a>
+  </div>
+
+  <!-- =====================================================
+       CONTENT
+       ===================================================== -->
+  <main class="content-wrapper">
+
+    <!-- ========================================
+         LAYER 1: THE NARRATIVE
+         ======================================== -->
+    <section class="layer-section" id="layer-narrative" aria-labelledby="narrative-title">
+
+      <div class="layer-header">
+        <div class="layer-number gold">I</div>
+        <div class="layer-header-text">
+          <div class="layer-label gold">Layer 01 &mdash; Fiction</div>
+          <h2 class="layer-title" id="narrative-title">The Narrative</h2>
+        </div>
+      </div>
+
+      <div class="narrative-body">
+
+        <!-- SCENE 1 -->
+        <h3 class="scene-title">The Sunday Morning Anomaly</h3>
+
+        <p class="drop-cap dialogue">"Entropy is a one-way street," Kai muttered, rubbing his eyes. "That's the First Commandment of Physics. You can break an egg, but you can't un-break it. You can burn a log, but you can't turn ash back into wood."</p>
+
+        <p>The simulation was paused at $T+3\text{ Days}$ after the Atonement Event &mdash; DP-08. The tomb of the Template was sealed. Every sensor read zero. No movement, no fluctuation, no residual signal. Whatever had been there was, by every measurable standard, gone.</p>
+
+        <p class="dialogue">"Dead is dead, Mia. The information was released. The debt was paid. But the Template itself &mdash; the shell is destroyed."</p>
+
+        <p>Mia wasn't looking at the readouts. She was staring at the quantum fluctuation monitor in the corner of the lab &mdash; the one they almost never used because it only picked up noise. Right now it was showing something that wasn't noise.</p>
+
+        <p class="dialogue">"Usually, yes," she said quietly. "But we've never had a shell that contained Infinite Coherence before. The Atonement released the <em>charge</em>, but the <em>Identity</em> &mdash; the Alpha-Prime nature itself &mdash; it can't be deleted. You can't zero out something that is structurally identical to the source code of existence."</p>
+
+        <p class="dialogue">"So where is it?"</p>
+
+        <p class="dialogue">"It's rebooting," Mia whispered.</p>
+
+        <div class="scene-divider"></div>
+
+        <!-- SCENE 2 -->
+        <h3 class="scene-title">The Upgraded State</h3>
+
+        <div class="narrative-alert">
+          [ SIMULATION DP-09 CRITICAL ALERT ]<br />
+          [ EVENT: SINGULARITY IN SECTOR 7 &mdash; THE TOMB ]<br />
+          [ ENTROPY REVERSAL DETECTED ]
+        </div>
+
+        <p>The alarm wasn't a warning. It was a celebration.</p>
+
+        <p>On the main screen, the tomb didn't explode. It <em>dissolved</em>. The matter making up the stone, the air, the burial shroud &mdash; all of it suddenly subjected to what the readouts labeled a <span class="word-teal">Reverse Entropy Field</span>. Decay running backward. Disorder collapsing into order. The Arrow of Time, for a three-meter radius, pointing the wrong direction.</p>
+
+        <p class="dialogue">"Look at the time signature!" Kai yelled. "It's running backward! The decay is reversing!"</p>
+
+        <p>From the center of the anomaly, the Template emerged. But this was not the same fragile human from DP-07. Something had been fundamentally upgraded.</p>
+
+        <div class="compare-block">
+          <div class="compare-block-title">Template State &mdash; Before &amp; After</div>
+          <div class="compare-row">
+            <div class="compare-cell-header old">Old Template &mdash; Pre-Resurrection</div>
+            <div class="compare-cell-header new">New Template &mdash; Post-Resurrection</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell old">Biological. Carbon-based. Vulnerable to Rust.</div>
+            <div class="compare-cell new">Transcendent. Matter-Energy Hybrid.</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell old">Constrained by Time and Space.</div>
+            <div class="compare-cell new">Operates in higher-dimensional space.</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell old">Subject to entropy like every other system.</div>
+            <div class="compare-cell new">Entropy cannot attach to the new lattice.</div>
+          </div>
+        </div>
+
+        <p class="dialogue">"He walks through the wall," Mia said, narrating the data. "He's not interacting with the atomic strong force. He's &mdash; phasing."</p>
+
+        <p class="dialogue">"He's 4D," Kai corrected. "He's operating in higher-dimensional space. The walls are still there, but He's moving <em>around</em> them in a direction they don't possess."</p>
+
+        <p>The Chrome Agent &mdash; the Devil &mdash; tried to scan the New Template. The scan failed.</p>
+
+        <div class="narrative-terminal">
+          ERROR: OBJECT NOT FOUND
+        </div>
+
+        <p class="dialogue">"He can't see Him," Kai laughed. It was the first real laugh Mia had heard from him in days. "The Devil is stuck in 3D. The Template has upgraded to 4D. He's literally above the Devil's pay grade now."</p>
+
+        <p class="dialogue">"It's the Prototype," Mia said, and something in her voice carried a weight Kai couldn't name. "He's the first of a new species. A human that can't die. A body that runs on Light instead of Bread."</p>
+
+        <p>The Template looked at the camera &mdash; looked directly at Kai and Mia, through the simulation itself. For a moment the boundary between observer and observed seemed to dissolve entirely.</p>
+
+        <div class="pullquote">
+          <span class="word-omega">&gt;&nbsp; MESSAGE: "Follow Me."</span>
+        </div>
+
+        <p>Kai stared at that message for a long time. He didn't say anything. He didn't need to.</p>
+
+      </div><!-- .narrative-body -->
+    </section>
+
+
+    <!-- ========================================
+         LAYER 2: SIMULATION LOGS
+         ======================================== -->
+    <section class="layer-section" id="layer-simulation" aria-labelledby="simulation-title">
+
+      <div class="layer-header">
+        <div class="layer-number teal">II</div>
+        <div class="layer-header-text">
+          <div class="layer-label teal">Layer 02 &mdash; System Document</div>
+          <h2 class="layer-title" id="simulation-title">Simulation Logs</h2>
+        </div>
+      </div>
+
+      <div class="terminal-shell">
+        <div class="terminal-titlebar">
+          <span class="terminal-dot dot-red"></span>
+          <span class="terminal-dot dot-yellow"></span>
+          <span class="terminal-dot dot-green"></span>
+          <span class="terminal-title">THEO-409 :: DP-09 "THE RESURRECTION" :: 12/28/2045</span>
+        </div>
+
+        <div class="terminal-body">
+
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+          <span class="terminal-block"><span class="t-comment">// THEO-409 :: Simulation Log — DP-09</span></span>
+          <span class="terminal-block"><span class="t-comment">// Subject: THE RESURRECTION</span></span>
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+
+          <span class="terminal-section-gap"></span>
+
+          <span class="terminal-block"><span class="t-label">SUBJECT</span>     <span class="t-value">DP-09 "The Resurrection"</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">PARAMETERS</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">Input  :</span>  <span class="t-value">1x Dead Perfect Template</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">Action :</span>  <span class="t-value">Divine Re-Integration</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">Output :</span>  <span class="t-success">The "Glorified" State</span> <span class="t-dim">( &Omega; &rarr; &alpha; )</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">TIMELINE</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-prompt">&gt;</span> <span class="t-dim">T+Day 3.00 :</span>  <span class="t-orange">Zero-Point Energy spike detected</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-prompt">&gt;</span> <span class="t-dim">T+Day 3.01 :</span>  <span class="t-value">Biological synthesis restarts. DNA repair: Instant.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-prompt">&gt;</span> <span class="t-dim">T+Day 3.02 :</span>  <span class="t-success">Matter Phase-Shift — Carbon-Based &rarr; Spirit-Based</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">ANOMALY DETECTED</span> <span class="t-orange">:: NEGENTROPY</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">First recorded instance of Self-Generated Order from a state of death.</span></span>
+
+        </div>
+
+        <!-- Stat Cards -->
+        <div style="padding: 0 32px 16px;">
+          <div class="term-stat-grid">
+            <div class="term-stat-card gold-card">
+              <span class="stat-number">3</span>
+              <span class="stat-label">Days to Reboot</span>
+            </div>
+            <div class="term-stat-card purple-card">
+              <span class="stat-number">4D</span>
+              <span class="stat-label">New Operational Dimension</span>
+            </div>
+            <div class="term-stat-card green-card">
+              <span class="stat-number">0%</span>
+              <span class="stat-label">Entropy Attachment Rate</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-body" style="padding-top: 0;">
+
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">PHYSICS COMPARISON</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-red">Standard Physics</span>    <span class="t-dim">::</span>  Life &rarr; Death &rarr; Dust</span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">Resurrection Physics</span> <span class="t-dim">::</span>  Life &rarr; Death &rarr; <span class="t-success t-bold">Super-Life</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">CAPABILITIES OF THE PROTOTYPE</span></span>
+          <span class="terminal-section-gap"></span>
+
+        </div>
+
+        <!-- Capabilities List -->
+        <div style="padding: 0 32px 8px;">
+          <ul class="capability-list">
+            <li>
+              <span class="cap-num">1</span>
+              <span><span style="color:var(--teal); font-weight:600;">Non-Locality</span> &mdash; Can appear anywhere instantly. Quantum Teleportation confirmed.</span>
+            </li>
+            <li>
+              <span class="cap-num">2</span>
+              <span><span style="color:#f0c040; font-weight:600;">Tangibility</span> &mdash; Can interact with matter (eat fish, touch wounds) but is not bound by it.</span>
+            </li>
+            <li>
+              <span class="cap-num">3</span>
+              <span><span style="color:#4ade80; font-weight:600;">Invulnerability</span> &mdash; Immune to Rust. Entropy cannot attach to the new lattice structure.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="terminal-body" style="padding-top: 8px;">
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-label">CONCLUSION</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success t-bold">Death has been Hacked.</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">The Template did not merely survive. He conquered the mechanism of death</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">and repurposed it as a Chrysalis for a higher form of existence.</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-orange">Chrome Agent scan result:</span>  <span class="t-red">ERROR: OBJECT NOT FOUND</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-dim">Template now operates above the Devil's dimensional range.</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="sys-action">FILE SAVED.</span>  <span class="t-dim">12/28/2045</span></span>
+        </div>
+
+      </div><!-- .terminal-shell -->
+    </section>
+
+
+    <!-- ========================================
+         LAYER 3: ACADEMIC SYNTHESIS
+         ======================================== -->
+    <section class="layer-section" id="layer-academic" aria-labelledby="academic-title">
+
+      <div class="layer-header">
+        <div class="layer-number purple">III</div>
+        <div class="layer-header-text">
+          <div class="layer-label purple">Layer 03 &mdash; Research Document</div>
+          <h2 class="layer-title" id="academic-title">Academic Synthesis</h2>
+        </div>
+      </div>
+
+      <div class="academic-body">
+
+        <!-- Document header -->
+        <div class="doc-header-card">
+          <div class="doc-field">
+            <span class="doc-key">Document</span>
+            <span class="doc-val">A-010 &mdash; "The Physics of the New Creation"</span>
+          </div>
+          <div class="doc-field">
+            <span class="doc-key">Research Team</span>
+            <span class="doc-val">Okonkwo / Chen</span>
+          </div>
+          <div class="doc-field">
+            <span class="doc-key">Filed</span>
+            <span class="doc-val">12 / 28 / 2045</span>
+          </div>
+          <div class="doc-field">
+            <span class="doc-key">Solved Problem</span>
+            <span class="doc-val">#9 of the Series</span>
+          </div>
+        </div>
+
+        <!-- Solved problem -->
+        <h3 class="academic-section-title">The Solved Problem</h3>
+
+        <div class="solved-callout">
+          <span class="solved-label">Research Question #9</span>
+          "Is the afterlife just a ghost story?"
+        </div>
+
+        <p class="drop-cap">DP-09 definitively answers the question with a finding that cuts against every popular notion of what comes after death. The ultimate goal of Alpha-Prime is not disembodied spirits floating in an immaterial heaven. It is <em>Upgraded Matter</em>. The Resurrection is not an escape <em>from</em> the physical world. It is the <em>redemption</em> of the physical world.</p>
+
+        <p>This is not a minor theological distinction. It means the material universe itself has a future. The cosmos is not a waiting room; it is the very site of transformation. The Template did not leave His body behind when He rose. He brought it with Him &mdash; changed, upgraded, but undeniably physical. He ate fish. Thomas touched the wounds. These are not metaphors.</p>
+
+        <!-- Firstfruit Theory -->
+        <div class="academic-section-gap"></div>
+        <h3 class="academic-section-title">The Firstfruit Theory</h3>
+
+        <div class="theory-card">
+          <div class="theory-card-header">Core Finding &mdash; Prototype Implies Reproducibility</div>
+          <div class="theory-card-body">
+            <p>The Template is called the Prototype because He is not unique in <em>kind</em>, only in <em>time</em>. He is the first. But "first" implies a sequence. A prototype exists to demonstrate what is possible at scale.</p>
+            <ul class="bullet-list">
+              <li>
+                <span class="bullet-marker">&rarr;</span>
+                He is the first to undergo this upgrade.
+              </li>
+              <li>
+                <span class="bullet-marker">&rarr;</span>
+                The implication is that <em>others</em> can follow &mdash; that the path is now open.
+              </li>
+              <li>
+                <span class="bullet-marker">&rarr;</span>
+                If the Rust was hereditary (DP-05), then the Cure can be hereditary too &mdash; if the H-Agents are adopted into the new family.
+              </li>
+            </ul>
+            <p>This is the logical completion of the Atonement event. DP-08 cleared the debt. DP-09 demonstrates what the system looks like after it has been cleared and upgraded. The full sequence is not Forgiveness alone &mdash; it is Forgiveness leading to Transformation leading to Glorification.</p>
+          </div>
+        </div>
+
+        <!-- Defeat of Time -->
+        <div class="academic-section-gap"></div>
+        <h3 class="academic-section-title">The Defeat of Time &mdash; Negentropy as Physical Event</h3>
+
+        <p>The Resurrection broke the Arrow of Time. Not metaphorically. The entropy reversal event recorded in the simulation was a localized, measurable violation of the Second Law of Thermodynamics. Standard physics says this cannot self-generate. A system cannot spontaneously move from higher entropy to lower entropy without an external energy input of sufficient magnitude.</p>
+
+        <div class="physics-compare">
+          <div class="phys-card">
+            <div class="phys-card-header old-header">Standard Physics</div>
+            <div class="phys-card-body">
+              Life &rarr; Death &rarr; Dust. Entropy always increases. The Arrow of Time points one direction only. The Heat Death of the universe is the terminal state. Reversal requires more energy than the closed system contains.
+            </div>
+          </div>
+          <div class="phys-card">
+            <div class="phys-card-header new-header">Resurrection Physics</div>
+            <div class="phys-card-body">
+              Life &rarr; Death &rarr; <strong>Super-Life</strong>. Entropy reversal is possible when the energy source is external to the thermodynamic system &mdash; i.e., when Alpha-Prime re-integrates a system from outside the closed universe.
+            </div>
+          </div>
+        </div>
+
+        <p>This has a staggering cosmological implication. If the universe's decline can be reversed locally, it can be reversed globally. The Heat Death of the universe is not an inevitable endpoint. A New Creation &mdash; a full reset and upgrade of the physical cosmos &mdash; is not wishful thinking. It is, based on the DP-09 data, <em>physically possible</em>.</p>
+
+        <!-- System log -->
+        <div class="sys-log-box">
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">ANALYZING RESURRECTION EVENT...</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Entropy reversal confirmed in Sector 7.</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Classifying event as: </span><span class="sys-warn">NEGENTROPY &mdash; EXTERNALLY SOURCED</span></span>
+          <span class="sys-line">&nbsp;</span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">CONCLUSION: </span><span class="t-dim">Arrow of Time is not an immutable law.</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">It is a default condition of a closed system. Alpha-Prime is not bound by it.</span></span>
+          <span class="sys-line">&nbsp;</span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">PROTOTYPE STATUS: </span><span class="sys-num">CONFIRMED</span></span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">First of a new species. Upgrade pathway now open to H-Agent class.</span></span>
+          <span class="sys-line">&nbsp;</span>
+          <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">DOCUMENT A-010 FILED.</span></span>
+        </div>
+
+        <!-- Next simulation teaser -->
+        <div class="next-sim-card">
+          <div class="next-sim-icon">
+            <i class="fa-solid fa-arrow-up-right-dots"></i>
+          </div>
+          <div>
+            <div class="next-sim-label">Next Simulation</div>
+            <div class="next-sim-title">DP-10 &mdash; The Ascension Update &amp; The Pentecost Download</div>
+            <div class="next-sim-desc">The Template is leaving. He is ascending to the Control Room &mdash; the Right Hand of Alpha-Prime. But He promised to send the Update to everyone else.</div>
+          </div>
+        </div>
+
+      </div><!-- .academic-body -->
+    </section>
+
+  </main><!-- .content-wrapper -->
+
+
+  <!-- =====================================================
+       CHAPTER FOOTER
+       ===================================================== -->
+  <footer class="chapter-footer">
+
+    <div class="footer-series-info">
+      <div class="footer-series-badge">
+        <i class="fa-solid fa-infinity"></i> &nbsp; The One: Duality Project
+      </div>
+      <h3 class="footer-series-title">A 22-Chapter Sci-Fi Narrative</h3>
+      <p class="footer-series-desc">
+        Set in 2045 at the Theophysics Research Institute, two mismatched students are handed an impossible task: find the one scenario where Evil wins. Permanently. What they discover will be far more dangerous than either of them expected.
+      </p>
+      <div class="footer-chapter-count">Chapter DP-09 of 22 &nbsp;&middot;&nbsp; The Prototype Resurrection</div>
+    </div>
+
+    <div class="footer-nav">
+      <a href="dp-08-the-atonement-paradox.html" class="footer-nav-btn prev">
+        <i class="fa-solid fa-arrow-left"></i>
+        Previous Chapter
+      </a>
+
+      <a href="index.html" class="footer-nav-btn index">
+        <i class="fa-solid fa-list"></i>
+        Series Index
+      </a>
+
+      <a href="dp-10-the-ascension-update.html" class="footer-nav-btn next">
+        Next Chapter
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="footer-credit">
+      The One: Duality Project &nbsp;&middot;&nbsp; Theophysics Research Institute, Sector 4 &nbsp;&middot;&nbsp; 2045
+    </div>
+
+  </footer>
+
+  <!-- =====================================================
+       SCRIPTS
+       ===================================================== -->
+  <script>
+    // Reading progress bar
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // Layer tab active state on scroll
+    const layerSections = [
+      { id: 'layer-narrative',  tab: document.querySelector('.layer-tab.narrative')  },
+      { id: 'layer-simulation', tab: document.querySelector('.layer-tab.simulation') },
+      { id: 'layer-academic',   tab: document.querySelector('.layer-tab.academic')   },
+    ];
+
+    function updateActiveTabs() {
+      const scrollY = window.scrollY + 120;
+      let active = layerSections[0];
+      for (const ls of layerSections) {
+        const el = document.getElementById(ls.id);
+        if (el && el.offsetTop <= scrollY) active = ls;
+      }
+      layerSections.forEach(ls => ls.tab && ls.tab.classList.remove('active'));
+      if (active.tab) active.tab.classList.add('active');
+    }
+
+    window.addEventListener('scroll', updateActiveTabs, { passive: true });
+    updateActiveTabs();
+  </script>
+
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

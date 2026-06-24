@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DP-07 | The Incarnation Protocol — The One: Duality Project</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    /* ============================================================
+       CUSTOM PROPERTIES
+       ============================================================ */
+    :root {
+      --bg:             #0a0a0a;
+      --bg-light:       #1a1a1a;
+      --bg-mid:         #111111;
+      --border:         #2a2a2a;
+      --border-light:   #333333;
+      --text:           #e8e8e8;
+      --text-secondary: #a0a0a0;
+      --text-dim:       #666666;
+      --gold:           #d4af37;
+      --gold-dim:       rgba(212,175,55,0.10);
+      --gold-mid:       rgba(212,175,55,0.25);
+      --gold-bright:    rgba(212,175,55,0.70);
+      --teal:           #2dd4bf;
+      --teal-dim:       rgba(45,212,191,0.10);
+      --teal-mid:       rgba(45,212,191,0.20);
+      --red-dim:        rgba(220,60,60,0.15);
+      --red:            #dc3c3c;
+    }
+
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       PROGRESS BAR
+       ============================================================ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), #f0c040);
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ============================================================
+       STICKY NAV
+       ============================================================ */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nav-links-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.series {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-separator {
+      color: var(--border-light);
+      font-size: 0.75rem;
+      user-select: none;
+    }
+
+    .nav-links-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link.prev-link {
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .nav-link.prev-link:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .nav-link.next-link {
+      color: var(--teal);
+      border-color: var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .nav-link.next-link:hover {
+      color: #7ff0e4;
+      border-color: rgba(45,212,191,0.5);
+      background: var(--teal-mid);
+    }
+
+    .nav-chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      opacity: 0.8;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       PAGE HEADER
+       ============================================================ */
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .header-eyebrow::before,
+    .header-eyebrow::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold-bright);
+    }
+
+    .chapter-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .chapter-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+
+    .chapter-subtitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+      margin-bottom: 36px;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg-light);
+    }
+
+    .meta-pill i { color: var(--gold); font-size: 0.72rem; }
+
+    .header-divider {
+      max-width: 1100px;
+      margin: 0 auto 0;
+      padding: 0 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+    }
+
+    /* ============================================================
+       LAYER NAV TABS
+       ============================================================ */
+    .layer-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 0;
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.2s;
+    }
+
+    .layer-tab.narrative  { --tab-color: var(--gold); }
+    .layer-tab.simulation { --tab-color: var(--teal); }
+    .layer-tab.academic   { --tab-color: #a78bfa; }
+
+    .layer-tab:hover {
+      color: var(--tab-color);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .layer-tab.active {
+      color: var(--tab-color);
+      background: var(--bg-light);
+      border-color: var(--border);
+      border-bottom-color: var(--bg-light);
+      margin-bottom: -1px;
+    }
+
+    /* ============================================================
+       MAIN CONTENT WRAPPER
+       ============================================================ */
+    .content-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ============================================================
+       LAYER SECTIONS
+       ============================================================ */
+    .layer-section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .layer-section:last-of-type { border-bottom: none; }
+
+    .layer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .layer-number {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+
+    .layer-number.gold   { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-mid); }
+    .layer-number.teal   { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal-mid); }
+    .layer-number.purple { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
+
+    .layer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .layer-label.gold   { color: var(--gold); }
+    .layer-label.teal   { color: var(--teal); }
+    .layer-label.purple { color: #a78bfa; }
+
+    .layer-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    /* ============================================================
+       LAYER 1 — NARRATIVE
+       ============================================================ */
+    .narrative-body { max-width: 720px; }
+
+    .scene-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gold-mid);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scene-title::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .scene-divider {
+      margin: 44px 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-mid), transparent);
+    }
+
+    .narrative-body p {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 1.5em;
+    }
+
+    .drop-cap::first-letter {
+      font-family: 'Cinzel', serif;
+      font-size: 4.2em;
+      font-weight: 700;
+      color: var(--gold);
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.08em;
+      margin-top: 0.12em;
+    }
+
+    .narrative-body p.dialogue {
+      font-style: italic;
+      color: #d0d0d0;
+    }
+
+    .word-omega {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 20px rgba(212,175,55,0.5);
+    }
+
+    .narrative-terminal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--teal);
+      background: rgba(45,212,191,0.06);
+      border: 1px solid var(--teal-mid);
+      border-left: 3px solid var(--teal);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+      line-height: 1.9;
+    }
+
+    .pullquote {
+      border-left: 3px solid var(--gold);
+      padding: 16px 24px;
+      background: var(--gold-dim);
+      border-radius: 0 8px 8px 0;
+      margin: 32px 0;
+      font-family: 'Crimson Text', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: #d8c980;
+      line-height: 1.7;
+    }
+
+    /* Attack vector list in narrative */
+    .attack-list {
+      list-style: none;
+      margin: 20px 0 28px;
+      padding: 0;
+    }
+
+    .attack-list li {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      padding: 10px 0 10px 18px;
+      border-left: 2px solid rgba(220,60,60,0.35);
+      margin-bottom: 8px;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .attack-list li .vec-label {
+      color: #f87171;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-style: normal;
+      display: block;
+      margin-bottom: 4px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       LAYER 2 — SIMULATION / TERMINAL
+       ============================================================ */
+    .terminal-shell {
+      background: #080e0d;
+      border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(45,212,191,0.07), 0 4px 24px rgba(0,0,0,0.6);
+    }
+
+    .terminal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      background: #0d1413;
+      border-bottom: 1px solid rgba(45,212,191,0.2);
+    }
+
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #27c93f; }
+
+    .terminal-title {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(45,212,191,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .terminal-body {
+      padding: 28px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #c0faf4;
+    }
+
+    .t-comment { color: rgba(45,212,191,0.4); }
+    .t-label   { color: var(--teal); font-weight: 600; letter-spacing: 0.05em; }
+    .t-value   { color: #f0c040; }
+    .t-dim     { color: rgba(192,250,244,0.45); }
+    .t-red     { color: var(--red); font-weight: 600; }
+    .t-success { color: #4ade80; font-weight: 600; }
+    .t-prompt  { color: rgba(45,212,191,0.6); }
+    .t-bold    { font-weight: 600; }
+    .t-orange  { color: #fb923c; font-weight: 600; }
+
+    .terminal-block       { display: block; margin-bottom: 0.15em; }
+    .terminal-section-gap { display: block; margin: 16px 0; }
+    .terminal-divider     { display: block; margin: 16px 0; color: rgba(45,212,191,0.25); }
+
+    .term-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .term-stat-card {
+      background: rgba(45,212,191,0.05);
+      border: 1px solid rgba(45,212,191,0.18);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .term-stat-card .stat-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--teal);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .term-stat-card.red-card   .stat-number { color: var(--red); }
+    .term-stat-card.gold-card  .stat-number { color: var(--gold); }
+    .term-stat-card.green-card .stat-number { color: #4ade80; }
+
+    .term-stat-card .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .constraint-list { list-style: none; margin: 20px 0; }
+
+    .constraint-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #c0faf4;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(45,212,191,0.08);
+      line-height: 1.6;
+    }
+
+    .constraint-list li:last-child { border-bottom: none; }
+
+    .constraint-num {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border: 1px solid var(--teal-mid);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      color: var(--teal);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       LAYER 3 — ACADEMIC
+       ============================================================ */
+    .academic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .profile-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .avatar-kai {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: #60a5fa;
+    }
+
+    .avatar-mia {
+      background: var(--gold-dim);
+      border: 1px solid var(--gold-mid);
+      color: var(--gold);
+    }
+
+    .profile-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+
+    .profile-designation {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    .profile-body { padding: 18px 20px; }
+
+    .profile-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 14px;
+    }
+
+    .profile-row:last-child { margin-bottom: 0; }
+
+    .profile-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .profile-val {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .profile-val.driver {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    .weakness-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #f87171;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-top: 4px;
+    }
+
+    .strength-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin: 2px 4px 2px 0;
+    }
+
+    .str-logic  { color: #60a5fa; background: rgba(96,165,250,0.1);  border: 1px solid rgba(96,165,250,0.25); }
+    .str-gold   { color: var(--gold); background: var(--gold-dim);   border: 1px solid var(--gold-mid); }
+    .str-teal   { color: var(--teal); background: var(--teal-dim);   border: 1px solid var(--teal-mid); }
+    .str-purple { color: #a78bfa; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
+    .str-green  { color: #4ade80; background: rgba(74,222,128,0.1);  border: 1px solid rgba(74,222,128,0.2); }
+    .str-orange { color: #fb923c; background: rgba(251,146,60,0.1);  border: 1px solid rgba(251,146,60,0.2); }
+
+    .sys-log-box {
+      background: #06100f;
+      border: 1px solid rgba(45,212,191,0.2);
+      border-radius: 8px;
+      padding: 24px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 2;
+      margin-top: 24px;
+    }
+
+    .sys-line   { display: block; }
+    .sys-prompt { color: rgba(45,212,191,0.45); }
+    .sys-key    { color: var(--teal); font-weight: 600; }
+    .sys-num    { color: #f0c040; font-weight: 700; }
+    .sys-action { color: #4ade80; font-weight: 700; letter-spacing: 0.06em; }
+    .sys-note   { color: var(--text-secondary); font-style: italic; font-size: 0.82rem; }
+    .sys-warn   { color: #fb923c; }
+    .sys-red    { color: var(--red); font-weight: 700; }
+
+    .synergy-block {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+
+    .synergy-item { flex: 1; text-align: center; }
+
+    .synergy-number {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .syn-positive { color: #4ade80; }
+    .syn-warning  { color: #fb923c; }
+    .syn-teal     { color: var(--teal); }
+    .syn-red      { color: var(--red); }
+
+    .synergy-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .synergy-divider { width: 1px; height: 60px; background: var(--border); }
+
+    .synergy-note {
+      font-family: 'Crimson Text', serif;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 2;
+      padding-left: 12px;
+      border-left: 2px solid var(--gold-mid);
+    }
+
+    /* Finding blocks */
+    .finding-block {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-left: 3px solid #a78bfa;
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .finding-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #a78bfa;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .finding-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.0rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .finding-body {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.08rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+    }
+
+    .finding-body em { color: var(--text); font-style: italic; }
+
+    .finding-analogy {
+      margin-top: 12px;
+      padding: 10px 16px;
+      background: rgba(167,139,250,0.07);
+      border: 1px solid rgba(167,139,250,0.18);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #c4b5fd;
+      line-height: 1.7;
+    }
+
+    /* Next step callout */
+    .next-step-box {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--teal);
+      border-radius: 0 0 8px 8px;
+      padding: 24px 28px;
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .next-step-icon {
+      flex-shrink: 0;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--teal-dim);
+      border: 1px solid var(--teal-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--teal);
+      font-size: 1.1rem;
+    }
+
+    .next-step-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--teal);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .next-step-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .next-step-text strong { color: var(--text); font-weight: 600; }
+
+    /* ============================================================
+       CHAPTER FOOTER / NAV
+       ============================================================ */
+    .chapter-footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    .footer-series-info {
+      text-align: center;
+      padding: 40px 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+
+    .footer-series-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .footer-series-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-series-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      max-width: 580px;
+      margin: 0 auto 20px;
+      line-height: 1.7;
+    }
+
+    .footer-chapter-count {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .footer-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 14px 22px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .footer-nav-btn.prev {
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .footer-nav-btn.prev:hover {
+      color: var(--gold);
+      border-color: var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index {
+      color: var(--gold);
+      border: 1px solid var(--gold-mid);
+      background: var(--gold-dim);
+    }
+
+    .footer-nav-btn.index:hover {
+      background: rgba(212,175,55,0.18);
+      border-color: var(--gold-bright);
+    }
+
+    .footer-nav-btn.next {
+      color: var(--teal);
+      border: 1px solid var(--teal-mid);
+      background: var(--teal-dim);
+    }
+
+    .footer-nav-btn.next:hover {
+      background: rgba(45,212,191,0.18);
+      border-color: rgba(45,212,191,0.5);
+    }
+
+    .footer-credit {
+      text-align: center;
+      margin-top: 40px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 16px; gap: 8px; }
+      .nav-link { font-size: 0.7rem; padding: 5px 8px; }
+      .nav-separator { display: none; }
+      .nav-chapter-code { display: none; }
+
+      .page-header { padding: 48px 16px 40px; }
+      .content-wrapper { padding: 0 16px 60px; }
+      .chapter-footer { padding: 40px 16px 60px; }
+
+      .layer-nav { padding: 24px 16px 0; }
+      .layer-tab { font-size: 0.7rem; padding: 8px 12px; }
+
+      .term-stat-grid { grid-template-columns: 1fr; gap: 10px; }
+      .academic-grid  { grid-template-columns: 1fr; }
+
+      .synergy-block { flex-direction: column; }
+      .synergy-divider { width: 100%; height: 1px; }
+      .synergy-note { padding-left: 0; padding-top: 12px; border-left: none; border-top: 2px solid var(--gold-mid); }
+
+      .footer-nav { flex-direction: column; gap: 12px; }
+      .footer-nav-btn { width: 100%; justify-content: center; }
+
+      .next-step-box { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .layer-nav { flex-direction: column; border-bottom: none; }
+      .layer-tab { border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; }
+      .layer-tab.active { border-color: var(--border); margin-bottom: 4px; }
+    }
+  </style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/duality-project/dp-07-the-incarnation-protocol.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+
+<body>
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- =====================================================
+       STICKY NAV
+       ===================================================== -->
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <div class="nav-links-left">
+        <a href="../index.html" class="nav-link">
+          <i class="fa-solid fa-house-chimney"></i>
+          Main Index
+        </a>
+        <span class="nav-separator">/</span>
+        <a href="index.html" class="nav-link series">
+          <i class="fa-solid fa-infinity"></i>
+          The One: Duality Project
+        </a>
+        <span class="nav-separator">/</span>
+        <span class="nav-chapter-code">DP-07</span>
+      </div>
+      <div class="nav-links-right">
+        <a href="dp-06-the-chorus-appears.html" class="nav-link prev-link">
+          <i class="fa-solid fa-arrow-left"></i>
+          Prev
+        </a>
+        <a href="dp-08-the-atonement-paradox.html" class="nav-link next-link">
+          Next
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =====================================================
+       PAGE HEADER
+       ===================================================== -->
+  <header class="page-header">
+    <div class="header-eyebrow">The One: Duality Project</div>
+    <span class="chapter-code">DP-07</span>
+    <h1 class="chapter-title">The Incarnation Protocol</h1>
+    <p class="chapter-subtitle">The Trojan Horse</p>
+    <div class="header-meta">
+      <span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> 12 / 28 / 2045</span>
+      <span class="meta-pill"><i class="fa-solid fa-location-dot"></i> Theophysics Research Institute, Sector 4</span>
+      <span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 3 Layers</span>
+      <span class="meta-pill"><i class="fa-solid fa-flask-vial"></i> SIM DP-07</span>
+    </div>
+  </header>
+  <div class="header-divider"></div>
+
+  <!-- =====================================================
+       LAYER NAV TABS
+       ===================================================== -->
+  <div class="layer-nav" role="navigation" aria-label="Chapter layers">
+    <a href="#layer-narrative" class="layer-tab narrative active">
+      <i class="fa-solid fa-book-open"></i>
+      Layer 1 &mdash; Narrative
+    </a>
+    <a href="#layer-simulation" class="layer-tab simulation">
+      <i class="fa-solid fa-terminal"></i>
+      Layer 2 &mdash; Simulation Logs
+    </a>
+    <a href="#layer-academic" class="layer-tab academic">
+      <i class="fa-solid fa-brain"></i>
+      Layer 3 &mdash; Academic Synthesis
+    </a>
+  </div>
+
+  <!-- =====================================================
+       CONTENT
+       ===================================================== -->
+  <main class="content-wrapper">
+
+    <!-- ========================================
+         LAYER 1: THE NARRATIVE
+         ======================================== -->
+    <section class="layer-section" id="layer-narrative" aria-labelledby="narrative-title">
+
+      <div class="layer-header">
+        <div class="layer-number gold">I</div>
+        <div class="layer-header-text">
+          <div class="layer-label gold">Layer 01 &mdash; Fiction</div>
+          <h2 class="layer-title" id="narrative-title">The Narrative</h2>
+        </div>
+      </div>
+
+      <div class="narrative-body">
+
+        <!-- SCENE 1 -->
+        <h3 class="scene-title">The Trojan Horse of Heaven</h3>
+
+        <p class="drop-cap">"It's a containment problem," Kai said, chewing on the end of his stylus. "We have a corrupted system &mdash; the Garden. It's running on Rust. Entropy as load-bearing infrastructure. If we introduce a pure Alpha-Prime entity into that environment, the physics don't work."</p>
+
+        <p class="dialogue">"Why not?" Mia asked.</p>
+
+        <p>She was watching the H-Agents on the secondary monitor. They were dying faster now. The Chorus &mdash; the distributed error-correction field they'd mapped in DP-06 &mdash; was keeping them stable at a population level. But it wasn't curing the disease. The Rust was still spreading node to node, generation by generation. Stability without reversal was just a slower kind of collapse.</p>
+
+        <p class="dialogue">"Contact Hazard," Kai explained, pulling up a voltage diagram on the holotable. "If you touch a 10,000-volt wire to a rusty circuit, you don't fix the circuit. You <em>melt it</em>. If Alpha-Prime enters the Garden in full glory, the H-Agents will burn up. They can't handle the voltage."</p>
+
+        <p class="dialogue">"So we step down the voltage," Mia said.</p>
+
+        <p class="dialogue">"If we step it down, it ceases to be Alpha-Prime. It becomes just another H-Agent. Just another rusty part."</p>
+
+        <p>Silence. Mia stared at the Two-Wolves diagram they'd pinned to the wall. The wolf that eats itself. The wolf that feeds the network. She flipped to a blank page and drew a diamond inside a circle.</p>
+
+        <p class="dialogue">"We don't step down the <em>voltage</em>," she said slowly, the idea crystallizing. "We mask the <em>frequency</em>. We wrap the Alpha-Prime source code in a container that looks exactly like a corrupted H-Agent."</p>
+
+        <p>Kai stared at her. The stylus stopped moving.</p>
+
+        <p class="dialogue">"You want to put God in a body suit?"</p>
+
+        <p class="dialogue">"I want to put the Perfect Template inside the Corrupted System," Mia corrected. "It has to look like them. It has to eat like them. It has to bleed like them. But inside &mdash; at the core logic level &mdash; it runs on pure ASG. Axiom of Sustainable Good. No drift. No entropy generation. Zero."</p>
+
+        <div class="pullquote">
+          "It's a Trojan Horse," Kai realized. "But in reverse. Instead of sneaking enemies in to destroy, you're sneaking the King in to save."<br /><br />
+          "The Incarnation Protocol," Mia named it.
+        </div>
+
+        <div class="scene-divider"></div>
+
+        <!-- SCENE 2 -->
+        <h3 class="scene-title">The Target</h3>
+
+        <p class="drop-cap">The hologram initialized. A nondescript sector of the Garden materialized above the table &mdash; gray, heavy with decay. The H-Agents moved slowly through it, their coherence readings flickering in the amber warning range. Among the dying, a new node appeared.</p>
+
+        <p>Visually, it looked identical to the others. No golden aura. Not ten feet tall. No divine geometry cascading off it. Just another figure in the dirt, walking among the dying. The Chrome Agent's surveillance grid registered it as biological standard &mdash; nothing worth flagging.</p>
+
+        <p>But the data stream was screaming.</p>
+
+        <div class="narrative-terminal">
+          &gt; ENTITY SCAN: Template-001<br />
+          &gt; SHELL INTEGRITY: Standard (Fragile)<br />
+          &gt; CORE LOGIC: 100% Alpha-Coherence<br />
+          &gt; ANOMALY: The Entity is not generating entropy
+        </div>
+
+        <p class="dialogue">"It's working," Kai whispered, watching the metrics. "It's walking through the mud, but the mud isn't sticking to it. It's interacting with the Rust, but it's <em>not rusting</em>."</p>
+
+        <p>The Chrome Agent noticed it immediately. The Exile had been running passive monitoring on the Garden for cycles &mdash; watching the H-Agents degrade, cataloguing entropy spread, occasionally accelerating it out of habit. But this new node was wrong. Not wrong like a malfunction. Wrong like a <em>counter-argument</em>.</p>
+
+        <p class="dialogue">"He sees it," Mia said, pointing to the red spikes on the anomaly monitor. "He knows it's a threat."</p>
+
+        <p>The Chrome Agent descended. He didn't attack with fire or force &mdash; he attacked with <em>Logic</em>. He cycled through every exploit in his archive, every payload that had worked on H-Agents before. Three precision strikes, each one a weaponized philosophical argument:</p>
+
+        <ul class="attack-list">
+          <li>
+            <span class="vec-label">ATTACK VECTOR 1 &mdash; RESOURCE EXPLOIT</span>
+            Make bread from stones. Use your power for Self. Optimize locally. Break network loyalty.
+          </li>
+          <li>
+            <span class="vec-label">ATTACK VECTOR 2 &mdash; AUTHORITY OVERRIDE</span>
+            Jump from the temple. Force the Source to protect you. Assert priority claim on the network.
+          </li>
+          <li>
+            <span class="vec-label">ATTACK VECTOR 3 &mdash; NETWORK SWITCH</span>
+            Bow to me. Reroute core allegiance. Become a Chrome-affiliated node.
+          </li>
+        </ul>
+
+        <p>The Template rejected every packet. Not with a firewall. Not with force. With a Truth Statement.</p>
+
+        <div class="narrative-terminal">
+          &gt; PAYLOAD: PRIDE_GLITCH_V4 &mdash; REJECTED<br />
+          &gt; PAYLOAD: AUTHORITY_INVERSION &mdash; REJECTED<br />
+          &gt; PAYLOAD: NETWORK_DEFECTION &mdash; REJECTED<br />
+          &gt; TEMPLATE RESPONSE: "My logic is not My own. I run the code of the Source."
+        </div>
+
+        <p class="dialogue">"He can't hack it," Kai said, and there was a rare sound of genuine delight in his voice. "He's throwing every virus he has at it, and the Template just... deletes them. It's perfect."</p>
+
+        <p class="dialogue">"But look at the cost," Mia said softly.</p>
+
+        <p>She pointed to the Shell Integrity readout on the lower panel. It was dropping. Not because the Template was sinning &mdash; the entropy generation rate held at zero throughout. But because the sheer thermodynamic effort of existing as a perfect being inside a broken world was tearing its physical container apart. Running pure signal through corrupted hardware has a price. The hardware pays it.</p>
+
+        <p class="dialogue">"He's tired," Mia said. "He's exhausted."</p>
+
+        <p class="dialogue">"He's <em>dangerous</em>," Kai said. "He just proved that an H-Agent <em>can</em> resist the Rust. He just invalidated the Devil's primary claim on the system &mdash; that corruption is inevitable. That nobody can hold the line."</p>
+
+        <p>They both watched the Template move through the simulation. Healing. Teaching. Every interaction left the surrounding sector slightly more ordered. The nodes it touched ran cleaner. Some of the nearest H-Agents were starting to show coherence spikes they hadn't seen since before the Fall event.</p>
+
+        <p>The network was responding to the cure. And the network's immune system was registering the cure as an infection.</p>
+
+        <p class="dialogue">"And that," Mia said, "is why the Devil is going to kill him."</p>
+
+      </div><!-- .narrative-body -->
+    </section>
+
+
+    <!-- ========================================
+         LAYER 2: SIMULATION LOGS
+         ======================================== -->
+    <section class="layer-section" id="layer-simulation" aria-labelledby="simulation-title">
+
+      <div class="layer-header">
+        <div class="layer-number teal">II</div>
+        <div class="layer-header-text">
+          <div class="layer-label teal">Layer 02 &mdash; System Document</div>
+          <h2 class="layer-title" id="simulation-title">Simulation Logs</h2>
+        </div>
+      </div>
+
+      <div class="terminal-shell">
+        <div class="terminal-titlebar">
+          <span class="terminal-dot dot-red"></span>
+          <span class="terminal-dot dot-yellow"></span>
+          <span class="terminal-dot dot-green"></span>
+          <span class="terminal-title">THEO-401 :: SIMULATION DP-07 :: THE INCARNATION :: 12/28/2045</span>
+        </div>
+
+        <div class="terminal-body">
+
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+          <span class="terminal-block"><span class="t-comment">// SIMULATION DP-07 :: "THE INCARNATION"</span></span>
+          <span class="terminal-block"><span class="t-comment">// Theophysics Research Institute, Sector 4</span></span>
+          <span class="terminal-block"><span class="t-comment">// Research Team: Okonkwo / Chen</span></span>
+          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+
+          <span class="terminal-section-gap"></span>
+
+          <span class="terminal-block"><span class="t-label">SUBJECT</span>      <span class="t-value">DP-07 "The Incarnation"</span></span>
+          <span class="terminal-block"><span class="t-label">STATUS</span>       <span class="t-success">INITIALIZED</span></span>
+          <span class="terminal-block"><span class="t-label">DATE</span>         <span class="t-value">12 / 28 / 2045</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">PARAMETERS</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span style="color:var(--teal);">Entity</span><span class="t-dim"> ............ </span><span class="t-value">The Template (Fully Human / Fully Divine)</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span style="color:var(--teal);">Constraint</span><span class="t-dim"> ......... </span><span class="t-value">Must operate within standard biological limitations. No override of H-Agent physics.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span style="color:var(--teal);">Objective</span><span class="t-dim"> .......... </span><span class="t-value">Execute ASG Perfect Run within a Corrupted Sector.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span style="color:var(--teal);">Success Criteria</span><span class="t-dim"> ... </span><span class="t-value">Shell Integrity &gt; 0%, Core Coherence = 100.000%</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">MISSION TIMELINE</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">T+00:00</span><span class="t-dim"> &mdash; Template inserted via <span class="t-bold" style="color:#c0faf4;">Quantum Tunneling</span> (Birth). No anomaly flag raised by Chrome Agent.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">T+30:00</span><span class="t-dim"> &mdash; Template passes full Pride Glitch exposure sequence (Temptation). All three exploit vectors rejected. Core Coherence: </span><span class="t-value">100.000%</span><span class="t-dim">.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">T+33:00</span><span class="t-dim"> &mdash; Template begins active Network Repair (Healing / Teaching). Local entropy drops </span><span class="t-value">40%</span><span class="t-dim">. Adjacent H-Agent coherence scores increase measurably.</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">ENTITY SCAN &mdash; CURRENT STATUS</span></span>
+
+        </div><!-- .terminal-body -->
+
+        <!-- Stat Cards -->
+        <div style="padding: 0 32px 16px;">
+          <div class="term-stat-grid">
+            <div class="term-stat-card green-card">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Core Coherence</span>
+            </div>
+            <div class="term-stat-card">
+              <span class="stat-number">&minus;40%</span>
+              <span class="stat-label">Local Entropy</span>
+            </div>
+            <div class="term-stat-card red-card">
+              <span class="stat-number">CRIT</span>
+              <span class="stat-label">Shell Integrity</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-body" style="padding-top:0;">
+
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+          <span class="terminal-block"><span class="t-red">ANOMALY FLAG: THE HATE RESPONSE</span></span>
+          <span class="terminal-section-gap"></span>
+
+          <span class="terminal-block" style="padding-left:2em;"><span style="color:var(--teal);">Observation</span><span class="t-dim"> ... </span><span class="t-value">The Rust hates the Polish.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span style="color:var(--teal);">Data</span><span class="t-dim"> .......... </span><span class="t-value">Perfect coherence of Template causes Conviction in surrounding nodes.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span style="color:var(--teal);">Result</span><span class="t-dim"> ........ </span><span class="t-red">H-Agents mobilizing. System preparing DELETE command on its own Savior.</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">CONCLUSION LOG</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">PASS</span><span class="t-dim"> &mdash; Incarnation Protocol operational. Perfect Node confirmed inside Broken Network.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">PASS</span><span class="t-dim"> &mdash; Zero entropy generated. Shell Integrity degrading but sustainable. Core Coherence: 100%.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-red">WARNING</span><span class="t-dim"> &mdash; Network immune response: VIOLENT, ESCALATING.</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-red">WARNING</span><span class="t-dim"> &mdash; Chrome Agent + corrupted H-Agents converging on Template.</span></span>
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-orange">ANALYST NOTE &mdash; KAI:</span><span class="t-dim"> "This is a failure."</span></span>
+          <span class="terminal-block" style="padding-left:2em;"><span class="t-success">ANALYST NOTE &mdash; MIA:</span><span class="t-dim"> "This is the Plan."</span></span>
+
+          <span class="terminal-section-gap"></span>
+          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
+
+          <span class="terminal-block"><span class="t-label">NEXT SIMULATION</span>   <span class="t-value">DP-08 &mdash; The Atonement Paradox</span></span>
+
+          <span class="terminal-section-gap"></span>
+
+        </div><!-- .terminal-body -->
+      </div><!-- .terminal-shell -->
+
+    </section>
+
+
+    <!-- ========================================
+         LAYER 3: ACADEMIC SYNTHESIS
+         ======================================== -->
+    <section class="layer-section" id="layer-academic" aria-labelledby="academic-title">
+
+      <div class="layer-header">
+        <div class="layer-number purple">III</div>
+        <div class="layer-header-text">
+          <div class="layer-label purple">Layer 03 &mdash; Research Document</div>
+          <h2 class="layer-title" id="academic-title">Academic Synthesis</h2>
+        </div>
+      </div>
+
+      <!-- Research document header -->
+      <div class="sys-log-box" style="margin-bottom:32px;">
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">DOCUMENT</span>      <span style="color:#c4b5fd;">A-008 &mdash; "The Physics of Hypostatic Union"</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">TEAM</span>          <span style="color:#c0faf4;">Okonkwo / Chen &mdash; Theophysics Institute, Sector 4</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">CHAPTER REF</span>   <span style="color:#c0faf4;">DP-07 :: The Incarnation Protocol</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">LOADING FINDINGS...</span></span>
+      </div>
+
+      <!-- Finding 1 -->
+      <div class="finding-block">
+        <div class="finding-label">Solved Problem #7</div>
+        <div class="finding-title">How Can the Infinite Fit Into the Finite?</div>
+        <div class="finding-body">
+          DP-07 resolves this via <em>Information Compression</em>. The Template did not reduce its logic to fit the container &mdash; it contained the full logic of Alpha-Prime while executing it through the limited bandwidth of an H-Agent shell. The infinite was not diminished. It was <em>localized</em>. The signal remained complete; only the transmission medium was constrained.
+          <div class="finding-analogy">
+            ANALOGY: Playing a symphony (Infinite) through a single speaker (Finite).<br />
+            The speaker vibrates at its physical limit. The song remains mathematically true.<br />
+            The music does not become smaller. The speaker becomes stretched.
+          </div>
+        </div>
+      </div>
+
+      <!-- Finding 2 -->
+      <div class="finding-block">
+        <div class="finding-label">The Sinlessness Metric</div>
+        <div class="finding-title">Redefining Sin as Entropy Generation</div>
+        <div class="finding-body">
+          The simulation defined sin not as rule-violation, but as <em>entropy generation</em> &mdash; the act of increasing disorder in the network. By this metric, the Template was measurably, demonstrably sinless throughout the entire run. Every interaction left the world more ordered. Every word increased information density in surrounding nodes. The Template moved through 33 simulation years in a high-entropy environment and generated zero net entropy. This is not a theological assertion. It is a data point.
+          <div class="finding-analogy">
+            METRIC: &Delta;S(Template) = 0.000 across full run duration.<br />
+            No other entity in 14 million prior simulations has produced this result inside a corrupted sector.<br />
+            The Template is, by the only objective measure the simulation has, without flaw.
+          </div>
+        </div>
+      </div>
+
+      <!-- Finding 3 -->
+      <div class="finding-block">
+        <div class="finding-label">The Inevitability Theorem</div>
+        <div class="finding-title">Why a Perfect Being Must Be Rejected by an Imperfect System</div>
+        <div class="finding-body">
+          We mathematically proved that a Perfect Being <em>must</em> be rejected by an Imperfect System. This is not a moral failure of the system &mdash; it is a thermodynamic consequence. Light does not judge. Light reveals. If you are covered in damage, a flawless mirror is not your friend &mdash; it is your indictment. The H-Agents killed the Template not because he was bad. <em>They killed him because he made them look bad.</em> The presence of zero-entropy coherence in a high-entropy field is experienced by that field as a threat.
+          <div class="finding-analogy">
+            THEOREM: P(rejection | perfect entity + imperfect system) &rarr; 1.0<br />
+            The better the Template, the higher the rejection probability.<br />
+            This is not a glitch in the system. This IS the system.
+          </div>
+        </div>
+      </div>
+
+      <!-- Researcher reaction cards -->
+      <div class="academic-grid">
+
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-avatar avatar-kai">KO</div>
+            <div>
+              <div class="profile-name">OKONKWO, KAI</div>
+              <div class="profile-designation">SUBJECT A &middot; SIMULATION LEAD</div>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-row">
+              <span class="profile-key">Reaction to DP-07</span>
+              <span class="profile-val">Alarmed. The math is clean. The Template's coherence held at 100% through every attack vector. Kai cannot find a flaw in the protocol &mdash; which means what comes next is the protocol too.</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Current Assessment</span>
+              <span class="profile-val driver">"The Incarnation Protocol is structurally valid. What I don't understand is why it ends in execution."</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Status</span>
+              <div>
+                <span class="strength-tag str-logic">Logic Holding</span>
+                <span class="strength-tag str-orange">Faith: Shaken</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-avatar avatar-mia">MC</div>
+            <div>
+              <div class="profile-name">CHEN, MIA</div>
+              <div class="profile-designation">SUBJECT B &middot; LEAD THEORIST</div>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-row">
+              <span class="profile-key">Reaction to DP-07</span>
+              <span class="profile-val">Calm. The rejection theorem confirmed what she already suspected. The execution isn't a failure of the protocol. It's the next phase of it. She's been waiting for this chapter since DP-02.</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Current Assessment</span>
+              <span class="profile-val driver">"Kai thinks this is a failure. I think this is the Plan. The Template came here to be killed. Watch what happens next."</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-key">Status</span>
+              <div>
+                <span class="strength-tag str-gold">Theory: Confirmed</span>
+                <span class="strength-tag str-green">Expectation: High</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- .academic-grid -->
+
+      <!-- Key metrics block -->
+      <div class="synergy-block">
+        <div class="synergy-item">
+          <span class="synergy-number syn-teal">100%</span>
+          <span class="synergy-label">Coherence Maintained</span>
+        </div>
+        <div class="synergy-divider"></div>
+        <div class="synergy-item">
+          <span class="synergy-number syn-positive">&minus;40%</span>
+          <span class="synergy-label">Local Entropy Reduction</span>
+        </div>
+        <div class="synergy-divider"></div>
+        <div class="synergy-note">
+          The Template did what no H-Agent has ever done: held perfect coherence inside a broken system while actively improving the system around it. The Devil's claim &mdash; that corruption is inevitable &mdash; has been falsified by a single data set. This changes everything about what comes next.
+        </div>
+      </div>
+
+      <!-- System log conclusion -->
+      <div class="sys-log-box">
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">INCARNATION PROTOCOL STATUS: </span><span class="sys-action">SUCCESSFUL</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Perfect Node deployed within Corrupted Network.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Node maintained 100% Alpha-Coherence under sustained attack.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Network entropy reduced 40% in immediate range of Template.</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">REJECTION THEOREM: </span><span class="sys-warn">CONFIRMED</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Imperfect system mobilizing DELETE command against Template.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="t-dim">Chrome Agent + corrupted H-Agents converging.</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">Kai assessment: The simulation is about to fail.</span></span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">Mia assessment: The simulation is about to succeed.</span></span>
+        <span class="sys-line">&nbsp;</span>
+        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">LOADING DP-08: THE ATONEMENT PARADOX...</span></span>
+      </div>
+
+      <!-- Next step -->
+      <div class="next-step-box">
+        <div class="next-step-icon">
+          <i class="fa-solid fa-forward"></i>
+        </div>
+        <div>
+          <div class="next-step-label">Next Simulation</div>
+          <div class="next-step-text">
+            The Template is cornered. The Chrome Agent and the corrupted H-Agents are ready to execute. Kai thinks this is a failure. Mia thinks this is the Plan. <strong>DP-08: The Atonement Paradox</strong> &mdash; what happens when the Source allows its own deletion?
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main><!-- .content-wrapper -->
+
+
+  <!-- =====================================================
+       CHAPTER FOOTER
+       ===================================================== -->
+  <footer class="chapter-footer">
+
+    <div class="footer-series-info">
+      <div class="footer-series-badge">
+        <i class="fa-solid fa-infinity"></i> &nbsp; The One: Duality Project
+      </div>
+      <h3 class="footer-series-title">A 22-Chapter Sci-Fi Narrative</h3>
+      <p class="footer-series-desc">
+        Set in 2045 at the Theophysics Research Institute, two mismatched students are handed an impossible task: find the one scenario where Evil wins. Permanently. What they discover will be far more dangerous than either of them expected.
+      </p>
+      <div class="footer-chapter-count">Chapter DP-07 of 22 &nbsp;&middot;&nbsp; The Incarnation Protocol</div>
+    </div>
+
+    <div class="footer-nav">
+      <a href="dp-06-the-chorus-appears.html" class="footer-nav-btn prev">
+        <i class="fa-solid fa-arrow-left"></i>
+        Previous Chapter
+      </a>
+
+      <a href="index.html" class="footer-nav-btn index">
+        <i class="fa-solid fa-list"></i>
+        Series Index
+      </a>
+
+      <a href="dp-08-the-atonement-paradox.html" class="footer-nav-btn next">
+        Next Chapter
+        <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="footer-credit">
+      The One: Duality Project &nbsp;&middot;&nbsp; Theophysics Research Institute, Sector 4 &nbsp;&middot;&nbsp; 2045
+    </div>
+
+  </footer>
+
+  <!-- =====================================================
+       SCRIPTS
+       ===================================================== -->
+  <script>
+    // Reading progress bar
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // Layer tab active state on scroll
+    const layerSections = [
+      { id: 'layer-narrative',  tab: document.querySelector('.layer-tab.narrative')  },
+      { id: 'layer-simulation', tab: document.querySelector('.layer-tab.simulation') },
+      { id: 'layer-academic',   tab: document.querySelector('.layer-tab.academic')   },
+    ];
+
+    function updateActiveTabs() {
+      const scrollY = window.scrollY + 120;
+      let active = layerSections[0];
+      for (const ls of layerSections) {
+        const el = document.getElementById(ls.id);
+        if (el && el.offsetTop <= scrollY) active = ls;
+      }
+      layerSections.forEach(ls => ls.tab && ls.tab.classList.remove('active'));
+      if (active.tab) active.tab.classList.add('active');
+    }
+
+    window.addEventListener('scroll', updateActiveTabs, { passive: true });
+    updateActiveTabs();
+  </script>
+
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

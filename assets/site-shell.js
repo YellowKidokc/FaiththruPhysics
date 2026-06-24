@@ -102,6 +102,7 @@
       <div class="site-audit-inner">
         <div class="site-audit-title">Audit Layer</div>
         <div class="site-audit-note">Every page should end with the same three-part check: what we got right, what we overstated, and what we got wrong. Use it as the bright end cap, even when the page style changes.</div>
+        <div class="site-audit-note"><strong>Epistemic covenant:</strong> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked; the mechanisms can be challenged; the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is yours. We think the pattern is worth believing, but we will not hide where faith begins.</div>
         <div class="site-audit-grid">
           <article class="site-audit-card is-green">
             <h3>What We Got Right</h3>
@@ -209,6 +210,10 @@
           font-size: 0.72rem;
           line-height: 1.6;
           max-width: 74ch;
+        }
+        .site-audit-note strong {
+          color: #d4af37;
+          font-weight: 600;
         }
         .site-audit-grid {
           display: grid;
