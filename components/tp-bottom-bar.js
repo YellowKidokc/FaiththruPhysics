@@ -100,7 +100,14 @@
       speedWrap.appendChild(button);
     });
 
+    function setButtonAvailability(button, enabled) {
+      button.disabled = !enabled;
+      button.setAttribute("aria-disabled", enabled ? "false" : "true");
+      button.classList.toggle("is-disabled", !enabled);
+    }
+
     function selectTrack(button, autoplay) {
+      if (!button || !button.dataset.src) return;
       buttonWrap.querySelectorAll(".tp-audio-button").forEach((item) => {
         item.setAttribute("aria-pressed", item === button ? "true" : "false");
       });
@@ -126,6 +133,7 @@
       button.type = "button";
       button.dataset.track = track.key;
       button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
+      button.setAttribute("aria-disabled", "true");
       button.textContent = track.label;
       button.addEventListener("click", () => selectTrack(button, true));
       buttonWrap.appendChild(button);
@@ -167,12 +175,23 @@
     });
 
     loadApiAudio(data).then((apiMap) => {
+      let firstAvailable = null;
       buttonWrap.querySelectorAll(".tp-audio-button").forEach((button) => {
         const track = TRACKS.find((item) => item.key === button.dataset.track);
-        button.dataset.src = sourceFor(track, data, apiMap);
+        const src = sourceFor(track, data, apiMap);
+        button.dataset.src = src;
+        setButtonAvailability(button, !!src);
+        if (!firstAvailable && src) firstAvailable = button;
       });
-      const first = buttonWrap.querySelector(".tp-audio-button");
-      if (first) selectTrack(first, false);
+      if (firstAvailable) {
+        selectTrack(firstAvailable, false);
+      } else {
+        buttonWrap.querySelectorAll(".tp-audio-button").forEach((button) => {
+          button.setAttribute("aria-pressed", "false");
+        });
+        state.label = "Audio coming soon";
+        status.textContent = "No audio yet";
+      }
     });
 
     if (window.TPStickyPlayer) {
