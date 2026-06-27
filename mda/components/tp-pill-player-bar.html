@@ -6,33 +6,21 @@
 
   Per-folder podcast URL: replace PODCAST-URL.m4a with the folder's shared track.
   Example mapping:
-    01-story-thread      -> moral-decline-01-introduction.m4a
-    02-method-and-metrics-> moral-decline-facts-paper.m4a
-    03-evidence-chronology -> moral-decline-01-introduction.m4a (placeholder)
-    04-collapse-mechanisms -> moral-decline-02-phase-transition.m4a (placeholder)
-    05-amish-and-case-studies -> moral-decline-09-amish-proof.m4a
-    06-recovery-and-synthesis -> moral-decline-10-way-back.m4a
-    90-appendices-and-source-packets -> moral-decline-of-america.m4a
--->
-
-<link rel="stylesheet" href="/mda/components/tp-pill-player.css">
-<script src="/mda/components/tp-pill-player.js" defer></script>
-
-<!-- TP PILL PLAYER BAR -->
-<div class="tp-pill-bar" id="tpPillBar">
-  <div class="tp-pill-strip">
-    <button class="tp-pill" data-mode="deep" data-src="PODCAST-URL.m4a" data-label="Deep Dive"><span class="dot"></span>Deep Dive</button>
-    <button class="tp-pill" data-mode="debate" data-src="PODCAST-URL.m4a" data-label="Debate"><span class="dot"></span>Debate</button>
-    <button class="tp-pill" data-mode="critique" data-src="PODCAST-URL.m4a" data-label="Critique"><span class="dot"></span>Critique</button>
-    <button class="tp-pill active" data-mode="tts" data-src="PODCAST-URL.m4a" data-label="TTS"><span class="dot"></span>TTS</button>
-    <button class="tp-pill" data-mode="web" data-src="PODCAST-URL.m4a" data-label="Web"><span class="dot"></span>Web</button>
-  </div>
-  <div class="tp-bar-controls">
-    <button class="tp-bar-play"><i class="fas fa-play"></i></button>
-    <div class="tp-bar-track"><div class="tp-bar-fill"></div></div>
-    <span class="tp-bar-time">0:00 / 0:00</span>
-    <select class="tp-bar-speed">
-      <option value="0.5">0.5x</option>
+    01-story-thread      ->
+<!-- TP-WORKER-AUDIO-PLAYER -->
+<div class="tp-player-block" data-audio-slug="components/tp-pill-player-bar" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=components%2Ftp-pill-player-bar">
+  <div class="tp-read-aloud" data-mode="tts">
+    <div class="tp-dot"></div>
+    <span class="tp-label">Read Aloud</span>
+    <audio id="tpMainAudio" preload="none"></audio>
+    <button class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)" aria-label="Play read-aloud">
+      <i class="fas fa-play"></i>
+    </button>
+    <div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+      <div id="tpMainFill" class="tp-fill"></div>
+    </div>
+    <span id="tpMainTime" class="tp-time">0:00</span>
+    <select class="tp-speed" onchange="tpSetSpeed(this.value)" aria-label="Playback speed">
       <option value="0.75">0.75x</option>
       <option value="1" selected>1x</option>
       <option value="1.25">1.25x</option>
@@ -40,6 +28,61 @@
       <option value="1.75">1.75x</option>
       <option value="2">2x</option>
     </select>
+    <button class="tp-mute" onclick="tpMute('tpMainAudio',this)" aria-label="Mute">
+      <i class="fas fa-volume-up"></i>
+    </button>
   </div>
-  <audio preload="metadata"></audio>
+  <div class="tp-pair">
+    <div class="tp-half tp-deep" data-mode="deep">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Deep Dive</span>
+      <audio id="tpDeepAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)" aria-label="Play deep dive">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+        <div id="tpDeepFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDeepTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-debate" data-mode="podcast">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Podcast</span>
+      <audio id="tpDebateAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)" aria-label="Play podcast">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+        <div id="tpDebateFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDebateTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-critique" data-mode="critique">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Critique</span>
+      <audio id="tpCritiqueAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)" aria-label="Play critique">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+        <div id="tpCritiqueFill" class="tp-fill"></div>
+      </div>
+      <span id="tpCritiqueTime" class="tp-time">0:00</span>
+    </div>
+  </div>
+  <div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+  </div>
 </div>
+ moral-decline-01-introduction.m4a
+    02-method-and-metrics-> moral-decline-facts-paper.m4a
+    03-evidence-chronology -> moral-decline-01-introduction.m4a (placeholder)
+    04-collapse-mechanisms -> moral-decline-02-phase-transition.m4a (placeholder)
+    05-amish-and-case-studies -> moral-decline-09-amish-proof.m4a
+    06-recovery-and-synthesis -> moral-decline-10-way-back.m4a
+    90-appendices-and-source-packets -> moral-decline-of-america.m4a
+-->
+<link href="/mda/components/tp-pill-player.css" rel="stylesheet"/>
+<script defer="" src="/mda/components/tp-pill-player.js"></script>
+<!-- TP PILL PLAYER BAR -->
+<script defer="" src="https://faiththruphysics.com/site-shell/frame.js"></script>

@@ -1,394 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>03 · Why Math Works — The Convergence Series</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&amp;family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-
-<style>
-:root {
-  --surface: #0a0a0a;
-  --surface-light: #141414;
-  --surface-mid: #1a1a1a;
-  --border: #2a2a2a;
-  --border-hover: #3a3a3a;
-  --text-primary: #e0e0e0;
-  --text-body: #c4c4c4;
-  --text-secondary: #888;
-  --text-dim: #555;
-  --highlight: #d4af37;
-  --highlight-bright: #e8c547;
-  --highlight-dim: rgba(212,175,55,0.08);
-  --red: #ef4444;
-  --teal: #2dd4bf;
-  --blue: #4a9eff;
-  --purple: #a855f7;
-  --green: #22c55e;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--surface);
-  color: var(--text-primary);
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
-}
-
-::selection {
-  background: rgba(212,175,55,0.25);
-  color: #fff;
-}
-
-
-/* ══════════════════════════════════════
-   ARTICLE HEADER
-   ══════════════════════════════════════ */
-.article-header {
-  border-bottom: 1px solid var(--border);
-  padding: 3rem 2rem 2.5rem;
-  max-width: 780px;
-  margin: 0 auto;
-}
-
-.header-meta {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.series-tag {
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--highlight);
-}
-
-.chapter-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-}
-
-.article-title {
-  font-family: 'Crimson Text', serif;
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.15;
-  margin-bottom: 0.75rem;
-}
-
-.article-subtitle {
-  font-family: 'Crimson Text', serif;
-  font-size: 1.15rem;
-  color: var(--text-secondary);
-  font-style: italic;
-  line-height: 1.5;
-  max-width: 600px;
-}
-
-.author-line {
-  margin-top: 1.25rem;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-}
-
-.author-line a {
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.author-line a:hover { color: var(--highlight); }
-
-
-/* ══════════════════════════════════════
-   FACTS CARD
-   ══════════════════════════════════════ */
-.facts-card {
-  max-width: 780px;
-  margin: 0 auto;
-  border-bottom: 1px solid var(--border);
-}
-
-.facts-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  user-select: none;
-}
-
-.facts-toggle:hover { background: var(--surface-light); }
-
-.facts-toggle-label {
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--highlight);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.facts-toggle-arrow {
-  color: var(--text-dim);
-  font-size: 0.7rem;
-  transition: transform 0.3s;
-}
-
-.facts-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-}
-
-.facts-body.open { max-height: 800px; }
-
-.facts-row {
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  border-top: 1px solid rgba(255,255,255,0.03);
-}
-
-.facts-letter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 0;
-  border-right: 1px solid rgba(255,255,255,0.03);
-}
-
-.facts-letter span {
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--highlight);
-  opacity: 0.5;
-}
-
-.facts-content {
-  padding: 1rem 1.5rem;
-  font-size: 0.88rem;
-  color: var(--text-body);
-  line-height: 1.6;
-}
-
-.facts-content em { color: var(--highlight); font-style: italic; }
-
-
-/* ══════════════════════════════════════
-   PROSE — the reading experience
-   ══════════════════════════════════════ */
-.prose {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 3rem 2rem 5rem;
-}
-
-.prose p {
-  font-size: 1.08rem;
-  color: var(--text-body);
-  line-height: 1.85;
-  margin-bottom: 1.5rem;
-}
-
-.prose p strong { color: #e0e0e0; }
-.prose p em { color: var(--highlight); font-style: italic; }
-
-/* Section breaks — the horizontal rules */
-.prose hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 3rem 0;
-}
-
-/* Pull quotes */
-.prose blockquote {
-  border-left: 2px solid var(--highlight);
-  padding: 0.25rem 0 0.25rem 1.5rem;
-  margin: 2rem 0;
-  font-family: 'Crimson Text', serif;
-  font-size: 1.2rem;
-  font-style: italic;
-  color: var(--highlight);
-  line-height: 1.55;
-}
-
-/* Drop cap for first paragraph after an hr */
-.drop-cap::first-letter {
-  font-family: 'Crimson Text', serif;
-  font-size: 3.8rem;
-  float: left;
-  line-height: 0.8;
-  padding: 0.35rem 0.5rem 0 0;
-  color: var(--highlight);
-  font-weight: 700;
-}
-
-/* Landing sentences — short, punchy, after builds */
-.prose .land {
-  font-size: 1.15rem;
-  color: #e8e8e8;
-  font-weight: 500;
-}
-
-
-/* ══════════════════════════════════════
-   AUDIO PLAYERS — bottom of article
-   ══════════════════════════════════════ */
-.listen-section {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 0 2rem 4rem;
-  border-top: 1px solid var(--border);
-  padding-top: 2.5rem;
-}
-
-.listen-label {
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: 1rem;
-}
-
-.player-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.player-row {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.85rem 1rem;
-  background: var(--surface-light);
-  border: 1px solid var(--border);
-  border-radius: 0.4rem;
-  transition: border-color 0.2s;
-}
-
-.player-row:hover { border-color: var(--border-hover); }
-
-.player-type {
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-.player-type.tts { color: var(--highlight); }
-.player-type.deep { color: var(--blue); }
-.player-type.debate { color: var(--purple); }
-
-.player-row audio {
-  width: 100%;
-  height: 36px;
-}
-
-
-/* ══════════════════════════════════════
-   ARTICLE NAV — prev / next
-   ══════════════════════════════════════ */
-.article-nav {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 0 2rem 3rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-top: 1px solid var(--border);
-  padding-top: 2rem;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: var(--text-dim);
-  font-size: 0.8rem;
-  font-family: 'Oswald', sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition: color 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.nav-link:hover { color: var(--highlight); }
-
-.nav-link .nav-title {
-  font-family: 'Crimson Text', serif;
-  font-size: 0.95rem;
-  text-transform: none;
-  letter-spacing: 0;
-  color: var(--text-secondary);
-  font-style: italic;
-}
-
-
-/* ══════════════════════════════════════
-   FOOTER
-   ══════════════════════════════════════ */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 2rem;
-  max-width: 780px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.footer-sig {
-  font-family: 'Caveat', cursive;
-  font-size: 1.1rem;
-  color: var(--highlight);
-}
-
-.footer-colophon {
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  font-style: italic;
-}
-
-
-/* ══════════════════════════════════════
-   RESPONSIVE
-   ══════════════════════════════════════ */
-@media (max-width: 640px) {
-  .article-header { padding: 2rem 1.5rem; }
-  .prose { padding: 2rem 1.5rem 4rem; }
-  .listen-section { padding: 0 1.5rem 3rem; padding-top: 2rem; }
-  .article-nav { padding: 0 1.5rem 2rem; padding-top: 1.5rem; }
-  footer { padding: 1.5rem; }
-  .player-row { grid-template-columns: 80px 1fr; }
-  .prose p { font-size: 1rem; }
-}
-/* Chapter Image */
-.chapter-image { max-width: 780px; margin: 2rem auto; padding: 0 2rem; }
-.chapter-image img { width: 100%; height: auto; border-radius: 4px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; }
-</style>
 <script id="article-meta" type="application/json">
 {
   "slug": "cns-03-why-math-works",
@@ -408,216 +29,265 @@ footer {
   "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
 }
 </script>
+<style>
+/* ═══ TP-WORKER-AUDIO-PLAYER ═══ */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+.tp-pair{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.tp-half{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid #222;border-radius:.4rem;background:#111;min-width:0;}
+.tp-half .tp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-half .tp-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;min-width:48px;}
+.tp-half .tp-play{width:24px;height:24px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-half .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-half .tp-track{height:3px;}.tp-half .tp-track:hover{height:5px;}
+.tp-half .tp-time{font-size:.55rem;min-width:28px;}
+.tp-half.tp-deep .tp-dot{background:#4a9eff;}.tp-half.tp-deep .tp-label{color:#4a9eff;}.tp-half.tp-deep .tp-play{border-color:#4a9eff;color:#4a9eff;}.tp-half.tp-deep .tp-fill{background:#4a9eff;}.tp-half.tp-deep:hover{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.08);}
+.tp-half.tp-debate .tp-dot{background:#a855f7;}.tp-half.tp-debate .tp-label{color:#a855f7;}.tp-half.tp-debate .tp-play{border-color:#a855f7;color:#a855f7;}.tp-half.tp-debate .tp-fill{background:#a855f7;}.tp-half.tp-debate:hover{border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08);}
+.tp-half.tp-critique .tp-dot{background:#22c55e;}.tp-half.tp-critique .tp-label{color:#22c55e;}.tp-half.tp-critique .tp-play{border-color:#22c55e;color:#22c55e;}.tp-half.tp-critique .tp-fill{background:#22c55e;}.tp-half.tp-critique:hover{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08);}
+.tp-pair{grid-template-columns:1fr 1fr 1fr;}
+.tp-speed{background:#111;border:1px solid #333;color:#888;font-family:'JetBrains Mono',monospace;font-size:.55rem;border-radius:.3rem;padding:.1rem .3rem;cursor:pointer;flex-shrink:0;}
+.tp-speed:hover{color:#ccc;border-color:#555;}
+.tp-sticky{position:fixed;right:-260px;top:50%;transform:translateY(-50%);width:220px;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border:1px solid #222;border-right:none;border-radius:.6rem 0 0 .6rem;padding:.75rem .8rem;z-index:9999;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.6);}
+.tp-sticky.tp-visible{right:0;}
+.tp-sticky-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem;}
+.tp-sticky .tp-sticky-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-sticky .tp-sticky-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tp-sticky .tp-sticky-close{background:none;border:none;color:#555;cursor:pointer;font-size:.65rem;padding:2px 4px;flex-shrink:0;transition:color .2s;}
+.tp-sticky .tp-sticky-close:hover{color:#e0e0e0;}
+.tp-sticky-controls{display:flex;align-items:center;gap:.5rem;}
+.tp-sticky .tp-play{width:26px;height:26px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-sticky .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-sticky .tp-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;}
+.tp-sticky .tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-sticky .tp-time{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:#555;min-width:28px;text-align:right;flex-shrink:0;}
+@media(max-width:700px){.tp-pair{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.tp-pair{grid-template-columns:1fr;}.tp-sticky{width:180px;padding:.6rem;}.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}.tp-speed{display:none;}}
+</style>
 </head>
 <body>
-
-
 <!-- ═══════════════════════════════════════
      HEADER
      ═══════════════════════════════════════ -->
 <header class="article-header">
-  <div class="header-meta">
-    <span class="series-tag">The Convergence Series</span>
-    <span class="chapter-num">Chapter 03 of 07</span>
-  </div>
-  <h1 class="article-title">Why Math Works</h1>
-  <p class="article-subtitle">The reason inside our heads matches the reason outside in the cosmos. Wigner called it a miracle. The founders of physics called it God.</p>
-  <div class="author-line">
+<div class="header-meta">
+<span class="series-tag">The Convergence Series</span>
+<span class="chapter-num">Chapter 03 of 07</span>
+</div>
+<h1 class="article-title">Why Math Works</h1>
+<p class="article-subtitle">The reason inside our heads matches the reason outside in the cosmos. Wigner called it a miracle. The founders of physics called it God.</p>
+<div class="author-line">
     Written by David Lowe with Claude · <a href="https://faiththruphysics.com">faiththruphysics.com</a> · 2026
   </div>
 </header>
-<div class="chapter-image"><img src="images/slide_08.webp" alt="The math has no margin — physical blueprint vs moral ledger"></div>
+
+<!-- TP-WORKER-AUDIO-PLAYER -->
+<div class="tp-player-block" data-audio-slug="convergence-series/cns-03-why-math-works" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=convergence-series%2Fcns-03-why-math-works" data-series-slug="convergence-series" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=convergence-series">
+  <div class="tp-read-aloud" data-mode="tts">
+    <div class="tp-dot"></div>
+    <span class="tp-label">Read Aloud</span>
+    <audio id="tpMainAudio" preload="none"></audio>
+    <button class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)" aria-label="Play read-aloud">
+      <i class="fas fa-play"></i>
+    </button>
+    <div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+      <div id="tpMainFill" class="tp-fill"></div>
+    </div>
+    <span id="tpMainTime" class="tp-time">0:00</span>
+    <select class="tp-speed" onchange="tpSetSpeed(this.value)" aria-label="Playback speed">
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="1.75">1.75x</option>
+      <option value="2">2x</option>
+    </select>
+    <button class="tp-mute" onclick="tpMute('tpMainAudio',this)" aria-label="Mute">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+  <div class="tp-pair">
+    <div class="tp-half tp-deep" data-mode="deep">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Deep Dive</span>
+      <audio id="tpDeepAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)" aria-label="Play deep dive">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+        <div id="tpDeepFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDeepTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-debate" data-mode="podcast">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Podcast</span>
+      <audio id="tpDebateAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)" aria-label="Play podcast">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+        <div id="tpDebateFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDebateTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-critique" data-mode="critique">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Critique</span>
+      <audio id="tpCritiqueAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)" aria-label="Play critique">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+        <div id="tpCritiqueFill" class="tp-fill"></div>
+      </div>
+      <span id="tpCritiqueTime" class="tp-time">0:00</span>
+    </div>
+  </div>
+  <div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+  </div>
+</div>
 
 
+<div class="chapter-image"><img alt="The math has no margin — physical blueprint vs moral ledger" src="images/slide_08.webp"/></div>
 <!-- ═══════════════════════════════════════
      FACTS CARD
      ═══════════════════════════════════════ -->
 <div class="facts-card">
-  <div class="facts-toggle" onclick="toggleFacts()">
-    <span class="facts-toggle-label"><i class="fas fa-list-check"></i> FACTS — What This Chapter Establishes</span>
-    <span class="facts-toggle-arrow"><i class="fas fa-chevron-down"></i></span>
-  </div>
-  <div class="facts-body" id="factsBody">
-    <div class="facts-row">
-      <div class="facts-letter"><span>F</span></div>
-      <div class="facts-content">Abstract mathematical structures — developed for <em>purely theoretical reasons</em> with no reference to the physical world — repeatedly turn out to describe physical reality with absurd precision.</div>
-    </div>
-    <div class="facts-row">
-      <div class="facts-letter"><span>A</span></div>
-      <div class="facts-content">Eight documented cases of <em>predictive mathematical excess</em> — conic sections (200 BC → Kepler 1609), Non-Euclidean geometry (1854 → Einstein 1915), Dirac equation (1928 → positron 1932), group theory (1830s → Standard Model), complex numbers (1545 → quantum mechanics).</div>
-    </div>
-    <div class="facts-row">
-      <div class="facts-letter"><span>C</span></div>
-      <div class="facts-content">Three possible explanations exist: math is <em>invented</em> (fails on predictive excess), math is <em>discovered</em> (fails on grounding), or math works because the <em>Author of logic and the Author of reality are the same</em> (explains both).</div>
-    </div>
-    <div class="facts-row">
-      <div class="facts-letter"><span>T</span></div>
-      <div class="facts-content">The founders of modern physics — Newton, Planck, Faraday, Maxwell, Polkinghorne — <em>explicitly stated in published work</em> that math works because God wrote both the book and the reader.</div>
-    </div>
-    <div class="facts-row">
-      <div class="facts-letter"><span>S</span></div>
-      <div class="facts-content">Wigner (1960), Apollonius (200 BC), Riemann (1854), Dirac (1928), Galois (1832), Cardano (1545), Tegmark's Mathematical Universe Hypothesis.</div>
-    </div>
-  </div>
+<div class="facts-toggle" onclick="toggleFacts()">
+<span class="facts-toggle-label"><i class="fas fa-list-check"></i> FACTS — What This Chapter Establishes</span>
+<span class="facts-toggle-arrow"><i class="fas fa-chevron-down"></i></span>
 </div>
-
-
+<div class="facts-body" id="factsBody">
+<div class="facts-row">
+<div class="facts-letter"><span>F</span></div>
+<div class="facts-content">Abstract mathematical structures — developed for <em>purely theoretical reasons</em> with no reference to the physical world — repeatedly turn out to describe physical reality with absurd precision.</div>
+</div>
+<div class="facts-row">
+<div class="facts-letter"><span>A</span></div>
+<div class="facts-content">Eight documented cases of <em>predictive mathematical excess</em> — conic sections (200 BC → Kepler 1609), Non-Euclidean geometry (1854 → Einstein 1915), Dirac equation (1928 → positron 1932), group theory (1830s → Standard Model), complex numbers (1545 → quantum mechanics).</div>
+</div>
+<div class="facts-row">
+<div class="facts-letter"><span>C</span></div>
+<div class="facts-content">Three possible explanations exist: math is <em>invented</em> (fails on predictive excess), math is <em>discovered</em> (fails on grounding), or math works because the <em>Author of logic and the Author of reality are the same</em> (explains both).</div>
+</div>
+<div class="facts-row">
+<div class="facts-letter"><span>T</span></div>
+<div class="facts-content">The founders of modern physics — Newton, Planck, Faraday, Maxwell, Polkinghorne — <em>explicitly stated in published work</em> that math works because God wrote both the book and the reader.</div>
+</div>
+<div class="facts-row">
+<div class="facts-letter"><span>S</span></div>
+<div class="facts-content">Wigner (1960), Apollonius (200 BC), Riemann (1854), Dirac (1928), Galois (1832), Cardano (1545), Tegmark's Mathematical Universe Hypothesis.</div>
+</div>
+</div>
+</div>
 <!-- ═══════════════════════════════════════
      THE ARTICLE
      ═══════════════════════════════════════ -->
 <article class="prose">
-
 <p class="drop-cap">In 1960, a physicist named Eugene Wigner wrote a paper with a title that has haunted science ever since.</p>
-
 <p>"The Unreasonable Effectiveness of Mathematics in the Natural Sciences."</p>
-
 <p>The word that matters is <em>unreasonable</em>. Not impressive. Not convenient. Unreasonable. Wigner was saying: this shouldn't work. And he couldn't explain why it does.</p>
-
 <p>Here's the problem. Mathematics is abstract. It's something humans do in their heads — or on paper, or on blackboards — with no direct reference to the physical world. Nobody goes outside to check if two plus two still equals four. Nobody runs an experiment to validate the Pythagorean theorem. Math operates in a domain that floats completely free of physical reality.</p>
-
 <p>And yet.</p>
-
 <p>When physicists take these abstract structures — equations nobody built for any practical purpose — and point them at the universe, the universe obeys them. Not approximately. Not loosely. With a precision so extreme it borders on the absurd.</p>
-
 <p class="land">That's the mystery Wigner identified. Not that math is useful. That math is <em>unreasonably</em> useful.</p>
-
 <p>That there's a correspondence between the logic inside human minds and the structure outside in the cosmos, and nobody has a good explanation for why.</p>
-
 <hr/>
-
 <p class="drop-cap">I want to show you what "unreasonable" actually looks like.</p>
-
 <p>In 200 BC, a Greek mathematician named Apollonius was studying conic sections — what happens when you slice a cone at different angles. Pure geometry. No practical application. No physics. Just a mathematician playing with shapes because shapes are interesting.</p>
-
 <p>Eighteen hundred years later, Johannes Kepler used those conic sections — specifically the ellipse — to describe the orbits of planets. The abstract curves Apollonius drew for fun turned out to be the literal paths the planets follow around the sun.</p>
-
 <p>In 1854, Bernhard Riemann developed a geometry of curved spaces. Not because he thought space was curved — Einstein hadn't been born yet. Riemann did it because the mathematics was interesting. Sixty-one years later, Einstein needed a framework for General Relativity, and Riemann's curved-space geometry was sitting there waiting for him. <em>The tool was built before the problem existed.</em></p>
-
 <p>In 1928, Paul Dirac was trying to write an equation for the electron that was consistent with both quantum mechanics and special relativity. He wanted the equation to be elegant — mathematically beautiful. When he solved it, the math produced something he wasn't looking for: negative energy states. Holes in the equations where particles with opposite charge should exist. Four years later, Carl Anderson discovered the positron — the first antimatter particle. Dirac's equation didn't just describe reality. It <em>predicted</em> a part of reality nobody had ever seen, because the math demanded it.</p>
-
 <p>In the 1830s, Evariste Galois developed group theory to solve polynomial equations. Pure algebra. He died at twenty in a duel and left his work in a letter written the night before. A century later, physicists used group theory to organize every known subatomic particle into families, predict missing particles, and then find them in accelerators exactly where the math said they'd be.</p>
-
 <p>Complex numbers — the square root of negative one, a concept that seemed like a mathematical trick when Cardano invented it in 1545 — turned out to be the foundation of quantum mechanics. Not a convenience. <em>The foundation.</em> The state space of every quantum system is built on complex numbers. Without the imaginary unit, quantum mechanics doesn't exist.</p>
-
 <p>Do you see what's happening here? Mathematicians invent structures for abstract reasons — beauty, curiosity, the internal logic of the symbols. And then, decades or centuries later, physicists discover that those structures describe the actual universe. Not metaphorically. Exactly.</p>
-
 <p>Richard Feynman said it this way: the final truth about a phenomenon lives in the mathematical description of it. As long as the math is right, the knowledge is complete.</p>
-
 <p>Paul Dirac said it differently: the rules the mathematician finds interesting are the same rules nature has chosen.</p>
-
 <p>Albert Einstein asked the question nobody can answer: <em>how can it be that mathematics — a product of human thought, independent of experience — is so perfectly adapted to the objects of reality?</em></p>
-
 <hr/>
-
 <p class="drop-cap">Stay with me. This is the one worth sitting with.</p>
-
 <p>There are exactly three possible explanations for why math works on reality. Three. Every philosopher, physicist, and mathematician who has engaged this question ends up in one of three camps.</p>
-
 <p>The first camp says math is <em>invented</em>. It's a human tool — like language, like logic, like a wrench. We built it to describe patterns we observe, so of course it describes patterns. There's no mystery. The map fits the territory because we drew the map by looking at the territory.</p>
-
 <p>The problem with this is the predictive excess. If math were just a description of what we've already observed, it wouldn't predict things we haven't observed yet. But it does. Consistently. Dirac's equation predicted antimatter. Maxwell's equations predicted radio waves twenty-three years before anyone detected them. Group theory predicted the Omega-minus baryon before it was found. A tool shaped by observation doesn't predict beyond observation. Something else is going on.</p>
-
 <p>The second camp says math is <em>discovered</em>. Mathematical objects exist in some abstract realm — independent of human minds, independent of the physical universe. Plato thought this. Penrose thinks this. Tegmark takes it all the way and says the universe doesn't just <em>follow</em> math — the universe <em>is</em> a mathematical structure, and we're patterns inside it looking out.</p>
-
 <p>This camp gets the predictive excess right. If mathematical truths exist independently and we're discovering them, then of course they can lead us to things we haven't seen yet — the structure was always there. But this camp has its own problem: where is this abstract realm? What sustains it? Why does it have the specific structures it has rather than others? "Math exists in an abstract Platonic realm" is a beautiful idea with no mechanism underneath it.</p>
-
 <p>The third camp says math works because <em>the Author of the universe is also the Author of logic</em>. The reason inside our heads matches the reason outside in the cosmos because both come from the same source. The mind that designed matter also designed the minds that perceive it. There's a pre-established harmony — and that harmony has a name.</p>
-
 <p>Newton said the solar system could only proceed from the counsel of an intelligent and powerful Being. Planck said behind every force there is a conscious and intelligent mind — the matrix of all things. Faraday said the chief aim of science is to discover the rational order imposed on reality by God. Maxwell said the laws of nature are not arbitrary decisions but essential parts of one universal system that reveals unsearchable Wisdom. Polkinghorne said the reason within and the reason without are linked by their common origin in the Rationality of the Creator.</p>
-
 <p class="land">These aren't apologists. These are the founders of modern physics.</p>
-
-<div class="chapter-image"><img src="images/slide_11.webp" alt="The energy that covers the gap — physics, information theory, and theology structurally converge"></div>
-
+<div class="chapter-image"><img alt="The energy that covers the gap — physics, information theory, and theology structurally converge" src="images/slide_11.webp"/></div>
 <p>The people who built the equations that run the world. And they said — explicitly, in their own words, in their published work — that math works because God wrote both the book and the reader.</p>
-
 <hr/>
-
 <p class="drop-cap">Here's where the camps collapse into two.</p>
-
 <p>Camp one — math is invented — can't explain predictive excess. A human tool doesn't reach beyond human observation, but math does. Consistently. Across centuries. So camp one is incomplete.</p>
-
 <p>Camp two — math is discovered — explains the predictive excess but can't explain the Platonic realm. Where do mathematical objects live? What grounds them? "They just exist" is the same move as "the universe just happened." It's not an explanation. It's a placeholder.</p>
-
 <p>Camp three — the Common Origin — explains both. Math predicts because the same intelligence designed the structure and the perceiver. Mathematical objects aren't floating in an abstract realm — they're grounded in the mind of God. The reason math works is the same reason a blueprint matches a building: <em>they have the same architect.</em></p>
-
 <p>And here's the part that should stop you. Camp three isn't just the theological answer. It's the one that explains more of the data with fewer assumptions. It accounts for predictive excess <em>and</em> the ground of mathematical existence <em>and</em> the precision of physical law — all with one commitment: there is a rational mind behind reality.</p>
-
 <p class="land">The person who finds that answer uncomfortable needs to reckon with why every other answer is worse.</p>
-
 <hr/>
-
 <p class="drop-cap">I said at the end of the last chapter that this was the most beautiful move in the series. Here's why.</p>
-
 <p>The effectiveness of mathematics is not a problem for the theist. It's a prediction. If God is real — if a rational, creative, truthful mind authored reality — then <em>of course</em> abstract logic maps onto physical structure. <em>Of course</em> beauty in the equations corresponds to truth in the cosmos. <em>Of course</em> the mind can reach further than the eyes, because the mind and the cosmos are reading from the same page.</p>
-
 <p>Wigner called it a miracle we neither understand nor deserve.</p>
-
 <p class="land">I think he was closer than he knew.</p>
-
 <hr/>
-
 <p class="drop-cap">But here's the thread that opened while we were in the math. If current scientific models are models — not final truth — then how many times has science replaced its own best understanding of reality? And what does the pattern of those replacements tell us?</p>
-
 <p>Turns out science keeps a graveyard. And the headstones are fascinating.</p>
-
 </article>
-
-
 <!-- ═══════════════════════════════════════
      AUDIO PLAYERS
      ═══════════════════════════════════════ -->
 <div class="listen-section">
-  <div class="listen-label">Listen</div>
-  <div class="player-stack">
-
-    <div class="player-row">
-      <span class="player-type tts"><i class="fas fa-volume-up"></i> Read</span>
-      <audio controls preload="none">
-        <source src="audio/CNS_03_tts.m4a" type="audio/mp4"/>
-      </audio>
-    </div>
-
-    <div class="player-row">
-      <span class="player-type deep"><i class="fas fa-microscope"></i> Deep Dive</span>
-      <audio controls preload="none">
-        <source src="audio/CNS_03_deep.m4a" type="audio/mp4"/>
-      </audio>
-    </div>
-
-    <div class="player-row">
-      <span class="player-type debate"><i class="fas fa-comments"></i> Debate</span>
-      <audio controls preload="none">
-        <source src="audio/CNS_03_debate.m4a" type="audio/mp4"/>
-      </audio>
-    </div>
-
-  </div>
+<div class="listen-label">Listen</div>
+<div class="player-stack">
+<div class="player-row">
+<span class="player-type tts"><i class="fas fa-volume-up"></i> Read</span>
+<audio controls="" preload="none">
+<source src="audio/CNS_03_tts.m4a" type="audio/mp4"/>
+</audio>
 </div>
-
-
+<div class="player-row">
+<span class="player-type deep"><i class="fas fa-microscope"></i> Deep Dive</span>
+<audio controls="" preload="none">
+<source src="audio/CNS_03_deep.m4a" type="audio/mp4"/>
+</audio>
+</div>
+<div class="player-row">
+<span class="player-type debate"><i class="fas fa-comments"></i> Debate</span>
+<audio controls="" preload="none">
+<source src="audio/CNS_03_debate.m4a" type="audio/mp4"/>
+</audio>
+</div>
+</div>
+</div>
 <!-- ═══════════════════════════════════════
      ARTICLE NAV
      ═══════════════════════════════════════ -->
 <nav class="article-nav">
-  <a href="cns-02-the-evidence.html" class="nav-link">
-    <i class="fas fa-arrow-left"></i> Prev: <span class="nav-title">The Evidence</span>
-  </a>
-  <a href="cns-04-the-paradigm-graveyard.html" class="nav-link">
+<a class="nav-link" href="cns-02-the-evidence.html">
+<i class="fas fa-arrow-left"></i> Prev: <span class="nav-title">The Evidence</span>
+</a>
+<a class="nav-link" href="cns-04-the-paradigm-graveyard.html">
     Next: <span class="nav-title">The Paradigm Graveyard</span> <i class="fas fa-arrow-right"></i>
-  </a>
+</a>
 </nav>
-
-
 <!-- ═══════════════════════════════════════
      FOOTER
      ═══════════════════════════════════════ -->
 <footer>
-  <span class="footer-sig">Plant the flag. — POF 2828</span>
-  <span class="footer-colophon">Written by David Lowe with Claude · Theophysics Research Initiative · 2026</span>
+<span class="footer-sig">Plant the flag. — POF 2828</span>
+<span class="footer-colophon">Written by David Lowe with Claude · Theophysics Research Initiative · 2026</span>
 </footer>
-
-
 <!-- ═══════════════════════════════════════
      SCRIPTS
      ═══════════════════════════════════════ -->
@@ -629,7 +299,149 @@ function toggleFacts() {
   arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
 }
 </script>
+<script data-theme="dark" src="/components/tp-inject.js"></script>
+<script defer="" src="https://faiththruphysics.com/site-shell/frame.js"></script>
 
-<script src="/components/tp-inject.js" data-theme="dark"></script>
+
+<div class="tp-sticky" id="stickyPlayer">
+  <div class="tp-sticky-header">
+    <div class="tp-sticky-dot" id="stickyDot" style="background:#d4af37;"></div>
+    <span class="tp-sticky-label" id="stickyLabel" style="color:#d4af37;">Audio</span>
+    <button class="tp-sticky-close" onclick="tpCloseSticky()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="tp-sticky-controls">
+    <button class="tp-play" id="stickyPlayBtn" onclick="tpStickyToggle()" style="border-color:#d4af37;color:#d4af37;"><i class="fas fa-play"></i></button>
+    <div class="tp-track" onclick="tpStickySeek(event)">
+      <div class="tp-fill" id="stickyFill" style="background:#d4af37;"></div>
+    </div>
+    <span class="tp-time" id="stickyTime">0:00</span>
+  </div>
+</div>
+<script>
+(function(){
+let tpCurrentId=null,tpStickyDismissed=false;
+const tpColors={};
+function tpRegister(id,color,label){tpColors[id]={color:color,label:label};}
+function tpFmt(s){if(isNaN(s)||!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function tpToggle(id,btn){
+  const a=document.getElementById(id);
+  document.querySelectorAll('.tp-player-block audio').forEach(x=>{if(x.id!==id&&!x.paused){x.pause();tpUpdateBtns(x.id,false);}});
+  if(a.paused){a.play();tpCurrentId=id;tpStickyDismissed=false;tpUpdateBtns(id,true);}
+  else{a.pause();tpCurrentId=null;tpUpdateBtns(id,false);}
+}
+function tpUpdateBtns(id,playing){
+  document.querySelectorAll('[data-audio="'+id+'"]').forEach(b=>{const i=b.querySelector('i');if(i)i.className='fas fa-'+(playing?'pause':'play');});
+  if(id===tpCurrentId||!playing){const si=document.querySelector('#stickyPlayBtn i');if(si)si.className='fas fa-'+(playing?'pause':'play');}
+}
+function tpSeek(e,id){const a=document.getElementById(id);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;}
+function tpMute(id,btn){const a=document.getElementById(id);a.muted=!a.muted;btn.querySelector('i').className='fas fa-volume-'+(a.muted?'mute':'up');}
+function tpWire(id){
+  const a=document.getElementById(id);if(!a)return;
+  a.addEventListener('timeupdate',()=>{
+    const fill=document.getElementById(id.replace('Audio','Fill'));
+    const time=document.getElementById(id.replace('Audio','Time'));
+    if(fill&&a.duration)fill.style.width=(a.currentTime/a.duration*100)+'%';
+    if(time)time.textContent=tpFmt(a.currentTime);
+    if(id===tpCurrentId){const sf=document.getElementById('stickyFill');const st=document.getElementById('stickyTime');if(sf&&a.duration)sf.style.width=(a.currentTime/a.duration*100)+'%';if(st)st.textContent=tpFmt(a.currentTime);}
+  });
+  a.addEventListener('ended',()=>{tpUpdateBtns(id,false);if(tpCurrentId===id)tpCurrentId=null;});
+}
+window.tpToggle=tpToggle;window.tpSeek=tpSeek;window.tpMute=tpMute;
+window.tpSetSpeed=function(v){
+  const rate=parseFloat(v)||1;
+  document.querySelectorAll('.tp-player-block audio').forEach(a=>{a.playbackRate=rate;});
+};
+
+// Browser TTS fallback
+window.tpBrowserTts=function(){
+  const main=document.querySelector('[data-tts-source],main,article,#main-content,.content');
+  const text=main?main.innerText.replace(/\s+/g,' ').trim().slice(0,12000):'';
+  if(!text||!window.speechSynthesis){alert('Browser TTS not available');return;}
+  const u=new SpeechSynthesisUtterance(text);u.rate=1;u.pitch=1;window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
+};
+
+// Fetch tracks from worker and bind sources.
+// TTS comes from the article-level slug.
+// Deep Dive, Podcast, Critique come from the series slug as a shared track,
+// falling back to an article-level override if one exists.
+function tpBindTracks(){
+  const block=document.querySelector('.tp-player-block');
+  if(!block)return;
+  const lookup=block.dataset.audioLookup;
+  const seriesLookup=block.dataset.seriesLookup;
+  if(!lookup)return;
+
+  function toMap(tracks){
+    const m={};
+    tracks.forEach(t=>{
+      if(t.mode)m[t.mode]=t.url;
+      if(t.is_default)m['__default__']=t.url;
+    });
+    return m;
+  }
+  function setSrc(id,url){
+    if(!url)return;
+    const a=document.getElementById(id);
+    if(a){a.src=url;a.preload='metadata';}
+  }
+
+  // Fetch article tracks first, then series tracks for shared slots
+  const articleP=fetch(lookup).then(r=>r.json()).catch(()=>({tracks:[]}));
+  const seriesP=(seriesLookup&&seriesLookup!==lookup)
+    ?fetch(seriesLookup).then(r=>r.json()).catch(()=>({tracks:[]}))
+    :Promise.resolve({tracks:[]});
+
+  Promise.all([articleP,seriesP]).then(([articleData,seriesData])=>{
+    const art=toMap(articleData.tracks||[]);
+    const ser=toMap(seriesData.tracks||[]);
+
+    // TTS: article only
+    setSrc('tpMainAudio', art['tts']||art['__default__']);
+    // Deep Dive, Podcast, Critique: article overrides series, else series shared track
+    setSrc('tpDeepAudio',     art['deep']    ||ser['deep']    ||ser['__default__']);
+    setSrc('tpDebateAudio',   art['podcast'] ||ser['podcast'] ||ser['__default__']);
+    setSrc('tpCritiqueAudio', art['critique']||ser['critique']||ser['__default__']);
+
+    const anyAudio=art['tts']||art['__default__']||ser['__default__'];
+    if(!anyAudio){
+      const fb=document.getElementById('tpTtsFallback');
+      if(fb)fb.style.display='block';
+    }
+  });
+}
+
+tpRegister('tpMainAudio','#d4af37','Read Aloud');
+tpRegister('tpDeepAudio','#4a9eff','Deep Dive');
+tpRegister('tpDebateAudio','#a855f7','Podcast');
+tpRegister('tpCritiqueAudio','#22c55e','Critique');
+tpWire('tpMainAudio');tpWire('tpDeepAudio');tpWire('tpDebateAudio');tpWire('tpCritiqueAudio');
+tpBindTracks();
+
+// Sticky player
+const stickyEl=document.getElementById('stickyPlayer');
+if(stickyEl){
+  function updateSticky(){
+    if(!tpCurrentId||tpStickyDismissed){stickyEl.classList.remove('tp-visible');return;}
+    let outOfView=true;
+    document.querySelectorAll('.tp-player-block').forEach(b=>{const r=b.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight)outOfView=false;});
+    if(outOfView){
+      const info=tpColors[tpCurrentId]||{color:'#d4af37',label:'Audio'};
+      document.getElementById('stickyDot').style.background=info.color;
+      document.getElementById('stickyLabel').style.color=info.color;
+      document.getElementById('stickyLabel').textContent=info.label;
+      document.getElementById('stickyPlayBtn').style.borderColor=info.color;
+      document.getElementById('stickyPlayBtn').style.color=info.color;
+      document.getElementById('stickyFill').style.background=info.color;
+      stickyEl.classList.add('tp-visible');
+    }else{stickyEl.classList.remove('tp-visible');}
+  }
+  window.tpStickyToggle=function(){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);if(a.paused){a.play();tpUpdateBtns(tpCurrentId,true);}else{a.pause();tpUpdateBtns(tpCurrentId,false);}};
+  window.tpStickySeek=function(e){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;};
+  window.tpCloseSticky=function(){tpStickyDismissed=true;stickyEl.classList.remove('tp-visible');};
+  window.addEventListener('scroll',updateSticky,{passive:true});
+  setInterval(updateSticky,500);
+}
+})();
+</script>
 </body>
 </html>

@@ -1,441 +1,512 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Lean 4 Formal Verification — Theophysics</title>
-<meta name="description" content="Machine-verified proofs for the Theophysics framework. 25 modules. 102+ theorems. Zero sorry. The kernel doesn't care about your argument — either the proof compiles or it doesn't.">
-<meta property="og:title" content="Lean 4 Formal Verification — Theophysics">
-<meta property="og:description" content="Machine-verified proofs backing every structural claim in the framework. Zero incomplete proofs.">
-<meta property="og:type" content="website">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta content="Machine-verified proofs for the Theophysics framework. 25 modules. 102+ theorems. Zero sorry. The kernel doesn't care about your argument — either the proof compiles or it doesn't." name="description"/>
+<meta content="Lean 4 Formal Verification — Theophysics" property="og:title"/>
+<meta content="Machine-verified proofs backing every structural claim in the framework. Zero incomplete proofs." property="og:description"/>
+<meta content="website" property="og:type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=JetBrains+Mono:wght@300;400;500;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 <style>
-:root {
-  --bg: #050505;
-  --bg-raised: #0b0b0a;
-  --bg-panel: #11100e;
-  --ink: #f1e7d5;
-  --ink-soft: #c8b899;
-  --ink-muted: #80715c;
-  --gold: #d4af37;
-  --gold-hot: #f0c659;
-  --gold-low: #8d7934;
-  --ember: #cf4b1d;
-  --ember-hot: #f06a2d;
-  --blue: #6f9dc6;
-  --green: #22c55e;
-  --green-dim: #166534;
-  --line: rgba(212, 175, 55, 0.14);
-  --line-strong: rgba(212, 175, 55, 0.34);
-  --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-mono: "JetBrains Mono", "Courier New", monospace;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-* { box-sizing: border-box; margin: 0; }
-html { background: var(--bg); color: var(--ink); font-family: var(--font-sans); scroll-behavior: smooth; }
-body { min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-body::before {
-  content: "";
-  position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse at 16% 12%, rgba(212, 175, 55, 0.08), transparent 34%),
-    radial-gradient(ellipse at 86% 78%, rgba(34, 197, 94, 0.04), transparent 38%),
-    linear-gradient(180deg, rgba(5,5,5,0.5), rgba(5,5,5,0.96) 78%);
-  pointer-events: none; z-index: 0;
-}
-.page { position: relative; z-index: 2; }
-
-/* ── Hero ── */
-.hero {
-  min-height: 88vh; display: grid; align-content: center; justify-items: center;
-  gap: 24px; padding: 56px 22px 34px; text-align: center;
-}
-.kicker {
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.34em;
-  text-transform: uppercase; color: var(--green); line-height: 1.7;
-  opacity: 0; animation: fadeUp 900ms 120ms ease forwards;
-}
-.hero h1 {
-  max-width: 920px; font-family: var(--font-display); font-style: italic;
-  font-weight: 500; font-size: clamp(38px, 7vw, 82px); line-height: 0.98;
-  opacity: 0; animation: fadeUp 1100ms 260ms ease forwards;
-}
-.hero h1 em { color: var(--gold-hot); font-style: italic; }
-.subtitle {
-  max-width: 700px; color: var(--ink-soft); font-family: var(--font-display);
-  font-style: italic; font-size: clamp(17px, 2vw, 24px); line-height: 1.45;
-  opacity: 0; animation: fadeUp 1100ms 410ms ease forwards;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Stats ── */
-.stats {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
-  max-width: 920px; margin: 0 auto; padding: 0 22px 80px;
-  opacity: 0; animation: fadeUp 1100ms 560ms ease forwards;
-}
-.stat-pill {
-  border: 1px solid var(--line); border-radius: 999px;
-  padding: 10px 18px; background: rgba(17,16,14,0.58);
-  font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);
-}
-.stat-pill strong { color: var(--gold); font-weight: 500; }
-.stat-pill .g { color: var(--green); }
-
-/* ── Section ── */
-.section {
-  max-width: 920px; margin: 0 auto; padding: 0 22px 64px;
-}
-.section-head {
-  font-family: var(--font-display); font-style: italic; font-weight: 500;
-  font-size: clamp(26px, 4vw, 38px); margin: 0 0 8px; color: var(--ink);
-}
-.section-sub {
-  font-size: 14px; color: var(--ink-muted); margin: 0 0 32px; line-height: 1.6;
-}
-
-/* ── Proof Cards ── */
-.proof-grid { display: grid; gap: 16px; }
-.proof-card {
-  border: 1px solid var(--line); border-radius: 8px;
-  background: var(--bg-raised); padding: 20px 24px;
-  transition: border-color 260ms ease;
-}
-.proof-card:hover { border-color: var(--line-strong); }
-.proof-card-head {
-  display: flex; align-items: center; justify-content: space-between;
-  margin: 0 0 12px; gap: 12px;
-}
-.proof-card-title {
-  font-family: var(--font-display); font-weight: 600; font-size: 18px;
-  color: var(--gold);
-}
-.badge {
-  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
-  text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
-  white-space: nowrap;
-}
-.badge-verified { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
-.badge-files { background: rgba(212,175,55,0.1); color: var(--gold); border: 1px solid rgba(212,175,55,0.2); }
-
-.theorem-list { list-style: none; padding: 0; margin: 0; }
-.theorem-list li {
-  padding: 8px 0; border-bottom: 1px solid rgba(212,175,55,0.06);
-  display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start;
-}
-.theorem-list li:last-child { border-bottom: none; }
-.thm-name {
-  font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);
-  margin: 0 0 2px;
-}
-.thm-english {
-  font-size: 14px; color: var(--ink-soft); line-height: 1.5;
-}
-.thm-check {
-  font-family: var(--font-mono); font-size: 11px; color: var(--green);
-  padding-top: 2px;
-}
-
-/* ── What This Does NOT Prove ── */
-.boundary-box {
-  border: 1px solid var(--ember); border-radius: 8px;
-  background: rgba(207,75,29,0.06); padding: 20px 24px; margin: 0 0 32px;
-}
-.boundary-box h3 {
-  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--ember-hot); margin: 0 0 12px;
-}
-.boundary-box p {
-  font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin: 0 0 8px;
-}
-.boundary-box p:last-child { margin: 0; }
-
-/* ── Paper Map ── */
-.paper-map { display: grid; gap: 6px; }
-.paper-row {
-  display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px;
-  padding: 10px 16px; border-radius: 6px; background: var(--bg-raised);
-  align-items: center; font-size: 13px;
-}
-.paper-name { color: var(--ink); font-weight: 500; }
-.paper-files { color: var(--ink-muted); font-family: var(--font-mono); font-size: 11px; }
-.paper-count { font-family: var(--font-mono); font-size: 11px; color: var(--gold); }
-
-/* ── Footer ── */
-.footer {
-  max-width: 920px; margin: 0 auto; padding: 48px 22px 64px;
-  border-top: 1px solid var(--line); text-align: center;
-}
-.footer p { font-size: 13px; color: var(--ink-muted); line-height: 1.7; margin: 0 0 8px; }
-.footer a { color: var(--gold); text-decoration: none; }
-
-@media (max-width: 640px) {
-  .paper-row { grid-template-columns: 1fr auto; }
-  .paper-files { display: none; }
-}
+/* ═══ TP-WORKER-AUDIO-PLAYER ═══ */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+.tp-pair{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.tp-half{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid #222;border-radius:.4rem;background:#111;min-width:0;}
+.tp-half .tp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-half .tp-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;min-width:48px;}
+.tp-half .tp-play{width:24px;height:24px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-half .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-half .tp-track{height:3px;}.tp-half .tp-track:hover{height:5px;}
+.tp-half .tp-time{font-size:.55rem;min-width:28px;}
+.tp-half.tp-deep .tp-dot{background:#4a9eff;}.tp-half.tp-deep .tp-label{color:#4a9eff;}.tp-half.tp-deep .tp-play{border-color:#4a9eff;color:#4a9eff;}.tp-half.tp-deep .tp-fill{background:#4a9eff;}.tp-half.tp-deep:hover{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.08);}
+.tp-half.tp-debate .tp-dot{background:#a855f7;}.tp-half.tp-debate .tp-label{color:#a855f7;}.tp-half.tp-debate .tp-play{border-color:#a855f7;color:#a855f7;}.tp-half.tp-debate .tp-fill{background:#a855f7;}.tp-half.tp-debate:hover{border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08);}
+.tp-half.tp-critique .tp-dot{background:#22c55e;}.tp-half.tp-critique .tp-label{color:#22c55e;}.tp-half.tp-critique .tp-play{border-color:#22c55e;color:#22c55e;}.tp-half.tp-critique .tp-fill{background:#22c55e;}.tp-half.tp-critique:hover{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08);}
+.tp-pair{grid-template-columns:1fr 1fr 1fr;}
+.tp-speed{background:#111;border:1px solid #333;color:#888;font-family:'JetBrains Mono',monospace;font-size:.55rem;border-radius:.3rem;padding:.1rem .3rem;cursor:pointer;flex-shrink:0;}
+.tp-speed:hover{color:#ccc;border-color:#555;}
+.tp-sticky{position:fixed;right:-260px;top:50%;transform:translateY(-50%);width:220px;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border:1px solid #222;border-right:none;border-radius:.6rem 0 0 .6rem;padding:.75rem .8rem;z-index:9999;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.6);}
+.tp-sticky.tp-visible{right:0;}
+.tp-sticky-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem;}
+.tp-sticky .tp-sticky-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-sticky .tp-sticky-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tp-sticky .tp-sticky-close{background:none;border:none;color:#555;cursor:pointer;font-size:.65rem;padding:2px 4px;flex-shrink:0;transition:color .2s;}
+.tp-sticky .tp-sticky-close:hover{color:#e0e0e0;}
+.tp-sticky-controls{display:flex;align-items:center;gap:.5rem;}
+.tp-sticky .tp-play{width:26px;height:26px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-sticky .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-sticky .tp-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;}
+.tp-sticky .tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-sticky .tp-time{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:#555;min-width:28px;text-align:right;flex-shrink:0;}
+@media(max-width:700px){.tp-pair{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.tp-pair{grid-template-columns:1fr;}.tp-sticky{width:180px;padding:.6rem;}.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}.tp-speed{display:none;}}
 </style>
 </head>
 <body>
 <div class="page">
+<!-- TP-WORKER-AUDIO-PLAYER -->
+<div class="tp-player-block" data-audio-slug="lean4/lean4-index" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=lean4%2Flean4-index" data-series-slug="lean4" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=lean4">
+  <div class="tp-read-aloud" data-mode="tts">
+    <div class="tp-dot"></div>
+    <span class="tp-label">Read Aloud</span>
+    <audio id="tpMainAudio" preload="none"></audio>
+    <button class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)" aria-label="Play read-aloud">
+      <i class="fas fa-play"></i>
+    </button>
+    <div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+      <div id="tpMainFill" class="tp-fill"></div>
+    </div>
+    <span id="tpMainTime" class="tp-time">0:00</span>
+    <select class="tp-speed" onchange="tpSetSpeed(this.value)" aria-label="Playback speed">
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="1.75">1.75x</option>
+      <option value="2">2x</option>
+    </select>
+    <button class="tp-mute" onclick="tpMute('tpMainAudio',this)" aria-label="Mute">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+  <div class="tp-pair">
+    <div class="tp-half tp-deep" data-mode="deep">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Deep Dive</span>
+      <audio id="tpDeepAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)" aria-label="Play deep dive">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+        <div id="tpDeepFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDeepTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-debate" data-mode="podcast">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Podcast</span>
+      <audio id="tpDebateAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)" aria-label="Play podcast">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+        <div id="tpDebateFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDebateTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-critique" data-mode="critique">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Critique</span>
+      <audio id="tpCritiqueAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)" aria-label="Play critique">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+        <div id="tpCritiqueFill" class="tp-fill"></div>
+      </div>
+      <span id="tpCritiqueTime" class="tp-time">0:00</span>
+    </div>
+  </div>
+  <div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+  </div>
+</div>
+
+
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
-  <p class="kicker">Lean 4 &middot; Formal Verification &middot; Theophysics</p>
-  <h1>The proofs <em>compile.</em></h1>
-  <p class="subtitle">Machine-verified formal proofs backing every structural claim in the framework. The Lean 4 kernel doesn't care about your argument. Either the proof compiles or it doesn't.</p>
+<p class="kicker">Lean 4 · Formal Verification · Theophysics</p>
+<h1>The proofs <em>compile.</em></h1>
+<p class="subtitle">Machine-verified formal proofs backing every structural claim in the framework. The Lean 4 kernel doesn't care about your argument. Either the proof compiles or it doesn't.</p>
 </section>
-
 <div class="stats">
-  <span class="stat-pill"><strong>25</strong>&ensp;modules</span>
-  <span class="stat-pill"><strong>102+</strong>&ensp;theorems</span>
-  <span class="stat-pill"><span class="g">0</span>&ensp;sorry</span>
-  <span class="stat-pill"><strong>2,940</strong>&ensp;lines</span>
-  <span class="stat-pill"><strong>18/18</strong>&ensp;papers backed</span>
+<span class="stat-pill"><strong>25</strong> modules</span>
+<span class="stat-pill"><strong>102+</strong> theorems</span>
+<span class="stat-pill"><span class="g">0</span> sorry</span>
+<span class="stat-pill"><strong>2,940</strong> lines</span>
+<span class="stat-pill"><strong>18/18</strong> papers backed</span>
 </div>
-
 <!-- ═══ WHAT LEAN IS ═══ -->
 <section class="section">
-  <h2 class="section-head">What this page is</h2>
-  <p class="section-sub">
+<h2 class="section-head">What this page is</h2>
+<p class="section-sub">
     Lean 4 is a formal proof assistant used by mathematicians at Microsoft Research, DeepMind, and leading universities.
     When a proof compiles in Lean, it means the logical structure has been verified by the kernel — a small, trusted core that checks every step.
-    No human judgment is involved in the verification. No rhetoric. No interpretation. The machine says yes or no.<br><br>
+    No human judgment is involved in the verification. No rhetoric. No interpretation. The machine says yes or no.<br/><br/>
     Every theorem listed below compiled clean. Zero <code style="font-family:var(--font-mono);color:var(--green);font-size:13px;">sorry</code> — Lean's marker for "I skipped this step." Nothing was skipped. Nothing was assumed without proof.
   </p>
-
-  <div class="boundary-box">
-    <h3>What this does not prove</h3>
-    <p>Lean verifies logical structure, not empirical truth. It proves: "Given these definitions and axioms, these theorems follow by logical necessity." It does not prove that the ten laws are true descriptions of reality, that each physics/theology pair is isomorphic to the physical world, or that the framework's theological claims are correct.</p>
-    <p>What it does prove: the internal architecture is formally consistent, the structural claims hold under any algebra satisfying the axioms, and no one can dismiss this as "just analogies." The algebra is real. The proofs are machine-checked.</p>
-  </div>
+<div class="boundary-box">
+<h3>What this does not prove</h3>
+<p>Lean verifies logical structure, not empirical truth. It proves: "Given these definitions and axioms, these theorems follow by logical necessity." It does not prove that the ten laws are true descriptions of reality, that each physics/theology pair is isomorphic to the physical world, or that the framework's theological claims are correct.</p>
+<p>What it does prove: the internal architecture is formally consistent, the structural claims hold under any algebra satisfying the axioms, and no one can dismiss this as "just analogies." The algebra is real. The proofs are machine-checked.</p>
+</div>
 </section>
-
 <!-- ═══ CORE PROOFS ═══ -->
 <section class="section">
-  <h2 class="section-head">Core verified theorems</h2>
-  <p class="section-sub">The structural backbone. These theorems hold for any system satisfying the coherence axioms — not just specific numbers, but universally.</p>
-
-  <div class="proof-grid">
-
-    <!-- CoherenceAlgebra -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">CoherenceAlgebra</span>
-        <span class="badge badge-verified">✓ verified</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">listProd_eq_zero_iff</p><p class="thm-english">If any one of the ten coherence factors goes to zero, the whole system collapses. Conversely, if the system collapses, at least one factor was zero.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">cannot_rescue_zero</p><p class="thm-english">No internal operation can rescue a system that has collapsed to zero. External input is required.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">no_zero_divisors</p><p class="thm-english">If the product of two factors is zero, at least one of them must be zero. No hidden collapse — every failure is traceable.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- GraceOperator -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">GraceOperator</span>
-        <span class="badge badge-verified">✓ verified</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">grace_idempotent</p><p class="thm-english">Grace applied twice equals grace applied once. You don't need to be saved twice.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">grace_not_invertible</p><p class="thm-english">Grace cannot be reversed. There is no operation that undoes what grace does. Irreversible by logical necessity.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">grace_event_after_constructive</p><p class="thm-english">Every grace event results in the constructive regime. Destructive becomes constructive. Constructive stays constructive.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- MaxwellTrinity -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">MaxwellTrinity</span>
-        <span class="badge badge-verified">✓ verified</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">trinity_isomorphism</p><p class="thm-english">The internal structure of Maxwell's equations — three distinct operators, one unified field, mutual generation without reduction — is structurally isomorphic to the Trinitarian relation.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- OntologicalPriority -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">OntologicalPriority</span>
-        <span class="badge badge-verified">✓ verified &middot; 14 theorems</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">math_before_matter</p><p class="thm-english">Mathematical structure is ontologically prior to physical instantiation. The blueprint precedes the house.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">good_is_ontological</p><p class="thm-english">Goodness is not imposed on a neutral substrate — it is a structural property of coherent systems. This theorem appears in every paper.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- JusticeMercy -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">JusticeMercyOperator</span>
-        <span class="badge badge-verified">✓ verified</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">cross_uniqueness</p><p class="thm-english">When α=0 (third party pays) and the judge is the payer, justice and mercy are both maximal simultaneously. This configuration is unique. There is exactly one point where both are satisfied without contradiction.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">zero_preserving_cannot_rescue</p><p class="thm-english">A justice operator that preserves zero cannot rescue a collapsed state. Internal correction preserves the problem.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- ParasiticEvil -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">ParasiticEvil</span>
-        <span class="badge badge-verified">✓ verified &middot; 14 theorems</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">evil_requires_good</p><p class="thm-english">Evil cannot exist independently. It is structurally parasitic on good — it requires a coherent substrate to corrupt.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- HebrewLogos -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">HebrewLogos</span>
-        <span class="badge badge-verified">✓ verified &middot; 21 theorems</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">grace_signature_verified</p><p class="thm-english">The Hebrew word for grace (חֵן) satisfies the algebraic properties of grace under a fixed letter-value mapping. The classifier accepts it.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">random_root_not_grace</p><p class="thm-english">A random Hebrew root with different letters fails the same classifier. The gate discriminates. It's not numerology — it's structure.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Master Equation -->
-    <div class="proof-card">
-      <div class="proof-card-head">
-        <span class="proof-card-title">MasterEquation + Invariance</span>
-        <span class="badge badge-verified">✓ verified</span>
-      </div>
-      <ul class="theorem-list">
-        <li>
-          <div><p class="thm-name">chi_pos_of_all_pos</p><p class="thm-english">When all ten factors are positive and the revelation gate is open, coherence is strictly positive. Life requires all channels active.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-        <li>
-          <div><p class="thm-name">sEff_antitone</p><p class="thm-english">As entropy production increases, effective coherence decreases. Decay is monotonic — you can't out-entropy the equation.</p></div>
-          <span class="thm-check">⊢</span>
-        </li>
-      </ul>
-    </div>
-
-  </div>
+<h2 class="section-head">Core verified theorems</h2>
+<p class="section-sub">The structural backbone. These theorems hold for any system satisfying the coherence axioms — not just specific numbers, but universally.</p>
+<div class="proof-grid">
+<!-- CoherenceAlgebra -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">CoherenceAlgebra</span>
+<span class="badge badge-verified">✓ verified</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">listProd_eq_zero_iff</p><p class="thm-english">If any one of the ten coherence factors goes to zero, the whole system collapses. Conversely, if the system collapses, at least one factor was zero.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">cannot_rescue_zero</p><p class="thm-english">No internal operation can rescue a system that has collapsed to zero. External input is required.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">no_zero_divisors</p><p class="thm-english">If the product of two factors is zero, at least one of them must be zero. No hidden collapse — every failure is traceable.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+<!-- GraceOperator -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">GraceOperator</span>
+<span class="badge badge-verified">✓ verified</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">grace_idempotent</p><p class="thm-english">Grace applied twice equals grace applied once. You don't need to be saved twice.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">grace_not_invertible</p><p class="thm-english">Grace cannot be reversed. There is no operation that undoes what grace does. Irreversible by logical necessity.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">grace_event_after_constructive</p><p class="thm-english">Every grace event results in the constructive regime. Destructive becomes constructive. Constructive stays constructive.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+<!-- MaxwellTrinity -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">MaxwellTrinity</span>
+<span class="badge badge-verified">✓ verified</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">trinity_isomorphism</p><p class="thm-english">The internal structure of Maxwell's equations — three distinct operators, one unified field, mutual generation without reduction — is structurally isomorphic to the Trinitarian relation.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+<!-- OntologicalPriority -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">OntologicalPriority</span>
+<span class="badge badge-verified">✓ verified · 14 theorems</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">math_before_matter</p><p class="thm-english">Mathematical structure is ontologically prior to physical instantiation. The blueprint precedes the house.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">good_is_ontological</p><p class="thm-english">Goodness is not imposed on a neutral substrate — it is a structural property of coherent systems. This theorem appears in every paper.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+<!-- JusticeMercy -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">JusticeMercyOperator</span>
+<span class="badge badge-verified">✓ verified</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">cross_uniqueness</p><p class="thm-english">When α=0 (third party pays) and the judge is the payer, justice and mercy are both maximal simultaneously. This configuration is unique. There is exactly one point where both are satisfied without contradiction.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">zero_preserving_cannot_rescue</p><p class="thm-english">A justice operator that preserves zero cannot rescue a collapsed state. Internal correction preserves the problem.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+<!-- ParasiticEvil -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">ParasiticEvil</span>
+<span class="badge badge-verified">✓ verified · 14 theorems</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">evil_requires_good</p><p class="thm-english">Evil cannot exist independently. It is structurally parasitic on good — it requires a coherent substrate to corrupt.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+<!-- HebrewLogos -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">HebrewLogos</span>
+<span class="badge badge-verified">✓ verified · 21 theorems</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">grace_signature_verified</p><p class="thm-english">The Hebrew word for grace (חֵן) satisfies the algebraic properties of grace under a fixed letter-value mapping. The classifier accepts it.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">random_root_not_grace</p><p class="thm-english">A random Hebrew root with different letters fails the same classifier. The gate discriminates. It's not numerology — it's structure.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+<!-- Master Equation -->
+<div class="proof-card">
+<div class="proof-card-head">
+<span class="proof-card-title">MasterEquation + Invariance</span>
+<span class="badge badge-verified">✓ verified</span>
+</div>
+<ul class="theorem-list">
+<li>
+<div><p class="thm-name">chi_pos_of_all_pos</p><p class="thm-english">When all ten factors are positive and the revelation gate is open, coherence is strictly positive. Life requires all channels active.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+<li>
+<div><p class="thm-name">sEff_antitone</p><p class="thm-english">As entropy production increases, effective coherence decreases. Decay is monotonic — you can't out-entropy the equation.</p></div>
+<span class="thm-check">⊢</span>
+</li>
+</ul>
+</div>
+</div>
 </section>
-
 <!-- ═══ PAPER MAP ═══ -->
 <section class="section">
-  <h2 class="section-head">Coverage by paper</h2>
-  <p class="section-sub">Every Logos paper has Lean 4 proofs backing its structural claims.</p>
-
-  <div class="paper-map">
-    <div class="paper-row"><span class="paper-name">P00 — Introduction</span><span class="paper-files">CoherenceAlgebra, TheophysicsSequence, OntologicalPriority</span><span class="paper-count">3</span></div>
-    <div class="paper-row"><span class="paper-name">P00 — The Missing Step</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
-    <div class="paper-row"><span class="paper-name">P00 — 2+2=5 (Math is Moral)</span><span class="paper-files">MathMoralNegative, MoralWeight, ParasiticEvil + 4 more</span><span class="paper-count">7</span></div>
-    <div class="paper-row"><span class="paper-name">P01 — The Logos Principle</span><span class="paper-files">HebrewLogos, MaxwellTrinity, DependencyLattice + 4 more</span><span class="paper-count">7</span></div>
-    <div class="paper-row"><span class="paper-name">P02 — Algorithm of Reality</span><span class="paper-files">OntologicalPriority, SubstratePriority</span><span class="paper-count">2</span></div>
-    <div class="paper-row"><span class="paper-name">P03 — The Hard Problem</span><span class="paper-files">PerfectSubstrateBoundary, JusticeMercyOperator + 2 more</span><span class="paper-count">4</span></div>
-    <div class="paper-row"><span class="paper-name">P04 — The Soul Observer</span><span class="paper-files">PerfectSubstrateBoundary, JusticeMercyOperator + 2 more</span><span class="paper-count">4</span></div>
-    <div class="paper-row"><span class="paper-name">P05 — Physics of Principalities</span><span class="paper-files">ParasiticEvil, OntologicalPriority</span><span class="paper-count">2</span></div>
-    <div class="paper-row"><span class="paper-name">P06 — The Grace Function</span><span class="paper-files">GraceOperator, OntologicalPriority</span><span class="paper-count">2</span></div>
-    <div class="paper-row"><span class="paper-name">P07 — Stretched Heavens</span><span class="paper-files">Thermodynamics, OntologicalPriority</span><span class="paper-count">2</span></div>
-    <div class="paper-row"><span class="paper-name">P08 — The Moral Universe</span><span class="paper-files">JusticeMercy, MaxwellTrinity, MasterEquation + 8 more</span><span class="paper-count">11</span></div>
-    <div class="paper-row"><span class="paper-name">P09 — Protocols &amp; Validation</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
-    <div class="paper-row"><span class="paper-name">P10 — Decalogue of the Cosmos</span><span class="paper-files">NoetherCommandments, Law9Asymmetry, OntologicalPriority</span><span class="paper-count">3</span></div>
-    <div class="paper-row"><span class="paper-name">P11 — Test Predictions</span><span class="paper-files">MasterEquation, MasterEquationInvariance, OntologicalPriority</span><span class="paper-count">3</span></div>
-    <div class="paper-row"><span class="paper-name">P12 — Lagrangian Framework</span><span class="paper-files">MasterEquation, MasterEquationInvariance, CoherenceAlgebra + 1</span><span class="paper-count">4</span></div>
-    <div class="paper-row"><span class="paper-name">P13 — The Quantum Bridge</span><span class="paper-files">MaxwellTrinity, DualProjection, OntologicalPriority</span><span class="paper-count">3</span></div>
-    <div class="paper-row"><span class="paper-name">P14 — Creatio in Silico</span><span class="paper-files">OntologicalPriority, CoherenceAlgebra</span><span class="paper-count">2</span></div>
-    <div class="paper-row"><span class="paper-name">P15 — Aggregated Data</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
-  </div>
+<h2 class="section-head">Coverage by paper</h2>
+<p class="section-sub">Every Logos paper has Lean 4 proofs backing its structural claims.</p>
+<div class="paper-map">
+<div class="paper-row"><span class="paper-name">P00 — Introduction</span><span class="paper-files">CoherenceAlgebra, TheophysicsSequence, OntologicalPriority</span><span class="paper-count">3</span></div>
+<div class="paper-row"><span class="paper-name">P00 — The Missing Step</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
+<div class="paper-row"><span class="paper-name">P00 — 2+2=5 (Math is Moral)</span><span class="paper-files">MathMoralNegative, MoralWeight, ParasiticEvil + 4 more</span><span class="paper-count">7</span></div>
+<div class="paper-row"><span class="paper-name">P01 — The Logos Principle</span><span class="paper-files">HebrewLogos, MaxwellTrinity, DependencyLattice + 4 more</span><span class="paper-count">7</span></div>
+<div class="paper-row"><span class="paper-name">P02 — Algorithm of Reality</span><span class="paper-files">OntologicalPriority, SubstratePriority</span><span class="paper-count">2</span></div>
+<div class="paper-row"><span class="paper-name">P03 — The Hard Problem</span><span class="paper-files">PerfectSubstrateBoundary, JusticeMercyOperator + 2 more</span><span class="paper-count">4</span></div>
+<div class="paper-row"><span class="paper-name">P04 — The Soul Observer</span><span class="paper-files">PerfectSubstrateBoundary, JusticeMercyOperator + 2 more</span><span class="paper-count">4</span></div>
+<div class="paper-row"><span class="paper-name">P05 — Physics of Principalities</span><span class="paper-files">ParasiticEvil, OntologicalPriority</span><span class="paper-count">2</span></div>
+<div class="paper-row"><span class="paper-name">P06 — The Grace Function</span><span class="paper-files">GraceOperator, OntologicalPriority</span><span class="paper-count">2</span></div>
+<div class="paper-row"><span class="paper-name">P07 — Stretched Heavens</span><span class="paper-files">Thermodynamics, OntologicalPriority</span><span class="paper-count">2</span></div>
+<div class="paper-row"><span class="paper-name">P08 — The Moral Universe</span><span class="paper-files">JusticeMercy, MaxwellTrinity, MasterEquation + 8 more</span><span class="paper-count">11</span></div>
+<div class="paper-row"><span class="paper-name">P09 — Protocols &amp; Validation</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
+<div class="paper-row"><span class="paper-name">P10 — Decalogue of the Cosmos</span><span class="paper-files">NoetherCommandments, Law9Asymmetry, OntologicalPriority</span><span class="paper-count">3</span></div>
+<div class="paper-row"><span class="paper-name">P11 — Test Predictions</span><span class="paper-files">MasterEquation, MasterEquationInvariance, OntologicalPriority</span><span class="paper-count">3</span></div>
+<div class="paper-row"><span class="paper-name">P12 — Lagrangian Framework</span><span class="paper-files">MasterEquation, MasterEquationInvariance, CoherenceAlgebra + 1</span><span class="paper-count">4</span></div>
+<div class="paper-row"><span class="paper-name">P13 — The Quantum Bridge</span><span class="paper-files">MaxwellTrinity, DualProjection, OntologicalPriority</span><span class="paper-count">3</span></div>
+<div class="paper-row"><span class="paper-name">P14 — Creatio in Silico</span><span class="paper-files">OntologicalPriority, CoherenceAlgebra</span><span class="paper-count">2</span></div>
+<div class="paper-row"><span class="paper-name">P15 — Aggregated Data</span><span class="paper-files">CoherenceAlgebra, OntologicalPriority</span><span class="paper-count">2</span></div>
+</div>
 </section>
-
 <!-- ═══ FULL CORPUS LINK ═══ -->
 <section class="section">
-  <h2 class="section-head">Full Theorem Index</h2>
-  <p class="section-sub">Every theorem. Every layer. Every lane. Filterable by type. All 210+ named results in one place.</p>
-  <a href="/lean4/lean4-corpus.html" style="display:inline-flex;align-items:center;gap:1rem;padding:1.2rem 2rem;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:#d4af37;text-decoration:none;font-family:var(--font-mono);font-size:0.82rem;letter-spacing:0.1em;margin-top:1rem;transition:all 0.2s;">
-    <span style="font-size:1.4rem;">⭐</span>
-    <span>
-      <strong style="display:block;font-size:1rem;margin-bottom:0.2rem;color:#f0c659;">The Lean 4 Corpus</strong>
+<h2 class="section-head">Full Theorem Index</h2>
+<p class="section-sub">Every theorem. Every layer. Every lane. Filterable by type. All 210+ named results in one place.</p>
+<a href="/lean4/lean4-corpus.html" style="display:inline-flex;align-items:center;gap:1rem;padding:1.2rem 2rem;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:#d4af37;text-decoration:none;font-family:var(--font-mono);font-size:0.82rem;letter-spacing:0.1em;margin-top:1rem;transition:all 0.2s;">
+<span style="font-size:1.4rem;">⭐</span>
+<span>
+<strong style="display:block;font-size:1rem;margin-bottom:0.2rem;color:#f0c659;">The Lean 4 Corpus</strong>
       287 theorems · 7 lanes · 16 layers · 70+ adversarial rejections · 0 sorry
     </span>
-    <span style="margin-left:auto;opacity:0.5">→</span>
-  </a>
+<span style="margin-left:auto;opacity:0.5">→</span>
+</a>
 </section>
-
 <!-- ═══ VERIFY YOURSELF ═══ -->
 <section class="section">
-  <h2 class="section-head">Verify it yourself</h2>
-  <p class="section-sub">You don't have to trust me. You don't have to trust anyone. Run it yourself.</p>
-
-  <div class="proof-card" style="font-family:var(--font-mono);font-size:13px;line-height:1.8;color:var(--ink-soft);">
-    <p style="color:var(--ink-muted);margin:0 0 12px;"># Install Lean 4</p>
-    <p style="margin:0;">curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh</p>
-    <br>
-    <p style="color:var(--ink-muted);margin:0 0 12px;"># Clone and build</p>
-    <p style="margin:0;">git clone https://github.com/YellowKidokc/theophysics.git</p>
-    <p style="margin:0;">cd theophysics</p>
-    <p style="margin:0;">lake build</p>
-    <br>
-    <p style="color:var(--green);margin:0;">Build completed successfully.</p>
-    <p style="color:var(--green);margin:0;">Zero sorry.</p>
-  </div>
+<h2 class="section-head">Verify it yourself</h2>
+<p class="section-sub">You don't have to trust me. You don't have to trust anyone. Run it yourself.</p>
+<div class="proof-card" style="font-family:var(--font-mono);font-size:13px;line-height:1.8;color:var(--ink-soft);">
+<p style="color:var(--ink-muted);margin:0 0 12px;"># Install Lean 4</p>
+<p style="margin:0;">curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh</p>
+<br/>
+<p style="color:var(--ink-muted);margin:0 0 12px;"># Clone and build</p>
+<p style="margin:0;">git clone https://github.com/YellowKidokc/theophysics.git</p>
+<p style="margin:0;">cd theophysics</p>
+<p style="margin:0;">lake build</p>
+<br/>
+<p style="color:var(--green);margin:0;">Build completed successfully.</p>
+<p style="color:var(--green);margin:0;">Zero sorry.</p>
+</div>
 </section>
-
 <!-- ═══ FOOTER ═══ -->
 <div class="footer">
-  <p>Theophysics Research &middot; David Lowe &middot; POF 2828</p>
-  <p><a href="/">faiththruphysics.com</a> &middot; <a href="/subdomains/equation/">Master Equation</a> &middot; <a href="/subdomains/glossary/">Glossary</a></p>
-  <p style="margin-top:16px;font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);">Lean 4 v4.30.0-rc2 &middot; Toolchain locked &middot; No external dependencies</p>
+<p>Theophysics Research · David Lowe · POF 2828</p>
+<p><a href="/">faiththruphysics.com</a> · <a href="/subdomains/equation/">Master Equation</a> · <a href="/subdomains/glossary/">Glossary</a></p>
+<p style="margin-top:16px;font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);">Lean 4 v4.30.0-rc2 · Toolchain locked · No external dependencies</p>
 </div>
+</div>
+<script defer="" src="https://faiththruphysics.com/site-shell/frame.js"></script>
 
+
+<div class="tp-sticky" id="stickyPlayer">
+  <div class="tp-sticky-header">
+    <div class="tp-sticky-dot" id="stickyDot" style="background:#d4af37;"></div>
+    <span class="tp-sticky-label" id="stickyLabel" style="color:#d4af37;">Audio</span>
+    <button class="tp-sticky-close" onclick="tpCloseSticky()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="tp-sticky-controls">
+    <button class="tp-play" id="stickyPlayBtn" onclick="tpStickyToggle()" style="border-color:#d4af37;color:#d4af37;"><i class="fas fa-play"></i></button>
+    <div class="tp-track" onclick="tpStickySeek(event)">
+      <div class="tp-fill" id="stickyFill" style="background:#d4af37;"></div>
+    </div>
+    <span class="tp-time" id="stickyTime">0:00</span>
+  </div>
 </div>
+<script>
+(function(){
+let tpCurrentId=null,tpStickyDismissed=false;
+const tpColors={};
+function tpRegister(id,color,label){tpColors[id]={color:color,label:label};}
+function tpFmt(s){if(isNaN(s)||!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function tpToggle(id,btn){
+  const a=document.getElementById(id);
+  document.querySelectorAll('.tp-player-block audio').forEach(x=>{if(x.id!==id&&!x.paused){x.pause();tpUpdateBtns(x.id,false);}});
+  if(a.paused){a.play();tpCurrentId=id;tpStickyDismissed=false;tpUpdateBtns(id,true);}
+  else{a.pause();tpCurrentId=null;tpUpdateBtns(id,false);}
+}
+function tpUpdateBtns(id,playing){
+  document.querySelectorAll('[data-audio="'+id+'"]').forEach(b=>{const i=b.querySelector('i');if(i)i.className='fas fa-'+(playing?'pause':'play');});
+  if(id===tpCurrentId||!playing){const si=document.querySelector('#stickyPlayBtn i');if(si)si.className='fas fa-'+(playing?'pause':'play');}
+}
+function tpSeek(e,id){const a=document.getElementById(id);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;}
+function tpMute(id,btn){const a=document.getElementById(id);a.muted=!a.muted;btn.querySelector('i').className='fas fa-volume-'+(a.muted?'mute':'up');}
+function tpWire(id){
+  const a=document.getElementById(id);if(!a)return;
+  a.addEventListener('timeupdate',()=>{
+    const fill=document.getElementById(id.replace('Audio','Fill'));
+    const time=document.getElementById(id.replace('Audio','Time'));
+    if(fill&&a.duration)fill.style.width=(a.currentTime/a.duration*100)+'%';
+    if(time)time.textContent=tpFmt(a.currentTime);
+    if(id===tpCurrentId){const sf=document.getElementById('stickyFill');const st=document.getElementById('stickyTime');if(sf&&a.duration)sf.style.width=(a.currentTime/a.duration*100)+'%';if(st)st.textContent=tpFmt(a.currentTime);}
+  });
+  a.addEventListener('ended',()=>{tpUpdateBtns(id,false);if(tpCurrentId===id)tpCurrentId=null;});
+}
+window.tpToggle=tpToggle;window.tpSeek=tpSeek;window.tpMute=tpMute;
+window.tpSetSpeed=function(v){
+  const rate=parseFloat(v)||1;
+  document.querySelectorAll('.tp-player-block audio').forEach(a=>{a.playbackRate=rate;});
+};
+
+// Browser TTS fallback
+window.tpBrowserTts=function(){
+  const main=document.querySelector('[data-tts-source],main,article,#main-content,.content');
+  const text=main?main.innerText.replace(/\s+/g,' ').trim().slice(0,12000):'';
+  if(!text||!window.speechSynthesis){alert('Browser TTS not available');return;}
+  const u=new SpeechSynthesisUtterance(text);u.rate=1;u.pitch=1;window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
+};
+
+// Fetch tracks from worker and bind sources.
+// TTS comes from the article-level slug.
+// Deep Dive, Podcast, Critique come from the series slug as a shared track,
+// falling back to an article-level override if one exists.
+function tpBindTracks(){
+  const block=document.querySelector('.tp-player-block');
+  if(!block)return;
+  const lookup=block.dataset.audioLookup;
+  const seriesLookup=block.dataset.seriesLookup;
+  if(!lookup)return;
+
+  function toMap(tracks){
+    const m={};
+    tracks.forEach(t=>{
+      if(t.mode)m[t.mode]=t.url;
+      if(t.is_default)m['__default__']=t.url;
+    });
+    return m;
+  }
+  function setSrc(id,url){
+    if(!url)return;
+    const a=document.getElementById(id);
+    if(a){a.src=url;a.preload='metadata';}
+  }
+
+  // Fetch article tracks first, then series tracks for shared slots
+  const articleP=fetch(lookup).then(r=>r.json()).catch(()=>({tracks:[]}));
+  const seriesP=(seriesLookup&&seriesLookup!==lookup)
+    ?fetch(seriesLookup).then(r=>r.json()).catch(()=>({tracks:[]}))
+    :Promise.resolve({tracks:[]});
+
+  Promise.all([articleP,seriesP]).then(([articleData,seriesData])=>{
+    const art=toMap(articleData.tracks||[]);
+    const ser=toMap(seriesData.tracks||[]);
+
+    // TTS: article only
+    setSrc('tpMainAudio', art['tts']||art['__default__']);
+    // Deep Dive, Podcast, Critique: article overrides series, else series shared track
+    setSrc('tpDeepAudio',     art['deep']    ||ser['deep']    ||ser['__default__']);
+    setSrc('tpDebateAudio',   art['podcast'] ||ser['podcast'] ||ser['__default__']);
+    setSrc('tpCritiqueAudio', art['critique']||ser['critique']||ser['__default__']);
+
+    const anyAudio=art['tts']||art['__default__']||ser['__default__'];
+    if(!anyAudio){
+      const fb=document.getElementById('tpTtsFallback');
+      if(fb)fb.style.display='block';
+    }
+  });
+}
+
+tpRegister('tpMainAudio','#d4af37','Read Aloud');
+tpRegister('tpDeepAudio','#4a9eff','Deep Dive');
+tpRegister('tpDebateAudio','#a855f7','Podcast');
+tpRegister('tpCritiqueAudio','#22c55e','Critique');
+tpWire('tpMainAudio');tpWire('tpDeepAudio');tpWire('tpDebateAudio');tpWire('tpCritiqueAudio');
+tpBindTracks();
+
+// Sticky player
+const stickyEl=document.getElementById('stickyPlayer');
+if(stickyEl){
+  function updateSticky(){
+    if(!tpCurrentId||tpStickyDismissed){stickyEl.classList.remove('tp-visible');return;}
+    let outOfView=true;
+    document.querySelectorAll('.tp-player-block').forEach(b=>{const r=b.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight)outOfView=false;});
+    if(outOfView){
+      const info=tpColors[tpCurrentId]||{color:'#d4af37',label:'Audio'};
+      document.getElementById('stickyDot').style.background=info.color;
+      document.getElementById('stickyLabel').style.color=info.color;
+      document.getElementById('stickyLabel').textContent=info.label;
+      document.getElementById('stickyPlayBtn').style.borderColor=info.color;
+      document.getElementById('stickyPlayBtn').style.color=info.color;
+      document.getElementById('stickyFill').style.background=info.color;
+      stickyEl.classList.add('tp-visible');
+    }else{stickyEl.classList.remove('tp-visible');}
+  }
+  window.tpStickyToggle=function(){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);if(a.paused){a.play();tpUpdateBtns(tpCurrentId,true);}else{a.pause();tpUpdateBtns(tpCurrentId,false);}};
+  window.tpStickySeek=function(e){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;};
+  window.tpCloseSticky=function(){tpStickyDismissed=true;stickyEl.classList.remove('tp-visible');};
+  window.addEventListener('scroll',updateSticky,{passive:true});
+  setInterval(updateSticky,500);
+}
+})();
+</script>
 </body>
 </html>
