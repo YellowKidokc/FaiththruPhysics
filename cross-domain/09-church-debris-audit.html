@@ -4,1083 +4,875 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>The Church Debris Audit — David Lowe</title>
-
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 <style>
-/* ═══════════════════════════════════════════════════
-   MANUSCRIPT NOIR — Cross-Domain Coherence Series
-   Design: Claude Opus · Theophysics Research Program
-   ═══════════════════════════════════════════════════ */
-
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root{
-  --bg:        #0b0a09;
-  --surface:   #131210;
-  --surface2:  #1a1916;
-  --surface3:  #22211d;
-  --border:    rgba(193,127,62,.12);
-  --border-h:  rgba(193,127,62,.30);
-  --copper:    #c17f3e;
-  --copper-l:  #d9a066;
-  --copper-dim:rgba(193,127,62,.06);
-  --copper-glow:rgba(193,127,62,.15);
-  --cream:     #ede6d6;
-  --cream-d:   #a89f8b;
-  --cream-m:   #6b6456;
-  --ink:       #d4cfc3;
-  --white:     #f5f0e6;
-  --sage:      #7a8c6e;
-  --sage-dim:  rgba(122,140,110,.08);
-  --slate:     #6b8fbf;
-  --slate-dim: rgba(107,143,191,.08);
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
 }
-
+*{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
 
-body{
-  background:var(--bg);
-  color:var(--ink);
-  font-family:'Source Serif 4',Georgia,serif;
-  font-size:1.08rem;
-  line-height:1.82;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
 
-/* Ambient glow */
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse at 30% -10%,rgba(193,127,62,.04) 0%,transparent 50%),
-    radial-gradient(ellipse at 70% 110%,rgba(193,127,62,.02) 0%,transparent 50%);
-}
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
 
-::selection{background:rgba(193,127,62,.25);color:var(--white)}
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
 
-/* ── TYPOGRAPHY ── */
-.display{font-family:'Playfair Display',Georgia,serif}
-.serif{font-family:'Source Serif 4',Georgia,serif}
-.sans{font-family:'Inter',system-ui,sans-serif}
-.mono{font-family:'JetBrains Mono',monospace}
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
 
-/* ── LAYOUT ── */
-.page{max-width:780px;margin:0 auto;padding:0 2rem}
-.wide{max-width:920px}
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
 
-/* ── TOP BAR ── */
-.top-bar{
-  border-bottom:1px solid var(--border);
-  padding:1rem 0;
-}
-.top-bar .inner{
-  max-width:780px;margin:0 auto;padding:0 2rem;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.series-mark{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;
-  color:var(--cream-m);
-}
-.series-mark span{color:var(--copper)}
-.top-nav{display:flex;gap:1.4rem}
-.top-nav a{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--cream-m);text-decoration:none;transition:color .25s;
-}
-.top-nav a:hover{color:var(--copper-l)}
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
 
-/* ── HERO ── */
-.hero{
-  padding:6rem 0 4rem;
-  text-align:center;
-  position:relative;
-}
-.hero::after{
-  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  width:80px;height:1px;background:var(--copper);opacity:.4;
-}
-.hero-number{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(5rem,12vw,8rem);
-  font-weight:900;
-  color:rgba(193,127,62,.06);
-  line-height:1;
-  margin-bottom:-1.5rem;
-  position:relative;
-  z-index:0;
-}
-.hero-tag{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;
-  color:var(--copper);
-  display:block;margin-bottom:1.8rem;
-  position:relative;z-index:1;
-}
-.hero h1{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(2.4rem,5.5vw,3.8rem);
-  font-weight:700;
-  color:var(--white);
-  line-height:1.1;
-  margin-bottom:1.5rem;
-  letter-spacing:-.02em;
-  position:relative;z-index:1;
-}
-.hero h1 em{
-  font-style:italic;
-  color:var(--copper-l);
-  font-weight:400;
-}
-.hero .byline{
-  font-family:'Inter',sans-serif;
-  font-size:.85rem;
-  color:var(--cream-m);
-  letter-spacing:.05em;
-}
-.hero .byline strong{color:var(--cream-d);font-weight:500}
-.hero .subtitle{
-  font-family:'Source Serif 4',Georgia,serif;
-  font-size:1.15rem;
-  font-style:italic;
-  color:var(--cream-d);
-  margin-bottom:1.8rem;
-  max-width:560px;
-  margin-left:auto;
-  margin-right:auto;
-  line-height:1.6;
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
 }
 
-/* ── SECTIONS ── */
-.section{
-  padding:3.5rem 0;
-  position:relative;
-}
-.section + .section{
-  border-top:1px solid var(--border);
-}
-.section-num{
-  font-family:'Playfair Display',serif;
-  font-size:4rem;font-weight:900;
-  color:rgba(193,127,62,.05);
-  position:absolute;top:2rem;right:0;
-  line-height:1;pointer-events:none;
-}
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
 
-h2{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(1.6rem,3vw,2.2rem);
-  font-weight:700;
-  color:var(--white);
-  margin-bottom:1.8rem;
-  line-height:1.2;
-}
-h2 .part-label{
-  display:block;
-  font-family:'JetBrains Mono',monospace;
-  font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;
-  color:var(--copper);
-  margin-bottom:.6rem;
-  font-weight:400;
-}
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
 
-h3{
-  font-family:'Playfair Display',serif;
-  font-size:1.3rem;font-weight:700;
-  color:var(--white);
-  margin:2.5rem 0 1rem;
-}
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
 
-p{margin-bottom:1.4rem}
-p + p{margin-top:0}
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
 
-strong{color:var(--white);font-weight:600}
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
 
-em{color:var(--copper-l)}
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
 
-/* ── PULL QUOTE ── */
-.pull-quote{
-  border-left:3px solid var(--copper);
-  padding:1.5rem 0 1.5rem 2rem;
-  margin:2.5rem 0;
-  position:relative;
-}
-.pull-quote p{
-  font-family:'Playfair Display',serif;
-  font-size:1.35rem;
-  font-style:italic;
-  color:var(--cream);
-  line-height:1.6;
-  margin-bottom:0;
-}
-.pull-quote .attr{
-  font-family:'Inter',sans-serif;
-  font-size:.75rem;
-  color:var(--copper);
-  margin-top:.8rem;
-  display:block;
-}
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
 
-/* ── VOICE BLOCK (raw voice vs. written) ── */
-.voice-block{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:2rem;
-  margin:2rem 0;
-}
-.voice-label{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;
-  color:var(--copper);
-  margin-bottom:1rem;display:block;
-}
-
-/* ── AI SPEAKER ── */
-.ai-voice{
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-left:3px solid var(--sage);
-  border-radius:0 8px 8px 0;
-  padding:2rem 2rem 2rem 2.5rem;
-  margin:2.5rem 0;
-}
-.ai-voice.gemini{border-left-color:var(--slate)}
-.ai-voice .speaker{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
-  color:var(--sage);
-  margin-bottom:1rem;display:block;
-}
-.ai-voice.gemini .speaker{color:var(--slate)}
-
-/* ── THEORIST BLOCK ── */
-.theorist-block{
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-left:3px solid var(--copper);
-  border-radius:0 8px 8px 0;
-  padding:2rem 2rem 2rem 2.5rem;
-  margin:2.5rem 0;
-}
-.theorist-block .speaker{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
-  color:var(--copper);
-  margin-bottom:1rem;display:block;
-}
-.theorist-block.slate{border-left-color:var(--slate)}
-.theorist-block.slate .speaker{color:var(--slate)}
-
-/* ── AXIOM CARDS ── */
-.axiom-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:2rem;
-  margin:1.5rem 0;
-  transition:border-color .25s, transform .25s;
-}
-.axiom-card:hover{
-  border-color:var(--border-h);
-  transform:translateY(-1px);
-}
-.axiom-card .num{
-  font-family:'Playfair Display',serif;
-  font-size:2.5rem;font-weight:900;
-  color:rgba(193,127,62,.10);
-  float:left;
-  margin-right:1.2rem;
-  line-height:1;
-  margin-top:.2rem;
-}
-.axiom-card h4{
-  font-family:'Playfair Display',serif;
-  font-size:1.1rem;font-weight:700;
-  color:var(--white);
-  margin-bottom:.8rem;
-}
-.axiom-card p{
-  font-size:.95rem;
-  color:var(--cream-d);
-  margin-bottom:.8rem;
-}
-.axiom-card .veto{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.7rem;
-  color:var(--copper);
-  padding:.4rem .8rem;
-  background:var(--copper-dim);
-  border-radius:4px;
-  display:inline-block;
-  margin-top:.5rem;
-}
-
-/* ── EQUATION STAGE ── */
-.eq-stage{
-  background:rgba(0,0,0,.4);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:2.5rem 2rem;
-  margin:2.5rem 0;
-  text-align:center;
-  position:relative;
-  overflow:hidden;
-}
-.eq-stage::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at center,rgba(193,127,62,.04) 0%,transparent 70%);
-  pointer-events:none;
-}
-.eq-stage .label{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;
-  color:var(--copper);
-  margin-bottom:1.2rem;display:block;
-  position:relative;
-}
-.eq-stage .mjx-math{font-size:1.3em}
-.eq-stage .caption{
-  font-family:'Inter',sans-serif;
-  font-size:.85rem;
-  color:var(--cream-m);
-  margin-top:1.2rem;
-  position:relative;
-}
-
-/* ── TERM / TRANSLATION CARDS ── */
-.term-card{
-  display:grid;
-  grid-template-columns:auto 1fr;
-  gap:1.5rem;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:1.8rem;
-  margin:1.2rem 0;
-  align-items:start;
-}
-.term-card .symbol{
-  font-family:'Playfair Display',serif;
-  font-size:2rem;font-weight:700;
-  color:var(--copper-l);
-  min-width:80px;
-  text-align:center;
-  padding-top:.2rem;
-}
-.term-card .meaning h4{
-  font-family:'Playfair Display',serif;
-  font-size:1.05rem;font-style:italic;
-  color:var(--white);
-  margin-bottom:.6rem;
-}
-.term-card .meaning p{
-  font-size:.95rem;
-  color:var(--cream-d);
-  margin-bottom:.5rem;
-}
-.term-card .force-tag{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;
-  padding:.3rem .7rem;border-radius:4px;
-  display:inline-block;margin-top:.3rem;
-}
-.force-tag.order{background:var(--sage-dim);color:var(--sage);border:1px solid rgba(122,140,110,.2)}
-.force-tag.chaos{background:rgba(200,60,60,.06);color:#c87070;border:1px solid rgba(200,60,60,.15)}
-.force-tag.outside{background:var(--copper-dim);color:var(--copper);border:1px solid rgba(193,127,62,.2)}
-
-/* ── CHALLENGE BOX ── */
-.challenge{
-  background:linear-gradient(135deg,var(--surface2),var(--surface));
-  border:2px solid var(--copper);
-  border-radius:10px;
-  padding:2.5rem;
-  margin:3rem 0;
-  text-align:center;
-}
-.challenge h3{
-  font-family:'Playfair Display',serif;
-  font-size:1.5rem;
-  color:var(--copper-l);
-  margin-bottom:1rem;
-  margin-top:0;
-}
-.challenge p{
-  max-width:560px;margin:0 auto 1rem;
-  color:var(--cream-d);
-}
-.challenge .final{
-  font-family:'Playfair Display',serif;
-  font-size:1.2rem;font-style:italic;
-  color:var(--white);
-  margin-top:1.5rem;
-}
-
-/* ── DIVIDER ── */
-.divider{
-  text-align:center;
-  padding:2rem 0;
-  color:var(--copper);
-  opacity:.3;
-  font-size:.8rem;
-  letter-spacing:1em;
-}
-
-/* ── FOOTER ── */
-footer{
-  border-top:1px solid var(--border);
-  padding:3rem 0;
-  text-align:center;
-}
-footer p{
-  font-family:'Inter',sans-serif;
-  font-size:.75rem;
-  color:var(--cream-m);
-  letter-spacing:.05em;
-}
-footer a{color:var(--copper);text-decoration:none}
-
-/* ── CASE STUDY CARD ── */
-.case-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:2.2rem;
-  margin:2rem 0;
-  position:relative;
-  transition:border-color .25s;
-}
-.case-card:hover{border-color:var(--border-h)}
-.case-card .date-tag{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
-  color:var(--copper);
-  margin-bottom:.8rem;display:block;
-}
-.case-card h3{
-  margin-top:0;
-  margin-bottom:1rem;
-}
-.case-card .mechanism{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.7rem;
-  color:var(--copper);
-  padding:.4rem .8rem;
-  background:var(--copper-dim);
-  border-radius:4px;
-  display:inline-block;
-  margin-top:.8rem;
-}
-
-/* ── CENTERPIECE TABLE ── */
-.debris-table{
-  width:100%;
-  border-collapse:collapse;
-  margin:2.5rem 0;
-}
-.debris-table th{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--copper);
-  padding:.8rem 1rem;
-  text-align:left;
-  border-bottom:2px solid var(--border-h);
-}
-.debris-table td{
-  padding:.9rem 1rem;
-  border-bottom:1px solid var(--border);
-  font-size:.95rem;
-  color:var(--cream-d);
-  vertical-align:top;
-}
-.debris-table tr:hover td{
-  background:var(--copper-dim);
-}
-.debris-table .epoch{
-  font-family:'Playfair Display',serif;
-  font-weight:700;
-  color:var(--white);
-  font-size:1rem;
-}
-.debris-table .count{
-  font-family:'Playfair Display',serif;
-  font-weight:900;
-  color:var(--copper-l);
-  font-size:1.8rem;
-  line-height:1.1;
-  white-space:nowrap;
-}
-.debris-table .count small{
-  font-size:.7rem;
-  font-weight:400;
-  color:var(--cream-m);
-  display:block;
-  font-family:'Inter',sans-serif;
-}
-
-/* ── REFORM TABLE ── */
-.reform-table{
-  width:100%;
-  border-collapse:collapse;
-  margin:2rem 0;
-}
-.reform-table th{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--copper);
-  padding:.7rem .8rem;
-  text-align:left;
-  border-bottom:2px solid var(--border-h);
-}
-.reform-table td{
-  padding:.7rem .8rem;
-  border-bottom:1px solid var(--border);
-  font-size:.9rem;
-  color:var(--cream-d);
-  vertical-align:top;
-}
-.reform-table tr:hover td{background:var(--copper-dim)}
-.reform-table .movement{
-  font-family:'Playfair Display',serif;
-  font-weight:700;
-  color:var(--white);
-}
-
-/* ── FUTURE TABLE ── */
-.future-table{
-  width:100%;
-  border-collapse:collapse;
-  margin:2rem 0;
-}
-.future-table th{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--copper);
-  padding:.7rem .8rem;
-  text-align:left;
-  border-bottom:2px solid var(--border-h);
-}
-.future-table td{
-  padding:.7rem .8rem;
-  border-bottom:1px solid var(--border);
-  font-size:.9rem;
-  color:var(--cream-d);
-  vertical-align:top;
-}
-.future-table .metric{
-  font-family:'Playfair Display',serif;
-  font-weight:700;
-  color:var(--white);
-}
-.future-table tr:hover td{background:var(--copper-dim)}
-
-/* ── NUMBERED LIST ── */
-.numbered-findings{
-  list-style:none;padding:0;margin:1.5rem 0;
-}
-.numbered-findings li{
-  padding:.6rem 0 .6rem 2.5rem;
-  position:relative;
-  margin-bottom:.5rem;
-}
-.numbered-findings li::before{
-  content:attr(data-num);
-  position:absolute;left:0;top:.6rem;
-  font-family:'Playfair Display',serif;
-  font-size:1.4rem;font-weight:900;
-  color:rgba(193,127,62,.2);
-}
-
-/* ── RESPONSIVE ── */
-@media(max-width:640px){
-  .page{padding:0 1.2rem}
-  .hero{padding:4rem 0 3rem}
-  .hero-number{font-size:4rem}
-  .section{padding:2.5rem 0}
-  .section-num{display:none}
-  .term-card{grid-template-columns:1fr;gap:.8rem}
-  .term-card .symbol{text-align:left;font-size:1.6rem}
-  .pull-quote{padding-left:1.2rem}
-  .ai-voice{padding:1.5rem}
-  .debris-table .count{font-size:1.3rem}
-  .debris-table td,.debris-table th{padding:.6rem .5rem}
-}
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
 </style>
-<script id="article-meta" type="application/json">
-{
-  "slug": "09-church-debris-audit",
-  "title": "The Church Debris Audit — David Lowe",
-  "series": "faith-through-physics",
-  "classification": [
-    {
-      "tag": "theophysics",
-      "pct": 100,
-      "color": "#d4af37"
+<base target="_blank">
+
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
     }
-  ],
-  "reading_levels": [
-    "story",
-    "plain"
-  ],
-  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
-}
+  }
+};
 </script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
+
 </head>
 <body>
 
-<!-- ═══ TOP BAR ═══ -->
-<nav class="top-bar">
-  <div class="inner">
-    <div class="series-mark"><span>Cross-Domain</span> Coherence Series</div>
-    <div class="top-nav">
-      <a href="08-the-thermodynamics-of-grace.html">Prev</a>
-      <a href="#">Index</a>
-      <a href="#" class="on">09 of 12</a>
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="tp-top">
+  <div class="tp-top-inner">
+    <a href="https://faiththruphysics.com" class="tp-brand">
+      <span class="tp-brand-chi">χ</span>
+      <span class="tp-brand-name">Faith thru Physics</span>
+    </a>
+    <span class="tp-div"></span>
+    <div class="tp-nav-links">
+      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
+      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
+      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
     </div>
+    <span class="tp-div"></span>
+    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
+      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
+        Series <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="tp-subdomain-panel" role="menu">
+        <div class="tp-subdomain-grid">
+          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
+          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
+          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
+          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
+          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
+          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
+          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
+          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
+        </div>
+      </div>
+    </div>
+    <span class="tp-spacer"></span>
+    <div class="tp-levels" role="tablist">
+      <button class="tp-level active" data-level="highschool">High School</button>
+      <button class="tp-level" data-level="college">College</button>
+      <button class="tp-level" data-level="phd">PhD</button>
+    </div>
+    <span class="tp-div"></span>
+    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
   </div>
-</nav>
-
-<!-- ═══ HERO ═══ -->
-<header class="hero page">
-  <div class="hero-number">09</div>
-  <span class="hero-tag">Cross-Domain Coherence Project · Paper 09</span>
-  <h1>The Church <em>Debris Audit</em></h1>
-  <p class="subtitle">The Accumulation of Denominational Fragmentation in Christianity, 33 AD &ndash; 2025</p>
-  <p class="byline"><strong>David Lowe</strong>, with Claude (Opus) &amp; Gemini</p>
 </header>
 
-<!-- ═══ CONTENT ═══ -->
-<article class="page">
 
-<!-- ══ 1. INTRODUCTION ══ -->
-<section class="section">
-  <span class="section-num">01</span>
-  <h2><span class="part-label">Section One</span>Introduction: The Cartography of Fracture</h2>
-
-  <p>The history of Christianity, viewed through the lens of institutional sociology and ecclesiastical demographics, presents a singular, escalating trajectory: the exponential atomization of the community of faith. As of the year 2025, the global Christian landscape is not defined by a unified "Christendom," but by a sprawling ecosystem of approximately <strong>45,000 to 49,000 distinct denominational entities</strong>. This phenomenon, which this report designates as the <em>"Church Debris Field,"</em> represents a staggering deviation from the apostolic ideal of unity and the relatively cohesive, if internally diverse, structure of the first millennium church.</p>
-
-  <p>This audit seeks to interrogate the mechanisms driving this fragmentation. The prevailing theological narrative suggests that denominations proliferate as a necessary byproduct of the pursuit of doctrinal purity&mdash;that schism is the unfortunate cost of truth-seeking. However, a rigorous analysis of the historical data, spanning from the post-Resurrection community of 33 AD to the hyper-fragmented global church of 2025, contradicts this narrative. The central hypothesis of this report is that the accumulation of denominational debris correlates primarily with disputes over <em>ecclesiastical authority</em> and the application of <em>works-based soteriological frameworks</em> (legalism), rather than with genuine divergences in the apprehension of theological truth.</p>
-
-  <p>By integrating historical data with the theoretical frameworks of physicist David Bohm's concept of "fragmentation" and theologian T.F. Torrance's "theological science," this report illuminates the cognitive and sociological engines of schism. We posit that the 45,000 distinct bodies in existence today are the material fallout of a collective failure to maintain the objectivity of the theological object, replaced instead by the subjective assertions of the ego&mdash;whether individual or corporate&mdash;manifested through the enforcement of rigorous, boundary-maintaining legalisms.</p>
-
-  <h3>1.1 The Statistical Magnitude of the Debris</h3>
-
-  <p>To comprehend the scale of the phenomenon, one must confront the raw data provided by the Center for the Study of Global Christianity (CSGC) and other demographic bodies. The trajectory of Christian organization has moved from a singular movement to a massive, chaotic plurality.</p>
-
-  <!-- ═══ CENTERPIECE TABLE ═══ -->
-  <div style="overflow-x:auto">
-  <table class="debris-table">
-    <thead>
-      <tr>
-        <th>Historical Epoch</th>
-        <th>Date Range</th>
-        <th>Denominations</th>
-        <th>Primary Characteristic</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="epoch">Apostolic / Ante-Nicene</td>
-        <td>33 &ndash; 313 AD</td>
-        <td class="count">&lt; 10<small>Schools &amp; Sects</small></td>
-        <td>Loose network of house churches; heresy vs. orthodoxy defined by proximity to apostolic tradition.</td>
-      </tr>
-      <tr>
-        <td class="epoch">Imperial / Conciliar</td>
-        <td>313 &ndash; 1054 AD</td>
-        <td class="count">~20<small>Patriarchates &amp; Schisms</small></td>
-        <td>Imperial consolidation; schisms defined by major Christological councils (Ephesus, Chalcedon).</td>
-      </tr>
-      <tr>
-        <td class="epoch">Medieval / Pre-Reform</td>
-        <td>1054 &ndash; 1517 AD</td>
-        <td class="count">~50<small>East/West Bipolar</small></td>
-        <td>The Great Schism creates a bipolar world; localized dissenting movements (Lollards, Hussites).</td>
-      </tr>
-      <tr>
-        <td class="epoch">Reformation / Westphalian</td>
-        <td>1517 &ndash; 1648 AD</td>
-        <td class="count">~200<small>Confessional Churches</small></td>
-        <td>National/State Churches; emergence of the "confessional" model.</td>
-      </tr>
-      <tr>
-        <td class="epoch">Modern / Denominational</td>
-        <td>1648 &ndash; 1900 AD</td>
-        <td class="count">~2,000<small>Voluntary Associations</small></td>
-        <td>The rise of voluntary associations; the export of European dissent to the Americas.</td>
-      </tr>
-      <tr>
-        <td class="epoch">Post-Modern / Atomized</td>
-        <td>1900 &ndash; 2025 AD</td>
-        <td class="count">~45,000<small>Networks &amp; Independents</small></td>
-        <td>Global Pentecostalism; Independent/Non-Denominational movements; the collapse of "denomination" into "network."</td>
-      </tr>
-    </tbody>
-  </table>
+<!-- ═══════ MTL READER BAR ═══════ -->
+<div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
+  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
+  <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
+    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
   </div>
+</div>
 
-  <p>The data indicates that the 20th and early 21st centuries have served as a <em>"hyper-accelerator"</em> of fragmentation. While it took nearly 1,900 years to reach 2,000 denominations, the last 125 years have added roughly 43,000 new entities. This explosion coincides with the rise of global Pentecostalism, the de-regularization of the religious marketplace in the West, and the proliferation of Independent African Instituted Churches (AICs).</p>
-
-  <p>Critics of these statistics often argue that the definition of "denomination" is too loose, inflating the numbers by counting national bodies of the same tradition separately. However, even when adjusting for these methodological nuances&mdash;collapsing national bodies into global families&mdash;the number of distinct, autonomous legal and theological entities remains in the thousands, particularly within the Protestant and Independent traditions. The "Independent" category alone, which accounts for a significant portion of the growth, is defined precisely by its lack of connection to historic streams, functionally creating thousands of "single-church denominations."</p>
-</section>
-
-<!-- ══ 2. THEORETICAL FRAMEWORKS ══ -->
-<section class="section">
-  <span class="section-num">02</span>
-  <h2><span class="part-label">Section Two</span>Theoretical Frameworks: The Physics of Schism</h2>
-
-  <p>To move beyond mere enumeration to an understanding of <em>causality</em>, we must employ a theoretical framework that explains how unity devolves into multiplicity. The intersection of quantum mechanics philosophy and theological epistemology offers a potent diagnostic tool.</p>
-
-  <h3>2.1 David Bohm and the Ontology of Fragmentation</h3>
-
-  <div class="theorist-block">
-    <span class="speaker">David Bohm &middot; Theoretical Physicist</span>
-    <p>Bohm proposed that "fragmentation" is not merely an organizational state but a <em>cognitive defect</em> rooted in the structure of the human ego. The human mind habitually breaks reality into fragments (nations, religions, in-groups) and then mistakes these fragments for independently existing realities, ignoring the underlying "undivided wholeness" of the universe.</p>
-  </div>
-
-  <p>Applied to the Church Debris Audit, denominationalism can be understood as the <em>institutionalization of the ego</em>. The "Church" in its theological reality corresponds to Bohm's <strong>Implicate Order</strong>&mdash;an enfolded, indivisible reality. The "Denomination" corresponds to the <strong>Explicate Order</strong>&mdash;the unfolded, visible manifestation. The error of schism arises when the Explicate fragment (the specific denomination) claims to be the Whole, or asserts its autonomy against the Whole.</p>
-
-  <p>Bohm suggests that thought itself is the source of this fragmentation. When theological thought becomes self-referential&mdash;when the defense of a specific doctrine or "standard" becomes more important than the reality it points to&mdash;the result is an inevitable shattering of the community. The ego, seeking security, identifies with the fragment (the specific sect) and defends it against the whole, generating "debris."</p>
-
-  <h3>2.2 T.F. Torrance and the Loss of the Object</h3>
-
-  <div class="theorist-block slate">
-    <span class="speaker">T.F. Torrance &middot; Theological Scientist</span>
-    <p>Torrance argued for a "Theological Science" that mirrors natural science in its rigorous submission to the object of study. True knowledge (whether of physics or God) occurs only when the mind <em>submits to the intrinsic reality of the object</em>.</p>
-  </div>
-
-  <p>The "debris field" of 45,000 denominations represents, in Torrance's framework, a massive <em>epistemological failure</em>. It signifies a retreat from the objectivity of God's self-revelation into the subjectivity of human religious preference. When the Church loses its focus on the <em>Object</em> (the Incarnate Word/Grace) and focuses instead on the <em>Subject</em> (the believer's experience, the leader's authority, the community's behavioral codes), unity becomes impossible. Subjective experience is infinitely variable; therefore, a church grounded in subjectivity must infinitely fragment.</p>
-
-  <p>The correlation between works-based soteriology and schism is thus an epistemological inevitability. "Works" and "Standards" are human-generated metrics (subjective). Grace is a divinely generated reality (objective). A church centered on the objective Grace of Christ tends toward unity (as seen in the lower fragmentation rates of high-church traditions), while a church centered on the subjective performance of the believer tends toward infinite fracture.</p>
-
-  <h3>2.3 The Quantum Multiverse of Ecclesiology</h3>
-
-  <p>The "Many Worlds Interpretation" of quantum mechanics offers a final analogy. In this theory, every decision point causes the universe to branch into separate, non-communicating realities. The history of the Church resembles a <em>"Many Ecclesiologies"</em> interpretation. Every dispute over authority or behavior creates a branching timeline&mdash;a new denomination.</p>
-
-  <p>However, unlike the quantum multiverse where branches are theoretically separated, in the ecclesiastical debris field, these branches coexist in the same physical space, competing for resources and legitimacy. This superposition of contradictory truths creates a cognitive dissonance that degrades the credibility of the faith itself, functioning as a barrier to the "wholeness" Bohm describes.</p>
-</section>
-
-<!-- ══ 3. GNOSTICISM ══ -->
-<section class="section">
-  <span class="section-num">03</span>
-  <h2><span class="part-label">Section Three</span>The Primordial Fissures: Authority in the Early Church</h2>
-
-  <p>The audit of the earliest period of Christian history reveals that the "DNA" of fragmentation was present from the inception, encoded in the tension between charismatic authority and institutional continuity.</p>
-
-  <div class="case-card">
-    <span class="date-tag">2nd &ndash; 3rd Century AD</span>
-    <h3>3.1 Gnosticism: The Elite Authority of Secret Knowledge</h3>
-
-    <p>The first major debris clusters to break away from the proto-orthodox core were the Gnostic sects. While traditionally categorized as a theological heresy regarding the nature of matter, the sociological engine of Gnosticism was a dispute over <em>authority</em>.</p>
-
-    <p>Gnosticism posited a two-tiered soteriology: the <em>psychics</em> (ordinary Christians with faith) and the <em>pneumatics</em> (the elite with secret knowledge or <em>gnosis</em>). This was functionally a works-based system where "salvation" (or liberation) was achieved through the intellectual "work" of acquiring secret knowledge.</p>
-
-    <p><strong>The Authority Mechanism:</strong> Gnosticism rejected the public, apostolic authority of the bishops in favor of the private, charismatic authority of the Gnostic teacher. This rejection of shared, public reality (the Implicate Order of the Church) in favor of private, subjective reality (the Gnosis) resulted in a proliferation of Gnostic sects (Valentinians, Sethians, Basilideans), none of which could maintain cohesion because their authority source was internal and subjective.</p>
-
-    <span class="mechanism">Engine: Subjective Authority + Knowledge as Work</span>
-  </div>
-
-  <div class="case-card">
-    <span class="date-tag">Late 2nd Century AD</span>
-    <h3>3.2 Montanism: The "New Prophecy" vs. The Bishops</h3>
-
-    <p>The "New Prophecy" or Montanism emerged in Phrygia. Montanus claimed that the Holy Spirit was speaking directly through him and his prophetesses, Prisca and Maximilla, delivering revelations that superseded or supplemented the apostolic deposit.</p>
-
-    <p><strong>The Mechanism of Fracture:</strong></p>
-
-    <ul style="list-style:none;padding:0;margin:1rem 0">
-      <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>Authority Dispute:</strong> The Bishops claimed authority based on apostolic succession (history/continuity). Montanus claimed authority based on immediate revelation (experience/discontinuity).</li>
-      <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>Rigorism (Works):</strong> Montanism was characterized by extreme asceticism, fasting, and a refusal to forgive serious sins committed after baptism. It was a "holiness movement" that viewed the established church as lax.</li>
-    </ul>
-
-    <p>The pattern established here&mdash;a charismatic leader claiming direct authority from the Spirit to enforce a stricter moral code than the established church&mdash;would replicate itself thousands of times in the history of the church, becoming the primary engine of the 20th-century Pentecostal explosion.</p>
-
-    <span class="mechanism">Engine: Charismatic Authority + Rigorism</span>
-  </div>
-</section>
-
-<!-- ══ 4. DONATISM & GREAT SCHISM ══ -->
-<section class="section">
-  <span class="section-num">04</span>
-  <h2><span class="part-label">Section Four</span>The Imperial Hardenings: Donatism and the Logic of Purity</h2>
-
-  <p>With the legalization of Christianity under Constantine (313 AD), the stakes of fragmentation changed. Schism now had political and legal consequences. It is in this era that the "Works-Based" hypothesis finds its most definitive historical validation in the Donatist Schism.</p>
-
-  <div class="case-card">
-    <span class="date-tag">4th &ndash; 5th Century AD &middot; North Africa</span>
-    <h3>4.1 Donatism: The Archetype of the Purity Cult</h3>
-
-    <p>The Donatist controversy is the <strong>Rosetta Stone</strong> for understanding denominational fragmentation. It arose not over Christology, but over the <em>moral purity of the clergy</em> following the Diocletianic persecutions.</p>
-
-    <p><strong>The Trigger:</strong> A group of rigorist bishops refused to accept the consecration of Caecilian as Bishop of Carthage because one of his consecrators was alleged to be a <em>traditor</em>&mdash;someone who had handed over copies of the scriptures to Roman authorities to avoid death.</p>
-
-    <p><strong>The Theological Engine of Debris:</strong> The Donatists developed a theology where the validity of the sacrament depended on the moral standing of the priest (the <em>ex opere operantis</em> view). This is a quintessentially works-based framework: the "work" of the priest's righteousness is the active ingredient in salvation, rather than the grace of Christ acting through the promise.</p>
-
-    <p><strong>Sociological Outcome:</strong> Because no human clergy is perfectly sinless, the Donatist logic necessitated constant purging. If a bishop was found to be sinful, all sacraments he performed were invalid, and everyone he baptized had to be re-baptized. This logic creates an <em>infinite regress of schism</em>, as the group must constantly fracture to separate the "pure" from the "impure." The Donatists established a massive, parallel church structure that rivaled Catholicism in North Africa for centuries, maintained solely by the claim of superior moral rigor.</p>
-
-    <div class="pull-quote" style="margin-top:1.5rem">
-      <p>Augustine of Hippo's refutation of Donatism&mdash;that the validity of the sacrament comes <em>ex opere operato</em> (from the work performed by Christ)&mdash;was an attempt to ground the church in Objectivity rather than Subjectivity.</p>
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-class-nav">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
     </div>
-
-    <p>The failure of the Donatists to accept this led to their eventual disappearance, but the <em>spirit</em> of Donatism&mdash;the separation from "impure" brethren to preserve one's own standing&mdash;remains the dominant psychological force in modern denominationalism.</p>
-
-    <span class="mechanism">Engine: Moral Purity as Sacramental Prerequisite</span>
+    <a href="#" class="tp-class-nav">Next →</a>
   </div>
+</div>
 
-  <div class="case-card">
-    <span class="date-tag">1054 AD &middot; Constantinople</span>
-    <h3>4.2 The Great Schism: Authority Masquerading as Theology</h3>
-
-    <p>The rupture between the Eastern Orthodox and Roman Catholic churches in 1054 is often cited as a theological dispute over the <em>Filioque</em> clause (the procession of the Holy Spirit). However, a deep audit reveals that theology was largely the <em>pretext</em> for a geopolitical authority dispute.</p>
-
-    <p><strong>The Authority Friction:</strong></p>
-
-    <ul style="list-style:none;padding:0;margin:1rem 0">
-      <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>Papal Supremacy vs. Pentarchy:</strong> Rome asserted a monarchical authority over the entire church (Universal Jurisdiction). Constantinople asserted a collegial model of five equal Patriarchs.</li>
-      <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>Liturgical Control:</strong> The immediate spark was the use of unleavened bread (azymes) in the West, which the East viewed as "Judaizing." Patriarch Michael Cerularius closed Latin churches in Constantinople in retaliation.</li>
-    </ul>
-
-    <p>When Cardinal Humbert laid the Bull of Excommunication on the altar of Hagia Sophia, he was not engaging in theological debate; he was engaging in an act of <em>administrative warfare</em>. The "debris" created here was not just a new denomination, but the bifurcation of civilization itself. The schism was sustained not by the <em>Filioque</em> (which had been debated for centuries without rupture) but by the refusal of either Rome or Constantinople to submit to the other's authority structure.</p>
-
-    <span class="mechanism">Engine: Competing Jurisdictional Claims</span>
-  </div>
-</section>
-
-<!-- ══ 5. THE REFORMATION ══ -->
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+  <h1>The ChurchDebris Audit</h1>
+  <p class="subtitle">The Accumulation of Denominational Fragmentation in Christianity, 33 AD – 2025</p>
+  <div class="byline">David Lowe, with Claude (Opus) & Gemini</div>
+  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=cross-domain%2F09-church-debris-audit" data-audio-slug="cross-domain/09-church-debris-audit" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=cross-domain" data-series-slug="cross-domain">
+<div class="tp-read-aloud" data-mode="tts">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="tpMainAudio" preload="none"></audio>
+<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+<div class="tp-fill" id="tpMainFill"></div>
+</div>
+<span class="tp-time" id="tpMainTime">0:00</span>
+<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
+<option value="0.75">0.75x</option>
+<option selected="" value="1">1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+<option value="1.75">1.75x</option>
+<option value="2">2x</option>
+</select>
+<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
+<i class="fas fa-volume-up"></i>
+</button>
+</div>
+<div class="tp-pair">
+<div class="tp-half tp-deep" data-mode="deep">
+<div class="tp-dot"></div>
+<span class="tp-label">Deep Dive</span>
+<audio id="tpDeepAudio" preload="none"></audio>
+<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+<div class="tp-fill" id="tpDeepFill"></div>
+</div>
+<span class="tp-time" id="tpDeepTime">0:00</span>
+</div>
+<div class="tp-half tp-debate" data-mode="podcast">
+<div class="tp-dot"></div>
+<span class="tp-label">Podcast</span>
+<audio id="tpDebateAudio" preload="none"></audio>
+<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+<div class="tp-fill" id="tpDebateFill"></div>
+</div>
+<span class="tp-time" id="tpDebateTime">0:00</span>
+</div>
+<div class="tp-half tp-critique" data-mode="critique">
+<div class="tp-dot"></div>
+<span class="tp-label">Critique</span>
+<audio id="tpCritiqueAudio" preload="none"></audio>
+<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+<div class="tp-fill" id="tpCritiqueFill"></div>
+</div>
+<span class="tp-time" id="tpCritiqueTime">0:00</span>
+</div>
+</div>
+<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+</div>
+</div>
+  
+ ══ 1. INTRODUCTION ══ 
 <section class="section">
-  <span class="section-num">05</span>
-  <h2><span class="part-label">Section Five</span>The Westphalian Shattering: The Atomization of Authority</h2>
-
-  <p>The Protestant Reformation marked the transition from "Schism" (a tear in a unified fabric) to "Fragmentation" (the shattering of the fabric into distinct, competitive pieces). This era validates the hypothesis that removing a central authority without replacing it with a cohesive alternative leads to runaway debris accumulation.</p>
-
-  <h3>5.1 The Reformation Authority Paradox</h3>
-
-  <p>The Reformers (Luther, Calvin, Zwingli) aimed to reform the One Church, not to create 45,000. However, by shifting the locus of authority from the Institution (the Magisterium) to the Text (<em>Sola Scriptura</em>), they inadvertently removed the regulatory mechanism for unity.</p>
-
-  <p><strong>The Interpretive Trap:</strong></p>
-
-  <ul style="list-style:none;padding:0;margin:1rem 0">
-    <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>Sola Scriptura:</strong> If the Bible is the final authority, who interprets the Bible?</li>
-    <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>The Result:</strong> When two groups disagree on interpretation (e.g., Luther and Zwingli at the Marburg Colloquy regarding the Eucharist), there is no higher court to resolve the dispute. The only option is separation.</li>
-  </ul>
-
-  <!-- ═══ REFORMATION TABLE ═══ -->
-  <div style="overflow-x:auto">
-  <table class="reform-table">
-    <thead>
-      <tr>
-        <th>Movement</th>
-        <th>Authority Locus</th>
-        <th>Fragmenting Mechanism</th>
-        <th>Outcome</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="movement">Lutheranism</td>
-        <td>Scripture + Confessions</td>
-        <td>Regional/Prince Authority</td>
-        <td>Fragmented into State Churches (German, Swedish, Danish).</td>
-      </tr>
-      <tr>
-        <td class="movement">Reformed (Calvinist)</td>
-        <td>Scripture + Systematic Theology</td>
-        <td>Doctrinal Purity</td>
-        <td>High fragmentation based on precise doctrinal definitions (Presbyterian splits).</td>
-      </tr>
-      <tr>
-        <td class="movement">Anglicanism</td>
-        <td>Royal Supremacy</td>
-        <td>Political/National</td>
-        <td>"Big Tent" unity that eventually fractured into High/Low/Broad factions.</td>
-      </tr>
-      <tr>
-        <td class="movement">Anabaptism</td>
-        <td>The Gathered Community</td>
-        <td>Rejection of All Central Authority</td>
-        <td>Radical atomization; the birth of the "congregational" model.</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3>5.2 The Anabaptist Engine of Debris</h3>
-
-  <p>The Anabaptists (Mennonites, Hutterites, Amish) represent the "Ground Zero" of modern denominational theory. They rejected the idea of a "State Church" entirely, arguing for a "Free Church" composed only of believing adults.</p>
-
-  <p><strong>The "Ban" as a Schism Tool:</strong> Anabaptists practiced the "Ban" (shunning) to maintain purity. This legalistic enforcement of community standards meant that any disagreement over lifestyle or doctrine resulted in the formation of a new group. The Amish alone have fractured into dozens of subgroups (Old Order, New Order, Beachy Amish) based on the specific application of technology and dress rules&mdash;a direct validation of the "Works-Based Schism" hypothesis. They proved that when purity is the primary metric of the church, fragmentation is the inevitable result.</p>
-
-  <h3>5.3 The Peace of Westphalia (1648): Legalizing the Fragments</h3>
-
-  <p>The Thirty Years' War, a catastrophic conflict fueled by religious difference, ended with the Peace of Westphalia. This treaty is crucial to the Church Debris Audit because it <em>legalized</em> fragmentation.</p>
-
-  <ul style="list-style:none;padding:0;margin:1rem 0">
-    <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>Cuius Regio, Eius Religio:</strong> The ruler of the land determines the religion. This enshrined the existence of competing Christianities (Catholic, Lutheran, Calvinist) as a permanent feature of international law.</li>
-    <li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> <strong>Sovereignty:</strong> It established the concept of state sovereignty over religious affairs, effectively breaking the idea of a trans-national "Christendom." The Church was no longer a universal body but a department of the state or a voluntary association within the state.</li>
-  </ul>
-
-  <p>Westphalia did not solve the problem of disunity; it managed it by creating borders. This paved the way for the "denominational" model, where truth is geographically or culturally circumscribed.</p>
+<span class="section-num">01</span>
+<h2><span class="part-label">Section One</span>Introduction: The Cartography of Fracture</h2>
+<p>The history of Christianity, viewed through the lens of institutional sociology and ecclesiastical demographics, presents a singular, escalating trajectory: the exponential atomization of the community of faith. As of the year 2025, the global Christian landscape is not defined by a unified "Christendom," but by a sprawling ecosystem of approximately <strong>45,000 to 49,000 distinct denominational entities</strong>. This phenomenon, which this report designates as the <em>"Church Debris Field,"</em> represents a staggering deviation from the apostolic ideal of unity and the relatively cohesive, if internally diverse, structure of the first millennium church.</p>
+<p>This audit seeks to interrogate the mechanisms driving this fragmentation. The prevailing theological narrative suggests that denominations proliferate as a necessary byproduct of the pursuit of doctrinal purity—that schism is the unfortunate cost of truth-seeking. However, a rigorous analysis of the historical data, spanning from the post-Resurrection community of 33 AD to the hyper-fragmented global church of 2025, contradicts this narrative. The central hypothesis of this report is that the accumulation of denominational debris correlates primarily with disputes over <em>ecclesiastical authority</em> and the application of <em>works-based soteriological frameworks</em> (legalism), rather than with genuine divergences in the apprehension of theological truth.</p>
+<p>By integrating historical data with the theoretical frameworks of physicist David Bohm's concept of "fragmentation" and theologian T.F. Torrance's "theological science," this report illuminates the cognitive and sociological engines of schism. We posit that the 45,000 distinct bodies in existence today are the material fallout of a collective failure to maintain the objectivity of the theological object, replaced instead by the subjective assertions of the ego—whether individual or corporate—manifested through the enforcement of rigorous, boundary-maintaining legalisms.</p>
+<h3>1.1 The Statistical Magnitude of the Debris</h3>
+<p>To comprehend the scale of the phenomenon, one must confront the raw data provided by the Center for the Study of Global Christianity (CSGC) and other demographic bodies. The trajectory of Christian organization has moved from a singular movement to a massive, chaotic plurality.</p>
+<!-- ═══ CENTERPIECE TABLE ═══ -->
+<div style="overflow-x:auto">
+<table class="debris-table">
+<thead>
+<tr>
+<th>Historical Epoch</th>
+<th>Date Range</th>
+<th>Denominations</th>
+<th>Primary Characteristic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="epoch">Apostolic / Ante-Nicene</td>
+<td>33 – 313 AD</td>
+<td class="count">&lt; 10<small>Schools &amp; Sects</small></td>
+<td>Loose network of house churches; heresy vs. orthodoxy defined by proximity to apostolic tradition.</td>
+</tr>
+<tr>
+<td class="epoch">Imperial / Conciliar</td>
+<td>313 – 1054 AD</td>
+<td class="count">~20<small>Patriarchates &amp; Schisms</small></td>
+<td>Imperial consolidation; schisms defined by major Christological councils (Ephesus, Chalcedon).</td>
+</tr>
+<tr>
+<td class="epoch">Medieval / Pre-Reform</td>
+<td>1054 – 1517 AD</td>
+<td class="count">~50<small>East/West Bipolar</small></td>
+<td>The Great Schism creates a bipolar world; localized dissenting movements (Lollards, Hussites).</td>
+</tr>
+<tr>
+<td class="epoch">Reformation / Westphalian</td>
+<td>1517 – 1648 AD</td>
+<td class="count">~200<small>Confessional Churches</small></td>
+<td>National/State Churches; emergence of the "confessional" model.</td>
+</tr>
+<tr>
+<td class="epoch">Modern / Denominational</td>
+<td>1648 – 1900 AD</td>
+<td class="count">~2,000<small>Voluntary Associations</small></td>
+<td>The rise of voluntary associations; the export of European dissent to the Americas.</td>
+</tr>
+<tr>
+<td class="epoch">Post-Modern / Atomized</td>
+<td>1900 – 2025 AD</td>
+<td class="count">~45,000<small>Networks &amp; Independents</small></td>
+<td>Global Pentecostalism; Independent/Non-Denominational movements; the collapse of "denomination" into "network."</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The data indicates that the 20th and early 21st centuries have served as a <em>"hyper-accelerator"</em> of fragmentation. While it took nearly 1,900 years to reach 2,000 denominations, the last 125 years have added roughly 43,000 new entities. This explosion coincides with the rise of global Pentecostalism, the de-regularization of the religious marketplace in the West, and the proliferation of Independent African Instituted Churches (AICs).</p>
+<p>Critics of these statistics often argue that the definition of "denomination" is too loose, inflating the numbers by counting national bodies of the same tradition separately. However, even when adjusting for these methodological nuances—collapsing national bodies into global families—the number of distinct, autonomous legal and theological entities remains in the thousands, particularly within the Protestant and Independent traditions. The "Independent" category alone, which accounts for a significant portion of the growth, is defined precisely by its lack of connection to historic streams, functionally creating thousands of "single-church denominations."</p>
 </section>
-
-<!-- ══ 6. ENGLISH & AMERICAN ══ -->
+ ══ 2. THEORETICAL FRAMEWORKS ══ 
 <section class="section">
-  <span class="section-num">06</span>
-  <h2><span class="part-label">Section Six</span>The English Laboratory and the American Acceleration</h2>
-
-  <p>Following Westphalia, the locus of fragmentation shifted to the English-speaking world, where the "Dissenting" tradition combined with American liberty to produce the modern explosion of denominations.</p>
-
-  <h3>6.1 The English Dissenters: Refining the Fracture</h3>
-
-  <p>In the 17th century, England became a laboratory for sectarianism. The English Civil War and Interregnum unleashed a torrent of groups: Quakers, Ranters, Diggers, Muggletonians, and Fifth Monarchists.</p>
-
-  <p>These groups shared a common trait: <strong>Anti-Authoritarianism</strong>. They rejected the authority of both the Pope and the Anglican Bishop, relying instead on the "Inner Light" (Quakers) or radical interpretations of prophecy (Fifth Monarchists). This shift toward <em>subjective</em> authority (Torrance's critique) meant that there was no external check on fragmentation. If the "Inner Light" led George Fox one way and James Nayler another, a split was inevitable.</p>
-
-  <h3>6.2 The Holiness Movement and the "Standards" (19th Century)</h3>
-
-  <p>The 19th-century Holiness Movement in America provides the clearest statistical evidence for the correlation between legalism and schism. Arising out of Methodism, the movement sought to recover "entire sanctification."</p>
-
-  <p><strong>The Codification of Legalism:</strong> Holiness groups defined sanctification not just inwardly, but outwardly through "Standards." These included prohibitions on:</p>
-
-  <ul style="list-style:none;padding:0;margin:1rem 0">
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Jewelry (wedding rings vs. no rings)</li>
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Neckties (viewed as adornment)</li>
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Sports and amusements</li>
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Television (the "devil's box")</li>
-  </ul>
-
-  <p><strong>The Schism Mechanism:</strong> When a denomination grew and began to relax these standards (e.g., allowing wedding rings), the "rigorist" faction would accuse the leadership of "worldliness" and separate to form a "true" holiness church. This cycle repeated <em>ad infinitum</em>, creating dozens of Holiness denominations (Wesleyan, Free Methodist, Church of the Nazarene, Church of God, etc.).</p>
-
-  <div class="pull-quote">
-    <p>The data shows a direct causal link: the more detailed the behavioral code, the higher the rate of schism. Grace-based traditions that rely on Creeds (what we believe) rather than Codes (what we do) fragment far less frequently.</p>
-  </div>
-
-  <h3>6.3 Pentecostalism: The Subjective Supernova (20th Century)</h3>
-
-  <p>Pentecostalism, emerging from the Holiness movement in 1906 (Azusa Street), added the final accelerant: the <strong>Authority of the Spirit</strong>.</p>
-
-  <p>In Pentecostal ecclesiology, the direct experience of the Spirit (prophecy, tongues, healing) carries immense authority. If a pastor or layman believes the Spirit is leading them to start a new work, institutional barriers are seen as "quenching the Spirit."</p>
-
-  <p><strong>The Entrepreneurial Split:</strong> This theology empowers the "religious entrepreneur." A charismatic leader can split a church, claim a fresh anointing, and start a new denomination with immediate legitimacy. This "anointing-based" authority structure is responsible for the vast majority of the 45,000 denominations counted in 2025. The "debris" here is often micro-denominations consisting of a single network of churches loyal to a single apostle.</p>
+<span class="section-num">02</span>
+<h2><span class="part-label">Section Two</span>Theoretical Frameworks: The Physics of Schism</h2>
+<p>To move beyond mere enumeration to an understanding of <em>causality</em>, we must employ a theoretical framework that explains how unity devolves into multiplicity. The intersection of quantum mechanics philosophy and theological epistemology offers a potent diagnostic tool.</p>
+<h3>2.1 David Bohm and the Ontology of Fragmentation</h3>
+<div class="theorist-block">
+<span class="speaker">David Bohm · Theoretical Physicist</span>
+<p>Bohm proposed that "fragmentation" is not merely an organizational state but a <em>cognitive defect</em> rooted in the structure of the human ego. The human mind habitually breaks reality into fragments (nations, religions, in-groups) and then mistakes these fragments for independently existing realities, ignoring the underlying "undivided wholeness" of the universe.</p>
+</div>
+<p>Applied to the Church Debris Audit, denominationalism can be understood as the <em>institutionalization of the ego</em>. The "Church" in its theological reality corresponds to Bohm's <strong>Implicate Order</strong>—an enfolded, indivisible reality. The "Denomination" corresponds to the <strong>Explicate Order</strong>—the unfolded, visible manifestation. The error of schism arises when the Explicate fragment (the specific denomination) claims to be the Whole, or asserts its autonomy against the Whole.</p>
+<p>Bohm suggests that thought itself is the source of this fragmentation. When theological thought becomes self-referential—when the defense of a specific doctrine or "standard" becomes more important than the reality it points to—the result is an inevitable shattering of the community. The ego, seeking security, identifies with the fragment (the specific sect) and defends it against the whole, generating "debris."</p>
+<h3>2.2 T.F. Torrance and the Loss of the Object</h3>
+<div class="theorist-block slate">
+<span class="speaker">T.F. Torrance · Theological Scientist</span>
+<p>Torrance argued for a "Theological Science" that mirrors natural science in its rigorous submission to the object of study. True knowledge (whether of physics or God) occurs only when the mind <em>submits to the intrinsic reality of the object</em>.</p>
+</div>
+<p>The "debris field" of 45,000 denominations represents, in Torrance's framework, a massive <em>epistemological failure</em>. It signifies a retreat from the objectivity of God's self-revelation into the subjectivity of human religious preference. When the Church loses its focus on the <em>Object</em> (the Incarnate Word/Grace) and focuses instead on the <em>Subject</em> (the believer's experience, the leader's authority, the community's behavioral codes), unity becomes impossible. Subjective experience is infinitely variable; therefore, a church grounded in subjectivity must infinitely fragment.</p>
+<p>The correlation between works-based soteriology and schism is thus an epistemological inevitability. "Works" and "Standards" are human-generated metrics (subjective). Grace is a divinely generated reality (objective). A church centered on the objective Grace of Christ tends toward unity (as seen in the lower fragmentation rates of high-church traditions), while a church centered on the subjective performance of the believer tends toward infinite fracture.</p>
+<h3>2.3 The Quantum Multiverse of Ecclesiology</h3>
+<p>The "Many Worlds Interpretation" of quantum mechanics offers a final analogy. In this theory, every decision point causes the universe to branch into separate, non-communicating realities. The history of the Church resembles a <em>"Many Ecclesiologies"</em> interpretation. Every dispute over authority or behavior creates a branching timeline—a new denomination.</p>
+<p>However, unlike the quantum multiverse where branches are theoretically separated, in the ecclesiastical debris field, these branches coexist in the same physical space, competing for resources and legitimacy. This superposition of contradictory truths creates a cognitive dissonance that degrades the credibility of the faith itself, functioning as a barrier to the "wholeness" Bohm describes.</p>
 </section>
-
-<!-- ══ 7. SOCIOLOGY ══ -->
+ ══ 3. GNOSTICISM ══ 
 <section class="section">
-  <span class="section-num">07</span>
-  <h2><span class="part-label">Section Seven</span>The Sociology of the Debris Field: Markets and Crime</h2>
-
-  <p>The fragmentation of the church is not occurring in a vacuum; it is driven by powerful sociological and economic forces that sustain the debris field.</p>
-
-  <h3>7.1 The Religious Marketplace and Product Differentiation</h3>
-
-  <p>In the United States and increasingly the Global South, the church operates in a deregulated marketplace. To survive, a denomination must compete for members and tithes.</p>
-
-  <p><strong>Differentiation Strategy:</strong> Schism and distinctiveness become marketing strategies. A church cannot simply be "Christian"; to capture a market segment, it must be "Pre-Millennial, King James Only, Spirit-Filled." This incentivizes the creation of new "brands" (denominations) that cater to specific consumer preferences. The 45,000 denominations are, in economic terms, 45,000 distinct brand identities vying for market share.</p>
-
-  <h3>7.2 The Cost of Debris: Ecclesiastical Crime</h3>
-
-  <p>The lack of centralized oversight in independent and fragmented churches has a tangible cost. The CSGC estimates that <strong>$92 billion</strong> will be stolen from churches in 2025 due to ecclesiastical crime.</p>
-
-  <p><strong>The Causality:</strong> Fragmentation removes accountability. In a hierarchical system (like Catholicism or Anglicanism), there are audits and oversights. In the "Independent" sector of the debris field, a pastor often holds absolute financial authority with no external check. The atomization of the church directly facilitates financial malfeasance, redirecting resources from mission to graft. This is the "criminal debris" of the schismatic mindset.</p>
+<span class="section-num">03</span>
+<h2><span class="part-label">Section Three</span>The Primordial Fissures: Authority in the Early Church</h2>
+<p>The audit of the earliest period of Christian history reveals that the "DNA" of fragmentation was present from the inception, encoded in the tension between charismatic authority and institutional continuity.</p>
+<div class="case-card">
+<span class="date-tag">2nd – 3rd Century AD</span>
+<h3>3.1 Gnosticism: The Elite Authority of Secret Knowledge</h3>
+<p>The first major debris clusters to break away from the proto-orthodox core were the Gnostic sects. While traditionally categorized as a theological heresy regarding the nature of matter, the sociological engine of Gnosticism was a dispute over <em>authority</em>.</p>
+<p>Gnosticism posited a two-tiered soteriology: the <em>psychics</em> (ordinary Christians with faith) and the <em>pneumatics</em> (the elite with secret knowledge or <em>gnosis</em>). This was functionally a works-based system where "salvation" (or liberation) was achieved through the intellectual "work" of acquiring secret knowledge.</p>
+<p><strong>The Authority Mechanism:</strong> Gnosticism rejected the public, apostolic authority of the bishops in favor of the private, charismatic authority of the Gnostic teacher. This rejection of shared, public reality (the Implicate Order of the Church) in favor of private, subjective reality (the Gnosis) resulted in a proliferation of Gnostic sects (Valentinians, Sethians, Basilideans), none of which could maintain cohesion because their authority source was internal and subjective.</p>
+<span class="mechanism">Engine: Subjective Authority + Knowledge as Work</span>
+</div>
+<div class="case-card">
+<span class="date-tag">Late 2nd Century AD</span>
+<h3>3.2 Montanism: The "New Prophecy" vs. The Bishops</h3>
+<p>The "New Prophecy" or Montanism emerged in Phrygia. Montanus claimed that the Holy Spirit was speaking directly through him and his prophetesses, Prisca and Maximilla, delivering revelations that superseded or supplemented the apostolic deposit.</p>
+<p><strong>The Mechanism of Fracture:</strong></p>
+<ul style="list-style:none;padding:0;margin:1rem 0">
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>Authority Dispute:</strong> The Bishops claimed authority based on apostolic succession (history/continuity). Montanus claimed authority based on immediate revelation (experience/discontinuity).</li>
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>Rigorism (Works):</strong> Montanism was characterized by extreme asceticism, fasting, and a refusal to forgive serious sins committed after baptism. It was a "holiness movement" that viewed the established church as lax.</li>
+</ul>
+<p>The pattern established here—a charismatic leader claiming direct authority from the Spirit to enforce a stricter moral code than the established church—would replicate itself thousands of times in the history of the church, becoming the primary engine of the 20th-century Pentecostal explosion.</p>
+<span class="mechanism">Engine: Charismatic Authority + Rigorism</span>
+</div>
 </section>
-
-<!-- ══ 8. AUDIT FINDINGS ══ -->
+ ══ 4. DONATISM & GREAT SCHISM ══ 
 <section class="section">
-  <span class="section-num">08</span>
-  <h2><span class="part-label">Section Eight</span>Audit Findings: Synthesis and Implications</h2>
-
-  <p>This deep research audit of the accumulation of denominational fragmentation from 33 AD to 2025 confirms the initial hypothesis and offers second-order insights into the nature of the phenomenon.</p>
-
-  <h3>8.1 Verification of the Hypothesis</h3>
-
-  <ol class="numbered-findings">
-    <li data-num="1"><strong>Authority Over Truth:</strong> The historical record confirms that the vast majority of schisms&mdash;from the Donatists to the Great Schism to the Pentecostal fractures&mdash;are precipitated by disputes over <em>who</em> holds authority (Bishops, Popes, Scripture, the Spirit, the Standard) rather than the intrinsic nature of the Gospel. Theology is frequently weaponized to justify an authority grab.</li>
-    <li data-num="2"><strong>Legalism as Accelerant:</strong> There is a strong positive correlation between works-based or legalistic frameworks and the rate of fragmentation. Traditions that define the church by the moral performance of its members (Donatism, Anabaptism, Holiness) are structurally unstable and prone to infinite fracture. Traditions defined by the objective grace of God (Torrance's "Objectivity") tend toward greater cohesion.</li>
-  </ol>
-
-  <h3>8.2 Second-Order Insight: The Epistemological Crisis</h3>
-
-  <p>The fragmentation is not merely organizational; it is <em>cognitive</em>. Drawing on <strong>David Bohm</strong>, we conclude that the Church has succumbed to the "fragmentation of thought," mistaking the <em>Explicate</em> parts for the <em>Implicate</em> whole. The ego of the denomination has superseded the reality of the Body.</p>
-
-  <p>Drawing on <strong>T.F. Torrance</strong>, we conclude that the "debris" represents a loss of "Theological Science." The church has ceased to submit to the Reality of God, choosing instead to construct subjective realities (denominations) that are manageable and controllable. The 45,000 denominations are monuments to the human desire to control God rather than be controlled by Him.</p>
-
-  <h3>8.3 Future Outlook: From Debris to Dust</h3>
-
-  <p>The trend lines suggest that the era of the "Denomination" is ending, replaced by the era of the "Network" and the "Independent." The debris is grinding down into finer particles. The large blocks of the past (Methodist, Presbyterian) are eroding, while the cloud of independent entities grows.</p>
-
-  <div style="overflow-x:auto">
-  <table class="future-table">
-    <thead>
-      <tr>
-        <th>Metric</th>
-        <th>1900</th>
-        <th>2025 (Current)</th>
-        <th>2050 (Projected)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="metric">Total Denominations</td>
-        <td>2,000</td>
-        <td>45,000+</td>
-        <td>60,000+</td>
-      </tr>
-      <tr>
-        <td class="metric">Dominant Form</td>
-        <td>State/National Church</td>
-        <td>Denomination</td>
-        <td>Independent Network</td>
-      </tr>
-      <tr>
-        <td class="metric">Primary Schism Driver</td>
-        <td>Doctrine/Polity</td>
-        <td>Style/Politics</td>
-        <td>Identity/Personality</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
+<span class="section-num">04</span>
+<h2><span class="part-label">Section Four</span>The Imperial Hardenings: Donatism and the Logic of Purity</h2>
+<p>With the legalization of Christianity under Constantine (313 AD), the stakes of fragmentation changed. Schism now had political and legal consequences. It is in this era that the "Works-Based" hypothesis finds its most definitive historical validation in the Donatist Schism.</p>
+<div class="case-card">
+<span class="date-tag">4th – 5th Century AD · North Africa</span>
+<h3>4.1 Donatism: The Archetype of the Purity Cult</h3>
+<p>The Donatist controversy is the <strong>Rosetta Stone</strong> for understanding denominational fragmentation. It arose not over Christology, but over the <em>moral purity of the clergy</em> following the Diocletianic persecutions.</p>
+<p><strong>The Trigger:</strong> A group of rigorist bishops refused to accept the consecration of Caecilian as Bishop of Carthage because one of his consecrators was alleged to be a <em>traditor</em>—someone who had handed over copies of the scriptures to Roman authorities to avoid death.</p>
+<p><strong>The Theological Engine of Debris:</strong> The Donatists developed a theology where the validity of the sacrament depended on the moral standing of the priest (the <em>ex opere operantis</em> view). This is a quintessentially works-based framework: the "work" of the priest's righteousness is the active ingredient in salvation, rather than the grace of Christ acting through the promise.</p>
+<p><strong>Sociological Outcome:</strong> Because no human clergy is perfectly sinless, the Donatist logic necessitated constant purging. If a bishop was found to be sinful, all sacraments he performed were invalid, and everyone he baptized had to be re-baptized. This logic creates an <em>infinite regress of schism</em>, as the group must constantly fracture to separate the "pure" from the "impure." The Donatists established a massive, parallel church structure that rivaled Catholicism in North Africa for centuries, maintained solely by the claim of superior moral rigor.</p>
+<div class="pull-quote" style="margin-top:1.5rem">
+<p>Augustine of Hippo's refutation of Donatism—that the validity of the sacrament comes <em>ex opere operato</em> (from the work performed by Christ)—was an attempt to ground the church in Objectivity rather than Subjectivity.</p>
+</div>
+<p>The failure of the Donatists to accept this led to their eventual disappearance, but the <em>spirit</em> of Donatism—the separation from "impure" brethren to preserve one's own standing—remains the dominant psychological force in modern denominationalism.</p>
+<span class="mechanism">Engine: Moral Purity as Sacramental Prerequisite</span>
+</div>
+<div class="case-card">
+<span class="date-tag">1054 AD · Constantinople</span>
+<h3>4.2 The Great Schism: Authority Masquerading as Theology</h3>
+<p>The rupture between the Eastern Orthodox and Roman Catholic churches in 1054 is often cited as a theological dispute over the <em>Filioque</em> clause (the procession of the Holy Spirit). However, a deep audit reveals that theology was largely the <em>pretext</em> for a geopolitical authority dispute.</p>
+<p><strong>The Authority Friction:</strong></p>
+<ul style="list-style:none;padding:0;margin:1rem 0">
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>Papal Supremacy vs. Pentarchy:</strong> Rome asserted a monarchical authority over the entire church (Universal Jurisdiction). Constantinople asserted a collegial model of five equal Patriarchs.</li>
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>Liturgical Control:</strong> The immediate spark was the use of unleavened bread (azymes) in the West, which the East viewed as "Judaizing." Patriarch Michael Cerularius closed Latin churches in Constantinople in retaliation.</li>
+</ul>
+<p>When Cardinal Humbert laid the Bull of Excommunication on the altar of Hagia Sophia, he was not engaging in theological debate; he was engaging in an act of <em>administrative warfare</em>. The "debris" created here was not just a new denomination, but the bifurcation of civilization itself. The schism was sustained not by the <em>Filioque</em> (which had been debated for centuries without rupture) but by the refusal of either Rome or Constantinople to submit to the other's authority structure.</p>
+<span class="mechanism">Engine: Competing Jurisdictional Claims</span>
+</div>
 </section>
-
-<!-- ══ 9. CONCLUSION ══ -->
+ ══ 5. THE REFORMATION ══ 
 <section class="section">
-  <span class="section-num">09</span>
-  <h2><span class="part-label">Section Nine</span>Conclusion</h2>
-
-  <p>The "Church Debris Audit" reveals a tragedy of immense proportions. The accumulation of 45,000 denominations is not a sign of vitality but of <em>entropy</em>. It is the physical evidence of a theological failure: the failure to locate unity in the objective grace of Jesus Christ, leading to a frantic, centuries-long attempt to secure unity through the "works" of law, structure, and boundary maintenance.</p>
-
-  <div class="challenge">
-    <h3>The Verdict</h3>
-    <p>Unless the Church recovers an ontology of "Wholeness" (Bohm) and an epistemology of "Objectivity" (Torrance)&mdash;submitting to the Truth rather than trying to possess it&mdash;the fragmentation will continue until the debris field becomes indistinguishable from dust.</p>
-    <p class="final">The only remedy for the debris is a return to a Grace that is sufficient to cover the differences that the Law exploits.</p>
-  </div>
-
-  <div class="divider">&middot; &middot; &middot;</div>
-
-  <h3>Primary Data Sources</h3>
-
-  <ul style="list-style:none;padding:0;margin:1rem 0">
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Center for the Study of Global Christianity (Gordon-Conwell)</li>
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Pew Research Center</li>
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Historical Analysis of Schisms</li>
-    <li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">&mdash;</span> Theoretical Physics and Theology (Bohm/Torrance)</li>
-  </ul>
+<span class="section-num">05</span>
+<h2><span class="part-label">Section Five</span>The Westphalian Shattering: The Atomization of Authority</h2>
+<p>The Protestant Reformation marked the transition from "Schism" (a tear in a unified fabric) to "Fragmentation" (the shattering of the fabric into distinct, competitive pieces). This era validates the hypothesis that removing a central authority without replacing it with a cohesive alternative leads to runaway debris accumulation.</p>
+<h3>5.1 The Reformation Authority Paradox</h3>
+<p>The Reformers (Luther, Calvin, Zwingli) aimed to reform the One Church, not to create 45,000. However, by shifting the locus of authority from the Institution (the Magisterium) to the Text (<em>Sola Scriptura</em>), they inadvertently removed the regulatory mechanism for unity.</p>
+<p><strong>The Interpretive Trap:</strong></p>
+<ul style="list-style:none;padding:0;margin:1rem 0">
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>Sola Scriptura:</strong> If the Bible is the final authority, who interprets the Bible?</li>
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>The Result:</strong> When two groups disagree on interpretation (e.g., Luther and Zwingli at the Marburg Colloquy regarding the Eucharist), there is no higher court to resolve the dispute. The only option is separation.</li>
+</ul>
+<!-- ═══ REFORMATION TABLE ═══ -->
+<div style="overflow-x:auto">
+<table class="reform-table">
+<thead>
+<tr>
+<th>Movement</th>
+<th>Authority Locus</th>
+<th>Fragmenting Mechanism</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="movement">Lutheranism</td>
+<td>Scripture + Confessions</td>
+<td>Regional/Prince Authority</td>
+<td>Fragmented into State Churches (German, Swedish, Danish).</td>
+</tr>
+<tr>
+<td class="movement">Reformed (Calvinist)</td>
+<td>Scripture + Systematic Theology</td>
+<td>Doctrinal Purity</td>
+<td>High fragmentation based on precise doctrinal definitions (Presbyterian splits).</td>
+</tr>
+<tr>
+<td class="movement">Anglicanism</td>
+<td>Royal Supremacy</td>
+<td>Political/National</td>
+<td>"Big Tent" unity that eventually fractured into High/Low/Broad factions.</td>
+</tr>
+<tr>
+<td class="movement">Anabaptism</td>
+<td>The Gathered Community</td>
+<td>Rejection of All Central Authority</td>
+<td>Radical atomization; the birth of the "congregational" model.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>5.2 The Anabaptist Engine of Debris</h3>
+<p>The Anabaptists (Mennonites, Hutterites, Amish) represent the "Ground Zero" of modern denominational theory. They rejected the idea of a "State Church" entirely, arguing for a "Free Church" composed only of believing adults.</p>
+<p><strong>The "Ban" as a Schism Tool:</strong> Anabaptists practiced the "Ban" (shunning) to maintain purity. This legalistic enforcement of community standards meant that any disagreement over lifestyle or doctrine resulted in the formation of a new group. The Amish alone have fractured into dozens of subgroups (Old Order, New Order, Beachy Amish) based on the specific application of technology and dress rules—a direct validation of the "Works-Based Schism" hypothesis. They proved that when purity is the primary metric of the church, fragmentation is the inevitable result.</p>
+<h3>5.3 The Peace of Westphalia (1648): Legalizing the Fragments</h3>
+<p>The Thirty Years' War, a catastrophic conflict fueled by religious difference, ended with the Peace of Westphalia. This treaty is crucial to the Church Debris Audit because it <em>legalized</em> fragmentation.</p>
+<ul style="list-style:none;padding:0;margin:1rem 0">
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>Cuius Regio, Eius Religio:</strong> The ruler of the land determines the religion. This enshrined the existence of competing Christianities (Catholic, Lutheran, Calvinist) as a permanent feature of international law.</li>
+<li style="padding:.4rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> <strong>Sovereignty:</strong> It established the concept of state sovereignty over religious affairs, effectively breaking the idea of a trans-national "Christendom." The Church was no longer a universal body but a department of the state or a voluntary association within the state.</li>
+</ul>
+<p>Westphalia did not solve the problem of disunity; it managed it by creating borders. This paved the way for the "denominational" model, where truth is geographically or culturally circumscribed.</p>
+</section>
+ ══ 6. ENGLISH & AMERICAN ══ 
+<section class="section">
+<span class="section-num">06</span>
+<h2><span class="part-label">Section Six</span>The English Laboratory and the American Acceleration</h2>
+<p>Following Westphalia, the locus of fragmentation shifted to the English-speaking world, where the "Dissenting" tradition combined with American liberty to produce the modern explosion of denominations.</p>
+<h3>6.1 The English Dissenters: Refining the Fracture</h3>
+<p>In the 17th century, England became a laboratory for sectarianism. The English Civil War and Interregnum unleashed a torrent of groups: Quakers, Ranters, Diggers, Muggletonians, and Fifth Monarchists.</p>
+<p>These groups shared a common trait: <strong>Anti-Authoritarianism</strong>. They rejected the authority of both the Pope and the Anglican Bishop, relying instead on the "Inner Light" (Quakers) or radical interpretations of prophecy (Fifth Monarchists). This shift toward <em>subjective</em> authority (Torrance's critique) meant that there was no external check on fragmentation. If the "Inner Light" led George Fox one way and James Nayler another, a split was inevitable.</p>
+<h3>6.2 The Holiness Movement and the "Standards" (19th Century)</h3>
+<p>The 19th-century Holiness Movement in America provides the clearest statistical evidence for the correlation between legalism and schism. Arising out of Methodism, the movement sought to recover "entire sanctification."</p>
+<p><strong>The Codification of Legalism:</strong> Holiness groups defined sanctification not just inwardly, but outwardly through "Standards." These included prohibitions on:</p>
+<ul style="list-style:none;padding:0;margin:1rem 0">
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Jewelry (wedding rings vs. no rings)</li>
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Neckties (viewed as adornment)</li>
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Sports and amusements</li>
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Television (the "devil's box")</li>
+</ul>
+<p><strong>The Schism Mechanism:</strong> When a denomination grew and began to relax these standards (e.g., allowing wedding rings), the "rigorist" faction would accuse the leadership of "worldliness" and separate to form a "true" holiness church. This cycle repeated <em>ad infinitum</em>, creating dozens of Holiness denominations (Wesleyan, Free Methodist, Church of the Nazarene, Church of God, etc.).</p>
+<div class="pull-quote">
+<p>The data shows a direct causal link: the more detailed the behavioral code, the higher the rate of schism. Grace-based traditions that rely on Creeds (what we believe) rather than Codes (what we do) fragment far less frequently.</p>
+</div>
+<h3>6.3 Pentecostalism: The Subjective Supernova (20th Century)</h3>
+<p>Pentecostalism, emerging from the Holiness movement in 1906 (Azusa Street), added the final accelerant: the <strong>Authority of the Spirit</strong>.</p>
+<p>In Pentecostal ecclesiology, the direct experience of the Spirit (prophecy, tongues, healing) carries immense authority. If a pastor or layman believes the Spirit is leading them to start a new work, institutional barriers are seen as "quenching the Spirit."</p>
+<p><strong>The Entrepreneurial Split:</strong> This theology empowers the "religious entrepreneur." A charismatic leader can split a church, claim a fresh anointing, and start a new denomination with immediate legitimacy. This "anointing-based" authority structure is responsible for the vast majority of the 45,000 denominations counted in 2025. The "debris" here is often micro-denominations consisting of a single network of churches loyal to a single apostle.</p>
+</section>
+ ══ 7. SOCIOLOGY ══ 
+<section class="section">
+<span class="section-num">07</span>
+<h2><span class="part-label">Section Seven</span>The Sociology of the Debris Field: Markets and Crime</h2>
+<p>The fragmentation of the church is not occurring in a vacuum; it is driven by powerful sociological and economic forces that sustain the debris field.</p>
+<h3>7.1 The Religious Marketplace and Product Differentiation</h3>
+<p>In the United States and increasingly the Global South, the church operates in a deregulated marketplace. To survive, a denomination must compete for members and tithes.</p>
+<p><strong>Differentiation Strategy:</strong> Schism and distinctiveness become marketing strategies. A church cannot simply be "Christian"; to capture a market segment, it must be "Pre-Millennial, King James Only, Spirit-Filled." This incentivizes the creation of new "brands" (denominations) that cater to specific consumer preferences. The 45,000 denominations are, in economic terms, 45,000 distinct brand identities vying for market share.</p>
+<h3>7.2 The Cost of Debris: Ecclesiastical Crime</h3>
+<p>The lack of centralized oversight in independent and fragmented churches has a tangible cost. The CSGC estimates that <strong>$92 billion</strong> will be stolen from churches in 2025 due to ecclesiastical crime.</p>
+<p><strong>The Causality:</strong> Fragmentation removes accountability. In a hierarchical system (like Catholicism or Anglicanism), there are audits and oversights. In the "Independent" sector of the debris field, a pastor often holds absolute financial authority with no external check. The atomization of the church directly facilitates financial malfeasance, redirecting resources from mission to graft. This is the "criminal debris" of the schismatic mindset.</p>
+</section>
+ ══ 8. AUDIT FINDINGS ══ 
+<section class="section">
+<span class="section-num">08</span>
+<h2><span class="part-label">Section Eight</span>Audit Findings: Synthesis and Implications</h2>
+<p>This deep research audit of the accumulation of denominational fragmentation from 33 AD to 2025 confirms the initial hypothesis and offers second-order insights into the nature of the phenomenon.</p>
+<h3>8.1 Verification of the Hypothesis</h3>
+<ol class="numbered-findings">
+<li data-num="1"><strong>Authority Over Truth:</strong> The historical record confirms that the vast majority of schisms—from the Donatists to the Great Schism to the Pentecostal fractures—are precipitated by disputes over <em>who</em> holds authority (Bishops, Popes, Scripture, the Spirit, the Standard) rather than the intrinsic nature of the Gospel. Theology is frequently weaponized to justify an authority grab.</li>
+<li data-num="2"><strong>Legalism as Accelerant:</strong> There is a strong positive correlation between works-based or legalistic frameworks and the rate of fragmentation. Traditions that define the church by the moral performance of its members (Donatism, Anabaptism, Holiness) are structurally unstable and prone to infinite fracture. Traditions defined by the objective grace of God (Torrance's "Objectivity") tend toward greater cohesion.</li>
+</ol>
+<h3>8.2 Second-Order Insight: The Epistemological Crisis</h3>
+<p>The fragmentation is not merely organizational; it is <em>cognitive</em>. Drawing on <strong>David Bohm</strong>, we conclude that the Church has succumbed to the "fragmentation of thought," mistaking the <em>Explicate</em> parts for the <em>Implicate</em> whole. The ego of the denomination has superseded the reality of the Body.</p>
+<p>Drawing on <strong>T.F. Torrance</strong>, we conclude that the "debris" represents a loss of "Theological Science." The church has ceased to submit to the Reality of God, choosing instead to construct subjective realities (denominations) that are manageable and controllable. The 45,000 denominations are monuments to the human desire to control God rather than be controlled by Him.</p>
+<h3>8.3 Future Outlook: From Debris to Dust</h3>
+<p>The trend lines suggest that the era of the "Denomination" is ending, replaced by the era of the "Network" and the "Independent." The debris is grinding down into finer particles. The large blocks of the past (Methodist, Presbyterian) are eroding, while the cloud of independent entities grows.</p>
+<div style="overflow-x:auto">
+<table class="future-table">
+<thead>
+<tr>
+<th>Metric</th>
+<th>1900</th>
+<th>2025 (Current)</th>
+<th>2050 (Projected)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="metric">Total Denominations</td>
+<td>2,000</td>
+<td>45,000+</td>
+<td>60,000+</td>
+</tr>
+<tr>
+<td class="metric">Dominant Form</td>
+<td>State/National Church</td>
+<td>Denomination</td>
+<td>Independent Network</td>
+</tr>
+<tr>
+<td class="metric">Primary Schism Driver</td>
+<td>Doctrine/Polity</td>
+<td>Style/Politics</td>
+<td>Identity/Personality</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+ ══ 9. CONCLUSION ══ 
+<section class="section">
+<span class="section-num">09</span>
+<h2><span class="part-label">Section Nine</span>Conclusion</h2>
+<p>The "Church Debris Audit" reveals a tragedy of immense proportions. The accumulation of 45,000 denominations is not a sign of vitality but of <em>entropy</em>. It is the physical evidence of a theological failure: the failure to locate unity in the objective grace of Jesus Christ, leading to a frantic, centuries-long attempt to secure unity through the "works" of law, structure, and boundary maintenance.</p>
+<div class="challenge">
+<h3>The Verdict</h3>
+<p>Unless the Church recovers an ontology of "Wholeness" (Bohm) and an epistemology of "Objectivity" (Torrance)—submitting to the Truth rather than trying to possess it—the fragmentation will continue until the debris field becomes indistinguishable from dust.</p>
+<p class="final">The only remedy for the debris is a return to a Grace that is sufficient to cover the differences that the Law exploits.</p>
+</div>
+<div class="divider">· · ·</div>
+<h3>Primary Data Sources</h3>
+<ul style="list-style:none;padding:0;margin:1rem 0">
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Center for the Study of Global Christianity (Gordon-Conwell)</li>
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Pew Research Center</li>
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Historical Analysis of Schisms</li>
+<li style="padding:.3rem 0;padding-left:1.5rem;position:relative"><span style="position:absolute;left:0;color:var(--copper)">—</span> Theoretical Physics and Theology (Bohm/Torrance)</li>
+</ul>
 </section>
 
 </article>
 
-<!-- ═══ FOOTER ═══ -->
-<footer>
-  <div class="page">
-    <p>Cross-Domain Coherence Series &middot; Paper 09 of 12</p>
-    <p style="margin-top:.5rem">Theophysics Research Program &middot; David Lowe &middot; 2026</p>
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+<nav class="tp-bignav">
+  <div class="tp-bignav-row">
+    <a href="#" class="tp-bignav-prev">
+      <span class="tp-bignav-arrow">←</span>
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Previous</span>
+        <span class="tp-bignav-title">Previous</span>
+      </div>
+    </a>
+    <div class="tp-bignav-center">
+      <a href="/cross-domain/" class="tp-bignav-series">Cross-Domain Series Home</a>
+      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
+    </div>
+    <a href="#" class="tp-bignav-next">
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Next</span>
+        <span class="tp-bignav-title">Next</span>
+      </div>
+      <span class="tp-bignav-arrow">→</span>
+    </a>
   </div>
-</footer>
+</nav>
 
-<script src="/components/tp-inject.js" data-theme="dark"></script>
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="tp-sub-title">The Math Behind the Claims</div>
+  <div class="tp-sub-grid">
+    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="tp-sub-title">Everything Else</div>
+  <div class="tp-sub-grid">
+    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+  <div class="tp-series-strip">
+    <a href="/" class="active">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+  </div>
+</nav>
+
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="tp-bottom">
+  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
+  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
+  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+  <div class="tp-door-num">15 + 15 = 100</div>
+  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="tp-door-mark"></span>
+</div>
+
+<script>
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
+
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
+
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
+</script>
+
+<!-- MTL worker client -->
+<script src="/shared/js/mtl-worker-client.js" defer></script>
+
 </body>
 </html>

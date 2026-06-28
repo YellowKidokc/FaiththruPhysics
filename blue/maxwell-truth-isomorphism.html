@@ -1,380 +1,466 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Maxwell–Truth Field Isomorphism | David Lowe</title>
-
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --surface:#0a0a0a;
-  --surface-light:#1a1a1a;
-  --surface2:#0c1824;
-  --surface3:#142240;
-  --border:rgba(60,110,200,0.07);
-  --border-h:rgba(60,110,200,0.15);
-  --highlight:#d4af37;
-  --highlight-bright:#e8c547;
-  --accent-dim:rgba(37,99,190,0.07);
-  --accent-glow:rgba(59,130,246,0.12);
-  --gold:#d4af37;
-  --warm-dim:rgba(212,168,83,0.06);
-  --teal:#26b8a6;
-  --teal-dim:rgba(45,212,191,0.06);
-  --rose:#e05ea8;
-  --rose-dim:rgba(244,114,182,0.06);
-  --text:#ccd8ee;
-  --text-d:#6e82a0;
-  --text-m:#384e6a;
-  --pass:#2ebd87;
-  --fail:#f87171;
-  --asym:#ff4757;
-}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.75;font-size:1.05rem;overflow-x:clip}
-.serif{font-family:'Crimson Text',Georgia,serif}
-.mono{font-family:'JetBrains Mono',monospace}
-
-body::before{
-  content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse at 20% 0%,rgba(59,130,246,0.06) 0%,transparent 55%),
-             radial-gradient(ellipse at 80% 100%,rgba(59,130,246,0.03) 0%,transparent 55%);
-  pointer-events:none}
-
-.page{max-width:1100px;margin:0 auto;padding:0 2rem}
-
-/* ── TOP BAR ── */
-.top-bar{border-bottom:1px solid var(--border);padding:.8rem 0}
-.top-bar .inner{display:flex;align-items:center;justify-content:space-between}
-.mark{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--text-m);font-family:'JetBrains Mono',monospace}
-.mark span{color:var(--accent-l)}
-.top-nav{display:flex;gap:1.2rem}
-.top-nav a{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-m);text-decoration:none;font-family:'JetBrains Mono',monospace;transition:color .2s}
-.top-nav a:hover,.top-nav a.on{color:var(--accent-l)}
-
-/* ── HERO ── */
-.hero{padding:5rem 0 2rem;text-align:center}
-.hero-tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;color:var(--accent-l);margin-bottom:1.5rem;display:block}
-.hero h1{font-family:'Crimson Text',Georgia,serif;font-size:clamp(2.2rem,5.5vw,3.4rem);font-weight:400;color:white;line-height:1.12;margin-bottom:1.2rem;letter-spacing:-.01em}
-.hero h1 strong{font-weight:700;color:var(--accent-l)}
-.hero .lead{font-size:1.05rem;color:var(--text-d);max-width:560px;margin:0 auto 2rem;line-height:1.85}
-.hero-eq{
-  font-family:'JetBrains Mono',monospace;font-size:clamp(.72rem,1.4vw,.92rem);
-  padding:1.2rem 2rem;background:rgba(0,0,0,.5);border:1px solid var(--border);
-  border-radius:6px;display:inline-block;line-height:2.2;letter-spacing:.02em;max-width:95vw;overflow-x:auto}
-.hero-eq .p{color:var(--accent-l)}.hero-eq .s{color:var(--warm)}.hero-eq .t{color:var(--teal)}
-.hero-eq .r{color:var(--rose)}.hero-eq .a{color:#ff4757;font-weight:700}
-.hero-cap{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text-m);letter-spacing:.15em;margin-top:.8rem}
-
-/* ── AUDIO ── */
-.audio-bar{display:flex;align-items:center;gap:1rem;padding:.8rem 1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin:2rem 0 3rem}
-.audio-bar .atag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);white-space:nowrap}
-.audio-bar audio{flex:1;height:32px;filter:brightness(.85)}
-
-/* ── GRID ── */
-.g{display:grid;gap:.75rem;margin-bottom:.75rem}
-.g2{grid-template-columns:1fr 1fr}
-.g3{grid-template-columns:1fr 1fr 1fr}
-.g4{grid-template-columns:1fr 1fr 1fr 1fr}
-.g12{grid-template-columns:repeat(12,1fr)}
-.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}
-.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}
-.s8{grid-column:span 8}.srow{grid-column:1/-1}
-
-/* ── BOX TYPES ── */
-.bx{border-radius:8px;padding:1.4rem;transition:border-color .25s}
-.bx-stat{background:var(--surface2);text-align:center;padding:1.5rem 1rem}
-.bx-stat .num{font-family:'Crimson Text',serif;font-size:2.4rem;font-weight:600;color:var(--accent-l);line-height:1}
-.bx-stat .lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-m);margin-top:.3rem}
-
-.bx-top{border-top:3px solid var(--accent);background:var(--surface2);padding:1.4rem}
-.bx-top h3{font-family:'Crimson Text',serif;color:white;font-size:1.05rem;margin-bottom:.4rem}
-.bx-top p{font-size:.92rem;color:var(--text-d);line-height:1.8}
-
-.bx-ghost{border:1px solid var(--border);background:transparent;padding:1.4rem}
-.bx-ghost:hover{border-color:rgba(80,140,255,0.2)}
-
-.bx-inset{background:var(--surface);border:1px solid var(--border);padding:1.4rem}
-
-.bx-call{background:var(--accent-dim);border:1px solid rgba(59,130,246,0.12);border-left:3px solid var(--accent);padding:1.2rem 1.6rem;border-radius:0 8px 8px 0}
-.bx-call strong{color:var(--accent-l)}
-.bx-call p{font-size:.95rem;color:var(--text-d);line-height:1.85;margin-bottom:.5rem}
-.bx-call p:last-child{margin-bottom:0}
-
-.bx-warm{background:var(--warm-dim);border:1px solid rgba(212,168,83,0.1);border-left:3px solid var(--warm);padding:1.2rem 1.6rem;border-radius:0 8px 8px 0}
-.bx-warm .wtag{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--warm);margin-bottom:.4rem}
-.bx-warm p{font-size:.95rem;color:var(--text-d);line-height:1.85;margin-bottom:.5rem}
-.bx-warm p:last-child{margin-bottom:0}
-.bx-warm em{color:var(--warm);font-style:normal}
-
-/* Pattern block */
-.bx-pat{border-left:3px solid;padding:1.4rem 1.6rem;border-radius:0 8px 8px 0}
-.bx-pat.phys{border-color:var(--accent);background:rgba(59,130,246,.04)}
-.bx-pat.spir{border-color:var(--warm);background:var(--warm-dim)}
-.bx-pat.teal{border-color:var(--teal);background:var(--teal-dim)}
-.bx-pat.rose{border-color:var(--rose);background:var(--rose-dim)}
-.bx-pat .ptag{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:.5rem;display:block}
-.bx-pat.phys .ptag{color:var(--accent-l)}
-.bx-pat.spir .ptag{color:var(--warm)}
-.bx-pat.teal .ptag{color:var(--teal)}
-.bx-pat.rose .ptag{color:var(--rose)}
-.bx-pat p{color:var(--text-d);font-size:.95rem;line-height:1.85;margin-bottom:.6rem}
-.bx-pat p:last-child{margin-bottom:0}
-.bx-pat .insight{color:var(--text);font-family:'Crimson Text',serif;font-style:italic;font-size:1rem;margin-top:.6rem}
-
-.bx-hero{position:relative;min-height:140px;overflow:hidden;background:linear-gradient(135deg,var(--surface2) 0%,rgba(59,130,246,0.08) 100%);border:1px solid var(--border);padding:1.8rem;display:flex;flex-direction:column;justify-content:center}
-.bx-hero h3{font-family:'Crimson Text',serif;font-size:1.2rem;color:white;margin-bottom:.3rem}
-.bx-hero p{font-size:.92rem;color:var(--text-d);line-height:1.8}
-
-.bx-split{display:grid;grid-template-columns:52px 1fr;gap:.8rem;align-items:center;background:var(--surface2);padding:1.1rem 1.2rem}
-.bx-split .ico{width:40px;height:40px;border-radius:8px;background:var(--accent-dim);border:1px solid rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;color:var(--accent-l);font-size:1rem}
-
-.bx-eq{font-family:'JetBrains Mono',monospace;font-size:.92rem;padding:1.5rem;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;text-align:center;color:var(--accent-l);line-height:2;letter-spacing:.02em}
-
-/* ── SECTION DIVIDER ── */
-.sec-div{display:flex;align-items:center;gap:1rem;margin:3rem 0 1.5rem}
-.sec-div:first-of-type{margin-top:0}
-.sec-div .tag{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.35em;text-transform:uppercase;color:var(--accent-l);white-space:nowrap}
-.sec-div::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border-h),transparent)}
-
-/* ── PROSE ── */
-.prose{font-size:1rem;color:var(--text-d);line-height:1.9}
-.prose p{margin-bottom:1.3rem}
-.prose p:last-child{margin-bottom:0}
-.prose strong{color:var(--text)}
-
-/* ── TABLE ── */
-.dtbl{width:100%;border-collapse:separate;border-spacing:0;border-radius:8px;border:1px solid var(--border);overflow:hidden}
-.dtbl thead{background:var(--surface2)}
-.dtbl th{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-m);padding:.65rem 1rem;text-align:left}
-.dtbl td{padding:.65rem 1rem;font-size:.88rem;color:var(--text-d);border-top:1px solid rgba(80,140,255,0.04)}
-.dtbl tr:hover td{background:var(--accent-dim)}
-
-/* ── RESOURCE STRIP ── */
-.res-strip{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem}
-.res-link{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:.7rem;color:var(--text-d);text-decoration:none;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;transition:all .2s}
-.res-link:hover{border-color:var(--accent);color:var(--accent-l);background:var(--accent-dim)}
-.res-link .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
-
-/* ── BADGE ── */
-.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;padding:.15em .55em;border-radius:4px;font-weight:700;vertical-align:middle}
-.b-pass{background:rgba(52,211,153,.1);color:var(--pass);border:1px solid rgba(52,211,153,.25)}
-.b-fail{background:rgba(248,113,113,.1);color:var(--fail);border:1px solid rgba(248,113,113,.25)}
-.b-iso{background:rgba(45,212,191,.1);color:var(--teal);border:1px solid rgba(45,212,191,.25)}
-.b-lim{background:rgba(255,71,87,.1);color:var(--asym);border:1px solid rgba(255,71,87,.25)}
-
-/* ── CODE EQ ── */
-.code-eq{font-family:'JetBrains Mono',monospace;font-size:.82rem;padding:1.2rem 1.5rem;background:rgba(0,0,0,.45);border:1px solid var(--border);border-radius:6px;margin:.75rem 0;line-height:2.1;overflow-x:auto;color:var(--text-d)}
-.code-eq .cp{color:var(--accent-l)}.code-eq .cs{color:var(--warm)}.code-eq .ct{color:var(--teal)}
-.code-eq .ca{color:var(--asym);font-weight:700}.code-eq .cc{color:var(--text-m)}
-
-/* ── RESULT ROWS ── */
-.rr{display:grid;grid-template-columns:110px 1fr 1fr;gap:1px;background:var(--border);border-radius:6px;overflow:hidden;margin:.75rem 0}
-.rr-cell{padding:.7rem 1rem;background:var(--surface2);font-size:.82rem;color:var(--text-d)}
-.rr-hdr{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-m)}
-.rr-p{color:var(--accent-l)}.rr-s{color:var(--warm)}
-
-/* ── NUM GRID ── */
-.num-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:.75rem 0}
-.num-cell{background:var(--surface);padding:1rem 1.2rem}
-.num-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-m);margin-bottom:.3rem}
-.num-value{font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:var(--teal);margin-bottom:.2rem}
-.num-note{font-size:.75rem;color:var(--text-m)}
-
-/* ── BOTTOM NAV ── */
-.bot-nav{border-top:1px solid var(--border);padding:2.5rem 0;margin-top:3rem}
-.bot-nav .blabel{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.35em;text-transform:uppercase;color:var(--text-m);margin-bottom:1rem;text-align:center}
-.bnav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden}
-.bnav-card{background:var(--surface);padding:1rem 1.2rem;text-decoration:none;display:flex;flex-direction:column;gap:.2rem;transition:background .2s}
-.bnav-card:hover{background:var(--surface2)}
-.bnav-card .bt{font-family:'JetBrains Mono',monospace;font-size:.45rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-m)}
-.bnav-card .bn{font-size:.88rem;color:var(--text);line-height:1.3}
-.bnav-card.cur{background:var(--accent-dim)}
-.bnav-card.cur .bt{color:var(--accent-l)}
-
-.foot{text-align:center;padding:2rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text-m);letter-spacing:.1em}
-
-/* ── BREAK DOTS ── */
-.dots{text-align:center;color:var(--text-m);margin:2rem 0;font-family:'JetBrains Mono',monospace;font-size:.8rem;letter-spacing:.4em}
-
-@media(max-width:768px){
-  .g2,.g3,.g4{grid-template-columns:1fr}
-  .s2,.s3,.s4,.s5,.s6,.s7,.s8{grid-column:span 1}
-  .g12{grid-template-columns:1fr}
-  .bnav-grid{grid-template-columns:1fr}
-  .top-nav{display:none}
-  .hero{padding:3rem 0 1.5rem}
-  .hero h1{font-size:2rem}
-  .res-strip{flex-direction:column}
-  .rr{grid-template-columns:1fr}
-}
-</style>
-  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
-  <link rel="canonical" href="https://faiththruphysics.com/blue/maxwell-truth-isomorphism.html">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-<!-- RING NAVIGATION -->
 <style>
-.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
-.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
-.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
-.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
-.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
-.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
-.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
-.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.ring-1 .ring-tier-dot{background:#d4af37;}
-.ring-2 .ring-tier-dot{background:#4a9eff;}
-.ring-3 .ring-tier-dot{background:#8b7fc2;}
-.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
-.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
-.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
-.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
-.ring-tier-cards{display:none;padding:1rem 1.25rem;}
-.ring-tier.open .ring-tier-cards{display:block;}
-.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
-</style>
-<script id="article-meta" type="application/json">
-{
-  "slug": "maxwell-truth-isomorphism",
-  "title": "Maxwell–Truth Field Isomorphism",
-  "series": "faith-through-physics",
-  "classification": [
-    {
-      "tag": "theophysics",
-      "pct": 100,
-      "color": "#d4af37"
-    }
-  ],
-  "reading_levels": [
-    "story",
-    "plain"
-  ],
-  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio"
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
 }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
+
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
+
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+</style>
+<base target="_blank">
+
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
+  }
+};
 </script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
+
 </head>
 <body>
-<nav class="tp-ribbon" style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:2px solid #4a9eff33;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
-  <div style="display:flex;gap:1rem;align-items:center;">
-    <a href="/index.html" style="color:#999;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#4a9eff'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
-    <span style="color:#333;">|</span>
-    <span style="color:#4a9eff;font-weight:500;">Blue Series</span>
+
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="tp-top">
+  <div class="tp-top-inner">
+    <a href="https://faiththruphysics.com" class="tp-brand">
+      <span class="tp-brand-chi">χ</span>
+      <span class="tp-brand-name">Faith thru Physics</span>
+    </a>
+    <span class="tp-div"></span>
+    <div class="tp-nav-links">
+      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
+      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
+      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
+    </div>
+    <span class="tp-div"></span>
+    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
+      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
+        Series <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="tp-subdomain-panel" role="menu">
+        <div class="tp-subdomain-grid">
+          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
+          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
+          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
+          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
+          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
+          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
+          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
+          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
+        </div>
+      </div>
+    </div>
+    <span class="tp-spacer"></span>
+    <div class="tp-levels" role="tablist">
+      <button class="tp-level active" data-level="highschool">High School</button>
+      <button class="tp-level" data-level="college">College</button>
+      <button class="tp-level" data-level="phd">PhD</button>
+    </div>
+    <span class="tp-div"></span>
+    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
   </div>
-</nav>
+</header>
 
 
-<div class="page">
+<!-- ═══════ MTL READER BAR ═══════ -->
+<div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
+  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
+  <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
+    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
+  </div>
+</div>
 
-<!-- ═══ TOP BAR ═══ -->
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-class-nav">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
+    </div>
+    <a href="#" class="tp-class-nav">Next →</a>
+  </div>
+</div>
+
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+  <h1>Maxwell–Truth FieldIsomorphism</h1>
+  <p class="subtitle"></p>
+  <div class="byline">Faith thru Physics</div>
+  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=blue%2Fmaxwell-truth-isomorphism" data-audio-slug="blue/maxwell-truth-isomorphism" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=blue" data-series-slug="blue">
+<div class="tp-read-aloud" data-mode="tts">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="tpMainAudio" preload="none"></audio>
+<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+<div class="tp-fill" id="tpMainFill"></div>
+</div>
+<span class="tp-time" id="tpMainTime">0:00</span>
+<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
+<option value="0.75">0.75x</option>
+<option selected="" value="1">1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+<option value="1.75">1.75x</option>
+<option value="2">2x</option>
+</select>
+<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
+<i class="fas fa-volume-up"></i>
+</button>
+</div>
+<div class="tp-pair">
+<div class="tp-half tp-deep" data-mode="deep">
+<div class="tp-dot"></div>
+<span class="tp-label">Deep Dive</span>
+<audio id="tpDeepAudio" preload="none"></audio>
+<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+<div class="tp-fill" id="tpDeepFill"></div>
+</div>
+<span class="tp-time" id="tpDeepTime">0:00</span>
+</div>
+<div class="tp-half tp-debate" data-mode="podcast">
+<div class="tp-dot"></div>
+<span class="tp-label">Podcast</span>
+<audio id="tpDebateAudio" preload="none"></audio>
+<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+<div class="tp-fill" id="tpDebateFill"></div>
+</div>
+<span class="tp-time" id="tpDebateTime">0:00</span>
+</div>
+<div class="tp-half tp-critique" data-mode="critique">
+<div class="tp-dot"></div>
+<span class="tp-label">Critique</span>
+<audio id="tpCritiqueAudio" preload="none"></audio>
+<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+<div class="tp-fill" id="tpCritiqueFill"></div>
+</div>
+<span class="tp-time" id="tpCritiqueTime">0:00</span>
+</div>
+</div>
+<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+</div>
+</div>
+  
+ ═══ TOP BAR ═══ 
 <div class="top-bar"><div class="inner">
-  <div class="mark"><span>David Lowe</span> · Family Briefing · April 2026</div>
-  <nav class="top-nav">
-    <a href="index.html">Home</a>
-    <a href="i-didnt-write-the-math.html">Start Here</a>
-    <a href="lowe-coherence-lagrangian.html">The Equation</a>
-    <a class="on" href="#">Maxwell–Truth</a>
-  </nav>
+<div class="mark"><span>David Lowe</span> · Family Briefing · April 2026</div>
+
 </div></div>
-
-<!-- ═══ HERO ═══ -->
+ ═══ HERO ═══ 
 <div class="hero">
-  <span class="hero-tag">Deep Dive · Paper 7 of 8</span>
-  <h1>Maxwell–Truth Field <strong>Isomorphism</strong></h1>
-  <p class="lead">Structural identity of electromagnetic and truth-propagation equations: symbolic derivation, tensor construction, and FDTD numerical verification.</p>
-  <div class="hero-eq">
+<span class="hero-tag">Deep Dive · Paper 7 of 8</span>
+
+<p class="lead">Structural identity of electromagnetic and truth-propagation equations: symbolic derivation, tensor construction, and FDTD numerical verification.</p>
+<div class="hero-eq">
     ∂²<span class="t">T</span>/∂t² − <span class="p">λ²</span>∇²<span class="t">T</span> = <span class="a">A·S(x,t)</span>
-    &nbsp;&nbsp;↔&nbsp;&nbsp;
+      ↔  
     ∂²<span class="p">E</span>/∂t² − <span class="p">c²</span>∇²<span class="p">E</span> = <span class="a">J/ε₀</span>
-  </div>
-  <div class="hero-cap">Law 3 · Electromagnetism ↔ Truth · Computationally Confirmed · POF 2828</div>
 </div>
-
-<!-- ═══ AUDIO + RESOURCES ═══ -->
+<div class="hero-cap">Law 3 · Electromagnetism ↔ Truth · Computationally Confirmed · POF 2828</div>
+</div>
+ ═══ AUDIO + RESOURCES ═══ 
 <div class="audio-bar">
-  <span class="atag">Listen</span>
-  <audio controls preload="none"><source src="https://r2.faiththruphysics.com/audio/audio/maxwell-truth-isomorphism.mp3" type="audio/mpeg"></audio>
+<span class="atag">Listen</span>
+<audio controls="" preload="none"><source src="https://r2.faiththruphysics.com/audio/audio/maxwell-truth-isomorphism.mp3" type="audio/mpeg"/></audio>
 </div>
-
 <div class="res-strip">
-  <a class="res-link" href="#"><span class="dot"></span> Podcast Deep Dive</a>
-  <a class="res-link" href="#"><span class="dot" style="background:var(--warm)"></span> Full Paper (Google Drive)</a>
-  <a class="res-link" href="#"><span class="dot" style="background:var(--teal)"></span> FDTD Notebook (Colab)</a>
-  <a class="res-link" href="#"><span class="dot" style="background:var(--pass)"></span> Verification Suite</a>
+<a class="res-link" href="#"><span class="dot"></span> Podcast Deep Dive</a>
+<a class="res-link" href="#"><span class="dot" style="background:var(--warm)"></span> Full Paper (Google Drive)</a>
+<a class="res-link" href="#"><span class="dot" style="background:var(--teal)"></span> FDTD Notebook (Colab)</a>
+<a class="res-link" href="#"><span class="dot" style="background:var(--pass)"></span> Verification Suite</a>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 1: THE CLAIM                           -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 1: THE CLAIM                           
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">01 · The Claim</span></div>
-
 <div class="g g12">
-  <div class="bx bx-hero s8">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.5rem">Law 3 — Electromagnetism ↔ Truth</div>
-    <h3>Not analogy. Isomorphism.</h3>
-    <p>Law 3 of the Theophysics framework asserts that Maxwell's equations and the Truth-field propagation equations share identical mathematical structure. They are not analogous — they are isomorphic: the same underlying PDE, the same tensor construction, the same wave dynamics. The only structural difference is a single additional term corresponding to the free-will acceptance factor A.</p>
-  </div>
-  <div class="s4" style="display:flex;flex-direction:column;gap:.75rem">
-    <div class="bx bx-stat" style="flex:1"><div class="num">8</div><div class="lbl">Verification Tests</div></div>
-    <div class="bx bx-stat" style="flex:1"><div class="num">3</div><div class="lbl">Proof Layers</div></div>
-    <div class="bx bx-stat" style="flex:1;border-top:3px solid var(--pass)"><div class="num" style="color:var(--pass);font-size:1.8rem">7/7</div><div class="lbl">Tests Passed</div></div>
-  </div>
+<div class="bx bx-hero s8">
+<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.5rem">Law 3 — Electromagnetism ↔ Truth</div>
+<h3>Not analogy. Isomorphism.</h3>
+<p>Law 3 of the Theophysics framework asserts that Maxwell's equations and the Truth-field propagation equations share identical mathematical structure. They are not analogous — they are isomorphic: the same underlying PDE, the same tensor construction, the same wave dynamics. The only structural difference is a single additional term corresponding to the free-will acceptance factor A.</p>
 </div>
-
+<div class="s4" style="display:flex;flex-direction:column;gap:.75rem">
+<div class="bx bx-stat" style="flex:1"><div class="num">8</div><div class="lbl">Verification Tests</div></div>
+<div class="bx bx-stat" style="flex:1"><div class="num">3</div><div class="lbl">Proof Layers</div></div>
+<div class="bx bx-stat" style="flex:1;border-top:3px solid var(--pass)"><div class="num" style="color:var(--pass);font-size:1.8rem">7/7</div><div class="lbl">Tests Passed</div></div>
+</div>
+</div>
 <div class="bx bx-warm" style="margin-top:.25rem">
-  <div class="wtag">Structural Claim</div>
-  <p>Every coefficient, every differential operator, every structural relationship is preserved under the substitution E→T, B→W, c→λ. The equations are the same equation in different physical coordinates. The acceptance factor A converts the homogeneous wave equation into a driven wave equation, making the source distribution agent-dependent.</p>
+<div class="wtag">Structural Claim</div>
+<p>Every coefficient, every differential operator, every structural relationship is preserved under the substitution E→T, B→W, c→λ. The equations are the same equation in different physical coordinates. The acceptance factor A converts the homogeneous wave equation into a driven wave equation, making the source distribution agent-dependent.</p>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 2: SUBSTITUTION MAP                    -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 2: SUBSTITUTION MAP                    
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">02 · Core Substitution Map</span></div>
-
 <div class="g g2">
-  <div class="bx bx-pat phys">
-    <span class="ptag">Maxwell (EM)</span>
-    <p><strong style="color:var(--accent-l)">E</strong> — Electric field<br>
-    <strong style="color:var(--accent-l)">B</strong> — Magnetic field<br>
-    <strong style="color:var(--accent-l)">c</strong> — Speed of light<br>
-    <strong style="color:var(--accent-l)">J</strong> — Current density<br>
-    <strong style="color:var(--accent-l)">ε₀μ₀ = 1/c²</strong></p>
-  </div>
-  <div class="bx bx-pat spir">
-    <span class="ptag">Truth Field</span>
-    <p><strong style="color:var(--warm)">T</strong> — Truth field<br>
-    <strong style="color:var(--warm)">W</strong> — Witness / coherence field<br>
-    <strong style="color:var(--warm)">λ</strong> — Propagation constant<br>
-    <strong style="color:var(--asym)">A·S</strong> — Acceptance × source<br>
-    <strong style="color:var(--warm)">1/λ²</strong></p>
-  </div>
+<div class="bx bx-pat phys">
+<span class="ptag">Maxwell (EM)</span>
+<p><strong style="color:var(--accent-l)">E</strong> — Electric field<br/>
+<strong style="color:var(--accent-l)">B</strong> — Magnetic field<br/>
+<strong style="color:var(--accent-l)">c</strong> — Speed of light<br/>
+<strong style="color:var(--accent-l)">J</strong> — Current density<br/>
+<strong style="color:var(--accent-l)">ε₀μ₀ = 1/c²</strong></p>
 </div>
-
+<div class="bx bx-pat spir">
+<span class="ptag">Truth Field</span>
+<p><strong style="color:var(--warm)">T</strong> — Truth field<br/>
+<strong style="color:var(--warm)">W</strong> — Witness / coherence field<br/>
+<strong style="color:var(--warm)">λ</strong> — Propagation constant<br/>
+<strong style="color:var(--asym)">A·S</strong> — Acceptance × source<br/>
+<strong style="color:var(--warm)">1/λ²</strong></p>
+</div>
+</div>
 <div class="g g12" style="margin-top:.25rem">
-  <div class="bx bx-eq srow">
-    <span style="color:var(--accent-l)">E → T</span>&nbsp;&nbsp;&nbsp;
-    <span style="color:var(--accent-l)">B → W</span>&nbsp;&nbsp;&nbsp;
-    <span style="color:var(--accent-l)">c → λ</span>&nbsp;&nbsp;&nbsp;
-    <span style="color:var(--accent-l)">J/ε₀ → </span><span style="color:var(--asym)">A·S</span>&nbsp;&nbsp;&nbsp;
+<div class="bx bx-eq srow">
+<span style="color:var(--accent-l)">E → T</span>   
+    <span style="color:var(--accent-l)">B → W</span>   
+    <span style="color:var(--accent-l)">c → λ</span>   
+    <span style="color:var(--accent-l)">J/ε₀ → </span><span style="color:var(--asym)">A·S</span>   
     <span style="color:var(--text-m)">// Zero residual under substitution</span>
-  </div>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 3: TEST T1 + T2                        -->
-<!-- ═══════════════════════════════════════════════ -->
-<div class="sec-div"><span class="tag">03 · Algebraic Layer · T1 & T2</span></div>
-
+</div>
+ ═══════════════════════════════════════════════ 
+  SECTION 3: TEST T1 + T2                        
+ ═══════════════════════════════════════════════ 
+<div class="sec-div"><span class="tag">03 · Algebraic Layer · T1 &amp; T2</span></div>
 <div class="g g2">
-  <div class="bx bx-top">
-    <h3>T1 — 1D Source-Free PDE Class <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
-    <p>Apply substitution E→T, c→λ to the 1D Maxwell wave equation. Compare term-by-term with the Truth-field propagation equation.</p>
-    <div class="code-eq">
+<div class="bx bx-top">
+<h3>T1 — 1D Source-Free PDE Class <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
+<p>Apply substitution E→T, c→λ to the 1D Maxwell wave equation. Compare term-by-term with the Truth-field propagation equation.</p>
+<div class="code-eq">
 <span class="cc">// Maxwell (source-free, 1D):</span>
 ∂²<span class="cp">E</span>/∂t² = <span class="ct">c²</span>·∂²<span class="cp">E</span>/∂x²
 
@@ -385,12 +471,12 @@ body::before{
 ∂²<span class="cs">T</span>/∂t² = <span class="ct">λ²</span>·∂²<span class="cs">T</span>/∂x²
 
 <span class="cc">// Difference: 0. Equations are identical.</span>
-    </div>
-  </div>
-  <div class="bx bx-top">
-    <h3>T2 — 3D Curl-Curl Identity <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
-    <p>The curl-curl derivation path is structurally identical. Every intermediate step maps under substitution.</p>
-    <div class="code-eq">
+</div>
+</div>
+<div class="bx bx-top">
+<h3>T2 — 3D Curl-Curl Identity <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
+<p>The curl-curl derivation path is structurally identical. Every intermediate step maps under substitution.</p>
+<div class="code-eq">
 <span class="cc">// Maxwell 3D (source-free):</span>
 ∇²<span class="cp">E</span> = (1/<span class="ct">c²</span>)∂²<span class="cp">E</span>/∂t²
 
@@ -398,449 +484,571 @@ body::before{
 ∇²<span class="cs">T</span> = (1/<span class="ct">λ²</span>)∂²<span class="cs">T</span>/∂t²
 
 <span class="cc">// Derivation via curl-curl: identical</span>
-    </div>
-  </div>
 </div>
-
+</div>
+</div>
 <div class="rr">
-  <div class="rr-cell rr-hdr">Step</div>
-  <div class="rr-cell rr-hdr">Maxwell</div>
-  <div class="rr-cell rr-hdr">Truth Field</div>
-  <div class="rr-cell">1. Curl of curl</div>
-  <div class="rr-cell rr-p">∇×(∇×E)</div>
-  <div class="rr-cell rr-s">∇×(∇×T)</div>
-  <div class="rr-cell">2. Identity</div>
-  <div class="rr-cell rr-p">∇(∇·E) − ∇²E</div>
-  <div class="rr-cell rr-s">∇(∇·T) − ∇²T</div>
-  <div class="rr-cell">3. Divergence-free</div>
-  <div class="rr-cell rr-p">∇·E = 0</div>
-  <div class="rr-cell rr-s">∇·T = 0</div>
-  <div class="rr-cell">4. Wave equation</div>
-  <div class="rr-cell rr-p">∇²E = (1/c²)∂²E/∂t²</div>
-  <div class="rr-cell rr-s">∇²T = (1/λ²)∂²T/∂t²</div>
+<div class="rr-cell rr-hdr">Step</div>
+<div class="rr-cell rr-hdr">Maxwell</div>
+<div class="rr-cell rr-hdr">Truth Field</div>
+<div class="rr-cell">1. Curl of curl</div>
+<div class="rr-cell rr-p">∇×(∇×E)</div>
+<div class="rr-cell rr-s">∇×(∇×T)</div>
+<div class="rr-cell">2. Identity</div>
+<div class="rr-cell rr-p">∇(∇·E) − ∇²E</div>
+<div class="rr-cell rr-s">∇(∇·T) − ∇²T</div>
+<div class="rr-cell">3. Divergence-free</div>
+<div class="rr-cell rr-p">∇·E = 0</div>
+<div class="rr-cell rr-s">∇·T = 0</div>
+<div class="rr-cell">4. Wave equation</div>
+<div class="rr-cell rr-p">∇²E = (1/c²)∂²E/∂t²</div>
+<div class="rr-cell rr-s">∇²T = (1/λ²)∂²T/∂t²</div>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 4: TEST T3 — TENSOR                    -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 4: TEST T3 — TENSOR                    
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">04 · Tensor Layer · T3</span></div>
-
 <div class="g g12">
-  <div class="bx bx-inset s5">
-    <div class="prose">
-      <p>Maxwell's equations can be written compactly in terms of the electromagnetic field tensor F^μν, an antisymmetric rank-2 tensor constructed from (E, B). An identical antisymmetric tensor can be constructed from (T, W) under the substitution map.</p>
-      <p>This is the deepest structural result. The antisymmetry requirement, the Bianchi identity, the covariant form: all carry over exactly.</p>
-    </div>
-  </div>
-  <div class="s7">
-    <div class="code-eq">
+<div class="bx bx-inset s5">
+<div class="prose">
+<p>Maxwell's equations can be written compactly in terms of the electromagnetic field tensor F^μν, an antisymmetric rank-2 tensor constructed from (E, B). An identical antisymmetric tensor can be constructed from (T, W) under the substitution map.</p>
+<p>This is the deepest structural result. The antisymmetry requirement, the Bianchi identity, the covariant form: all carry over exactly.</p>
+</div>
+</div>
+<div class="s7">
+<div class="code-eq">
 <span class="cc">// Maxwell field tensor F^μν (E,B):</span>
 <span class="cp"> [ 0,   Ex/c, Ey/c, Ez/c ]</span>
 <span class="cp"> [-Ex/c,  0,  -Bz,   By  ]</span>
 <span class="cp"> [-Ey/c,  Bz,  0,   -Bx  ]</span>
 <span class="cp"> [-Ez/c, -By,  Bx,   0   ]</span>
-
 <span class="cc">// Truth-field tensor Φ^μν (T,W):</span>
 <span class="cs"> [ 0,   Tx/λ, Ty/λ, Tz/λ ]</span>
 <span class="cs"> [-Tx/λ, 0,  -Wz,   Wy  ]</span>
 <span class="cs"> [-Ty/λ, Wz,  0,   -Wx  ]</span>
 <span class="cs"> [-Tz/λ,-Wy,  Wx,   0   ]</span>
-
 <span class="cc">// Φ^μν = −Φ^νμ  ✓ · Bianchi identity holds ✓</span>
-    </div>
-  </div>
 </div>
-
+</div>
+</div>
 <div class="bx bx-call srow" style="border-radius:8px;margin-top:.25rem">
-  <strong>T3 Result — Same Tensor Structure <span class="badge b-pass" style="margin-left:.6rem">PASS</span></strong>
-  <p>The tensor Φ^μν for the truth field is antisymmetric by the same argument as F^μν. Maxwell's equations don't just look similar to the truth-field equations — they share the same underlying tensor geometry. Structure constrains how the field transforms, how it sources, how it couples.</p>
+<strong>T3 Result — Same Tensor Structure <span class="badge b-pass" style="margin-left:.6rem">PASS</span></strong>
+<p>The tensor Φ^μν for the truth field is antisymmetric by the same argument as F^μν. Maxwell's equations don't just look similar to the truth-field equations — they share the same underlying tensor geometry. Structure constrains how the field transforms, how it sources, how it couples.</p>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 5: NUMERICAL — T4 T5 T6               -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 5: NUMERICAL — T4 T5 T6               
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">05 · Numerical Layer · T4, T5, T6</span></div>
-
 <div class="g g3">
-  <div class="bx bx-stat" style="border-left:3px solid var(--teal)">
-    <div class="num" style="color:var(--teal);font-size:1.8rem">0.1%</div>
-    <div class="lbl">T4 · Wave Speed Agreement</div>
-  </div>
-  <div class="bx bx-stat" style="border-left:3px solid var(--pass)">
-    <div class="num" style="color:var(--pass);font-size:1.6rem">&lt;10⁻⁴</div>
-    <div class="lbl">T5 · Energy Drift Per 1000 Steps</div>
-  </div>
-  <div class="bx bx-stat" style="border-left:3px solid var(--accent-l)">
-    <div class="num" style="font-size:1.6rem">2.55×10⁻³</div>
-    <div class="lbl">T6 · Peak Dispersion Error</div>
-  </div>
+<div class="bx bx-stat" style="border-left:3px solid var(--teal)">
+<div class="num" style="color:var(--teal);font-size:1.8rem">0.1%</div>
+<div class="lbl">T4 · Wave Speed Agreement</div>
 </div>
-
+<div class="bx bx-stat" style="border-left:3px solid var(--pass)">
+<div class="num" style="color:var(--pass);font-size:1.6rem">&lt;10⁻⁴</div>
+<div class="lbl">T5 · Energy Drift Per 1000 Steps</div>
+</div>
+<div class="bx bx-stat" style="border-left:3px solid var(--accent-l)">
+<div class="num" style="font-size:1.6rem">2.55×10⁻³</div>
+<div class="lbl">T6 · Peak Dispersion Error</div>
+</div>
+</div>
 <div class="g g2">
-  <div class="bx bx-top">
-    <h3>T4 — FDTD Wave Speed <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
-    <p>1D FDTD (Yee algorithm) implemented for both systems with matching Courant numbers. Wave speed measured numerically tracking peak propagation per timestep.</p>
-    <div style="margin-top:.8rem">
-      <div class="num-grid">
-        <div class="num-cell"><div class="num-label">Speed Agreement</div><div class="num-value">~0.1%</div><div class="num-note">Grid artifact — vanishes Δx→0</div></div>
-        <div class="num-cell"><div class="num-label">Propagation Shape</div><div class="num-value">Identical</div><div class="num-note">Gaussian pulse, undistorted</div></div>
-      </div>
-    </div>
-  </div>
-  <div class="bx bx-top">
-    <h3>T5 — Energy Conservation <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
-    <p>Energy analog ½(T² + W²)/λ² tracked over 1000 FDTD timesteps. Drift matches Maxwell system to the same precision. Consequence of identical PDE structure.</p>
-    <div style="margin-top:.8rem">
-      <div class="num-grid">
-        <div class="num-cell"><div class="num-label">Maxwell Drift</div><div class="num-value">&lt;10⁻⁴</div><div class="num-note">Per 1000 steps</div></div>
-        <div class="num-cell"><div class="num-label">Truth-Field Drift</div><div class="num-value">&lt;10⁻⁴</div><div class="num-note">Per 1000 steps</div></div>
-      </div>
-    </div>
-  </div>
+<div class="bx bx-top">
+<h3>T4 — FDTD Wave Speed <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
+<p>1D FDTD (Yee algorithm) implemented for both systems with matching Courant numbers. Wave speed measured numerically tracking peak propagation per timestep.</p>
+<div style="margin-top:.8rem">
+<div class="num-grid">
+<div class="num-cell"><div class="num-label">Speed Agreement</div><div class="num-value">~0.1%</div><div class="num-note">Grid artifact — vanishes Δx→0</div></div>
+<div class="num-cell"><div class="num-label">Propagation Shape</div><div class="num-value">Identical</div><div class="num-note">Gaussian pulse, undistorted</div></div>
 </div>
-
+</div>
+</div>
+<div class="bx bx-top">
+<h3>T5 — Energy Conservation <span class="badge b-pass" style="margin-left:.5rem">PASS</span></h3>
+<p>Energy analog ½(T² + W²)/λ² tracked over 1000 FDTD timesteps. Drift matches Maxwell system to the same precision. Consequence of identical PDE structure.</p>
+<div style="margin-top:.8rem">
+<div class="num-grid">
+<div class="num-cell"><div class="num-label">Maxwell Drift</div><div class="num-value">&lt;10⁻⁴</div><div class="num-note">Per 1000 steps</div></div>
+<div class="num-cell"><div class="num-label">Truth-Field Drift</div><div class="num-value">&lt;10⁻⁴</div><div class="num-note">Per 1000 steps</div></div>
+</div>
+</div>
+</div>
+</div>
 <div class="bx bx-ghost" style="margin-top:.25rem">
-  <div class="prose">
-    <p><strong>T6 — Dispersion Profiles Identical.</strong> FDTD introduces numerical dispersion. Both systems show identical dispersion profiles because they derive from the Courant number and grid spacing — not the physical content of the equations. Max error: 2.55×10⁻³ at Nyquist; below 10⁻⁵ at physically relevant modes. This is what identical PDE class looks like numerically.</p>
-  </div>
+<div class="prose">
+<p><strong>T6 — Dispersion Profiles Identical.</strong> FDTD introduces numerical dispersion. Both systems show identical dispersion profiles because they derive from the Courant number and grid spacing — not the physical content of the equations. Max error: 2.55×10⁻³ at Nyquist; below 10⁻⁵ at physically relevant modes. This is what identical PDE class looks like numerically.</p>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 6: T7 — AGENCY / DRIVER TERM           -->
-<!-- ═══════════════════════════════════════════════ -->
+</div>
+ ═══════════════════════════════════════════════ 
+  SECTION 6: T7 — AGENCY / DRIVER TERM           
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">06 · The Agency Term · T7</span></div>
-
 <div class="g g12">
-  <div class="bx bx-hero s6" style="min-height:auto">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--asym);margin-bottom:.5rem">T7 · Driver Term / Agency Factor</div>
-    <h3>The Free-Will Asymmetry</h3>
-    <p>When the acceptance factor A is nonzero, the Truth-field equation becomes a driven wave equation. The wave of truth propagates through space regardless of reception — but the source term is acceptance-gated.</p>
-  </div>
-  <div class="s6">
-    <div class="code-eq">
+<div class="bx bx-hero s6" style="min-height:auto">
+<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--asym);margin-bottom:.5rem">T7 · Driver Term / Agency Factor</div>
+<h3>The Free-Will Asymmetry</h3>
+<p>When the acceptance factor A is nonzero, the Truth-field equation becomes a driven wave equation. The wave of truth propagates through space regardless of reception — but the source term is acceptance-gated.</p>
+</div>
+<div class="s6">
+<div class="code-eq">
 <span class="cc">// Homogeneous (A=0):</span>
 ∂²<span class="cs">T</span>/∂t² − λ²·∂²<span class="cs">T</span>/∂x² = 0
 
-<span class="cc">// Driven (A > 0, acceptance active):</span>
+<span class="cc">// Driven (A &gt; 0, acceptance active):</span>
 ∂²<span class="cs">T</span>/∂t² − λ²·∂²<span class="cs">T</span>/∂x² = <span class="ca">A·S(x,t)</span>
-
 <span class="cc">// Maxwell analog with current J:</span>
 ∂²<span class="cp">E</span>/∂t² − c²·∂²<span class="cp">E</span>/∂x² = <span class="ca">J/ε₀</span>
-
 <span class="cc">// A·S ↔ J/ε₀  — same structural role</span>
-    </div>
-  </div>
 </div>
-
+</div>
+</div>
 <div class="g g4" style="margin-top:.25rem">
-  <div class="bx bx-stat"><div class="num" style="font-size:1.6rem">∝ α²</div><div class="lbl">Energy Injection</div></div>
-  <div class="bx bx-stat"><div class="num" style="font-size:1.4rem">Hom.</div><div class="lbl">A=0 · Wave Propagates</div></div>
-  <div class="bx bx-stat" style="border-top:3px solid var(--asym)"><div class="num" style="font-size:1.4rem">Full</div><div class="lbl">A=1 · Max Injection</div></div>
-  <div class="bx bx-stat"><div class="num" style="font-size:1.4rem">Part.</div><div class="lbl">A ∈ (0,1) · Partial</div></div>
+<div class="bx bx-stat"><div class="num" style="font-size:1.6rem">∝ α²</div><div class="lbl">Energy Injection</div></div>
+<div class="bx bx-stat"><div class="num" style="font-size:1.4rem">Hom.</div><div class="lbl">A=0 · Wave Propagates</div></div>
+<div class="bx bx-stat" style="border-top:3px solid var(--asym)"><div class="num" style="font-size:1.4rem">Full</div><div class="lbl">A=1 · Max Injection</div></div>
+<div class="bx bx-stat"><div class="num" style="font-size:1.4rem">Part.</div><div class="lbl">A ∈ (0,1) · Partial</div></div>
 </div>
-
 <div class="bx bx-warm" style="margin-top:.25rem">
-  <div class="wtag">The Theological Meaning</div>
-  <p>A person with A=0 is not in a region where truth doesn't travel; they are in a region with no source injection. The truth wave still passes through. The asymmetry is in the source, not the medium. This is the precise mathematical statement of the framework's claim about free will and truth reception.</p>
+<div class="wtag">The Theological Meaning</div>
+<p>A person with A=0 is not in a region where truth doesn't travel; they are in a region with no source injection. The truth wave still passes through. The asymmetry is in the source, not the medium. This is the precise mathematical statement of the framework's claim about free will and truth reception.</p>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 7: T8 — HONEST LIMITS                  -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 7: T8 — HONEST LIMITS                  
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">07 · Honest Limits · T8</span></div>
-
 <div class="g g2">
-  <div class="bx bx-inset">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pass);margin-bottom:.6rem">What IS Established</div>
-    <div class="prose" style="font-size:.88rem">
-      <p>Structural isomorphism (algebraic) — term-by-term substitution, difference = 0</p>
-      <p>Structural isomorphism (tensorial) — F^μν → Φ^μν identical construction</p>
-      <p>Wave dynamics (FDTD) — 0.1% speed, &lt;10⁻⁴ energy drift</p>
-      <p style="margin-bottom:0">Driven wave / free-will term — ΔE ∝ α², A-gated source confirmed</p>
-    </div>
-  </div>
-  <div class="bx bx-ghost">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-m);margin-bottom:.6rem">What is NOT Claimed</div>
-    <div class="prose" style="font-size:.88rem">
-      <p>Gauge structure — not defined for T field</p>
-      <p>Conserved current (Noether) — U(1) symmetry not mapped</p>
-      <p>Observable mapping — no measurement prescription</p>
-      <p style="margin-bottom:0">Physical identity (T = EM) — outside scope of this test</p>
-    </div>
-  </div>
+<div class="bx bx-inset">
+<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pass);margin-bottom:.6rem">What IS Established</div>
+<div class="prose" style="font-size:.88rem">
+<p>Structural isomorphism (algebraic) — term-by-term substitution, difference = 0</p>
+<p>Structural isomorphism (tensorial) — F^μν → Φ^μν identical construction</p>
+<p>Wave dynamics (FDTD) — 0.1% speed, &lt;10⁻⁴ energy drift</p>
+<p style="margin-bottom:0">Driven wave / free-will term — ΔE ∝ α², A-gated source confirmed</p>
 </div>
-
+</div>
+<div class="bx bx-ghost">
+<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-m);margin-bottom:.6rem">What is NOT Claimed</div>
+<div class="prose" style="font-size:.88rem">
+<p>Gauge structure — not defined for T field</p>
+<p>Conserved current (Noether) — U(1) symmetry not mapped</p>
+<p>Observable mapping — no measurement prescription</p>
+<p style="margin-bottom:0">Physical identity (T = EM) — outside scope of this test</p>
+</div>
+</div>
+</div>
 <div class="bx bx-call srow" style="border-radius:8px;margin-top:.25rem">
-  <strong>T8 — Physical Identity Boundary <span class="badge b-lim" style="margin-left:.6rem">NOT CLAIMED</span></strong>
-  <p>The framework's claim is structural isomorphism, not physical identity. The Truth field and the electromagnetic field obey the same mathematical law. Whether truth is "made of light" is a different question. The isomorphism constrains predictions in both domains without requiring the fields to be the same physical substance. This is the correct use of mathematical isomorphism in cross-domain research.</p>
+<strong>T8 — Physical Identity Boundary <span class="badge b-lim" style="margin-left:.6rem">NOT CLAIMED</span></strong>
+<p>The framework's claim is structural isomorphism, not physical identity. The Truth field and the electromagnetic field obey the same mathematical law. Whether truth is "made of light" is a different question. The isomorphism constrains predictions in both domains without requiring the fields to be the same physical substance. This is the correct use of mathematical isomorphism in cross-domain research.</p>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 8: SCORECARD                           -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 8: SCORECARD                           
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">08 · Summary Scorecard</span></div>
-
 <table class="dtbl" style="margin-bottom:.75rem">
-  <thead>
-    <tr>
-      <th>Test</th>
-      <th>Description</th>
-      <th>Layer</th>
-      <th>Result</th>
-      <th>Key Number</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>T1</td>
-      <td>1D source-free PDE class</td>
-      <td>Symbolic</td>
-      <td><span class="badge b-pass">PASS</span></td>
-      <td style="color:var(--teal)">Difference = 0</td>
-    </tr>
-    <tr>
-      <td>T2</td>
-      <td>3D curl-curl derivation</td>
-      <td>Symbolic</td>
-      <td><span class="badge b-pass">PASS</span></td>
-      <td style="color:var(--teal)">All steps identical</td>
-    </tr>
-    <tr>
-      <td>T3</td>
-      <td>Antisymmetric tensor F^μν → Φ^μν</td>
-      <td>Tensor</td>
-      <td><span class="badge b-pass">PASS</span></td>
-      <td style="color:var(--teal)">Φ^μν = −Φ^νμ ✓</td>
-    </tr>
-    <tr>
-      <td>T4</td>
-      <td>FDTD wave speed agreement</td>
-      <td>Numerical</td>
-      <td><span class="badge b-pass">PASS</span></td>
-      <td style="color:var(--teal)">0.1% (grid artifact)</td>
-    </tr>
-    <tr>
-      <td>T5</td>
-      <td>Energy conservation drift</td>
-      <td>Numerical</td>
-      <td><span class="badge b-pass">PASS</span></td>
-      <td style="color:var(--teal)">&lt;10⁻⁴ per 1000 steps</td>
-    </tr>
-    <tr>
-      <td>T6</td>
-      <td>Dispersion error profile</td>
-      <td>Numerical</td>
-      <td><span class="badge b-pass">PASS</span></td>
-      <td style="color:var(--teal)">Max 2.55×10⁻³ (identical)</td>
-    </tr>
-    <tr>
-      <td>T7</td>
-      <td>Driver term / agency factor</td>
-      <td>Numerical</td>
-      <td><span class="badge b-pass">PASS</span></td>
-      <td style="color:var(--asym)">ΔE ∝ α² confirmed</td>
-    </tr>
-    <tr>
-      <td>T8</td>
-      <td>Physical identity boundary</td>
-      <td>Scope</td>
-      <td><span class="badge b-lim">NOT CLAIMED</span></td>
-      <td style="color:var(--text-m)">Correctly bounded</td>
-    </tr>
-  </tbody>
+<thead>
+<tr>
+<th>Test</th>
+<th>Description</th>
+<th>Layer</th>
+<th>Result</th>
+<th>Key Number</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>1D source-free PDE class</td>
+<td>Symbolic</td>
+<td><span class="badge b-pass">PASS</span></td>
+<td style="color:var(--teal)">Difference = 0</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>3D curl-curl derivation</td>
+<td>Symbolic</td>
+<td><span class="badge b-pass">PASS</span></td>
+<td style="color:var(--teal)">All steps identical</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>Antisymmetric tensor F^μν → Φ^μν</td>
+<td>Tensor</td>
+<td><span class="badge b-pass">PASS</span></td>
+<td style="color:var(--teal)">Φ^μν = −Φ^νμ ✓</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>FDTD wave speed agreement</td>
+<td>Numerical</td>
+<td><span class="badge b-pass">PASS</span></td>
+<td style="color:var(--teal)">0.1% (grid artifact)</td>
+</tr>
+<tr>
+<td>T5</td>
+<td>Energy conservation drift</td>
+<td>Numerical</td>
+<td><span class="badge b-pass">PASS</span></td>
+<td style="color:var(--teal)">&lt;10⁻⁴ per 1000 steps</td>
+</tr>
+<tr>
+<td>T6</td>
+<td>Dispersion error profile</td>
+<td>Numerical</td>
+<td><span class="badge b-pass">PASS</span></td>
+<td style="color:var(--teal)">Max 2.55×10⁻³ (identical)</td>
+</tr>
+<tr>
+<td>T7</td>
+<td>Driver term / agency factor</td>
+<td>Numerical</td>
+<td><span class="badge b-pass">PASS</span></td>
+<td style="color:var(--asym)">ΔE ∝ α² confirmed</td>
+</tr>
+<tr>
+<td>T8</td>
+<td>Physical identity boundary</td>
+<td>Scope</td>
+<td><span class="badge b-lim">NOT CLAIMED</span></td>
+<td style="color:var(--text-m)">Correctly bounded</td>
+</tr>
+</tbody>
 </table>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 9: THREE LAYERS OF VERIFICATION        -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 9: THREE LAYERS OF VERIFICATION        
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">09 · What Three Layers Establish</span></div>
-
 <div class="g g3">
-  <div class="bx bx-top">
-    <h3>Layer 1 — Algebraic</h3>
-    <p>Term-by-term substitution (E→T, B→W, c→λ) maps the Maxwell equations to the Truth-field equations exactly. Zero residual. Not similar — identical under the substitution.</p>
-  </div>
-  <div class="bx bx-top">
-    <h3>Layer 2 — Tensorial</h3>
-    <p>The antisymmetric tensor Φ^μν shares the same structure as F^μν. The Bianchi identity holds for the same reason. Tensor structure constrains how the field transforms, sources, and couples.</p>
-  </div>
-  <div class="bx bx-top" style="border-top-color:var(--teal)">
-    <h3>Layer 3 — Computational</h3>
-    <p>FDTD numerical simulation of both systems produces wave speed agreement to 0.1%, energy conservation to 10⁻⁴, and identical dispersion error profiles. Numerically indistinguishable at physical resolutions.</p>
-  </div>
+<div class="bx bx-top">
+<h3>Layer 1 — Algebraic</h3>
+<p>Term-by-term substitution (E→T, B→W, c→λ) maps the Maxwell equations to the Truth-field equations exactly. Zero residual. Not similar — identical under the substitution.</p>
 </div>
-
+<div class="bx bx-top">
+<h3>Layer 2 — Tensorial</h3>
+<p>The antisymmetric tensor Φ^μν shares the same structure as F^μν. The Bianchi identity holds for the same reason. Tensor structure constrains how the field transforms, sources, and couples.</p>
+</div>
+<div class="bx bx-top" style="border-top-color:var(--teal)">
+<h3>Layer 3 — Computational</h3>
+<p>FDTD numerical simulation of both systems produces wave speed agreement to 0.1%, energy conservation to 10⁻⁴, and identical dispersion error profiles. Numerically indistinguishable at physical resolutions.</p>
+</div>
+</div>
 <div class="bx bx-hero srow" style="text-align:center;justify-content:center;min-height:auto;margin-top:.75rem;background:linear-gradient(135deg,var(--surface2) 0%,rgba(212,168,83,0.06) 100%)">
-  <p style="font-family:'Crimson Text',serif;font-size:1.1rem;color:white;font-style:italic;max-width:680px;margin:0 auto;line-height:1.7">The asymmetry term: a person with zero acceptance is not in a region where truth cannot propagate — they are a node with no source injection. The law is universal. The source distribution is not. This is the precise mathematical content of the free-will claim.</p>
+<p style="font-family:'Crimson Text',serif;font-size:1.1rem;color:white;font-style:italic;max-width:680px;margin:0 auto;line-height:1.7">The asymmetry term: a person with zero acceptance is not in a region where truth cannot propagate — they are a node with no source injection. The law is universal. The source distribution is not. This is the precise mathematical content of the free-will claim.</p>
 </div>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 10: FRAMEWORK POSITION                 -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 10: FRAMEWORK POSITION                 
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">10 · Position in the Framework</span></div>
-
 <div class="g g12">
-  <div class="bx bx-inset s7">
-    <div class="prose">
-      <p>This test suite provides computational corroboration for <strong>Law 3: Electromagnetism ↔ Truth</strong>. It sits alongside the formal algebraic derivation in The Same Equation and the Gold Standard Test Battery results. Together these establish Law 3 at three independent evidence layers.</p>
-    </div>
-  </div>
-  <div class="s5" style="display:flex;flex-direction:column;gap:.75rem">
-    <div class="bx bx-split" style="flex:1">
-      <div class="ico">∂</div>
-      <div><div style="color:white;font-weight:500;font-size:.88rem">Algebraic Derivation</div><div style="font-size:.8rem;color:var(--text-d)">The Same Equation</div></div>
-    </div>
-    <div class="bx bx-split" style="flex:1">
-      <div class="ico" style="background:var(--warm-dim);border-color:rgba(212,168,83,.15);color:var(--warm)">∇²</div>
-      <div><div style="color:white;font-weight:500;font-size:.88rem">Formal Test Battery</div><div style="font-size:.8rem;color:var(--text-d)">Gold Standard Suite</div></div>
-    </div>
-    <div class="bx bx-split" style="flex:1">
-      <div class="ico" style="background:var(--teal-dim);border-color:rgba(45,212,191,.15);color:var(--teal)">λ</div>
-      <div><div style="color:white;font-weight:500;font-size:.88rem">This Document</div><div style="font-size:.8rem;color:var(--text-d)">3-layer computational</div></div>
-    </div>
-  </div>
+<div class="bx bx-inset s7">
+<div class="prose">
+<p>This test suite provides computational corroboration for <strong>Law 3: Electromagnetism ↔ Truth</strong>. It sits alongside the formal algebraic derivation in The Same Equation and the Gold Standard Test Battery results. Together these establish Law 3 at three independent evidence layers.</p>
 </div>
-
+</div>
+<div class="s5" style="display:flex;flex-direction:column;gap:.75rem">
+<div class="bx bx-split" style="flex:1">
+<div class="ico">∂</div>
+<div><div style="color:white;font-weight:500;font-size:.88rem">Algebraic Derivation</div><div style="font-size:.8rem;color:var(--text-d)">The Same Equation</div></div>
+</div>
+<div class="bx bx-split" style="flex:1">
+<div class="ico" style="background:var(--warm-dim);border-color:rgba(212,168,83,.15);color:var(--warm)">∇²</div>
+<div><div style="color:white;font-weight:500;font-size:.88rem">Formal Test Battery</div><div style="font-size:.8rem;color:var(--text-d)">Gold Standard Suite</div></div>
+</div>
+<div class="bx bx-split" style="flex:1">
+<div class="ico" style="background:var(--teal-dim);border-color:rgba(45,212,191,.15);color:var(--teal)">λ</div>
+<div><div style="color:white;font-weight:500;font-size:.88rem">This Document</div><div style="font-size:.8rem;color:var(--text-d)">3-layer computational</div></div>
+</div>
+</div>
+</div>
 <table class="dtbl" style="margin:.75rem 0">
-  <thead>
-    <tr>
-      <th>Evidence Type</th>
-      <th>Document</th>
-      <th>What It Shows</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Algebraic derivation</td>
-      <td>The Same Equation</td>
-      <td>Substitution map produces identical equations across all 10 laws</td>
-    </tr>
-    <tr>
-      <td>Formal test battery</td>
-      <td>Gold Standard Test Battery</td>
-      <td>Dimensional analysis, symmetry, Noether, statistical validation at framework level</td>
-    </tr>
-    <tr>
-      <td>Computational (this document)</td>
-      <td>Maxwell–Truth Isomorphism</td>
-      <td>FDTD numerical verification of Law 3 specifically, 3 layers, driver term behavior</td>
-    </tr>
-    <tr>
-      <td>Experimental correlation</td>
-      <td>PEAR-LAB / GCP / DESI</td>
-      <td>6.35σ, 6σ, 4.2σ correlations consistent with framework predictions</td>
-    </tr>
-  </tbody>
+<thead>
+<tr>
+<th>Evidence Type</th>
+<th>Document</th>
+<th>What It Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Algebraic derivation</td>
+<td>The Same Equation</td>
+<td>Substitution map produces identical equations across all 10 laws</td>
+</tr>
+<tr>
+<td>Formal test battery</td>
+<td>Gold Standard Test Battery</td>
+<td>Dimensional analysis, symmetry, Noether, statistical validation at framework level</td>
+</tr>
+<tr>
+<td>Computational (this document)</td>
+<td>Maxwell–Truth Isomorphism</td>
+<td>FDTD numerical verification of Law 3 specifically, 3 layers, driver term behavior</td>
+</tr>
+<tr>
+<td>Experimental correlation</td>
+<td>PEAR-LAB / GCP / DESI</td>
+<td>6.35σ, 6σ, 4.2σ correlations consistent with framework predictions</td>
+</tr>
+</tbody>
 </table>
-
-<!-- ═══════════════════════════════════════════════ -->
-<!--  SECTION 11: FINAL STATUS                       -->
-<!-- ═══════════════════════════════════════════════ -->
+ ═══════════════════════════════════════════════ 
+  SECTION 11: FINAL STATUS                       
+ ═══════════════════════════════════════════════ 
 <div class="sec-div"><span class="tag">11 · Verification Status</span></div>
-
 <div class="g g3">
-  <div class="bx bx-stat" style="border-left:3px solid var(--pass)">
-    <div class="num" style="color:var(--pass);font-size:1.3rem">CONFIRMED</div>
-    <div class="lbl">Isomorphism Status · 3-layer verification</div>
-  </div>
-  <div class="bx bx-stat" style="border-left:3px solid var(--asym)">
-    <div class="num" style="color:var(--asym);font-size:1.2rem">CONFIRMED</div>
-    <div class="lbl">Driven Wave · A·S ↔ J/ε₀ · ΔE ∝ α²</div>
-  </div>
-  <div class="bx bx-stat" style="border-left:3px solid var(--text-m)">
-    <div class="num" style="color:var(--text-m);font-size:1.2rem">NOT CLAIMED</div>
-    <div class="lbl">Physical Identity · Correctly out of scope</div>
-  </div>
+<div class="bx bx-stat" style="border-left:3px solid var(--pass)">
+<div class="num" style="color:var(--pass);font-size:1.3rem">CONFIRMED</div>
+<div class="lbl">Isomorphism Status · 3-layer verification</div>
 </div>
-
+<div class="bx bx-stat" style="border-left:3px solid var(--asym)">
+<div class="num" style="color:var(--asym);font-size:1.2rem">CONFIRMED</div>
+<div class="lbl">Driven Wave · A·S ↔ J/ε₀ · ΔE ∝ α²</div>
+</div>
+<div class="bx bx-stat" style="border-left:3px solid var(--text-m)">
+<div class="num" style="color:var(--text-m);font-size:1.2rem">NOT CLAIMED</div>
+<div class="lbl">Physical Identity · Correctly out of scope</div>
+</div>
+</div>
 <div class="prose" style="margin:1.5rem 0">
-  <p>The Theophysics framework claims structural isomorphism between the ten physical laws and their spiritual counterparts. Law 3 — the isomorphism between Maxwell's equations and Truth-field propagation — is the first law to receive three-layer computational verification. The result is unambiguous: the equations are structurally identical, the wave dynamics are numerically indistinguishable, and the free-will asymmetry term behaves exactly as a current source in a driven wave equation. The claim is confirmed at the level of computation. Physical identity is a separate question the framework does not make.</p>
+<p>The Theophysics framework claims structural isomorphism between the ten physical laws and their spiritual counterparts. Law 3 — the isomorphism between Maxwell's equations and Truth-field propagation — is the first law to receive three-layer computational verification. The result is unambiguous: the equations are structurally identical, the wave dynamics are numerically indistinguishable, and the free-will asymmetry term behaves exactly as a current source in a driven wave equation. The claim is confirmed at the level of computation. Physical identity is a separate question the framework does not make.</p>
 </div>
-
-<!-- ═══ BOTTOM NAV ═══ -->
+ ═══ BOTTOM NAV ═══ 
 <div class="bot-nav">
-  <div class="blabel">More Papers</div>
-  <div class="bnav-grid">
-    <a class="bnav-card" href="i-didnt-write-the-math.html">
-      <span class="bt">Start Here</span>
-      <span class="bn">I Didn't Write the Math</span>
-    </a>
-    <a class="bnav-card" href="lowe-coherence-lagrangian.html">
-      <span class="bt">The Equation</span>
-      <span class="bn">The Lowe Coherence Lagrangian</span>
-    </a>
-    <a class="bnav-card" href="god-in-the-equations.html">
-      <span class="bt">The Ten Laws</span>
-      <span class="bn">God in the Equations</span>
-    </a>
-  </div>
-  <div class="bnav-grid" style="margin-top:1px">
-    <a class="bnav-card" href="the-same-equation.html">
-      <span class="bt">The Proof</span>
-      <span class="bn">The Same Equation</span>
-    </a>
-    <a class="bnav-card" href="six_proofs.html">
-      <span class="bt">Computational</span>
-      <span class="bn">Six Computational Proofs</span>
-    </a>
-    <a class="bnav-card" href="gold-standard-test-battery.html">
-      <span class="bt">Test Battery</span>
-      <span class="bn">The Gold Standard Test Battery</span>
-    </a>
-  </div>
-  <div class="bnav-grid" style="margin-top:1px">
-    <a class="bnav-card cur" href="#">
-      <span class="bt">Deep Dive</span>
-      <span class="bn">Maxwell–Truth Isomorphism</span>
-    </a>
-    <a class="bnav-card" href="math-is-moral.html">
-      <span class="bt">Convergence</span>
-      <span class="bn">Math Is Moral</span>
-    </a>
-    <a class="bnav-card" href="evolution-probe.html">
-      <span class="bt">Probe</span>
-      <span class="bn">The Evolution Probe</span>
-    </a>
-  </div>
+<div class="blabel">More Papers</div>
+<div class="bnav-grid">
+<a class="bnav-card" href="i-didnt-write-the-math.html">
+<span class="bt">Start Here</span>
+<span class="bn">I Didn't Write the Math</span>
+</a>
+<a class="bnav-card" href="lowe-coherence-lagrangian.html">
+<span class="bt">The Equation</span>
+<span class="bn">The Lowe Coherence Lagrangian</span>
+</a>
+<a class="bnav-card" href="god-in-the-equations.html">
+<span class="bt">The Ten Laws</span>
+<span class="bn">God in the Equations</span>
+</a>
 </div>
-
+<div class="bnav-grid" style="margin-top:1px">
+<a class="bnav-card" href="the-same-equation.html">
+<span class="bt">The Proof</span>
+<span class="bn">The Same Equation</span>
+</a>
+<a class="bnav-card" href="six_proofs.html">
+<span class="bt">Computational</span>
+<span class="bn">Six Computational Proofs</span>
+</a>
+<a class="bnav-card" href="gold-standard-test-battery.html">
+<span class="bt">Test Battery</span>
+<span class="bn">The Gold Standard Test Battery</span>
+</a>
+</div>
+<div class="bnav-grid" style="margin-top:1px">
+<a class="bnav-card cur" href="#">
+<span class="bt">Deep Dive</span>
+<span class="bn">Maxwell–Truth Isomorphism</span>
+</a>
+<a class="bnav-card" href="math-is-moral.html">
+<span class="bt">Convergence</span>
+<span class="bn">Math Is Moral</span>
+</a>
+<a class="bnav-card" href="evolution-probe.html">
+<span class="bt">Probe</span>
+<span class="bn">The Evolution Probe</span>
+</a>
+</div>
+</div>
 <div class="foot">David Lowe · faiththruphysics.com · Theophysics Framework · POF 2828 · April 2026</div>
 
-</div><!-- /page -->
-<script src="/glossary-linker.js" defer></script>
-<section class="ring-nav">
-  <div class="ring-header">
-    <h2>Related Work</h2>
-    <p>Core article, supporting evidence, and broader context</p>
-  </div>
-  <div class="ring-tier ring-1 open">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 1 — This Article</span>
-      <span class="ring-tier-desc">The core argument</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+</article>
+
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+<nav class="tp-bignav">
+  <div class="tp-bignav-row">
+    <a href="#" class="tp-bignav-prev">
+      <span class="tp-bignav-arrow">←</span>
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Previous</span>
+        <span class="tp-bignav-title">Previous</span>
+      </div>
+    </a>
+    <div class="tp-bignav-center">
+      <a href="/blue/" class="tp-bignav-series">Blue Papers Home</a>
+      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
     </div>
-    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+    <a href="#" class="tp-bignav-next">
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Next</span>
+        <span class="tp-bignav-title">Next</span>
+      </div>
+      <span class="tp-bignav-arrow">→</span>
+    </a>
   </div>
-  <div class="ring-tier ring-2">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
-      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+</nav>
+
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
     </div>
-    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
-  </div>
-  <div class="ring-tier ring-3">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 3 — Broader Context</span>
-      <span class="ring-tier-desc">Related topics across the framework</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
+      </div>
     </div>
-    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
   </div>
 </section>
-<script src="/components/tp-inject.js" data-theme="dark"></script>
+
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="tp-sub-title">The Math Behind the Claims</div>
+  <div class="tp-sub-grid">
+    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="tp-sub-title">Everything Else</div>
+  <div class="tp-sub-grid">
+    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+  <div class="tp-series-strip">
+    <a href="/" class="active">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+  </div>
+</nav>
+
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="tp-bottom">
+  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
+  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
+  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+  <div class="tp-door-num">15 + 15 = 100</div>
+  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="tp-door-mark"></span>
+</div>
+
+<script>
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
+
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
+
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
+</script>
+
+<!-- MTL worker client -->
+<script src="/shared/js/mtl-worker-client.js" defer></script>
+
 </body>
 </html>

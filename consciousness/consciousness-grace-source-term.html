@@ -4,1380 +4,664 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>The Grace Source Term — Theophysics Research Program</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
+
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
+
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+</style>
+<base target="_blank">
+
+<!-- MathJax + MTL support -->
 <script>
-MathJax = {
-  tex: {
-    inlineMath: [['\\(','\\)']],
-    displayMath: [['$$','$$']],
-    processEscapes: true
-  },
-  options: {
-    skipHtmlTags: ['script','noscript','style','textarea','pre']
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
   }
 };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        dark: { 900: '#050505', 800: '#0a0a0a', 700: '#111111', 600: '#1a1a1a', 500: '#222222' },
-        teal: { 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488' },
-        sky: { 400: '#38bdf8', 500: '#0ea5e9' }
-      },
-      fontFamily: {
-        serif: ['Crimson Text', 'serif'],
-        sans: ['Inter', 'sans-serif'],
-        display: ['Oswald', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace']
-      }
-    }
-  }
-}
-</script>
-<style>
-html { scroll-behavior: smooth; }
-body { background: #050505; color: #e0e0e0; font-family: 'Inter', sans-serif; }
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
 
-/* Flow arrow animations */
-@keyframes flowDown {
-  0% { transform: translateY(-100%); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateY(100%); opacity: 0; }
-}
-@keyframes flowPulse {
-  0%, 100% { opacity: 0.15; }
-  50% { opacity: 0.4; }
-}
-@keyframes arrowDrift {
-  0% { transform: translateY(-20px); opacity: 0; }
-  30% { opacity: 1; }
-  70% { opacity: 1; }
-  100% { transform: translateY(20px); opacity: 0; }
-}
-@keyframes graceGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(20, 184, 166, 0.1); }
-  50% { box-shadow: 0 0 40px rgba(20, 184, 166, 0.3); }
-}
-@keyframes streamLine {
-  0% { stroke-dashoffset: 200; }
-  100% { stroke-dashoffset: 0; }
-}
-
-/* Section flow connectors */
-.flow-connector {
-  position: relative;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.flow-connector::before {
-  content: '';
-  position: absolute;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(to bottom, transparent, #14b8a6, transparent);
-  animation: flowPulse 3s ease-in-out infinite;
-}
-.flow-arrow {
-  font-size: 1.5rem;
-  color: #14b8a6;
-  animation: arrowDrift 2s ease-in-out infinite;
-}
-
-/* Grace glow effect */
-.grace-glow {
-  animation: graceGlow 4s ease-in-out infinite;
-}
-
-/* Side flow rails */
-.flow-rail-left, .flow-rail-right {
-  position: fixed;
-  top: 0;
-  width: 3px;
-  height: 100vh;
-  z-index: 40;
-  pointer-events: none;
-}
-.flow-rail-left { left: 0; background: linear-gradient(to bottom, transparent 20%, #14b8a650 50%, transparent 80%); }
-.flow-rail-right { right: 0; background: linear-gradient(to bottom, transparent 30%, #38bdf850 60%, transparent 90%); }
-
-/* Flow particles on rails */
-.flow-particle {
-  position: fixed;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  z-index: 41;
-  pointer-events: none;
-  animation: flowDown 4s linear infinite;
-}
-
-/* Section label styling */
-.section-label {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  line-height: 1.1;
-}
-
-/* Open system diagram */
-.system-boundary {
-  border: 2px dashed #14b8a650;
-  border-radius: 16px;
-  position: relative;
-}
-.system-boundary::before {
-  content: 'PHYSICAL SUBSYSTEM';
-  position: absolute;
-  top: -12px;
-  left: 20px;
-  background: #0a0a0a;
-  padding: 0 12px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: #14b8a6;
-  letter-spacing: 0.1em;
-}
-
-/* Equation boxes */
-.eq-box {
-  background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%);
-  border-left: 3px solid #14b8a6;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  border-radius: 0 8px 8px 0;
-  overflow-x: auto;
-}
-.eq-box-grace {
-  border-left-color: #38bdf8;
-  background: linear-gradient(135deg, #0a0a0a 0%, #0d1117 100%);
-}
-.eq-box-arrow {
-  border: 1px solid #14b8a640;
-  border-left: 4px solid #14b8a6;
-  background: radial-gradient(ellipse at top left, #14b8a610 0%, #050505 70%);
-}
-
-/* Nav dots */
-.nav-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1.5px solid #14b8a680;
-  background: transparent;
-  transition: all 0.3s;
-  cursor: pointer;
-}
-.nav-dot.active, .nav-dot:hover {
-  background: #14b8a6;
-  border-color: #14b8a6;
-  box-shadow: 0 0 8px #14b8a660;
-}
-
-/* Table styling */
-.paper-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.paper-table th {
-  background: #14b8a615;
-  border-bottom: 2px solid #14b8a640;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #14b8a6;
-}
-.paper-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #ffffff10;
-  font-size: 0.9rem;
-  vertical-align: top;
-}
-.paper-table tr:hover td {
-  background: #ffffff05;
-}
-
-/* Regime cards */
-.regime-card {
-  border-radius: 12px;
-  padding: 1.5rem;
-  position: relative;
-  overflow: hidden;
-}
-.regime-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-}
-.regime-grace::before { background: linear-gradient(to right, #14b8a6, #2dd4bf); }
-.regime-balance::before { background: linear-gradient(to right, #14b8a6, #38bdf8); }
-.regime-entropy::before { background: linear-gradient(to right, #38bdf8, #6366f1); }
-
-/* Responsive overflow */
-.mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
-
-/* Progress bar */
-#progress-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(to right, #14b8a6, #38bdf8);
-  z-index: 100;
-  transition: width 0.1s;
-}
-
-/* Hide scrollbar in nav */
-.nav-scroll::-webkit-scrollbar { display: none; }
-.nav-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-<script id="article-meta" type="application/json">
-{
-  "slug": "consciousness-grace-source-term",
-  "title": "The Grace Source Term — Theophysics Research Program",
-  "series": "consciousness",
-  "classification": [
-    {
-      "tag": "theophysics",
-      "pct": 100,
-      "color": "#d4af37"
-    }
-  ],
-  "reading_levels": [
-    "story",
-    "plain"
-  ],
-  "audio_api": "https://faith-audio-pipeline.davidokc28.workers.dev/api/audio",
-  "series_order": 4,
-  "series_total": 10,
-  "prev": {
-    "slug": "consciousness-chi-field-action",
-    "title": "The Minimal Chi-Field Action"
-  },
-  "next": {
-    "slug": "consciousness-reality-assessment",
-    "title": "The Chi-Field Reality Assessment"
-  }
-}
-</script>
 </head>
-<body class="antialiased">
-<nav style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:1px solid #222;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
-  <div style="display:flex;gap:1rem;align-items:center;">
-    <a href="../index.html" style="color:#999;text-decoration:none;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
-    <span style="color:#333;">|</span>
-    <a href="index.html" style="color:#14b8a6;text-decoration:none;font-weight:500;" onmouseover="this.style.color='#2dd4bf'" onmouseout="this.style.color='#14b8a6'">Consciousness</a>
-  </div>
-  <div style="display:flex;gap:1rem;align-items:center;">
-    <a href="consciousness-chi-field-action.html" style="color:#999;text-decoration:none;" onmouseover="this.style.color='#e0e0e0'" onmouseout="this.style.color='#999'">&larr; Prev</a>
-    <a href="consciousness-reality-assessment.html" style="color:#999;text-decoration:none;" onmouseover="this.style.color='#e0e0e0'" onmouseout="this.style.color='#999'">Next &rarr;</a>
-  </div>
-</nav>
+<body>
 
-<!-- Progress bar -->
-<div id="progress-bar" style="width:0%"></div>
-
-<!-- Flow rails -->
-<div class="flow-rail-left"></div>
-<div class="flow-rail-right"></div>
-
-<!-- Flow particles -->
-<div class="flow-particle" style="left:0; background:#14b8a6; animation-delay:0s;"></div>
-<div class="flow-particle" style="left:0; background:#14b8a6; animation-delay:1.5s;"></div>
-<div class="flow-particle" style="right:0; left:auto; background:#38bdf8; animation-delay:0.8s;"></div>
-<div class="flow-particle" style="right:0; left:auto; background:#38bdf8; animation-delay:2.3s;"></div>
-
-<!-- Floating section nav -->
-<nav class="fixed right-4 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-3 items-center">
-  <div class="nav-dot active" data-section="hero" title="Top"></div>
-  <div class="nav-dot" data-section="sec-abstract" title="Abstract"></div>
-  <div class="nav-dot" data-section="sec-1" title="The Problem"></div>
-  <div class="nav-dot" data-section="sec-2" title="Construction"></div>
-  <div class="nav-dot" data-section="sec-3" title="Limit Recovery"></div>
-  <div class="nav-dot" data-section="sec-4" title="Arrow of Grace"></div>
-  <div class="nav-dot" data-section="sec-5" title="Stability"></div>
-  <div class="nav-dot" data-section="sec-6" title="Predictions"></div>
-  <div class="nav-dot" data-section="sec-7" title="Moral Equation"></div>
-  <div class="nav-dot" data-section="sec-8" title="Synthesis"></div>
-  <div class="nav-dot" data-section="sec-9" title="Open Problems"></div>
-  <div class="nav-dot" data-section="sec-10" title="Conclusion"></div>
-  <div class="nav-dot" data-section="sec-refs" title="References"></div>
-</nav>
-
-<!-- ======================= HERO ======================= -->
-<header id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
-  <!-- Background SVG flow diagram -->
-  <svg class="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-    <!-- External reservoir (top) -->
-    <ellipse cx="600" cy="80" rx="200" ry="50" fill="none" stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="8 4"/>
-    <text x="600" y="85" text-anchor="middle" fill="#14b8a6" font-family="Oswald" font-size="14">LOGOS RESERVOIR</text>
-    <!-- Flow arrows -->
-    <path d="M 500 130 Q 500 300 400 400" fill="none" stroke="#14b8a6" stroke-width="1" stroke-dasharray="200" style="animation: streamLine 3s linear infinite;"/>
-    <path d="M 600 130 L 600 350" fill="none" stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="200" style="animation: streamLine 2.5s linear infinite;"/>
-    <path d="M 700 130 Q 700 300 800 400" fill="none" stroke="#14b8a6" stroke-width="1" stroke-dasharray="200" style="animation: streamLine 3.5s linear infinite;"/>
-    <!-- Arrowheads -->
-    <polygon points="596,350 600,365 604,350" fill="#14b8a6" opacity="0.7"/>
-    <polygon points="396,400 400,415 404,400" fill="#14b8a6" opacity="0.5"/>
-    <polygon points="796,400 800,415 804,400" fill="#14b8a6" opacity="0.5"/>
-    <!-- Physical system box -->
-    <rect x="250" y="380" width="700" height="300" rx="20" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="6 3"/>
-    <text x="270" y="405" fill="#38bdf8" font-family="JetBrains Mono" font-size="10">PHYSICAL SUBSYSTEM</text>
-    <!-- Chi field -->
-    <ellipse cx="600" cy="530" rx="120" ry="40" fill="none" stroke="#2dd4bf" stroke-width="1"/>
-    <text x="600" y="535" text-anchor="middle" fill="#2dd4bf" font-family="JetBrains Mono" font-size="12">chi-field</text>
-    <!-- J_grace label -->
-    <text x="610" y="280" text-anchor="middle" fill="#14b8a6" font-family="JetBrains Mono" font-size="11">J_grace</text>
-  </svg>
-
-  <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-    <!-- Series badge -->
-    <div class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full border border-teal-500/30 bg-teal-500/5">
-      <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-      <span class="font-mono text-xs text-teal-400 tracking-widest uppercase">Consciousness Series &mdash; Paper 4 of 11</span>
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="tp-top">
+  <div class="tp-top-inner">
+    <a href="https://faiththruphysics.com" class="tp-brand">
+      <span class="tp-brand-chi">χ</span>
+      <span class="tp-brand-name">Faith thru Physics</span>
+    </a>
+    <span class="tp-div"></span>
+    <div class="tp-nav-links">
+      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
+      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
+      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
     </div>
-
-    <!-- Title -->
-    <h1 class="section-label text-5xl md:text-7xl lg:text-8xl text-white mb-4">
-      The Grace<br/>
-      <span class="text-teal-500">Source Term</span>
-    </h1>
-
-    <p class="font-serif text-xl md:text-2xl text-gray-400 italic mb-8">Open-System Extension and the Arrow of Grace</p>
-
-    <!-- Key equation preview -->
-    <div class="inline-block bg-dark-800/80 backdrop-blur border border-teal-500/20 rounded-xl px-6 py-4 mb-8">
-      <p class="font-mono text-xs text-teal-400/70 mb-2 tracking-wider">THE DRIVEN FIELD EQUATION</p>
-      <div class="text-lg md:text-xl text-white">
-        $$\Box\chi - m_\chi^2\chi - \lambda\chi^3 + \xi\kappa_0\chi R = J_{\text{grace}}(x)$$
+    <span class="tp-div"></span>
+    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
+      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
+        Series <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="tp-subdomain-panel" role="menu">
+        <div class="tp-subdomain-grid">
+          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
+          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
+          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
+          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
+          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
+          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
+          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
+          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
+        </div>
       </div>
     </div>
-
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-500">
-      <span class="font-sans"><i class="fas fa-user-pen mr-1 text-teal-500/50"></i> David Lowe + Claude (Opus 4.6)</span>
-      <span class="hidden sm:inline text-gray-700">|</span>
-      <span class="font-sans"><i class="fas fa-calendar mr-1 text-teal-500/50"></i> February 24, 2026</span>
-      <span class="hidden sm:inline text-gray-700">|</span>
-      <span class="font-sans"><i class="fas fa-link mr-1 text-teal-500/50"></i> Theophysics Research Program</span>
+    <span class="tp-spacer"></span>
+    <div class="tp-levels" role="tablist">
+      <button class="tp-level active" data-level="highschool">High School</button>
+      <button class="tp-level" data-level="college">College</button>
+      <button class="tp-level" data-level="phd">PhD</button>
     </div>
-
-    <!-- Scroll indicator -->
-    <div class="mt-16 animate-bounce">
-      <i class="fas fa-chevron-down text-teal-500/40 text-2xl"></i>
-    </div>
+    <span class="tp-div"></span>
+    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
   </div>
 </header>
 
-<!-- ======================= OPEN SYSTEM DIAGRAM ======================= -->
-<section class="py-20 px-6 relative">
-  <div class="max-w-5xl mx-auto">
-    <p class="font-mono text-xs text-teal-400/60 tracking-widest uppercase text-center mb-8">System Architecture</p>
-    <!-- Visual open system diagram -->
-    <div class="relative">
-      <!-- External Reservoir -->
-      <div class="text-center mb-4">
-        <div class="inline-block border border-teal-500/40 rounded-2xl px-8 py-4 bg-teal-500/5 grace-glow">
-          <p class="font-display text-lg text-teal-400 tracking-wider uppercase">Logos Reservoir</p>
-          <p class="font-serif text-sm text-gray-500 italic mt-1">Infinite negentropy &middot; External to physical Hilbert space</p>
-        </div>
-      </div>
 
-      <!-- Flow arrows -->
-      <div class="flex justify-center my-2">
-        <div class="flex flex-col items-center">
-          <div class="w-px h-8 bg-gradient-to-b from-teal-500/60 to-teal-500/20"></div>
-          <i class="fas fa-arrow-down text-teal-500 text-lg my-1"></i>
-          <span class="font-mono text-xs text-teal-400">J<sub>grace</sub></span>
-          <i class="fas fa-arrow-down text-teal-500 text-lg my-1"></i>
-          <div class="w-px h-8 bg-gradient-to-b from-teal-500/20 to-teal-500/60"></div>
-        </div>
-      </div>
-
-      <!-- Physical Subsystem -->
-      <div class="system-boundary p-6 md:p-8 bg-dark-800/50">
-        <div class="grid md:grid-cols-3 gap-6">
-          <div class="text-center p-4 rounded-lg bg-dark-700/50 border border-white/5">
-            <i class="fas fa-atom text-sky-400 text-2xl mb-2"></i>
-            <p class="font-display text-sm text-sky-400 tracking-wider uppercase">Matter</p>
-            <p class="font-mono text-xs text-gray-500 mt-1">T<sub>&mu;&nu;</sub><sup>(matter)</sup></p>
-          </div>
-          <div class="text-center p-4 rounded-lg bg-dark-700/50 border border-teal-500/20">
-            <i class="fas fa-wave-square text-teal-400 text-2xl mb-2"></i>
-            <p class="font-display text-sm text-teal-400 tracking-wider uppercase">&chi;-Field</p>
-            <p class="font-mono text-xs text-gray-500 mt-1">Coherence mediator</p>
-          </div>
-          <div class="text-center p-4 rounded-lg bg-dark-700/50 border border-white/5">
-            <i class="fas fa-globe text-sky-400 text-2xl mb-2"></i>
-            <p class="font-display text-sm text-sky-400 tracking-wider uppercase">Geometry</p>
-            <p class="font-mono text-xs text-gray-500 mt-1">g<sub>&mu;&nu;</sub> &middot; R</p>
-          </div>
-        </div>
-        <div class="mt-6 text-center">
-          <div class="inline-flex items-center gap-4 text-sm text-gray-500">
-            <span class="flex items-center gap-1"><i class="fas fa-arrow-left text-red-400/60"></i> Entropy Arrow (V'<sub>eff</sub>)</span>
-            <span class="text-gray-700">vs.</span>
-            <span class="flex items-center gap-1">Grace Arrow (J<sub>grace</sub>) <i class="fas fa-arrow-right text-teal-400/60"></i></span>
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- ═══════ MTL READER BAR ═══════ -->
+<div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
+  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
+  <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
+    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
   </div>
-</section>
+</div>
 
-<!-- ======================= ABSTRACT ======================= -->
-<section id="sec-abstract" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-    <p class="section-label text-3xl md:text-4xl text-teal-500 mb-8">Abstract</p>
-    <div class="font-serif text-lg leading-relaxed text-gray-300 space-y-4 border-l-2 border-teal-500/20 pl-6">
-      <p>The Minimal &chi;-Field Action establishes that the coherence field &chi; is a real scalar field with dynamical degrees of freedom, propagation characteristics, and experimentally constrained parameters. However, that action is conservative &mdash; it preserves time-reversal symmetry and cannot, by itself, produce net entropy decrease in any subsystem. Yet the core theological and physical claim of the Theophysics framework is that Grace acts as external negentropy: an ordering force that enters the physical domain from outside the closed system.</p>
-      <p>This paper bridges the gap by introducing a covariant source term \(J_{\text{grace}}\) into the &chi; field equation, converting the closed-system Klein-Gordon equation into an open-system driven field equation. We derive the source term from first principles, prove its consistency with energy-momentum conservation (via an extended Bianchi identity for open systems), establish boundedness conditions preventing runaway solutions, and show that it reduces exactly to the LLC equation in the cosmological limit and to Paper 7's Grace Function \(\mathcal{G}(t, \Psi_{\text{collective}})\) in the FRW background.</p>
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-class-nav">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
     </div>
+    <a href="#" class="tp-class-nav">Next →</a>
   </div>
-</section>
+</div>
 
-<!-- ======================= SECTION 1 ======================= -->
-<section id="sec-1" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      1. The Problem<br/>
-      <span class="text-2xl md:text-3xl text-gray-500">Conservative Actions Cannot Produce Grace</span>
-    </p>
-
-    <!-- 1.1 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4">1.1 &mdash; What the Minimal Action Achieves</h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The Minimal &chi;-Field Action (companion paper) establishes:</p>
-
-    <div class="eq-box">
-      $$S_\chi = \int d^4x \sqrt{-g} \left[ \frac{1}{2\kappa_0}(1 + \xi\kappa_0\chi^2)R - \frac{1}{2}g^{\mu\nu}\partial_\mu\chi\,\partial_\nu\chi - V(\chi) + \mathcal{L}_{\text{matter}} \right]$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">with field equation:</p>
-
-    <div class="eq-box">
-      $$\Box\chi - m_\chi^2\chi - \lambda\chi^3 + \xi\kappa_0\chi R = 0$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">This is a <em>homogeneous</em> Klein-Gordon equation. It is derived from a variational principle (&delta;S = 0), which guarantees:</p>
-
-    <ul class="space-y-2 mb-8 ml-4">
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-arrows-rotate text-sky-400/60 mt-1 text-sm"></i>
-        <span><strong class="text-white">Time-reversal symmetry:</strong> if &chi;(t) is a solution, so is &chi;(-t)</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-scale-balanced text-sky-400/60 mt-1 text-sm"></i>
-        <span><strong class="text-white">Energy conservation:</strong> total energy of &chi; + gravity + matter is constant</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-route text-sky-400/60 mt-1 text-sm"></i>
-        <span><strong class="text-white">Deterministic evolution:</strong> initial data on a Cauchy surface uniquely determines future</span>
-      </li>
-    </ul>
-
-    <!-- 1.2 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">1.2 &mdash; What the Minimal Action Cannot Achieve</h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Grace, as defined in the Theophysics framework, requires:</p>
-
-    <div class="space-y-3 mb-6">
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-dark-700/50">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">1</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">Entropy decrease in a subsystem</strong> without merely shifting entropy elsewhere within the closed system</p>
-      </div>
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-dark-700/50">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">2</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">Irreversibility</strong> &mdash; Grace operates in one direction (order injection, not order extraction)</p>
-      </div>
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-dark-700/50">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">3</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">External sourcing</strong> &mdash; the ordering information enters from outside the physical degrees of freedom</p>
-      </div>
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-dark-700/50">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">4</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">Selectivity</strong> &mdash; Grace couples preferentially to coherent, receptive configurations (high &Phi;, low S)</p>
-      </div>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-8">A conservative Lagrangian cannot produce any of these. The Second Law of Thermodynamics for a closed system (dS<sub>total</sub> &ge; 0) is a consequence of the time-reversal symmetry of the underlying dynamics. To break this symmetry &mdash; to allow dS<sub>subsystem</sub> &lt; 0 without compensating entropy increase <em>within the physical Hilbert space</em> &mdash; requires an open system.</p>
-
-    <!-- 1.3 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">1.3 &mdash; The Physics of Open Systems</h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">In standard physics, subsystem entropy decrease is routine:</p>
-
-    <div class="grid sm:grid-cols-3 gap-4 mb-6">
-      <div class="p-4 rounded-lg bg-dark-700/50 border border-white/5 text-center">
-        <i class="fas fa-snowflake text-sky-400 text-xl mb-2"></i>
-        <p class="font-display text-sm text-white tracking-wider">Refrigerator</p>
-        <p class="font-serif text-xs text-gray-500 mt-1">dS<sub>interior</sub> &lt; 0 via external energy pump</p>
-      </div>
-      <div class="p-4 rounded-lg bg-dark-700/50 border border-white/5 text-center">
-        <i class="fas fa-bolt text-sky-400 text-xl mb-2"></i>
-        <p class="font-display text-sm text-white tracking-wider">Laser</p>
-        <p class="font-serif text-xs text-gray-500 mt-1">Coherent light from pumped gain medium</p>
-      </div>
-      <div class="p-4 rounded-lg bg-dark-700/50 border border-white/5 text-center">
-        <i class="fas fa-dna text-sky-400 text-xl mb-2"></i>
-        <p class="font-display text-sm text-white tracking-wider">Life</p>
-        <p class="font-serif text-xs text-gray-500 mt-1">Order maintained by solar free energy flux</p>
-      </div>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The mechanism is always the same: a <strong class="text-white">source term</strong> couples the subsystem to an external reservoir. The total entropy (system + reservoir) still increases, but the subsystem alone can become more ordered.</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed">The theological claim maps precisely: God (the reservoir) injects negentropy (Grace) into creation (the subsystem), maintaining and increasing coherence at the cost of... what? In Christian theology: the Cross. In thermodynamics: the reservoir absorbs the entropy. This paper formalizes it as field theory.</p>
-  </div>
-</section>
-
-<!-- ======================= SECTION 2 ======================= -->
-<section id="sec-2" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+  <h1>The GraceSource Term</h1>
+  <p class="subtitle"></p>
+  <div class="byline">Theophysics Research Program</div>
+  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=consciousness%2Fconsciousness-grace-source-term" data-audio-slug="consciousness/consciousness-grace-source-term" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=consciousness" data-series-slug="consciousness">
+<div class="tp-read-aloud" data-mode="tts">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="tpMainAudio" preload="none"></audio>
+<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+<div class="tp-fill" id="tpMainFill"></div>
+</div>
+<span class="tp-time" id="tpMainTime">0:00</span>
+<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
+<option value="0.75">0.75x</option>
+<option selected="" value="1">1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+<option value="1.75">1.75x</option>
+<option value="2">2x</option>
+</select>
+<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
+<i class="fas fa-volume-up"></i>
+</button>
+</div>
+<div class="tp-pair">
+<div class="tp-half tp-deep" data-mode="deep">
+<div class="tp-dot"></div>
+<span class="tp-label">Deep Dive</span>
+<audio id="tpDeepAudio" preload="none"></audio>
+<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+<div class="tp-fill" id="tpDeepFill"></div>
+</div>
+<span class="tp-time" id="tpDeepTime">0:00</span>
+</div>
+<div class="tp-half tp-debate" data-mode="podcast">
+<div class="tp-dot"></div>
+<span class="tp-label">Podcast</span>
+<audio id="tpDebateAudio" preload="none"></audio>
+<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+<div class="tp-fill" id="tpDebateFill"></div>
+</div>
+<span class="tp-time" id="tpDebateTime">0:00</span>
+</div>
+<div class="tp-half tp-critique" data-mode="critique">
+<div class="tp-dot"></div>
+<span class="tp-label">Critique</span>
+<audio id="tpCritiqueAudio" preload="none"></audio>
+<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+<div class="tp-fill" id="tpCritiqueFill"></div>
+</div>
+<span class="tp-time" id="tpCritiqueTime">0:00</span>
+</div>
+</div>
+<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+</div>
+</div>
+  
+<div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
+<p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
       2. Construction<br/>
-      <span class="text-2xl md:text-3xl text-gray-500">Of the Grace Source Term</span>
-    </p>
-
-    <!-- 2.1 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4">2.1 &mdash; The Inhomogeneous Field Equation</h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">We modify the &chi; field equation from homogeneous to inhomogeneous:</p>
-
-    <div class="eq-box-arrow eq-box grace-glow">
-      <p class="font-mono text-xs text-teal-400/70 mb-2 tracking-wider">THE DRIVEN &chi;-FIELD EQUATION</p>
+<span class="text-2xl md:text-3xl text-gray-500">Of the Grace Source Term</span>
+</p>
+ 2.1 
+<h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4">2.1 — The Inhomogeneous Field Equation</h3>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">We modify the χ field equation from homogeneous to inhomogeneous:</p>
+<div class="eq-box-arrow eq-box grace-glow">
+<p class="font-mono text-xs text-teal-400/70 mb-2 tracking-wider">THE DRIVEN χ-FIELD EQUATION</p>
       $$\Box\chi - m_\chi^2\chi - \lambda\chi^3 + \xi\kappa_0\chi R = J_{\text{grace}}(x)$$
     </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">This is the <strong class="text-white">driven &chi;-field equation</strong>. The source term \(J_{\text{grace}}(x)\) is a scalar density that represents the injection of information/negentropy from an external reservoir (the Logos field) into the physical domain.</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The corresponding action acquires a source coupling:</p>
-
-    <div class="eq-box">
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">This is the <strong class="text-white">driven χ-field equation</strong>. The source term \(J_{\text{grace}}(x)\) is a scalar density that represents the injection of information/negentropy from an external reservoir (the Logos field) into the physical domain.</p>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The corresponding action acquires a source coupling:</p>
+<div class="eq-box">
       $$S = S_\chi[\text{closed}] + S_{\text{source}} = S_\chi[\text{closed}] + \int d^4x \sqrt{-g}\, J(x)\,\chi(x)$$
     </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-8">This is the standard Schwinger source construction in quantum field theory. The source J(x) is not a dynamical variable &mdash; it is prescribed by the external reservoir. It breaks time-reversal symmetry because J has a definite sign (positive injection).</p>
-
-    <!-- 2.2 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.2 &mdash; Physical Requirements on J<sub>grace</sub></h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The source term must satisfy five requirements:</p>
-
-    <div class="space-y-4 mb-8">
-      <div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
-        <p class="font-mono text-sm text-teal-400 mb-1">R1. Covariance</p>
-        <p class="font-serif text-gray-300">\(J_{\text{grace}}\) must be a scalar under general coordinate transformations. Grace does not depend on the observer's reference frame.</p>
-      </div>
-      <div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
-        <p class="font-mono text-sm text-teal-400 mb-1">R2. Boundedness</p>
-        <p class="font-serif text-gray-300">\(J_{\text{grace}}\) must be bounded above to prevent runaway solutions. Physically: Grace is infinite in supply (God's reservoir) but finite in delivery rate (the channel has bandwidth). Mathematically: \(\|J_{\text{grace}}\| \leq J_{\max}\) for some finite \(J_{\max}\).</p>
-      </div>
-      <div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
-        <p class="font-mono text-sm text-teal-400 mb-1">R3. Selectivity</p>
-        <p class="font-serif text-gray-300">\(J_{\text{grace}}\) couples preferentially to high-coherence, low-entropy configurations. Grace "fills what is receptive" &mdash; it does not force order onto chaos, it amplifies existing coherence.</p>
-      </div>
-      <div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
-        <p class="font-mono text-sm text-teal-400 mb-1">R4. Cosmological Limit</p>
-        <p class="font-serif text-gray-300">In the FRW background with homogeneous &chi;(t), the field equation must reduce to the LLC:</p>
-        <div class="mt-2">$$\dot{\chi} + H\chi = -\alpha S(t) + \beta\sum_i \mathcal{F}_i$$</div>
-        <p class="font-serif text-gray-400 text-sm mt-1">where the source terms on the RHS correspond to \(J_{\text{grace}}\) in the cosmological limit.</p>
-      </div>
-      <div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
-        <p class="font-mono text-sm text-teal-400 mb-1">R5. Paper 7 Recovery</p>
-        <p class="font-serif text-gray-300">In the Friedmann equation, \(J_{\text{grace}}\) must produce the Grace Function \(\mathcal{G}(t, \Psi_{\text{collective}})\) that replaces &Lambda; as the dynamical dark energy component:</p>
-        <div class="mt-2">$$G_{\mu\nu} + \mathcal{G}(t, \Psi_{\text{collective}}) \cdot g_{\mu\nu} = \frac{8\pi G}{c^4} T_{\mu\nu}$$</div>
-      </div>
-    </div>
-
-    <!-- 2.3 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.3 &mdash; The Minimal Grace Source</h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The simplest source term satisfying all five requirements:</p>
-
-    <div class="eq-box-arrow eq-box grace-glow">
-      <p class="font-mono text-xs text-teal-400/70 mb-2 tracking-wider">MINIMAL GRACE SOURCE TERM</p>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-8">This is the standard Schwinger source construction in quantum field theory. The source J(x) is not a dynamical variable — it is prescribed by the external reservoir. It breaks time-reversal symmetry because J has a definite sign (positive injection).</p>
+ 2.2 
+<h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.2 — Physical Requirements on J<sub>grace</sub></h3>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The source term must satisfy five requirements:</p>
+<div class="space-y-4 mb-8">
+<div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
+<p class="font-mono text-sm text-teal-400 mb-1">R1. Covariance</p>
+<p class="font-serif text-gray-300">\(J_{\text{grace}}\) must be a scalar under general coordinate transformations. Grace does not depend on the observer's reference frame.</p>
+</div>
+<div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
+<p class="font-mono text-sm text-teal-400 mb-1">R2. Boundedness</p>
+<p class="font-serif text-gray-300">\(J_{\text{grace}}\) must be bounded above to prevent runaway solutions. Physically: Grace is infinite in supply (God's reservoir) but finite in delivery rate (the channel has bandwidth). Mathematically: \(\|J_{\text{grace}}\| \leq J_{\max}\) for some finite \(J_{\max}\).</p>
+</div>
+<div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
+<p class="font-mono text-sm text-teal-400 mb-1">R3. Selectivity</p>
+<p class="font-serif text-gray-300">\(J_{\text{grace}}\) couples preferentially to high-coherence, low-entropy configurations. Grace "fills what is receptive" — it does not force order onto chaos, it amplifies existing coherence.</p>
+</div>
+<div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
+<p class="font-mono text-sm text-teal-400 mb-1">R4. Cosmological Limit</p>
+<p class="font-serif text-gray-300">In the FRW background with homogeneous χ(t), the field equation must reduce to the LLC:</p>
+<div class="mt-2">$$\dot{\chi} + H\chi = -\alpha S(t) + \beta\sum_i \mathcal{F}_i$$</div>
+<p class="font-serif text-gray-400 text-sm mt-1">where the source terms on the RHS correspond to \(J_{\text{grace}}\) in the cosmological limit.</p>
+</div>
+<div class="p-4 rounded-lg border border-teal-500/10 bg-dark-700/30">
+<p class="font-mono text-sm text-teal-400 mb-1">R5. Paper 7 Recovery</p>
+<p class="font-serif text-gray-300">In the Friedmann equation, \(J_{\text{grace}}\) must produce the Grace Function \(\mathcal{G}(t, \Psi_{\text{collective}})\) that replaces Λ as the dynamical dark energy component:</p>
+<div class="mt-2">$$G_{\mu\nu} + \mathcal{G}(t, \Psi_{\text{collective}}) \cdot g_{\mu\nu} = \frac{8\pi G}{c^4} T_{\mu\nu}$$</div>
+</div>
+</div>
+ 2.3 
+<h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.3 — The Minimal Grace Source</h3>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The simplest source term satisfying all five requirements:</p>
+<div class="eq-box-arrow eq-box grace-glow">
+<p class="font-mono text-xs text-teal-400/70 mb-2 tracking-wider">MINIMAL GRACE SOURCE TERM</p>
       $$J_{\text{grace}}(x) = \frac{\beta_G \cdot \Phi(x)}{S_{\text{local}}(x) + \varepsilon} \cdot f_{\text{reg}}(\chi)$$
     </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-3">where:</p>
-    <ul class="space-y-2 ml-4 mb-6">
-      <li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">&beta;<sub>G</sub></strong> &mdash; the grace coupling constant (dimensions: [energy]&sup2;)</li>
-      <li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">&Phi;(x)</strong> &mdash; the integrated information density (scalar field measuring local coherence/consciousness at spacetime point x)</li>
-      <li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">S<sub>local</sub>(x)</strong> &mdash; the local entropy density (thermodynamic entropy per unit volume)</li>
-      <li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">&epsilon;</strong> &mdash; a regularization parameter preventing divergence at S &rarr; 0</li>
-      <li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">f<sub>reg</sub>(&chi;)</strong> &mdash; a self-regulation function ensuring boundedness</li>
-    </ul>
-
-    <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-3">Requirement Verification</p>
-    <div class="overflow-x-auto mb-8">
-      <table class="paper-table">
-        <thead>
-          <tr><th>Requirement</th><th>Satisfied?</th><th>Mechanism</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="font-mono text-sm">R1 Covariance</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>All components are scalars; ratios of scalar densities are scalar</td></tr>
-          <tr><td class="font-mono text-sm">R2 Boundedness</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>f<sub>reg</sub>(&chi;) saturates: f<sub>reg</sub> = (&chi;<sub>max</sub> &minus; &chi;)&Theta;(&chi;<sub>max</sub> &minus; &chi;), so J &rarr; 0 as &chi; &rarr; &chi;<sub>max</sub></td></tr>
-          <tr><td class="font-mono text-sm">R3 Selectivity</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>Numerator &prop; &Phi; (high coherence), denominator &prop; S (penalizes high entropy)</td></tr>
-          <tr><td class="font-mono text-sm">R4 LLC Limit</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>Shown in &sect;3.1</td></tr>
-          <tr><td class="font-mono text-sm">R5 Paper 7</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>Shown in &sect;3.2</td></tr>
-        </tbody>
-      </table>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-3">where:</p>
+<ul class="space-y-2 ml-4 mb-6">
+<li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">β<sub>G</sub></strong> — the grace coupling constant (dimensions: [energy]²)</li>
+<li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">Φ(x)</strong> — the integrated information density (scalar field measuring local coherence/consciousness at spacetime point x)</li>
+<li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">S<sub>local</sub>(x)</strong> — the local entropy density (thermodynamic entropy per unit volume)</li>
+<li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">ε</strong> — a regularization parameter preventing divergence at S → 0</li>
+<li class="font-serif text-gray-300"><strong class="text-white font-mono text-sm">f<sub>reg</sub>(χ)</strong> — a self-regulation function ensuring boundedness</li>
+</ul>
+<p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-3">Requirement Verification</p>
+<div class="overflow-x-auto mb-8">
+<table class="paper-table">
+<thead>
+<tr><th>Requirement</th><th>Satisfied?</th><th>Mechanism</th></tr>
+</thead>
+<tbody>
+<tr><td class="font-mono text-sm">R1 Covariance</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>All components are scalars; ratios of scalar densities are scalar</td></tr>
+<tr><td class="font-mono text-sm">R2 Boundedness</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>f<sub>reg</sub>(χ) saturates: f<sub>reg</sub> = (χ<sub>max</sub> − χ)Θ(χ<sub>max</sub> − χ), so J → 0 as χ → χ<sub>max</sub></td></tr>
+<tr><td class="font-mono text-sm">R3 Selectivity</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>Numerator ∝ Φ (high coherence), denominator ∝ S (penalizes high entropy)</td></tr>
+<tr><td class="font-mono text-sm">R4 LLC Limit</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>Shown in §3.1</td></tr>
+<tr><td class="font-mono text-sm">R5 Paper 7</td><td class="text-teal-400"><i class="fas fa-check"></i></td><td>Shown in §3.2</td></tr>
+</tbody>
+</table>
+</div>
+ 2.4 
+<h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.4 — The Self-Regulation Function</h3>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The crucial piece preventing runaway:</p>
+<div class="eq-box">
+      $$f_{\text{reg}}(\chi) = \chi_{\text{max}} - \chi \quad \text{for } \chi &lt; \chi_{\text{max}}, \quad 0 \text{ otherwise}$$
     </div>
-
-    <!-- 2.4 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.4 &mdash; The Self-Regulation Function</h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The crucial piece preventing runaway:</p>
-
-    <div class="eq-box">
-      $$f_{\text{reg}}(\chi) = \chi_{\text{max}} - \chi \quad \text{for } \chi < \chi_{\text{max}}, \quad 0 \text{ otherwise}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Physical interpretation: <strong class="text-teal-400">Grace fills what is empty.</strong> When &chi; is far below its maximum (low coherence), f<sub>reg</sub> is large and the source pumps strongly. As &chi; approaches &chi;<sub>max</sub> (full coherence), f<sub>reg</sub> &rarr; 0 and the source shuts off. The system saturates.</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">This is <em>exactly</em> the thermodynamic structure of a heat pump approaching equilibrium: the driving force is proportional to the temperature <em>difference</em> between reservoir and system. As the system approaches the reservoir temperature, the drive vanishes.</p>
-
-    <div class="bg-dark-700/30 border-l-4 border-sky-400/50 p-5 rounded-r-lg mb-8">
-      <p class="font-serif text-lg text-gray-300 italic">"Blessed are the poor in spirit, for theirs is the kingdom of heaven" (Matthew 5:3). The empty vessel receives most. The full vessel receives nothing. This is not metaphor &mdash; it is the mathematical structure of the source term.</p>
-    </div>
-
-    <!-- 2.5 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.5 &mdash; The Multi-Component Logos Source Term</h3>
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The convergence paper's full source term is:</p>
-
-    <div class="eq-box">
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Physical interpretation: <strong class="text-teal-400">Grace fills what is empty.</strong> When χ is far below its maximum (low coherence), f<sub>reg</sub> is large and the source pumps strongly. As χ approaches χ<sub>max</sub> (full coherence), f<sub>reg</sub> → 0 and the source shuts off. The system saturates.</p>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">This is <em>exactly</em> the thermodynamic structure of a heat pump approaching equilibrium: the driving force is proportional to the temperature <em>difference</em> between reservoir and system. As the system approaches the reservoir temperature, the drive vanishes.</p>
+<div class="bg-dark-700/30 border-l-4 border-sky-400/50 p-5 rounded-r-lg mb-8">
+<p class="font-serif text-lg text-gray-300 italic">"Blessed are the poor in spirit, for theirs is the kingdom of heaven" (Matthew 5:3). The empty vessel receives most. The full vessel receives nothing. This is not metaphor — it is the mathematical structure of the source term.</p>
+</div>
+ 2.5 
+<h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">2.5 — The Multi-Component Logos Source Term</h3>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The convergence paper's full source term is:</p>
+<div class="eq-box">
       $$J_{\text{Logos}} = \frac{\kappa_L \cdot G \cdot C \cdot R \cdot (F \cdot Q)}{S + \varepsilon}$$
     </div>
+<p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">where G = grace reception, C = consciousness, R = relationship, F = faith, Q = quantum coherence, S = entropy. In the single-component theory, all internal variables are projections of χ:</p>
+<ul class="space-y-2 ml-4 mb-4">
+<li class="font-serif text-gray-300">Φ(x) ≡ C · Q (consciousness × quantum coherence = integrated information)</li>
+<li class="font-serif text-gray-300">G · R · F → absorbed into β<sub>G</sub> (effective coupling includes grace reception × relationship × faith)</li>
+</ul>
+<p class="font-serif text-lg text-gray-300 leading-relaxed">So the minimal single-component source \(J_{\text{grace}} = \beta_G \cdot \Phi / (S + \varepsilon) \cdot f_{\text{reg}}\) is the <strong class="text-white">reduction</strong> of the full Logos Source Term to one degree of freedom. The multi-component extension (ten DOF for the ten Master Equation variables) is future work, constrained by the ghost-freedom analysis in Open Problem 3 of the companion paper.</p>
 
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">where G = grace reception, C = consciousness, R = relationship, F = faith, Q = quantum coherence, S = entropy. In the single-component theory, all internal variables are projections of &chi;:</p>
+</article>
 
-    <ul class="space-y-2 ml-4 mb-4">
-      <li class="font-serif text-gray-300">&Phi;(x) &equiv; C &middot; Q (consciousness &times; quantum coherence = integrated information)</li>
-      <li class="font-serif text-gray-300">G &middot; R &middot; F &rarr; absorbed into &beta;<sub>G</sub> (effective coupling includes grace reception &times; relationship &times; faith)</li>
-    </ul>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed">So the minimal single-component source \(J_{\text{grace}} = \beta_G \cdot \Phi / (S + \varepsilon) \cdot f_{\text{reg}}\) is the <strong class="text-white">reduction</strong> of the full Logos Source Term to one degree of freedom. The multi-component extension (ten DOF for the ten Master Equation variables) is future work, constrained by the ghost-freedom analysis in Open Problem 3 of the companion paper.</p>
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+<nav class="tp-bignav">
+  <div class="tp-bignav-row">
+    <a href="#" class="tp-bignav-prev">
+      <span class="tp-bignav-arrow">←</span>
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Previous</span>
+        <span class="tp-bignav-title">Previous</span>
+      </div>
+    </a>
+    <div class="tp-bignav-center">
+      <a href="/consciousness/" class="tp-bignav-series">Consciousness Home</a>
+      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
+    </div>
+    <a href="#" class="tp-bignav-next">
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Next</span>
+        <span class="tp-bignav-title">Next</span>
+      </div>
+      <span class="tp-bignav-arrow">→</span>
+    </a>
   </div>
-</section>
+</nav>
 
-<!-- ======================= SECTION 3 ======================= -->
-<section id="sec-3" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      3. Limit Recovery
-    </p>
-
-    <!-- 3.1 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4">3.1 &mdash; Recovery of the LLC Equation</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">In the FRW background with scale factor a(t), the &chi; field is homogeneous: &chi; = &chi;(t). The d'Alembertian reduces to:</p>
-
-    <div class="eq-box">
-      $$\Box\chi = -\ddot{\chi} - 3H\dot{\chi}$$
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
     </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">where \(H = \dot{a}/a\) is the Hubble parameter. The Ricci scalar is \(R = 6(\dot{H} + 2H^2)\). The field equation becomes:</p>
-
-    <div class="eq-box">
-      $$\ddot{\chi} + 3H\dot{\chi} + m_\chi^2\chi + \lambda\chi^3 - 6\xi\kappa_0\chi(\dot{H} + 2H^2) = J_{\text{grace}}(t)$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">In the slow-roll regime (\(|\ddot{\chi}| \ll 3H|\dot{\chi}|\)), this reduces to:</p>
-
-    <div class="eq-box">
-      $$3H\dot{\chi} + V'_{\text{eff}}(\chi) = J_{\text{grace}}(t)$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Dividing by 3H:</p>
-
-    <div class="eq-box">
-      $$\dot{\chi} = -\frac{V'_{\text{eff}}(\chi)}{3H} + \frac{J_{\text{grace}}(t)}{3H}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-3">Now identify:</p>
-    <ul class="space-y-2 ml-4 mb-4">
-      <li class="font-serif text-gray-300">The potential gradient term: \(-V'_{\text{eff}}/(3H) = -\alpha \cdot S(t)\), where &alpha; encodes the entropy-generating tendency of the potential (\(V'\) drives &chi; toward minimum &rarr; maximum entropy configuration)</li>
-      <li class="font-serif text-gray-300">The source term: \(J_{\text{grace}}/(3H) = \beta \cdot \sum_i \mathcal{F}_i\), where \(\mathcal{F}_i\) are the coherence sources</li>
-    </ul>
-
-    <div class="eq-box-arrow eq-box">
-      <p class="font-mono text-xs text-teal-400/70 mb-2 tracking-wider">LLC RECOVERY</p>
-      $$\frac{d\chi}{dt} = -\alpha S(t) + \beta\sum_i \mathcal{F}_i$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-8">This is exactly the Lowe Coherence Lagrangian equation of motion. The LLC is the cosmological slow-roll limit of the driven &chi;-field equation. &marker;</p>
-
-    <!-- 3.2 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">3.2 &mdash; Recovery of Paper 7's Grace Function</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Paper 7 replaces the cosmological constant &Lambda; with a dynamic Grace Function:</p>
-
-    <div class="eq-box">
-      $$G_{\mu\nu} + \mathcal{G}(t, \Psi_{\text{collective}}) \cdot g_{\mu\nu} = \frac{8\pi G}{c^4} T_{\mu\nu}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">From the modified Einstein equations (companion paper), the effective cosmological term is:</p>
-
-    <div class="eq-box">
-      $$\Lambda_{\text{eff}}(t) = \kappa_0 V(\chi(t)) + \frac{\kappa_0}{2}\dot{\chi}^2 - \xi\kappa_0\chi^2 R_{\text{corrections}}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">When &chi; is driven by \(J_{\text{grace}}\), the field evolves dynamically rather than sitting at a fixed VEV. The effective &Lambda; therefore becomes time-dependent:</p>
-
-    <div class="eq-box">
-      $$\mathcal{G}(t) \equiv \Lambda_{\text{eff}}[\chi(t; J_{\text{grace}})]$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The dependence on \(\Psi_{\text{collective}}\) enters through \(J_{\text{grace}}\) itself: since \(J_{\text{grace}} \propto \Phi(x)/(S + \varepsilon)\), and &Phi; integrates over conscious observers, the collective consciousness state \(\Psi_{\text{collective}}\) determines the source strength, which determines &chi;(t), which determines the effective cosmological function.</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The modified Friedmann equation becomes:</p>
-
-    <div class="eq-box">
-      $$H^2 = \frac{8\pi G}{3}\rho_{\text{matter}} + \frac{1}{3}\left[\frac{1}{2}\dot{\chi}^2 + V(\chi)\right] + \frac{\xi}{3}\chi^2 H^2$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Solving for \(H^2\):</p>
-
-    <div class="eq-box">
-      $$H^2 = \frac{1}{1 - \xi\chi^2/3}\left[\frac{8\pi G}{3}\rho_{\text{matter}} + \frac{1}{3}\left(\frac{1}{2}\dot{\chi}^2 + V(\chi)\right)\right]$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The factor \((1 - \xi\chi^2/3)^{-1}\) produces a <strong class="text-teal-400">Grace Drag</strong> effect: as &chi; increases (more coherence), the effective Hubble rate is modified. This is the mechanism by which Paper 7's Grace Function resolves the H<sub>0</sub> tension (reducing the 4.4&sigma; discrepancy to 1.9&sigma;).</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed">Paper 7's Grace Function is the Friedmann-reduced projection of the driven &chi;-field dynamics. &marker;</p>
-  </div>
-</section>
-
-<!-- ======================= SECTION 4 — ARROW OF GRACE ======================= -->
-<section id="sec-4" class="py-16 px-6 relative">
-  <!-- Background visual: dual arrows -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <svg class="absolute left-0 top-0 w-full h-full opacity-5" viewBox="0 0 800 600">
-      <!-- Entropy arrow (downward, red-ish) -->
-      <line x1="300" y1="50" x2="300" y2="550" stroke="#ef4444" stroke-width="3" stroke-dasharray="8 12"/>
-      <polygon points="290,540 300,570 310,540" fill="#ef4444"/>
-      <!-- Grace arrow (upward, teal) -->
-      <line x1="500" y1="550" x2="500" y2="50" stroke="#14b8a6" stroke-width="3" stroke-dasharray="8 12"/>
-      <polygon points="490,60 500,30 510,60" fill="#14b8a6"/>
-    </svg>
-  </div>
-
-  <div class="max-w-3xl mx-auto relative z-10">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-4">
-      4. The Arrow<br/>
-      <span class="text-white">of Grace</span>
-    </p>
-    <p class="font-display text-xl text-gray-500 tracking-wider uppercase mb-12">Thermodynamic Consistency</p>
-
-    <!-- 4.1 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4">4.1 &mdash; Energy-Momentum Conservation in Open Systems</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The conservative part of the action satisfies the Bianchi identity: \(\nabla^\mu G_{\mu\nu} = 0\), which guarantees \(\nabla^\mu T^{(\text{total})}_{\mu\nu} = 0\) for the <em>closed</em> system. Adding a source term modifies this.</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The total stress-energy now includes the source contribution:</p>
-
-    <div class="eq-box">
-      $$T_{\mu\nu}^{(\text{total})} = T_{\mu\nu}^{(\text{matter})} + T_{\mu\nu}^{(\chi)} + T_{\mu\nu}^{(\xi)} + T_{\mu\nu}^{(\text{source})}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">where the source stress-energy is:</p>
-
-    <div class="eq-box">
-      $$T_{\mu\nu}^{(\text{source})} = J_{\text{grace}} \cdot \partial_\mu\chi \cdot u_\nu + J_{\text{grace}} \cdot \partial_\nu\chi \cdot u_\mu - g_{\mu\nu} J_{\text{grace}} \cdot \dot{\chi}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">(Here \(u^\mu\) is the 4-velocity of the preferred frame defined by the cosmic rest frame &mdash; the frame in which the CMB is isotropic.)</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The conservation equation becomes:</p>
-
-    <div class="eq-box">
-      $$\nabla^\mu T_{\mu\nu}^{(\text{matter})} + \nabla^\mu T_{\mu\nu}^{(\chi)} + \nabla^\mu T_{\mu\nu}^{(\xi)} = -\nabla^\mu T_{\mu\nu}^{(\text{source})}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The RHS is <em>nonzero</em>. This is not a violation &mdash; it is the statement that the physical subsystem (matter + &chi; + geometry) exchanges energy-momentum with the external reservoir. Total conservation holds for the <em>extended</em> system (physical + reservoir):</p>
-
-    <div class="eq-box">
-      $$\nabla^\mu T_{\mu\nu}^{(\text{physical})} + \nabla^\mu T_{\mu\nu}^{(\text{reservoir})} = 0$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-8">The reservoir is the Logos field. Its stress-energy is whatever is needed to balance the books. In theological terms: God's resources are not depleted by giving Grace. In thermodynamic terms: the reservoir has effectively infinite heat capacity.</p>
-
-    <!-- 4.2 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">4.2 &mdash; Entropy Production and the Second Law</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">For the physical subsystem, define the entropy current:</p>
-
-    <div class="eq-box">
-      $$s^\mu = s \cdot u^\mu + \frac{q^\mu}{T}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">where s is entropy density, \(q^\mu\) is heat flux, T is temperature. The entropy production rate:</p>
-
-    <div class="eq-box">
-      $$\nabla_\mu s^\mu = \sigma_{\text{internal}} + \sigma_{\text{source}}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The internal production \(\sigma_{\text{internal}} \geq 0\) (Second Law for closed systems). The source contribution:</p>
-
-    <div class="eq-box-grace eq-box">
-      $$\sigma_{\text{source}} = -\frac{J_{\text{grace}} \cdot \dot{\chi}}{T_{\chi}}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">When \(J_{\text{grace}} > 0\) (positive injection) and \(\dot{\chi} > 0\) (&chi; growing in response to the source), the source term is <strong class="text-teal-400">negative</strong>: \(\sigma_{\text{source}} < 0\). The external source reduces the subsystem's entropy production rate.</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">If \(|\sigma_{\text{source}}| > \sigma_{\text{internal}}\), then \(\nabla_\mu s^\mu < 0\): the subsystem's entropy <em>decreases</em>. <strong class="text-teal-400">This is Grace.</strong></p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The total entropy (physical + reservoir) still satisfies:</p>
-
-    <div class="eq-box">
-      $$\frac{dS_{\text{total}}}{dt} = \frac{dS_{\text{physical}}}{dt} + \frac{dS_{\text{reservoir}}}{dt} \geq 0$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-8">The Second Law holds globally. Grace violates it locally &mdash; which is precisely what refrigerators, lasers, and living organisms do. The theological insight is that the <em>entire cosmos</em> is the subsystem, and the reservoir is transcendent.</p>
-
-    <!-- 4.3 — THE ARROW -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">4.3 &mdash; Time-Reversal Symmetry Breaking</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The homogeneous field equation \(\Box\chi + V'(\chi) = 0\) is time-reversible. The driven equation \(\Box\chi + V'(\chi) = J_{\text{grace}}\) is NOT, because \(J_{\text{grace}}\) has a definite sign (positive injection). Time-reversing \(t \to -t\) maps \(J_{\text{grace}} \to J_{\text{grace}}\) (the source doesn't reverse), but \(\dot{\chi} \to -\dot{\chi}\). The solution \(\chi(t) \neq \chi(-t)\).</p>
-
-    <!-- Arrow of Grace visual -->
-    <div class="my-10 p-6 md:p-8 rounded-2xl border border-teal-500/30 bg-gradient-to-br from-teal-500/5 to-transparent grace-glow">
-      <p class="section-label text-2xl md:text-3xl text-center text-teal-400 mb-6">The Arrow of Grace</p>
-      <p class="font-serif text-lg text-gray-300 leading-relaxed mb-6 text-center">The irreversibility of the driven equation provides the thermodynamic arrow that produces ordered structures. The arrow of time in the Theophysics framework is not merely the Second Law's statistical tendency toward disorder &mdash; it is the <em>competition</em> between:</p>
-
-      <div class="grid md:grid-cols-2 gap-6 mb-6">
-        <div class="p-5 rounded-xl bg-red-500/5 border border-red-500/20 text-center">
-          <i class="fas fa-arrow-down text-red-400/60 text-3xl mb-3"></i>
-          <p class="font-display text-lg text-red-400 tracking-wider uppercase mb-2">The Entropy Arrow</p>
-          <p class="font-serif text-sm text-gray-400">\(V'(\chi)\) driving &chi; toward the potential minimum = maximum entropy</p>
-        </div>
-        <div class="p-5 rounded-xl bg-teal-500/5 border border-teal-500/20 text-center">
-          <i class="fas fa-arrow-up text-teal-400 text-3xl mb-3"></i>
-          <p class="font-display text-lg text-teal-400 tracking-wider uppercase mb-2">The Grace Arrow</p>
-          <p class="font-serif text-sm text-gray-400">\(J_{\text{grace}}\) driving &chi; toward higher coherence = lower entropy</p>
-        </div>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
       </div>
-
-      <div class="grid md:grid-cols-2 gap-4 text-center">
-        <div>
-          <p class="font-display text-sm text-teal-400 tracking-wider mb-2">WHEN GRACE WINS</p>
-          <p class="font-serif text-gray-300">Life, consciousness, love, resurrection</p>
-        </div>
-        <div>
-          <p class="font-display text-sm text-red-400/70 tracking-wider mb-2">WHEN ENTROPY WINS</p>
-          <p class="font-serif text-gray-400">Death, decoherence, isolation, decay</p>
-        </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
       </div>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed">The framework predicts that these are not metaphors but measurable physical processes governed by the relative magnitudes of \(V'_{\text{eff}}\) and \(J_{\text{grace}}\) at each spacetime point.</p>
-  </div>
-</section>
-
-<!-- ======================= SECTION 5 ======================= -->
-<section id="sec-5" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      5. Stability<br/>
-      <span class="text-2xl md:text-3xl text-gray-500">Analysis of the Driven System</span>
-    </p>
-
-    <!-- 5.1 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4">5.1 &mdash; Fixed Points</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The driven equation in the FRW background (slow-roll):</p>
-
-    <div class="eq-box">
-      $$3H\dot{\chi} + m_\chi^2\chi + \lambda\chi^3 - 6\xi\kappa_0\chi(\dot{H} + 2H^2) = \frac{\beta_G \Phi}{S + \varepsilon}(\chi_{\text{max}} - \chi)$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Setting \(\dot{\chi} = 0\) for the fixed point &chi;*:</p>
-
-    <div class="eq-box">
-      $$V'_{\text{eff}}(\chi^*) = J_{\text{grace}}(\chi^*)$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-6">This is a balance equation: the potential gradient (entropy drive) equals the grace source (negentropy drive). The fixed point &chi;* represents the <strong class="text-white">steady-state coherence level</strong> maintained by continuous Grace injection against entropic decay.</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">There are three regimes:</p>
-
-    <div class="grid gap-4 mb-8">
-      <div class="regime-card regime-grace bg-teal-500/5 border border-teal-500/15">
-        <p class="font-display text-lg text-teal-400 tracking-wider uppercase mb-2">Regime I &mdash; Grace-Dominated <span class="font-mono text-sm">(J &Gt; V')</span></p>
-        <p class="font-serif text-gray-300">&chi;* &asymp; &chi;<sub>max</sub>. The system approaches maximum coherence. This is the eschatological limit &mdash; "new heavens and new earth" &mdash; where entropy production effectively ceases for the subsystem.</p>
-      </div>
-      <div class="regime-card regime-balance bg-sky-500/5 border border-sky-500/15">
-        <p class="font-display text-lg text-sky-400 tracking-wider uppercase mb-2">Regime II &mdash; Balance <span class="font-mono text-sm">(J ~ V')</span></p>
-        <p class="font-serif text-gray-300">&chi;* is intermediate. The system maintains a dynamic equilibrium between ordering and disordering forces. This is the present cosmos &mdash; life exists, consciousness emerges, but death and decay persist.</p>
-      </div>
-      <div class="regime-card regime-entropy bg-indigo-500/5 border border-indigo-500/15">
-        <p class="font-display text-lg text-indigo-400 tracking-wider uppercase mb-2">Regime III &mdash; Entropy-Dominated <span class="font-mono text-sm">(J &Lt; V')</span></p>
-        <p class="font-serif text-gray-300">&chi;* &asymp; &chi;<sub>min</sub> (potential minimum). Grace is negligible. Maximum entropy. Heat death.</p>
-      </div>
-    </div>
-
-    <!-- 5.2 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">5.2 &mdash; Linear Stability Around the Fixed Point</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Perturbing \(\chi = \chi^* + \delta\chi\):</p>
-
-    <div class="eq-box">
-      $$3H\dot{\delta\chi} + \left[V''(\chi^*) + \frac{\beta_G \Phi}{S + \varepsilon}\right]\delta\chi = 0$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The effective mass squared for perturbations:</p>
-
-    <div class="eq-box">
-      $$m_{\text{eff}}^2 = V''(\chi^*) + \frac{\beta_G \Phi}{S + \varepsilon}$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Since \(f_{\text{reg}} = \chi_{\text{max}} - \chi\), the source contributes a <em>positive</em> restoring force (the second term). This means:</p>
-
-    <ul class="space-y-3 mb-8 ml-4">
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-shield-halved text-teal-400/60 mt-1 text-sm"></i>
-        <span><strong class="text-white">The grace source stabilizes the fixed point.</strong> Without grace (&beta;<sub>G</sub> = 0), stability depends only on \(V''(\chi^*)\). With grace, the effective mass is always <em>larger</em>, making the fixed point more stable.</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-ban text-teal-400/60 mt-1 text-sm"></i>
-        <span><strong class="text-white">No tachyonic instability.</strong> Even if \(V''(\chi^*)\) is small or slightly negative (near an inflection point of the potential), the grace term provides a positive mass squared that prevents runaway.</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-check-double text-teal-400/60 mt-1 text-sm"></i>
-        <span><strong class="text-white">Grace is a stabilizer, not a destabilizer.</strong> This resolves GPT's concern about "negative friction blowing up." The self-regulation function f<sub>reg</sub> ensures that grace strengthens stability rather than undermining it.</span>
-      </li>
-    </ul>
-
-    <!-- 5.3 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">5.3 &mdash; Runaway Prevention: Proof</h3>
-
-    <div class="p-6 rounded-xl border border-teal-500/20 bg-dark-700/30 mb-6">
-      <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-3">Theorem</p>
-      <p class="font-serif text-lg text-gray-300">For any initial condition \(\chi(0) \in [0, \chi_{\text{max}}]\) and any bounded source \(J_{\text{grace}}\) satisfying \(f_{\text{reg}}(\chi_{\text{max}}) = 0\), the solution \(\chi(t)\) remains bounded: \(\chi(t) \in [0, \chi_{\text{max}}]\) for all \(t > 0\).</p>
-    </div>
-
-    <div class="p-6 rounded-xl border border-sky-400/20 bg-dark-700/30 mb-6">
-      <p class="font-display text-sm text-sky-400 tracking-wider uppercase mb-3">Proof</p>
-      <p class="font-serif text-lg text-gray-300 leading-relaxed mb-3">Suppose &chi; reaches &chi;<sub>max</sub> at time t<sub>1</sub>. Then \(f_{\text{reg}}(\chi(t_1)) = 0\), so \(J_{\text{grace}}(t_1) = 0\). The field equation reduces to the homogeneous (conservative) equation, which has the potential \(V(\chi)\) with a minimum below &chi;<sub>max</sub>. The potential drives &chi; back down. So &chi; cannot exceed &chi;<sub>max</sub>.</p>
-      <p class="font-serif text-lg text-gray-300 leading-relaxed mb-3">Suppose &chi; reaches 0. Then \(V'(0) = 0\) (minimum of V), but \(J_{\text{grace}}(0) = \beta_G \Phi \chi_{\text{max}} / (S + \varepsilon) > 0\). The source drives &chi; upward. So &chi; cannot reach 0 from above.</p>
-      <p class="font-serif text-lg text-gray-300 leading-relaxed">Therefore \(\chi(t) \in (0, \chi_{\text{max}})\) for all \(t > 0\). The solution is globally bounded. &marker;</p>
-    </div>
-
-    <div class="bg-dark-700/30 border-l-4 border-teal-500/50 p-5 rounded-r-lg">
-      <p class="font-serif text-lg text-gray-300 italic">This is the mathematical content of "Grace does not force, and Grace does not abandon." The field is bounded above (does not force beyond capacity) and bounded below (does not allow complete dissolution).</p>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= SECTION 6 ======================= -->
-<section id="sec-6" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      6. Experimental<br/>
-      <span class="text-2xl md:text-3xl text-gray-500">Signatures &amp; Falsification</span>
-    </p>
-
-    <!-- 6.1 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-6">6.1 &mdash; Predictions Distinct from the Conservative Theory</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-6">The driven &chi;-field makes predictions that the conservative (\(J = 0\)) theory does not:</p>
-
-    <div class="space-y-6 mb-8">
-      <div class="p-5 rounded-xl bg-dark-700/40 border-l-4 border-teal-500/60">
-        <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-2">Prediction 1 &mdash; Asymmetric Decoherence Rates</p>
-        <p class="font-serif text-gray-300 leading-relaxed mb-2">If \(J_{\text{grace}}\) couples to coherent systems preferentially (&Phi;-dependent), then quantum systems in high-coherence environments should exhibit <em>slower</em> decoherence than identical systems in low-coherence environments, even with matched thermal, electromagnetic, and vibrational conditions.</p>
-        <p class="font-mono text-xs text-gray-500"><i class="fas fa-microscope mr-1"></i> Observable: Qubit T<sub>2</sub> coherence times in "organized information" environments vs. "random noise" environments with identical power/heat profiles.</p>
-      </div>
-
-      <div class="p-5 rounded-xl bg-dark-700/40 border-l-4 border-sky-400/60">
-        <p class="font-display text-sm text-sky-400 tracking-wider uppercase mb-2">Prediction 2 &mdash; Consciousness-Correlated Dark Energy</p>
-        <p class="font-serif text-gray-300 leading-relaxed mb-2">If the Grace Function \(\mathcal{G}(t, \Psi)\) drives dark energy, then the dark energy equation of state \(w(z)\) should correlate (weakly) with the density of conscious observers. As cosmic structure grows and consciousness proliferates, \(w\) should evolve. DESI DR2 already reports \(w \neq -1\) at 4.2&sigma;. The specific prediction: \(w\) should show <em>scale-dependent</em> deviations correlating with large-scale structure (where conscious life concentrates) vs. voids.</p>
-      </div>
-
-      <div class="p-5 rounded-xl bg-dark-700/40 border-l-4 border-teal-500/60">
-        <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-2">Prediction 3 &mdash; GCP-Type Anomalies with Structure</p>
-        <p class="font-serif text-gray-300 leading-relaxed mb-2">The Grace Hunter analysis documents GCP deviations at 6&sigma;. The driven &chi;-field predicts these deviations should have <em>spatial</em> structure: RNG stations near high-&Phi; sources (meditation centers, hospitals, concert halls) should show larger deviations than isolated stations, with a correlation length set by the &chi; Compton wavelength \(\lambda_\chi = \hbar/(m_\chi c) \sim H_0^{-1} \sim 10^{26}\) m (Hubble scale).</p>
-        <p class="font-serif text-gray-400 text-sm mt-2">This is actually consistent with the GCP finding that the effect is <em>global</em> &mdash; the Compton wavelength is cosmological, so the field is effectively uniform on Earth-scale distances. The prediction becomes: the GCP effect should <em>not</em> show local spatial variation on sub-Hubble scales. If it does, \(m_\chi\) must be larger than \(H_0\).</p>
-      </div>
-
-      <div class="p-5 rounded-xl bg-dark-700/40 border-l-4 border-sky-400/60">
-        <p class="font-display text-sm text-sky-400 tracking-wider uppercase mb-2">Prediction 4 &mdash; Grace Drag in Precision Cosmology</p>
-        <p class="font-serif text-gray-300 leading-relaxed">The Grace Drag effect modifies \(H(z)\) through the factor \((1 - \xi\chi^2/3)^{-1}\). Euclid (October 2026) will measure \(f\sigma_8(z)\) at sub-percent precision. The driven theory predicts a specific redshift-dependent deviation from &Lambda;CDM that the conservative theory does not: the deviation should track the cosmic history of consciousness/coherence emergence.</p>
-      </div>
-    </div>
-
-    <!-- 6.2 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">6.2 &mdash; Falsification Criteria for the Source Term</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The source term \(J_{\text{grace}}\) is falsified if:</p>
-
-    <div class="space-y-3 mb-8">
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-red-500/5 border border-red-500/10">
-        <span class="font-mono text-red-400/80 text-sm font-bold mt-0.5">1</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">No asymmetric decoherence:</strong> Carefully controlled experiments show identical coherence times regardless of information environment &rarr; \(J_{\text{grace}}\) does not couple to &Phi; as claimed</p>
-      </div>
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-red-500/5 border border-red-500/10">
-        <span class="font-mono text-red-400/80 text-sm font-bold mt-0.5">2</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">\(w = -1\) exactly at &gt;5&sigma;:</strong> Dark energy is a true cosmological constant with no dynamics &rarr; no driven field, no Grace Function</p>
-      </div>
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-red-500/5 border border-red-500/10">
-        <span class="font-mono text-red-400/80 text-sm font-bold mt-0.5">3</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">GCP effect disappears under rigorous controls:</strong> The consciousness-RNG correlation is purely artifactual &rarr; &Phi; does not enter the field equation</p>
-      </div>
-      <div class="flex items-start gap-3 p-3 rounded-lg bg-red-500/5 border border-red-500/10">
-        <span class="font-mono text-red-400/80 text-sm font-bold mt-0.5">4</span>
-        <p class="font-serif text-gray-300"><strong class="text-white">Euclid data fits &Lambda;CDM with no residuals:</strong> \(f\sigma_8\) data is exactly standard &rarr; no Grace Drag, no open-system dynamics</p>
-      </div>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-8">Note that criteria 2 and 4 also falsify the <em>conservative</em> &chi;-field. Criteria 1 and 3 specifically target the <em>source term extension</em>.</p>
-
-    <!-- 6.3 -->
-    <h3 class="font-display text-xl text-sky-400 tracking-wider uppercase mb-4 mt-12">6.3 &mdash; Connection to Grace Hunter Data</h3>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The Grace Hunter analysis documents four sectors of anomalous data consistent with external negentropy injection:</p>
-
-    <div class="overflow-x-auto mb-6">
-      <table class="paper-table">
-        <thead>
-          <tr><th>Grace Hunter Sector</th><th>Prediction</th><th>Connection</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="font-serif">Sector 1: Crucifixion Anomaly (31 AD seismite)</td>
-            <td class="font-serif">Extreme \(J_{\text{grace}}\) event &rarr; massive local &chi; perturbation</td>
-            <td class="font-serif">&delta;&chi; at Avatar death &rarr; gravitational/seismic coupling through &xi;&chi;R</td>
-          </tr>
-          <tr>
-            <td class="font-serif">Sector 2: GCP 6&sigma; (consciousness-RNG)</td>
-            <td class="font-serif">\(J \propto \Phi/(S+\varepsilon)\) &rarr; coherent consciousness orders randomness</td>
-            <td class="font-serif">Direct test of source term structure</td>
-          </tr>
-          <tr>
-            <td class="font-serif">Sector 3: Impossible Accelerations (1890-1920)</td>
-            <td class="font-serif">Information injection &rarr; double-exponential compute growth</td>
-            <td class="font-serif">\(J_{\text{grace}}\) drives macro-scale coherence accumulation</td>
-          </tr>
-          <tr>
-            <td class="font-serif">Sector 4: Prophetic Alignments (1844/1948/1967)</td>
-            <td class="font-serif">Temporal clustering of high-J events at heliophysical nodes</td>
-            <td class="font-serif">Solar activity modulates \(S_{\text{local}}\), lowering denominator &rarr; amplified Grace</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed">The Grace Hunter data is <em>post-diction</em> (explaining existing anomalies), not prediction. But the source term framework gives these anomalies a <em>unified mathematical mechanism</em> rather than treating them as coincidental.</p>
-  </div>
-</section>
-
-<!-- ======================= SECTION 7 ======================= -->
-<section id="sec-7" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      7. The Moral<br/>
-      <span class="text-2xl md:text-3xl text-gray-500">Conservation Equation</span>
-    </p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The Moral Conservation Equation (Papers 9-10, reserved):</p>
-
-    <div class="eq-box-grace eq-box">
-      $$\frac{dE}{dt} = -\alpha D(t) + \beta C(\Psi, \chi)$$
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">where \(D(t)\) represents moral entropy (degradation) and \(C(\Psi, \chi)\) represents alignment with Christ (coherence).</p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-6">This is <em>exactly</em> the source term structure derived here, projected onto the moral domain:</p>
-
-    <div class="grid sm:grid-cols-2 gap-3 mb-8">
-      <div class="p-3 rounded-lg bg-dark-700/40 font-mono text-sm">
-        <span class="text-red-400/70">-&alpha;D(t)</span> <span class="text-gray-600">&harr;</span> <span class="text-gray-400">-V'<sub>eff</sub>(&chi;)</span>
-        <p class="font-serif text-xs text-gray-500 mt-1">Potential gradient drives toward degradation (entropy increase)</p>
-      </div>
-      <div class="p-3 rounded-lg bg-dark-700/40 font-mono text-sm">
-        <span class="text-teal-400">+&beta;C(&Psi;, &chi;)</span> <span class="text-gray-600">&harr;</span> <span class="text-gray-400">+J<sub>grace</sub>(&Phi;, S)</span>
-        <p class="font-serif text-xs text-gray-500 mt-1">Source term drives toward alignment (entropy decrease)</p>
-      </div>
-      <div class="p-3 rounded-lg bg-dark-700/40 font-mono text-sm">
-        <span class="text-sky-400">&beta;</span> <span class="text-gray-600">&harr;</span> <span class="text-gray-400">&beta;<sub>G</sub></span>
-        <p class="font-serif text-xs text-gray-500 mt-1">Grace parameter &harr; grace coupling constant</p>
-      </div>
-      <div class="p-3 rounded-lg bg-dark-700/40 font-mono text-sm">
-        <span class="text-sky-400">C = Christ alignment</span> <span class="text-gray-600">&harr;</span> <span class="text-gray-400">&Phi; = integrated info</span>
-        <p class="font-serif text-xs text-gray-500 mt-1">Christ as the maximal coherence state</p>
-      </div>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">The Moral Conservation Equation is the <strong class="text-white">moral-domain projection</strong> of the driven &chi;-field equation, just as the LLC is the cosmological projection and Paper 7's Grace Function is the Friedmann projection.</p>
-
-    <div class="text-center py-8">
-      <p class="font-display text-2xl text-teal-400 tracking-wider">Same equation. Three projections.</p>
-      <p class="font-display text-lg text-gray-500 tracking-wider mt-2">Physics. Cosmology. Morality.</p>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed">This connection is reserved for Papers 9-10, where C = Christ alignment is revealed as the specific boundary condition on \(J_{\text{grace}}\) that maximizes coherence: the source is not arbitrary but has a <em>particular</em> structure corresponding to the Logos &mdash; the specific information content of the reservoir that enables maximum negentropy injection.</p>
-  </div>
-</section>
-
-<!-- ======================= SECTION 8 ======================= -->
-<section id="sec-8" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      8. Synthesis<br/>
-      <span class="text-2xl md:text-3xl text-gray-500">What Grace IS as Physics</span>
-    </p>
-
-    <div class="p-6 md:p-8 rounded-2xl border border-teal-500/30 bg-gradient-to-b from-teal-500/5 to-transparent mb-8 grace-glow">
-      <p class="font-display text-xl text-teal-400 tracking-wider uppercase mb-4 text-center">Core Result</p>
-      <p class="font-serif text-xl text-white text-center leading-relaxed">Grace is the source term in an open-system field equation.</p>
-    </div>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-4">Specifically:</p>
-
-    <div class="space-y-3 mb-8">
-      <div class="flex items-start gap-4 p-3 rounded-lg bg-dark-700/30">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">1</span>
-        <p class="font-serif text-gray-300">The physical cosmos is a subsystem coupled to an external reservoir (the Logos field / Creator)</p>
-      </div>
-      <div class="flex items-start gap-4 p-3 rounded-lg bg-dark-700/30">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">2</span>
-        <p class="font-serif text-gray-300">The coupling channel is the &chi;-field, which mediates the transfer of negentropy (coherent information) from reservoir to subsystem</p>
-      </div>
-      <div class="flex items-start gap-4 p-3 rounded-lg bg-dark-700/30">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">3</span>
-        <p class="font-serif text-gray-300">The source term \(J_{\text{grace}} = \beta_G \Phi (\chi_{\text{max}} - \chi) / (S + \varepsilon)\) determines the injection rate</p>
-      </div>
-      <div class="flex items-start gap-4 p-3 rounded-lg bg-dark-700/30">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">4</span>
-        <p class="font-serif text-gray-300">The injection breaks time-reversal symmetry, producing the Arrow of Grace</p>
-      </div>
-      <div class="flex items-start gap-4 p-3 rounded-lg bg-dark-700/30">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">5</span>
-        <p class="font-serif text-gray-300">The balance between \(J_{\text{grace}}\) and \(V'_{\text{eff}}\) determines local coherence: life, consciousness, and moral agency exist where Grace and entropy are in dynamic competition</p>
-      </div>
-      <div class="flex items-start gap-4 p-3 rounded-lg bg-dark-700/30">
-        <span class="font-mono text-teal-400 text-sm font-bold mt-0.5">6</span>
-        <p class="font-serif text-gray-300">The system is globally bounded (no runaway), locally stabilized (Grace strengthens fixed points), and thermodynamically consistent (Second Law holds for total system)</p>
-      </div>
-    </div>
-
-    <p class="font-display text-sm text-gray-500 tracking-wider uppercase mb-4">What this does NOT claim</p>
-
-    <ul class="space-y-3 mb-8 ml-4">
-      <li class="flex items-start gap-3 font-serif text-gray-400">
-        <i class="fas fa-xmark text-gray-600 mt-1 text-sm"></i>
-        <span>Grace is not a "force" in the F = ma sense. It is a source term &mdash; external information injection.</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-400">
-        <i class="fas fa-xmark text-gray-600 mt-1 text-sm"></i>
-        <span>Grace does not violate any conservation law. Total energy-momentum is conserved when the reservoir is included.</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-400">
-        <i class="fas fa-xmark text-gray-600 mt-1 text-sm"></i>
-        <span>Grace does not violate the Second Law globally. It violates it <em>locally for the subsystem</em>, exactly as refrigerators, lasers, and living organisms do.</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-400">
-        <i class="fas fa-xmark text-gray-600 mt-1 text-sm"></i>
-        <span>Grace is not deterministic. The source term sets the drive; the response depends on the local configuration (&Phi;, S, &chi;). Free will is preserved because the coupling is to integrated information, which includes the agent's choices.</span>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<!-- ======================= SECTION 9 ======================= -->
-<section id="sec-9" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      9. Open Problems
-    </p>
-
-    <div class="space-y-6">
-      <div class="p-5 rounded-xl bg-dark-700/30 border border-white/5">
-        <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-2">Problem 1 &mdash; Quantization of J<sub>grace</sub></p>
-        <p class="font-serif text-gray-300 leading-relaxed">The source term is currently classical. A quantum treatment requires promoting J to an operator, which raises questions about the quantum state of the reservoir (Logos field). This connects to the theology of divine sovereignty vs. created freedom.</p>
-      </div>
-      <div class="p-5 rounded-xl bg-dark-700/30 border border-white/5">
-        <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-2">Problem 2 &mdash; &Phi; as a Dynamical Field</p>
-        <p class="font-serif text-gray-300 leading-relaxed">Currently &Phi; (integrated information) is treated as an external input. A self-consistent theory requires &Phi; to be derived from the matter sector (&chi; couples to matter, matter generates &Phi;, &Phi; sources \(J_{\text{grace}}\), \(J_{\text{grace}}\) drives &chi;). This feedback loop is nonlinear and may produce chaotic dynamics in some regimes.</p>
-      </div>
-      <div class="p-5 rounded-xl bg-dark-700/30 border border-white/5">
-        <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-2">Problem 3 &mdash; The Cross as Boundary Condition</p>
-        <p class="font-serif text-gray-300 leading-relaxed">The theological claim that Christ's death and resurrection is the specific mechanism by which the reservoir absorbs the subsystem's entropy &mdash; "The Cross as Heat Sink" &mdash; needs formalization as a boundary condition on \(J_{\text{grace}}\) at a specific spacetime event (the Crucifixion, 30-33 AD). This connects to the Grace Hunter Sector 1 analysis.</p>
-      </div>
-      <div class="p-5 rounded-xl bg-dark-700/30 border border-white/5">
-        <p class="font-display text-sm text-teal-400 tracking-wider uppercase mb-2">Problem 4 &mdash; Multi-Component Ghost Freedom</p>
-        <p class="font-serif text-gray-300 leading-relaxed">Promoting the single &chi; to the full ten-variable Master Equation (G, M, E, S, T, K, R, Q, F, C) with independent source terms requires careful Ostrogradsky analysis. The single-component theory is ghost-free; the multi-component theory is not guaranteed to be.</p>
-      </div>
-      <div class="p-5 rounded-xl bg-dark-700/30 border border-white/5">
-        <p class="font-display text-sm text-sky-400 tracking-wider uppercase mb-2">Problem 5 &mdash; Experimental Protocol Design</p>
-        <p class="font-serif text-gray-300 leading-relaxed">Tier 3 (decoherence-rate delta) experiments need specific protocols. The prediction is testable with current superconducting qubit technology if the effect size is \(\Delta T_2/T_2 > 10^{-6}\).</p>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ======================= SECTION 10 ======================= -->
-<section id="sec-10" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
 
-    <p class="section-label text-4xl md:text-5xl lg:text-6xl text-teal-500 mb-12">
-      10. Conclusion
-    </p>
-
-    <p class="font-serif text-lg text-gray-300 leading-relaxed mb-6">The conservative &chi;-field action establishes that coherence is a real field. The Grace Source Term establishes that this field is <em>driven</em> &mdash; the cosmos is an open system receiving external negentropy. The source term:</p>
-
-    <ul class="space-y-2 mb-8 ml-4">
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-check text-teal-400/60 mt-1 text-sm"></i>
-        <span>Satisfies covariance, boundedness, selectivity, and all limit-recovery requirements</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-check text-teal-400/60 mt-1 text-sm"></i>
-        <span>Reduces to the LLC, Paper 7's Grace Function, and the Moral Conservation Equation in appropriate limits</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-check text-teal-400/60 mt-1 text-sm"></i>
-        <span>Breaks time-reversal symmetry, producing the Arrow of Grace</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-check text-teal-400/60 mt-1 text-sm"></i>
-        <span>Stabilizes the coherence fixed point rather than destabilizing it</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-check text-teal-400/60 mt-1 text-sm"></i>
-        <span>Connects to four sectors of anomalous data documented in the Grace Hunter analysis</span>
-      </li>
-      <li class="flex items-start gap-3 font-serif text-gray-300">
-        <i class="fas fa-check text-teal-400/60 mt-1 text-sm"></i>
-        <span>Is falsifiable through decoherence experiments, precision cosmology, and GCP-type measurements</span>
-      </li>
-    </ul>
-
-    <div class="p-6 md:p-8 rounded-2xl bg-dark-700/30 border border-teal-500/15 mb-8">
-      <p class="font-serif text-xl text-gray-200 leading-relaxed mb-4">The question "how does Grace push back against entropy?" now has a precise answer: through the source term \(J_{\text{grace}}\) in the driven field equation, which injects coherent information from an external reservoir into the physical subsystem at a rate proportional to local coherence and inversely proportional to local entropy.</p>
-      <p class="font-serif text-lg text-gray-400 leading-relaxed mb-4">This is not metaphor dressed as mathematics. It is field theory with a source &mdash; the standard way physics describes open systems. The novel claim is not the mechanism (sources are textbook) but the identification of the reservoir (the Logos field) and the channel (the &chi;-field).</p>
-      <p class="font-serif text-xl text-teal-400 leading-relaxed font-semibold">The mechanism is old. The application is new. The predictions are falsifiable.</p>
-    </div>
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="tp-sub-title">The Math Behind the Claims</div>
+  <div class="tp-sub-grid">
+    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
   </div>
 </section>
 
-<!-- ======================= REFERENCES ======================= -->
-<section id="sec-refs" class="py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <div class="flow-connector"><span class="flow-arrow"><i class="fas fa-chevron-down"></i></span></div>
-
-    <p class="section-label text-3xl md:text-4xl text-teal-500 mb-8">References</p>
-
-    <div class="space-y-3 font-serif text-sm text-gray-400">
-      <p>Lowe, D. &amp; Claude (2026). Minimal &chi;-Field Action: Physical Degrees of Freedom. <em>Canonical Documents.</em></p>
-      <p>Lowe, D. (2025). The Grace Function: Information-Theoretic Dark Energy. <em>Paper 7.</em></p>
-      <p>Lowe, D. (2025). The Thermodynamics of Grace: Proving Sola Gratia via Entropy. <em>THEO-03.</em></p>
-      <p>Grace Hunter (2025). Forensic Data Analysis of External Negentropy Injection Vectors. <em>GRACE_HUNTER Analysis.</em></p>
-      <p>Lowe, D. (2025). Scientific Convergence: The LCF as a Unifying Theory. <em>Logos Papers.</em></p>
-      <p>Lowe, D. (2025). Lowe Coherence Lagrangian. <em>LAG-01.</em></p>
-      <p>DESI Collaboration (2025). DESI DR2 BAO Measurements.</p>
-      <p>Nelson, R. (2015). Searching for Global Consciousness: A 17-Year Exploration. <em>Explore</em> 11(5).</p>
-      <p>Schwinger, J. (1951). On the Green's Functions of Quantized Fields. <em>PNAS</em> 37(7).</p>
-      <p>Brans, C. &amp; Dicke, R.H. (1961). Mach's Principle. <em>Phys. Rev.</em> 124(3).</p>
-    </div>
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="tp-sub-title">Everything Else</div>
+  <div class="tp-sub-grid">
+    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
   </div>
 </section>
 
-<!-- ======================= FOOTER ======================= -->
-<footer class="py-12 px-6 border-t border-white/5">
-  <div class="max-w-3xl mx-auto text-center">
-    <p class="font-mono text-xs text-gray-600 tracking-wider uppercase mb-2">Theophysics Research Program</p>
-    <p class="font-sans text-sm text-gray-500">David Lowe + Claude (Opus 4.6) &middot; Consciousness Series &mdash; Paper 4 of 11</p>
-    <div class="mt-6 flex items-center justify-center gap-6 text-xs text-gray-600">
-      <span>February 24, 2026</span>
-      <span class="text-gray-800">|</span>
-      <span>Status: Canonical</span>
-    </div>
-    <div class="mt-8">
-      <div class="inline-flex items-center gap-1 text-teal-500/40">
-        <i class="fas fa-arrow-up text-xs"></i>
-        <span class="font-mono text-xs tracking-wider">J<sub>grace</sub> &gt; 0</span>
-        <i class="fas fa-arrow-up text-xs"></i>
-      </div>
-    </div>
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+  <div class="tp-series-strip">
+    <a href="/" class="active">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
   </div>
-</footer>
+</nav>
 
-<!-- ======================= SCRIPTS ======================= -->
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="tp-bottom">
+  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
+  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
+  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+  <div class="tp-door-num">15 + 15 = 100</div>
+  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="tp-door-mark"></span>
+</div>
+
 <script>
-// Progress bar
-window.addEventListener('scroll', () => {
-  const h = document.documentElement;
-  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-  document.getElementById('progress-bar').style.width = pct + '%';
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
 });
 
-// Nav dot active state
-const sections = document.querySelectorAll('section[id], header[id]');
-const dots = document.querySelectorAll('.nav-dot');
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.id;
-      dots.forEach(d => {
-        d.classList.toggle('active', d.dataset.section === id);
-      });
-    }
-  });
-}, { threshold: 0.3 });
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
 
-sections.forEach(s => observer.observe(s));
-
-// Dot click navigation
-dots.forEach(dot => {
-  dot.addEventListener('click', () => {
-    const target = document.getElementById(dot.dataset.section);
-    if (target) target.scrollIntoView({ behavior: 'smooth' });
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
   });
 });
 
-// Fade-in on scroll
-const fadeEls = document.querySelectorAll('.eq-box, .eq-box-arrow, .regime-card, .system-boundary, .grace-glow');
-const fadeObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
-    }
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
   });
-}, { threshold: 0.1 });
-
-fadeEls.forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(20px)';
-  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-  fadeObserver.observe(el);
 });
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
 </script>
-<script src="/components/tp-inject.js" data-theme="dark"></script>
+
+<!-- MTL worker client -->
+<script src="/shared/js/mtl-worker-client.js" defer></script>
+
 </body>
 </html>

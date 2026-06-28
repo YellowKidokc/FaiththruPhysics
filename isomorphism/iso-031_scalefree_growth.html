@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Scale-free network dynamics — preferential attachment, hub vulnerability, small-world paths — are structurally isomorphic to ecclesiology. Matthew 25:29 states the Barabasi-Albert preferential attachment mechanism 1,950 years before the formal mathematical model.">
+  <title>ISO-031 · Network Science ↔ Ecclesiology · Theophysics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
+      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
+      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
+      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
+      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
+      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
+      --max-width:1100px; --section-gap:5rem;
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.65;}
+    .container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+    .site-header{border-bottom:1px solid var(--border);padding:.9rem 0;position:sticky;top:0;
+      background:rgba(10,10,10,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:100;}
+    .site-header .container{display:flex;align-items:center;justify-content:space-between;}
+    .site-brand{font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--text-muted);text-decoration:none;}
+    .site-brand span{color:var(--gold);}
+    .iso-badge{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);
+      border:1px solid var(--border-gold);padding:.22rem .65rem;border-radius:3px;letter-spacing:.12em;}
+    .hero{padding:5rem 0 4rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+    .hero-bg-number{position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
+      font-family:var(--font-display);font-size:clamp(12rem,28vw,26rem);font-weight:700;
+      color:var(--gold-faded);line-height:1;pointer-events:none;user-select:none;letter-spacing:-.05em;}
+    .hero-iso-id{font-family:var(--font-mono);font-size:.8rem;color:var(--gold);
+      letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
+    .hero-iso-id::after{content:'';display:inline-block;width:80px;height:1px;
+      background:linear-gradient(90deg,var(--gold),transparent);}
+    .hero-title{font-family:var(--font-display);font-size:clamp(2rem,5.5vw,3.8rem);font-weight:700;
+      text-transform:uppercase;letter-spacing:.04em;color:#fff;line-height:1.08;margin-bottom:1rem;}
+    .hero-subtitle{font-family:var(--font-mono);font-size:clamp(.85rem,2vw,1.05rem);
+      color:var(--gold);margin-bottom:2rem;letter-spacing:.06em;}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2.5rem;}
+    .tag{font-family:var(--font-display);font-size:.62rem;font-weight:500;letter-spacing:.14em;
+      text-transform:uppercase;padding:.28rem .7rem;border-radius:2px;border:1px solid;
+      display:inline-flex;align-items:center;gap:.35rem;}
+    .tag-gold{color:var(--gold);border-color:var(--border-gold);background:var(--gold-faded);}
+    .tag-green{color:var(--success);border-color:rgba(63,185,80,.25);background:rgba(63,185,80,.05);}
+    .tag-blue{color:var(--info);border-color:rgba(121,192,255,.25);background:rgba(121,192,255,.05);}
+    .tag-purple{color:var(--purple);border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.05);}
+    .tag-warn{color:var(--warn);border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.05);}
+    .hero-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+      background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;max-width:780px;}
+    .hero-meta-item{padding:1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .hero-meta-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-dim);margin-bottom:.25rem;}
+    .hero-meta-value{font-family:var(--font-display);font-size:.82rem;font-weight:500;
+      color:var(--text);letter-spacing:.04em;}
+    .hero-meta-value.gold{color:var(--gold);}
+    .hero-meta-value.green{color:var(--success);}
+    .hero-meta-value.blue{color:var(--info);}
+    .hero-meta-value.purple{color:var(--purple);}
+    .main-content{padding:0 0 7rem;}
+    .iso-section{padding:var(--section-gap) 0;border-bottom:1px solid var(--border);}
+    .iso-section:last-child{border-bottom:none;}
+    .section-header{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:2.5rem;}
+    .section-num{font-family:var(--font-display);font-size:6rem;font-weight:700;line-height:.85;
+      color:var(--gold-faded-2);letter-spacing:-.03em;user-select:none;min-width:100px;
+      text-align:right;padding-top:.1em;}
+    .section-title-group{padding-top:.3rem;}
+    .section-title{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.85rem);
+      font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:.5rem;}
+    .section-divider{height:2px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
+      border-radius:1px;margin-bottom:.5rem;}
+    .section-subtitle{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);
+      letter-spacing:.1em;text-transform:uppercase;}
+    .claim-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);
+      padding:1.75rem 2rem;border-radius:0 6px 6px 0;margin-bottom:1.5rem;font-size:1.03rem;line-height:1.75;}
+    .kill-condition{background:var(--surface-2);border:1px solid rgba(248,81,73,.25);
+      border-left:3px solid var(--danger);padding:1.25rem 1.75rem;border-radius:0 6px 6px 0;}
+    .kill-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--danger);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
+    .iso-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;}
+    .iso-table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:580px;}
+    .iso-table thead tr{background:var(--surface-2);border-bottom:1px solid var(--border-gold);}
+    .iso-table thead th{font-family:var(--font-display);font-size:.62rem;font-weight:600;
+      letter-spacing:.16em;text-transform:uppercase;padding:.9rem 1.1rem;text-align:left;}
+    .iso-table thead th.col-physics{color:var(--info);}
+    .iso-table thead th.col-theology{color:var(--purple);}
+    .iso-table thead th.col-label{color:var(--text-muted);}
+    .iso-table thead th.col-notes{color:var(--gold);}
+    .iso-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+    .iso-table tbody tr:last-child{border-bottom:none;}
+    .iso-table tbody tr:hover{background:rgba(212,175,55,.04);}
+    .iso-table tbody tr.key-row{background:rgba(212,175,55,.04);}
+    .iso-table td{padding:.9rem 1.1rem;vertical-align:top;line-height:1.58;}
+    .td-label{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--gold);
+      text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
+    .td-physics{color:var(--info);}
+    .td-theology{color:var(--purple);}
+    .td-notes{color:var(--text-muted);font-size:.82rem;}
+    .equation-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1.25rem 1.5rem;margin-bottom:1rem;overflow-x:auto;}
+    .equation-block .eq-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;}
+    .equation{font-family:var(--font-mono);font-size:1rem;color:var(--gold);line-height:1.8;white-space:pre-wrap;}
+    .eq-note{font-size:.82rem;color:var(--text-muted);margin-top:.5rem;line-height:1.55;}
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+    .info-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1.25rem;transition:border-color .2s;}
+    .info-card:hover{border-color:var(--border-gold);}
+    .info-card-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;
+      letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.4rem;}
+    .info-card-value{font-family:var(--font-display);font-size:1.5rem;font-weight:700;
+      color:var(--gold);line-height:1;margin-bottom:.3rem;}
+    .info-card-text{font-size:.82rem;color:var(--text-muted);line-height:1.55;}
+    .accent-block{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;
+      border-radius:0 6px 6px 0;margin-bottom:1rem;}
+    .accent-block.gold{border-left:3px solid var(--gold);}
+    .accent-block.green{border-left:3px solid var(--success);}
+    .accent-block.warn{border-left:3px solid var(--warn);}
+    .accent-block.blue{border-left:3px solid var(--info);}
+    .accent-block.danger{border-left:3px solid var(--danger);}
+    .accent-label{font-family:var(--font-display);font-size:.63rem;font-weight:600;
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
+    .accent-block.gold .accent-label{color:var(--gold);}
+    .accent-block.green .accent-label{color:var(--success);}
+    .accent-block.warn .accent-label{color:var(--warn);}
+    .accent-block.blue .accent-label{color:var(--info);}
+    .accent-block.danger .accent-label{color:var(--danger);}
+    .accent-block p{font-size:.9rem;line-height:1.65;}
+    .iso-quote{font-family:var(--font-quote);font-style:italic;font-size:1.05rem;color:var(--text);
+      padding:1.25rem 1.5rem;background:var(--gold-faded-2);border:1px solid var(--border-gold);
+      border-radius:6px;line-height:1.75;margin-bottom:1rem;}
+    .iso-quote-source{font-family:var(--font-mono);font-style:normal;font-size:.65rem;
+      letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:.5rem;display:block;}
+    .classification-banner{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;
+      text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;}
+    .classification-banner::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold);}
+    .classification-banner::after{content:'';display:inline-block;flex:1;height:1px;
+      background:linear-gradient(90deg,var(--border-gold),transparent);}
+    .test-grid{display:grid;gap:.75rem;margin-bottom:1.5rem;}
+    .test-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;}
+    .test-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:.1rem;}
+    .test-icon.pass{background:rgba(63,185,80,.12);color:var(--success);border:1px solid rgba(63,185,80,.25);}
+    .test-icon.fail{background:rgba(248,81,73,.12);color:var(--danger);border:1px solid rgba(248,81,73,.25);}
+    .test-icon.warn{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+    .test-label{font-family:var(--font-display);font-size:.68rem;font-weight:600;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.25rem;}
+    .test-text{font-size:.88rem;color:var(--text);line-height:1.6;}
+    .bidir-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:1.5rem;align-items:center;margin-bottom:2rem;}
+    .bidir-domain{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;}
+    .bidir-domain-label{font-family:var(--font-display);font-size:.6rem;font-weight:600;letter-spacing:.18em;
+      text-transform:uppercase;margin-bottom:.6rem;}
+    .bidir-domain.physics .bidir-domain-label{color:var(--info);}
+    .bidir-domain.theology .bidir-domain-label{color:var(--purple);}
+    .bidir-domain-text{font-size:.88rem;line-height:1.6;color:var(--text);}
+    .bidir-arrow{text-align:center;font-size:2rem;color:var(--gold);user-select:none;}
+    p{margin-bottom:1rem;}
+    p:last-child{margin-bottom:0;}
+    strong{color:#e6edf3;font-weight:600;}
+    .prose{font-size:.95rem;line-height:1.75;color:var(--text);margin-bottom:1.5rem;}
+    ul{padding-left:1.4rem;margin-bottom:1rem;}
+    ul li{margin-bottom:.4rem;font-size:.92rem;line-height:1.65;}
+    .page-footer{border-top:1px solid var(--border);padding:2.5rem 0;}
+    .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
+    .footer-meta{font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);line-height:1.9;}
+    .footer-meta span{color:var(--text-muted);}
+    .footer-back{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;padding:.5rem .8rem;border:1px solid var(--border);border-radius:4px;transition:all .2s;}
+    .footer-back:hover{color:var(--gold);border-color:var(--border-gold);}
+    .back-link{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;margin-bottom:2rem;transition:color .2s;}
+    .back-link:hover{color:var(--gold);}
+    .scroll-top{position:fixed;bottom:1.75rem;right:1.75rem;width:38px;height:38px;
+      background:var(--surface);border:1px solid var(--border);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;color:var(--text-muted);
+      cursor:pointer;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
+      font-size:.75rem;z-index:50;}
+    .scroll-top.visible{opacity:1;visibility:visible;}
+    .scroll-top:hover{border-color:var(--border-gold);color:var(--gold);}
+    code{font-family:var(--font-mono);font-size:.85em;color:var(--gold);
+      background:var(--gold-faded);padding:.1em .4em;border-radius:3px;}
+    .section-intro{font-size:.95rem;line-height:1.78;color:var(--text);margin-bottom:2rem;
+      padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+    .ref-block{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;
+      padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1rem;align-items:flex-start;}
+    .ref-icon{font-size:.85rem;color:var(--gold);margin-top:.1rem;flex-shrink:0;}
+    .ref-content{flex:1;}
+    .ref-title{font-family:var(--font-display);font-size:.78rem;font-weight:600;letter-spacing:.08em;
+      text-transform:uppercase;color:var(--text);margin-bottom:.2rem;}
+    .ref-detail{font-size:.8rem;color:var(--text-muted);line-height:1.55;}
+    .highlight-num{font-family:var(--font-display);font-size:2.5rem;font-weight:700;color:var(--gold);line-height:1;}
+    .star-row td:first-child::before{content:'★ ';color:var(--gold);}
+    @media(max-width:768px){
+      .container{padding:0 1.1rem;}
+      .hero{padding:3rem 0 2.5rem;}
+      :root{--section-gap:3.5rem;}
+      .section-header{grid-template-columns:1fr;gap:.4rem;}
+      .section-num{font-size:3.8rem;text-align:left;min-width:auto;line-height:1;}
+      .card-grid{grid-template-columns:1fr;}
+      .bidir-wrap{grid-template-columns:1fr;gap:.75rem;}
+      .bidir-arrow{transform:rotate(90deg);}
+    }
+    @media(max-width:520px){
+      .hero-title{font-size:1.9rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
+      <div class="iso-badge">ISO-031</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      <div aria-hidden="true" class="hero-bg-number">031</div>
+      <div class="hero-iso-id"><i class="fas fa-project-diagram"></i> ISO-031 &middot; Network Science &harr; Theology</div>
+      <h1 class="hero-title">Network Science &harr; Ecclesiology</h1>
+      <p class="hero-subtitle">Preferential Attachment Stated 1,950 Years Before Barab&aacute;si &mdash; Matthew 25:29</p>
+      <div class="hero-tags">
+        <span class="tag tag-gold"><i class="fas fa-vials"></i> Status: Testing</span>
+        <span class="tag tag-blue">Scale-Free Networks</span>
+        <span class="tag tag-purple">Acts &middot; Church Growth</span>
+        <span class="tag tag-green">Structural Isomorphism</span>
+        <span class="tag tag-gold">L3 Candidate</span>
+        <span class="tag tag-blue">Barab&aacute;si-Albert</span>
+        <span class="tag tag-purple">Matt 25:29</span>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">ID</div>
+          <div class="hero-meta-value gold">ISO-031</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Type</div>
+          <div class="hero-meta-value">Structural ISO</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain A</div>
+          <div class="hero-meta-value blue">Network Science</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain B</div>
+          <div class="hero-meta-value purple">Ecclesiology</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Confidence</div>
+          <div class="hero-meta-value green">High</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Level</div>
+          <div class="hero-meta-value gold">L3 Candidate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- SECTION 01: THE CLAIM -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">01</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Claim</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">What is being asserted — and how it could be falsified</div>
+          </div>
+        </div>
+
+        <div class="classification-banner">
+          <span>Structural Isomorphism &middot; Bidirectional &middot; Empirically Grounded &middot; Predictive</span>
+        </div>
+
+        <div class="claim-block">
+          <p>Scale-free network dynamics — power-law degree distributions, preferential attachment, small-world path lengths, hub vulnerability, and cascade failure — are <strong>structurally isomorphic</strong> to the organizational and growth dynamics of the early church as recorded in Acts. The isomorphism is not retrospective: Matthew 25:29 provides a verbal statement of the Barab&aacute;si-Albert preferential attachment mechanism <strong>1,950 years before the formal mathematical model</strong> was published (Barab&aacute;si &amp; Albert, Science 1999).</p>
+          <p>The early church grew from 120 (Acts 1:15) to thousands within weeks and to millions within three centuries. This growth pattern is empirically scale-free, not random. Power-law ministry distributions (few apostles/pastors, many believers), clustering in house churches, hub-and-spoke missionary networks, and resilience under targeted persecution are all predicted by network theory and independently documented in Acts.</p>
+        </div>
+
+        <div class="accent-block gold" style="margin-top:1.5rem;">
+          <div class="accent-label"><i class="fas fa-star"></i> The Key Insight</div>
+          <p>Barab&aacute;si and Albert (1999) showed that preferential attachment — "new nodes connect preferentially to well-connected nodes" — produces power-law degree distributions. Matthew 25:29 states: <em>"For to everyone who has, more shall be given, and he will have an abundance."</em> This is the preferential attachment mechanism stated with perfect precision in AD 30. Not an analogy. The same mechanism, described verbally.</p>
+        </div>
+
+        <div class="kill-condition" style="margin-top:1.5rem;">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
+          <p><strong>Primary:</strong> If church growth patterns followed random (Erd&#337;s-R&eacute;nyi) rather than scale-free (power-law) dynamics — i.e., if every believer had roughly the same number of connections and influence — the mapping would collapse. Historical and sociological evidence shows clear power-law structure in Christian network formation.</p>
+          <p style="margin-top:.75rem;"><strong>Secondary:</strong> If Acts 8 scatter (hub disruption) had produced network fragmentation rather than multiplication, the resilience-via-decentralization mapping would fail. The historical record confirms the opposite: "Those who had been scattered preached the word wherever they went" (Acts 8:4) — new clusters formed from distributed nodes.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 02: DOMAIN A — NETWORK SCIENCE -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">02</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Domain A — Network Science</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Scale-free networks, preferential attachment, small-world topology</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          Scale-free networks are characterized by a power-law degree distribution: P(k) ~ k<sup>-&gamma;</sup>. Most nodes have few connections; a small number of hubs have many. This structure is ubiquitous in the real world — the internet, citation networks, social networks, metabolic networks — because it arises from a universal generative mechanism: preferential attachment.
+        </div>
+
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book-open"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Barab&aacute;si &amp; Albert (1999) — Emergence of Scaling in Random Networks</div>
+            <div class="ref-detail">Science 286, 509–512. Showed that preferential attachment — new nodes connect to nodes proportional to their existing degree — produces power-law degree distributions. Named "the Barab&aacute;si-Albert model." Most cited paper in network science.</div>
+          </div>
+        </div>
+
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book-open"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Watts &amp; Strogatz (1998) — Small-World Networks</div>
+            <div class="ref-detail">Nature 393, 440–442. Characterized the small-world property: high clustering coefficient (tight local groups) combined with short average path length (fast global connectivity). Real social networks show both properties simultaneously.</div>
+          </div>
+        </div>
+
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book-open"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Granovetter (1973) — The Strength of Weak Ties</div>
+            <div class="ref-detail">American Journal of Sociology 78(6), 1360–1380. Demonstrated that weak ties (bridging connections between distinct clusters) are more important for information diffusion than strong ties within a cluster. Foundational for understanding how networks spread across boundaries.</div>
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Degree Distribution — Power Law</div>
+          <div class="equation">P(k) ~ k^(-γ)   where γ ≈ 2-3 for most real networks
+
+Preferential attachment probability:
+Π(kᵢ) = kᵢ / Σⱼ kⱼ
+
+New node connects to node i with probability proportional to kᵢ
+→ Rich-get-richer dynamics → power-law distribution</div>
+          <div class="eq-note">Hub nodes simultaneously concentrate the network's efficiency and its vulnerability: removing a random node has negligible effect; removing a hub can fragment the network (targeted attack problem, Albert et al. 2000).</div>
+        </div>
+
+        <div class="card-grid" style="margin-top:1.5rem;">
+          <div class="info-card">
+            <div class="info-card-label">Degree Distribution</div>
+            <div class="info-card-value">k<sup>-γ</sup></div>
+            <div class="info-card-text">Power law, not Gaussian. Most nodes few connections; few hubs many.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Clustering Coefficient</div>
+            <div class="info-card-value">High C</div>
+            <div class="info-card-text">Tight local clusters with dense internal connections (house church topology).</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Average Path Length</div>
+            <div class="info-card-value">O(log N)</div>
+            <div class="info-card-text">Short paths despite huge network size — "six degrees of separation."</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Hub Removal</div>
+            <div class="info-card-value">Fragile</div>
+            <div class="info-card-text">Targeted hub attack breaks the network; random node removal does not.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 03: DOMAIN B — ECCLESIOLOGY -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">03</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Domain B — Ecclesiology</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Acts church growth pattern, Matthew 25:29, hub apostles, weak-tie missionaries</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          The early church grew from 120 (Acts 1:15) to 3,000 (Acts 2:41) to 5,000 men plus households (Acts 4:4) to "great multitudes" (Acts 6:7) to empire-wide penetration within three centuries — a growth trajectory consistent with scale-free network dynamics, not random diffusion.
+        </div>
+
+        <div class="iso-quote">
+          For to everyone who has, more shall be given, and he will have an abundance; but from the one who does not have, even what he does have shall be taken away.
+          <span class="iso-quote-source">Matthew 25:29 — Preferential Attachment Mechanism, AD ~30</span>
+        </div>
+
+        <div class="iso-quote">
+          On that day a great persecution broke out against the church in Jerusalem, and all except the apostles were scattered throughout Judea and Samaria. Those who had been scattered preached the word wherever they went.
+          <span class="iso-quote-source">Acts 8:1,4 — Natural Experiment in Network Resilience</span>
+        </div>
+
+        <div class="prose">
+          The church's organizational structure in Acts exhibits all hallmarks of a scale-free small-world network: <strong>hub nodes</strong> (apostles, Paul) with disproportionate connection counts; <strong>tight clustering</strong> in house churches (Rom 16:5, Col 4:15, Philemon 1:2); <strong>weak tie bridges</strong> via missionary journeys spanning thousands of miles; and <strong>resilience via decentralization</strong> — persecution that targeted hub nodes (Acts 12: James executed, Peter imprisoned) paradoxically accelerated network growth through scatter-and-replant dynamics.
+        </div>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-label">Acts 1:15</div>
+            <div class="info-card-value">120</div>
+            <div class="info-card-text">Initial node count. Upper room community — a dense, high-clustering seed cluster.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Acts 2:41</div>
+            <div class="info-card-value">3,000</div>
+            <div class="info-card-text">After Pentecost. 25× growth in one event — hub-node influence at Pentecost (Peter).</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Acts 4:4</div>
+            <div class="info-card-value">5,000+</div>
+            <div class="info-card-text">Men only (households additional). Scale-free growth continues exponentially.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">By AD 300</div>
+            <div class="info-card-value">~10M</div>
+            <div class="info-card-text">Rodney Stark's estimate: ~10% of empire. Consistent with 40% per decade scale-free diffusion.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 04: 10-ROW MAPPING TABLE -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">04</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Structural Mapping</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">10 independent correspondences — ★ marks the key predictive insight</div>
+          </div>
+        </div>
+
+        <div class="iso-table-wrap">
+          <table class="iso-table">
+            <thead>
+              <tr>
+                <th class="col-label">#</th>
+                <th class="col-physics">Network Science (Domain A)</th>
+                <th class="col-theology">Ecclesiology (Domain B)</th>
+                <th class="col-notes">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">01</td>
+                <td class="td-physics">Scale-free degree distribution — power-law P(k) ~ k<sup>-γ</sup></td>
+                <td class="td-theology">Pareto ministry distribution — few apostles/pastors, many believers</td>
+                <td class="td-notes">Not Gaussian — extreme inequality of influence is the expected structure, not a bug</td>
+              </tr>
+              <tr class="key-row star-row">
+                <td class="td-label">02</td>
+                <td class="td-physics">Preferential attachment — new nodes connect proportional to existing degree</td>
+                <td class="td-theology">"To everyone who has, more shall be given" (Matt 25:29)</td>
+                <td class="td-notes">★ Exact verbal statement of the BA mechanism, 1,950 years before Barab&aacute;si (1999)</td>
+              </tr>
+              <tr>
+                <td class="td-label">03</td>
+                <td class="td-physics">Small-world path length — O(log N) steps across large network</td>
+                <td class="td-theology">Gospel reached Rome from Jerusalem in ~20 years — one generation</td>
+                <td class="td-notes">Short average path despite geographic scale; Jerusalem → Rome via weak-tie bridges</td>
+              </tr>
+              <tr>
+                <td class="td-label">04</td>
+                <td class="td-physics">Hub vulnerability — targeted removal of high-degree nodes fragments network</td>
+                <td class="td-theology">Persecution targeting leaders (Acts 12: James executed, Peter imprisoned)</td>
+                <td class="td-notes">Enemy strategy follows network science: attack the hubs</td>
+              </tr>
+              <tr>
+                <td class="td-label">05</td>
+                <td class="td-physics">Clustering coefficient — tightly-connected local subgraphs</td>
+                <td class="td-theology">House churches (Rom 16:5, Col 4:15, Philemon 1:2)</td>
+                <td class="td-notes">High local clustering is a defining feature of small-world topology</td>
+              </tr>
+              <tr>
+                <td class="td-label">06</td>
+                <td class="td-physics">Weak ties (Granovetter) — bridge nodes connecting distinct clusters</td>
+                <td class="td-theology">Paul's missionary network — Antioch to Asia Minor to Greece to Rome</td>
+                <td class="td-notes">Granovetter: weak ties (not strong ties) carry information across cluster boundaries</td>
+              </tr>
+              <tr>
+                <td class="td-label">07</td>
+                <td class="td-physics">Network resilience via distributed topology — no single point of failure</td>
+                <td class="td-theology">Acts 8:1-4 — scatter = growth; persecution produced new clusters</td>
+                <td class="td-notes">Distributed networks are robust to random node removal; paradoxical growth under attack</td>
+              </tr>
+              <tr>
+                <td class="td-label">08</td>
+                <td class="td-physics">Cascade failure — failure propagates through highly-connected nodes</td>
+                <td class="td-theology">Apostasy spread — "All in Asia turned away from me" (2 Tim 1:15)</td>
+                <td class="td-notes">Hub nodes carry both positive (growth) and negative (apostasy) cascades</td>
+              </tr>
+              <tr>
+                <td class="td-label">09</td>
+                <td class="td-physics">Bridge nodes — connect otherwise separate subgraphs</td>
+                <td class="td-theology">Apostolic function (Eph 4:11) — structural connectors between communities</td>
+                <td class="td-notes">Remove a bridge node and two clusters become disconnected; same in church history</td>
+              </tr>
+              <tr>
+                <td class="td-label">10</td>
+                <td class="td-physics">Network growth dynamics — cumulative advantage, accelerating attachment</td>
+                <td class="td-theology">Acts 2-28 growth pattern: 120 → 3,000 → 5,000 → "multiplied greatly" → empire-wide</td>
+                <td class="td-notes">Acts growth data fits scale-free model (Stark: ~40% per decade) not linear diffusion</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="accent-block warn">
+          <div class="accent-label"><i class="fas fa-balance-scale"></i> Honest Limitation</div>
+          <p>The mapping is structural, not quantitative. We cannot directly measure the degree distribution of the early church network from Acts. Rodney Stark's sociological reconstruction (The Rise of Christianity, 1996) provides estimates, but the underlying network data is not preserved in sufficient granularity to compute &gamma; directly. The correspondence is qualitative-structural, not numerically validated.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 05: THE MATTHEW 25:29 PREDICTION -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">05</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Matthew 25:29 Prediction</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Preferential attachment stated 1,950 years before Barabási</div>
+          </div>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-star"></i> The Core Evidence</div>
+          <p>Barab&aacute;si and Albert (1999) showed that networks acquire their scale-free structure through preferential attachment: a new node connecting to the network attaches to node <em>i</em> with probability proportional to k<sub>i</sub> (that node's existing degree). This is the mathematical formalization of "rich get richer" — the cumulative advantage mechanism. It explains why power-law distributions arise.</p>
+          <p style="margin-top:.75rem;">Matthew 25:29 states: <em>"For to everyone who has, more shall be given, and he will have an abundance; but from the one who does not have, even what he does have shall be taken away."</em></p>
+          <p style="margin-top:.75rem;">This is not a loose metaphor about wealth. It is a <strong>precise statement of the preferential attachment mechanism</strong>: nodes with higher degree acquire new connections at a higher rate; nodes with lower degree lose relative standing over time. Jesus was describing the generative mechanism of all scale-free networks in AD 30.</p>
+        </div>
+
+        <div class="bidir-wrap" style="margin-top:2rem;">
+          <div class="bidir-domain physics">
+            <div class="bidir-domain-label">Network Science Prediction</div>
+            <div class="bidir-domain-text">Preferential attachment (Π(k<sub>i</sub>) = k<sub>i</sub>/Σk<sub>j</sub>) produces power-law degree distributions. Well-connected nodes become hubs; poorly-connected nodes stay peripheral. The gap widens over time.</div>
+          </div>
+          <div class="bidir-arrow">⇄</div>
+          <div class="bidir-domain theology">
+            <div class="bidir-domain-label">Theological Prediction (Matt 25:29)</div>
+            <div class="bidir-domain-text">To him who has, more will be given. From him who does not have, even what he has will be taken. The principle of cumulative advantage — stated without knowing the underlying mathematics that makes it true.</div>
+          </div>
+        </div>
+
+        <div class="prose">
+          The reverse direction is also informative. Network science predicts that this mechanism is <em>domain-independent</em> — it operates in any growing network regardless of content. This explains why the Matthew 25:29 principle appears across domains: wealth, talent, social influence, spiritual gifts. It is not a moral judgment; it is a <strong>structural law</strong> of any network in which new connections form preferentially.
+        </div>
+      </section>
+
+      <!-- SECTION 06: ACTS 8 SCATTER TEST -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">06</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Acts 8 Scatter Test</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Natural experiment in network resilience under targeted attack</div>
+          </div>
+        </div>
+
+        <div class="accent-block green">
+          <div class="accent-label"><i class="fas fa-flask"></i> Natural Experiment</div>
+          <p>Acts 8:1: "On that day a great persecution broke out against the church in Jerusalem, and all except the apostles were scattered throughout Judea and Samaria."</p>
+          <p style="margin-top:.75rem;">Network science makes a specific prediction about what happens when you attempt to destroy a distributed network via hub targeting: if the non-hub nodes (the majority) are also removed from the original cluster, they don't disappear — they form <strong>new clusters</strong> wherever they land. This is precisely what happens. Acts 8:4: "Those who had been scattered preached the word wherever they went."</p>
+          <p style="margin-top:.75rem;">The persecution was designed to destroy the network. What it actually did was implement a <strong>forced network distribution operation</strong>: relocating peripheral nodes to new geographic areas, where they became seed nodes for new clusters. The enemy did not understand network topology.</p>
+        </div>
+
+        <div class="test-grid" style="margin-top:1.5rem;">
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Network Prediction — Hub Attack Does Not Destroy Distributed Networks</div>
+              <div class="test-text">Albert et al. (2000): scale-free networks are remarkably robust to random node removal, and their resilience depends on whether peripheral nodes can form new connections elsewhere. In Acts 8, the hub nodes (apostles) remained in Jerusalem; the peripheral nodes scattered. Peripheral nodes then formed new clusters — exactly the resilience prediction.</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Historical Outcome — Persecution Produced Growth, Not Elimination</div>
+              <div class="test-text">Philip preached in Samaria (Acts 8:5-8), establishing the Samaritan church. The Ethiopian eunuch was converted (Acts 8:26-39), extending the network to Africa. The persecution of 70 AD similarly produced the final global scatter of Jewish Christianity. Every concentrated persecution produced distributed growth — precisely as network theory predicts.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 07: SEPARATOR TESTS -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">07</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Separator Tests</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Swap test, bidirectional predictions, falsification</div>
+          </div>
+        </div>
+
+        <div class="test-grid">
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Swap Test — PASSED</div>
+              <div class="test-text">Replace "hub node" with "apostle" and "preferential attachment" with "Matthew 25:29" — the network dynamics are identical. Replace "scatter" with "persecution" and "new cluster formation" with "church planting" — the dynamics hold. The substitutions produce non-trivial, testable claims that are independently confirmed by Acts.</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Bidirectional Prediction A — Network → Theology</div>
+              <div class="test-text">Network science predicts that removing hub nodes should cause maximum damage to network connectivity. Acts records that persecution consistently targeted leaders (James, Peter, Paul). The enemy's strategy is predicted by network theory — and partially effective (Paul's imprisonment did slow the Aegean network) and partially counterproductive (distributed nodes scatter and replant).</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Bidirectional Prediction B — Theology → Network</div>
+              <div class="test-text">Acts 8:4 states that scattered believers "preached the word wherever they went." Theology predicts that peripheral nodes, when displaced, will become local hubs in their new location — carrying the message. Network science confirms: in distributed networks without central coordination, peripheral nodes establish new connections based on the information they carry. The gospel acts as a "connection protocol" that enables node-to-hub promotion.</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon warn"><i class="fas fa-exclamation"></i></div>
+            <div>
+              <div class="test-label">Limitation — Data Quality</div>
+              <div class="test-text">We cannot measure the actual degree distribution of the early church network from Acts. The power-law claim is plausible and supported by Rodney Stark's reconstruction, but the underlying network data is not preserved. The mapping remains structural-qualitative, not quantitative-empirical at the level of a computed &gamma;.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kill-condition">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Falsification Conditions</div>
+          <p><strong>Primary:</strong> If church growth patterns followed random (Erd&#337;s-R&eacute;nyi) network dynamics — if every believer had roughly the same number of connections and influence — the power-law mapping collapses. This requires demonstrating that the distribution of influence in early Christianity was Gaussian, not power-law.</p>
+          <p style="margin-top:.75rem;"><strong>Secondary:</strong> If Acts 8 persecution had fragmented the network rather than distributing it — i.e., if the scattered believers had not formed new communities but simply stopped practicing — the resilience mapping fails. The historical record is clear on this point: scatter produced new churches (Acts 8-11 documents the spread).</p>
+          <p style="margin-top:.75rem;"><strong>Tertiary:</strong> If Matthew 25:29 could be shown to have no relationship to network-growth mechanisms and instead refers purely to an eschatological judgment with no natural-process implications, the preferential-attachment identification would be weakened (though not falsified, since the mechanism can be true in both domains simultaneously).</p>
+        </div>
+      </section>
+
+    </div><!-- /.container -->
+  </main>
+
+  <footer class="page-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          <span>ID:</span> ISO-031 &nbsp;&bull;&nbsp;
+          <span>Type:</span> Structural Isomorphism &nbsp;&bull;&nbsp;
+          <span>Level:</span> L3 Candidate &nbsp;&bull;&nbsp;
+          <span>Status:</span> Testing &nbsp;&bull;&nbsp;
+          <span>Confidence:</span> High<br>
+          <span>Domain A:</span> Network Science &nbsp;&bull;&nbsp;
+          <span>Domain B:</span> Ecclesiology<br>
+          <span>Key Text:</span> Matthew 25:29 &nbsp;&bull;&nbsp; Acts 8:1-4 &nbsp;&bull;&nbsp; Acts 2-28<br>
+          <span>Key Refs:</span> Barab&aacute;si &amp; Albert (1999), Watts &amp; Strogatz (1998), Granovetter (1973), Stark (1996)
+        </div>
+        <a href="index.html" class="footer-back"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <script>
+    const btn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visible', window.scrollY > 400);
+    });
+  </script>
+
+</body>
+</html>

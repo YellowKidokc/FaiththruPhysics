@@ -1,540 +1,652 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MDA Coherence Diagnostic — Theophysics Research Initiative</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 <style>
 :root {
-  --bg:#080b0f; --bg2:#0d1117; --bg3:#111820; --border:#1e2d3d;
-  --amber:#f0a500; --amber2:#ffcc44; --red:#e05252; --green:#52c97a;
-  --blue:#4d9de0; --muted:#4a6278; --text:#c8d8e8; --text2:#8aa0b4;
-  --mono:'Share Tech Mono',monospace; --head:'Rajdhani',sans-serif; --body:'Crimson Pro',serif;
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);pointer-events:none;z-index:9999;}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
 
-header{border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(240,165,0,0.04) 0%,transparent 100%);}
-.logo{font-family:var(--head);font-weight:700;font-size:22px;letter-spacing:6px;color:var(--amber);text-transform:uppercase;}
-.logo span{color:var(--text2);font-weight:300;font-size:13px;letter-spacing:2px;display:block;margin-top:2px;}
-.nav{display:flex;gap:2px;}
-.nav button{background:none;border:1px solid transparent;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:2px;padding:7px 16px;cursor:pointer;text-transform:uppercase;transition:all .15s;}
-.nav button:hover,.nav button.active{border-color:var(--amber);color:var(--amber);background:rgba(240,165,0,0.06);}
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
 
-.tab{display:none;}.tab.active{display:block;}
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
 
-/* CALCULATOR */
-.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 65px);}
-.input-panel{border-right:1px solid var(--border);padding:28px;overflow-y:auto;}
-.result-panel{padding:28px 32px;overflow-y:auto;}
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
 
-.section-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
-.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
 
-.channel-block{background:var(--bg3);border:1px solid var(--border);padding:16px;margin-bottom:10px;}
-.channel-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
-.channel-num{font-family:var(--mono);font-size:10px;color:var(--muted);margin-right:8px;}
-.channel-name{font-family:var(--head);font-size:14px;font-weight:600;color:var(--text);letter-spacing:1px;}
-.channel-pair{font-family:var(--body);font-size:12px;color:var(--text2);font-style:italic;}
-.channel-computed{font-family:var(--mono);font-size:14px;color:var(--amber);font-weight:bold;}
-.channel-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
-.input-col label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:4px;}
-.input-col .proxy-label{font-family:var(--body);font-size:12px;color:var(--text2);margin-bottom:6px;line-height:1.4;font-style:italic;}
-.input-col input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:8px 10px;outline:none;transition:border-color .15s;}
-.input-col input:focus{border-color:var(--amber);}
-.c-label{color:var(--green)!important;}
-.d-label{color:var(--red)!important;}
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
 
-.source-toggle{background:none;border:none;cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:10px;padding:0;margin-top:8px;text-decoration:underline;text-decoration-color:var(--border);}
-.source-info{margin-top:6px;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.8;padding-left:8px;border-left:1px solid var(--border);display:none;}
-.source-info.visible{display:block;}
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
 
-.calc-btn{width:100%;background:var(--amber);color:var(--bg);border:none;font-family:var(--head);font-size:14px;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:14px;cursor:pointer;margin-top:8px;transition:all .15s;}
-.calc-btn:hover{background:var(--amber2);}
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
 
-/* RESULTS */
-.equation-display{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--amber);padding:20px 24px;margin-bottom:24px;font-family:var(--mono);font-size:13px;line-height:2;}
-.eq-line{display:flex;align-items:baseline;gap:10px;}
-.eq-label{color:var(--text2);width:240px;flex-shrink:0;font-size:11px;letter-spacing:1px;}
-.eq-formula{color:var(--text);}
-.eq-result{color:var(--amber2);font-size:15px;margin-left:auto;}
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
 
-.step{display:flex;gap:16px;margin-bottom:2px;opacity:0;transform:translateX(-10px);transition:all .3s ease;}
-.step.revealed{opacity:1;transform:translateX(0);}
-.step-num{font-family:var(--mono);font-size:10px;color:var(--muted);width:24px;flex-shrink:0;padding-top:3px;text-align:right;}
-.step-body{flex:1;background:var(--bg3);border:1px solid var(--border);padding:12px 16px;margin-bottom:6px;}
-.step-title{font-family:var(--head);font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;}
-.step-math{font-family:var(--mono);font-size:12px;color:var(--text);margin-bottom:4px;}
-.step-math .val{color:var(--amber2);}
-.step-math .neg{color:var(--red);}
-.step-note{font-family:var(--body);font-size:13px;color:var(--text2);font-style:italic;}
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
 
-.chi-display{font-family:var(--mono);font-size:52px;color:var(--amber);margin:16px 0 4px;letter-spacing:-2px;}
-.verdict-badge{display:inline-block;font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:5px 14px;border:1px solid;margin-top:8px;}
-.badge-above{color:var(--green);border-color:var(--green);background:rgba(82,201,122,0.08);}
-.badge-precarious{color:var(--amber);border-color:var(--amber);background:rgba(240,165,0,0.08);}
-.badge-below{color:var(--red);border-color:var(--red);background:rgba(224,82,82,0.08);}
-.badge-deep{color:#ff6b6b;border-color:#ff6b6b;background:rgba(255,107,107,0.08);}
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
 
-/* REGISTRY */
-.db-layout{padding:28px 32px;}
-.stats-row{display:flex;gap:24px;margin-bottom:20px;}
-.stat-box{background:var(--bg3);border:1px solid var(--border);padding:12px 18px;flex:1;}
-.stat-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;}
-.stat-val{font-family:var(--mono);font-size:22px;color:var(--amber);margin-top:2px;}
-.db-controls{display:flex;gap:12px;margin-bottom:24px;align-items:center;}
-.db-controls input,.db-controls select{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:11px;padding:8px 12px;outline:none;}
-.db-controls input:focus{border-color:var(--amber);}
-.signal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;}
-.signal-card{background:var(--bg3);border:1px solid var(--border);padding:16px 18px;position:relative;overflow:hidden;transition:border-color .15s;}
-.signal-card:hover{border-color:var(--amber);}
-.signal-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
-.signal-card.above::before{background:var(--green);}
-.signal-card.precarious::before{background:var(--amber);}
-.signal-card.below::before{background:var(--red);}
-.signal-card.deep::before{background:#ff6b6b;}
-.card-rank{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:4px;}
-.card-name{font-family:var(--head);font-size:16px;font-weight:600;color:var(--text);margin-bottom:2px;}
-.card-chi{font-family:var(--mono);font-size:20px;margin-bottom:4px;}
-.card-chi.pos{color:var(--amber2);}
-.card-chi.neg{color:var(--red);}
-.card-bar-bg{height:3px;background:var(--border);margin-bottom:8px;position:relative;}
-.card-bar-fill{height:100%;transition:width .6s ease;}
-.card-date{font-family:var(--mono);font-size:10px;color:var(--muted);float:right;margin-top:-24px;}
-.card-note{font-family:var(--body);font-size:12px;color:var(--text2);margin-top:8px;font-style:italic;line-height:1.5;}
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
 
-/* METHODOLOGY */
-.method-layout{max-width:800px;margin:0 auto;padding:40px 32px;font-family:var(--body);line-height:1.7;}
-.method-layout h2{font-family:var(--head);font-weight:600;font-size:20px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin:32px 0 12px;}
-.method-layout h2:first-child{margin-top:0;}
-.method-layout p{color:var(--text2);margin-bottom:12px;}
-.method-layout .eq{font-family:var(--mono);font-size:14px;color:var(--amber2);background:var(--bg3);border:1px solid var(--border);padding:14px 20px;margin:16px 0;}
-.method-layout table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
-.method-layout th{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);}
-.method-layout td{padding:8px 12px;border-bottom:1px solid rgba(30,45,61,0.5);color:var(--text2);}
-.method-layout td:first-child{color:var(--text);font-family:var(--mono);font-size:13px;}
-.warning-box{background:rgba(240,165,0,0.05);border:1px solid rgba(240,165,0,0.25);border-left:3px solid var(--amber);padding:14px 18px;margin:20px 0;font-size:14px;color:var(--text2);}
-.blue-box{background:rgba(77,157,224,0.04);border:1px solid rgba(77,157,224,0.3);border-left:3px solid var(--blue);padding:14px 18px;margin:20px 0;font-size:14px;color:var(--text2);}
-.claim-box{background:rgba(85,214,124,0.06);border:1px solid rgba(85,214,124,0.28);border-left:3px solid var(--green);padding:14px 18px;margin:20px 0;font-size:14px;color:var(--text2);}
-.related-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:16px 0 24px;}
-.related-grid a{display:block;border:1px solid var(--border);background:var(--bg3);padding:12px 14px;color:var(--blue);text-decoration:none;font-family:var(--mono);font-size:11px;line-height:1.45;}
-.related-grid a:hover{border-color:var(--amber);}
-.source-list a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(77,157,224,.4);}
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
 </style>
+<base target="_blank">
+
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
+
 </head>
 <body>
-<header>
-  <div class="logo">MDA<span>Moral Decline of America · Coherence Diagnostic v1.0</span></div>
-  <nav class="nav">
-    <button class="active" onclick="showTab('calc',this)">Calculator</button>
-    <button onclick="showTab('db',this)">Historical Registry</button>
-    <button onclick="showTab('method',this)">Methodology</button>
-  </nav>
+
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="tp-top">
+  <div class="tp-top-inner">
+    <a href="https://faiththruphysics.com" class="tp-brand">
+      <span class="tp-brand-chi">χ</span>
+      <span class="tp-brand-name">Faith thru Physics</span>
+    </a>
+    <span class="tp-div"></span>
+    <div class="tp-nav-links">
+      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
+      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
+      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
+    </div>
+    <span class="tp-div"></span>
+    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
+      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
+        Series <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="tp-subdomain-panel" role="menu">
+        <div class="tp-subdomain-grid">
+          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
+          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
+          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
+          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
+          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
+          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
+          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
+          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
+        </div>
+      </div>
+    </div>
+    <span class="tp-spacer"></span>
+    <div class="tp-levels" role="tablist">
+      <button class="tp-level active" data-level="highschool">High School</button>
+      <button class="tp-level" data-level="college">College</button>
+      <button class="tp-level" data-level="phd">PhD</button>
+    </div>
+    <span class="tp-div"></span>
+    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
+  </div>
 </header>
 
-<!-- ══════════════ CALCULATOR ══════════════ -->
-<div id="tab-calc" class="tab active">
-<div class="calc-layout">
-<div class="input-panel">
-  <div class="section-label">Society Identity</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-    <div><label style="display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Name</label>
-    <input type="text" id="soc-name" placeholder="e.g. United States 2024" value="United States 2024" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;outline:none;"></div>
-    <div><label style="display:block;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">Date</label>
-    <input type="text" id="soc-date" placeholder="2024" value="2024" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;outline:none;"></div>
-  </div>
 
-  <div class="section-label">Ten-Law Channel Inputs</div>
-  <div id="channel-inputs"></div>
-  <button class="calc-btn" onclick="runMDA()">Compute χ<sub>MDA</sub></button>
-  <button class="calc-btn" style="background:none;border:1px solid var(--border);color:var(--text2);margin-top:4px;font-size:12px;letter-spacing:2px;" onclick="resetInputs()">Reset to Sourced Data</button>
-</div>
-
-<div class="result-panel">
-  <div class="section-label">Formal Structure</div>
-  <div class="equation-display">
-    <div class="eq-line"><span class="eq-label">Channel Score (per Law)</span><span class="eq-formula">Lᵢ = log( (Cᵢ + ε) / (Dᵢ + ε) )</span></div>
-    <div class="eq-line"><span class="eq-label">KL Divergence Analog</span><span class="eq-formula">D_KL(P‖Q) = Σ P(x) log( P(x)/Q(x) )</span></div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-    <div class="eq-line"><span class="eq-label">Aggregate Coherence</span><span class="eq-formula">χ_MDA = (1/N) Σ wᵢ · Lᵢ</span></div>
-    <div class="eq-line"><span class="eq-label">Dynamics (Rate)</span><span class="eq-formula">dS_m/dt = σ − W/T</span></div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-    <div class="eq-line"><span class="eq-label" style="font-size:10px;color:var(--muted);">Lᵢ maps to KL divergence · χ maps to aggregate coherence · dS/dt tracks dynamics</span></div>
-  </div>
-
-  <div class="section-label">Step-by-Step Derivation</div>
-  <div id="steps"><div style="font-family:var(--mono);font-size:12px;color:var(--muted);padding:20px 0;">Enter values and click Compute χ<sub>MDA</sub></div></div>
-  <div id="final-result" style="display:none;">
-    <div class="section-label">Result</div>
-    <div class="chi-display" id="chi-out">—</div>
-    <div id="verdict-out"></div>
-    <div style="margin-top:16px;font-family:var(--body);font-size:14px;color:var(--text2);max-width:480px;line-height:1.6;" id="interp-out"></div>
+<!-- ═══════ MTL READER BAR ═══════ -->
+<div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
+  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
+  <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
+    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
   </div>
 </div>
-</div>
-</div>
-<!-- ══════════════ HISTORICAL REGISTRY ══════════════ -->
-<div id="tab-db" class="tab">
-<div class="db-layout">
-  <div class="stats-row" id="db-stats"></div>
-  <div class="db-controls">
-    <input type="text" id="db-search" placeholder="Search societies..." oninput="renderDB()">
-    <select onchange="dbSort=this.value;renderDB()">
-      <option value="chi">Sort: Coherence Score</option>
-      <option value="date">Sort: Date</option>
-      <option value="name">Sort: Name</option>
-    </select>
+
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-class-nav">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
+    </div>
+    <a href="#" class="tp-class-nav">Next →</a>
   </div>
-  <div class="signal-grid" id="db-grid"></div>
-</div>
 </div>
 
-<!-- ══════════════ METHODOLOGY ══════════════ -->
-<div id="tab-method" class="tab">
-<div class="method-layout">
-
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+  <h1>MDA Coherence Diagnostic — Theophysics Research Initiative</h1>
+  <p class="subtitle"></p>
+  <div class="byline">Theophysics Research Initiative</div>
+  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=rigor%2FRigor-MDA" data-audio-slug="rigor/Rigor-MDA" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=rigor" data-series-slug="rigor">
+<div class="tp-read-aloud" data-mode="tts">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="tpMainAudio" preload="none"></audio>
+<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+<div class="tp-fill" id="tpMainFill"></div>
+</div>
+<span class="tp-time" id="tpMainTime">0:00</span>
+<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
+<option value="0.75">0.75x</option>
+<option selected="" value="1">1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+<option value="1.75">1.75x</option>
+<option value="2">2x</option>
+</select>
+<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
+<i class="fas fa-volume-up"></i>
+</button>
+</div>
+<div class="tp-pair">
+<div class="tp-half tp-deep" data-mode="deep">
+<div class="tp-dot"></div>
+<span class="tp-label">Deep Dive</span>
+<audio id="tpDeepAudio" preload="none"></audio>
+<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+<div class="tp-fill" id="tpDeepFill"></div>
+</div>
+<span class="tp-time" id="tpDeepTime">0:00</span>
+</div>
+<div class="tp-half tp-debate" data-mode="podcast">
+<div class="tp-dot"></div>
+<span class="tp-label">Podcast</span>
+<audio id="tpDebateAudio" preload="none"></audio>
+<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+<div class="tp-fill" id="tpDebateFill"></div>
+</div>
+<span class="tp-time" id="tpDebateTime">0:00</span>
+</div>
+<div class="tp-half tp-critique" data-mode="critique">
+<div class="tp-dot"></div>
+<span class="tp-label">Critique</span>
+<audio id="tpCritiqueAudio" preload="none"></audio>
+<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+<div class="tp-fill" id="tpCritiqueFill"></div>
+</div>
+<span class="tp-time" id="tpCritiqueTime">0:00</span>
+</div>
+</div>
+<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+</div>
+</div>
+  
 <h2>The Measurement Isomorphism</h2>
 <p>The MDA Coherence Diagnostic is not meant to be a decorative equation. Its serious claim is that societal coherence can be treated as a signal-versus-noise problem and scored with a transparent log-ratio diagnostic. That does not prove the full theology or the full historical interpretation by itself, but it gives the work a falsifiable mathematical spine.</p>
-<div class="eq">Lᵢ = log( (Cᵢ + ε) / (Dᵢ + ε) ) &nbsp;&nbsp;[per channel]<br>χ_MDA = (1/N) · Σ wᵢ · Lᵢ &nbsp;&nbsp;[aggregate]</div>
+<div class="eq">Lᵢ = log( (Cᵢ + ε) / (Dᵢ + ε) )   [per channel]<br/>χ_MDA = (1/N) · Σ wᵢ · Lᵢ   [aggregate]</div>
 <p>The log-ratio form belongs to the same mathematical family as Kullback-Leibler divergence and Shannon signal-to-noise reasoning. The claim here is structural transfer: constructive proxies are treated as signal, destructive proxies as noise, and the aggregate score tests whether the mapping has predictive weight in a different measurement domain.</p>
-
 <div class="claim-box">
-  <strong style="font-family:var(--head);letter-spacing:2px;color:var(--green);">WHY THIS DESERVES TESTING</strong><br><br>
+<strong style="font-family:var(--head);letter-spacing:2px;color:var(--green);">WHY THIS DESERVES TESTING</strong><br/><br/>
   The equation has merit if it does four things at once: it compresses many social indicators without hiding them, generates predictions before the result is known, distinguishes model output from proof, and can be killed by null tests. That is the standard this page now points toward. The argument is not "trust the equation." The argument is "this equation is structured enough to be tested seriously."
 </div>
-
 <h2>Why Log-Ratio, Not Linear Difference</h2>
 <p>A linear difference (C − D) would weight a society where C=100 and D=90 the same as one where C=10 and D=0. The log-ratio captures the <em>proportion</em>, not the absolute gap. This matches information theory: what matters is the signal-to-noise ratio, not the absolute signal power. A society with modest institutions that are internally coherent (low C, lower D) scores higher than a society with massive institutions that are deeply corrupted (high C, higher D). This is physically correct.</p>
-
 <h2>The Ten-Law Channel Decomposition</h2>
 <p>The diagnostic decomposes societal coherence into ten channels, each corresponding to a fundamental law of physics. This is the framework's distinctive structural claim: that the ten fundamental forces and principles of physics each generate a distinct dimension of societal coherence.</p>
 <table>
-  <tr><th>#</th><th>Physics</th><th>Societal Channel</th><th>Constructive Proxy</th><th>Destructive Proxy</th></tr>
-  <tr><td>01</td><td>Gravitation</td><td>Community binding vs. isolation</td><td>Civic org membership, community participation</td><td>Social isolation indices, loneliness prevalence</td></tr>
-  <tr><td>02</td><td>Motion (F=ma)</td><td>Behavioral momentum and change</td><td>Recovery participation, behavioral health access</td><td>Addiction rates, recidivism</td></tr>
-  <tr><td>03</td><td>Electromagnetism</td><td>Signal integrity in discourse</td><td>Media trust, press freedom indices</td><td>Misinformation prevalence, propaganda saturation</td></tr>
-  <tr><td>04</td><td>Strong Force</td><td>Close-bond binding strength</td><td>Marriage rates, family stability</td><td>Divorce rates, single-parent households</td></tr>
-  <tr><td>05</td><td>Thermodynamics</td><td>Consequence functioning</td><td>Rule of law index, legal coherence</td><td>Recidivism, debt-to-income, bankruptcy rates</td></tr>
-  <tr><td>06</td><td>Information (Shannon)</td><td>Knowledge transmission fidelity</td><td>Functional literacy, educational attainment</td><td>Information overload, media consumption hours</td></tr>
-  <tr><td>07</td><td>Quantum</td><td>Commitment under uncertainty</td><td>Religious attendance, charitable giving</td><td>Religious disaffiliation rates</td></tr>
-  <tr><td>08</td><td>Relativity</td><td>Perspective-taking across difference</td><td>Cross-group trust, social mobility</td><td>Political polarization indices</td></tr>
-  <tr><td>09</td><td>Weak Force</td><td>Moral conservation (directional)</td><td>Intergenerational household stability</td><td>Family structure dissolution rates</td></tr>
-  <tr><td>10</td><td>Coherence</td><td>Overall systemic integration</td><td>Social cohesion indices, well-being scores</td><td>Fragmentation composites (Gini + distrust + isolation)</td></tr>
+<tr><th>#</th><th>Physics</th><th>Societal Channel</th><th>Constructive Proxy</th><th>Destructive Proxy</th></tr>
+<tr><td>01</td><td>Gravitation</td><td>Community binding vs. isolation</td><td>Civic org membership, community participation</td><td>Social isolation indices, loneliness prevalence</td></tr>
+<tr><td>02</td><td>Motion (F=ma)</td><td>Behavioral momentum and change</td><td>Recovery participation, behavioral health access</td><td>Addiction rates, recidivism</td></tr>
+<tr><td>03</td><td>Electromagnetism</td><td>Signal integrity in discourse</td><td>Media trust, press freedom indices</td><td>Misinformation prevalence, propaganda saturation</td></tr>
+<tr><td>04</td><td>Strong Force</td><td>Close-bond binding strength</td><td>Marriage rates, family stability</td><td>Divorce rates, single-parent households</td></tr>
+<tr><td>05</td><td>Thermodynamics</td><td>Consequence functioning</td><td>Rule of law index, legal coherence</td><td>Recidivism, debt-to-income, bankruptcy rates</td></tr>
+<tr><td>06</td><td>Information (Shannon)</td><td>Knowledge transmission fidelity</td><td>Functional literacy, educational attainment</td><td>Information overload, media consumption hours</td></tr>
+<tr><td>07</td><td>Quantum</td><td>Commitment under uncertainty</td><td>Religious attendance, charitable giving</td><td>Religious disaffiliation rates</td></tr>
+<tr><td>08</td><td>Relativity</td><td>Perspective-taking across difference</td><td>Cross-group trust, social mobility</td><td>Political polarization indices</td></tr>
+<tr><td>09</td><td>Weak Force</td><td>Moral conservation (directional)</td><td>Intergenerational household stability</td><td>Family structure dissolution rates</td></tr>
+<tr><td>10</td><td>Coherence</td><td>Overall systemic integration</td><td>Social cohesion indices, well-being scores</td><td>Fragmentation composites (Gini + distrust + isolation)</td></tr>
 </table>
-
 <h2>The Weight Problem (Honest Statement)</h2>
 <p>The current implementation uses equal weights (wᵢ = 1 for all channels). This is a deliberate methodological choice, not an oversight. The framework predicts that the weights should be non-arbitrary — that the ten laws are not interchangeable and some channels should carry more diagnostic weight than others. However, until the weights are either derived from the mathematical structure or empirically fitted and shown to be unique, equal weighting is the most conservative assumption. Any weight tuning is an additional degree of freedom that must be justified, not assumed.</p>
-
 <h2>The Dynamics Equation</h2>
 <p>The channel scores Lᵢ describe the <em>state</em> — where a society is. The dynamics equation describes the <em>motion</em> — how fast it is moving toward coherence or collapse:</p>
 <div class="eq">dS_m/dt = σ − W/T</div>
 <p>Where σ is the rate of entropy production (damage accumulation), W is restorative work (grace, reform, renewal), and T is institutional resistance (bureaucratic friction, cultural inertia, system mass). This is inherited from irreversible thermodynamics (Onsager, 1931; Prigogine, 1967) and is not original to this framework.</p>
 <p>The critical prediction: when T is large, even significant restorative work W is divided down to near-zero effectiveness. This explains why large empires can rot internally while surface statistics remain stable, and why restoration in heavily institutionalized societies requires disproportionate force — either spiritual renewal or existential threat.</p>
-
 <h2>The Permutation Test (Proposed)</h2>
 <p>The decisive empirical test for this framework is whether the ten-law channel decomposition outperforms arbitrary groupings of the same proxy variables. The protocol:</p>
 <table>
-  <tr><th>Step</th><th>Procedure</th></tr>
-  <tr><td>1</td><td>Gather all proxy variables across all ten channels</td></tr>
-  <tr><td>2</td><td>Score χ_MDA using the ten-law channel assignments</td></tr>
-  <tr><td>3</td><td>Randomly shuffle the same variables into ten arbitrary buckets</td></tr>
-  <tr><td>4</td><td>Score the same way, record predictions for collapse/recovery/instability</td></tr>
-  <tr><td>5</td><td>Repeat 1,000 times to build a null distribution</td></tr>
-  <tr><td>6</td><td>Compare: if the ten-law grouping sits outside the 95th percentile of the null distribution, the channel decomposition is doing statistically significant structural work</td></tr>
+<tr><th>Step</th><th>Procedure</th></tr>
+<tr><td>1</td><td>Gather all proxy variables across all ten channels</td></tr>
+<tr><td>2</td><td>Score χ_MDA using the ten-law channel assignments</td></tr>
+<tr><td>3</td><td>Randomly shuffle the same variables into ten arbitrary buckets</td></tr>
+<tr><td>4</td><td>Score the same way, record predictions for collapse/recovery/instability</td></tr>
+<tr><td>5</td><td>Repeat 1,000 times to build a null distribution</td></tr>
+<tr><td>6</td><td>Compare: if the ten-law grouping sits outside the 95th percentile of the null distribution, the channel decomposition is doing statistically significant structural work</td></tr>
 </table>
 <p>This test has not yet been run. The framework makes an explicit prediction: the ten-law grouping will outperform random. If it does not, the framework fails its own test and the channel decomposition should be abandoned.</p>
-
 <h2>Five Falsification Criteria</h2>
 <p>Written before testing, not after. The framework is killed if any of the following hold:</p>
 <table>
-  <tr><th>#</th><th>Criterion</th><th>What It Would Mean</th></tr>
-  <tr><td>F1</td><td>Ten-law grouping does not outperform random groupings in the permutation test</td><td>The channel decomposition adds no structural information beyond arbitrary categorization</td></tr>
-  <tr><td>F2</td><td>Historical reversal cases (Josiah, Great Awakening, Meiji) do not score below threshold before reversal and above after</td><td>The threshold concept has no historical validity</td></tr>
-  <tr><td>F3</td><td>The 2024 US prediction (χ ≈ 0.27, below threshold) is falsified by measurable self-correction through administrative reform alone within 10 years</td><td>The framework's central prediction about the nature of recovery is wrong</td></tr>
-  <tr><td>F4</td><td>Channel scores show no temporal correlation — past values do not predict future values within the same channel</td><td>The channels are not measuring persistent structural features</td></tr>
-  <tr><td>F5</td><td>A society is identified that self-corrected from below χ = 0.35 through purely administrative/political means without metaphysical renewal or existential threat</td><td>The threshold is not a boundary requiring the mechanism the framework claims</td></tr>
+<tr><th>#</th><th>Criterion</th><th>What It Would Mean</th></tr>
+<tr><td>F1</td><td>Ten-law grouping does not outperform random groupings in the permutation test</td><td>The channel decomposition adds no structural information beyond arbitrary categorization</td></tr>
+<tr><td>F2</td><td>Historical reversal cases (Josiah, Great Awakening, Meiji) do not score below threshold before reversal and above after</td><td>The threshold concept has no historical validity</td></tr>
+<tr><td>F3</td><td>The 2024 US prediction (χ ≈ 0.27, below threshold) is falsified by measurable self-correction through administrative reform alone within 10 years</td><td>The framework's central prediction about the nature of recovery is wrong</td></tr>
+<tr><td>F4</td><td>Channel scores show no temporal correlation — past values do not predict future values within the same channel</td><td>The channels are not measuring persistent structural features</td></tr>
+<tr><td>F5</td><td>A society is identified that self-corrected from below χ = 0.35 through purely administrative/political means without metaphysical renewal or existential threat</td><td>The threshold is not a boundary requiring the mechanism the framework claims</td></tr>
 </table>
-
 <div class="warning-box">
-  <strong style="font-family:var(--head);letter-spacing:2px;color:var(--amber);">METHODOLOGICAL HONESTY</strong><br><br>
+<strong style="font-family:var(--head);letter-spacing:2px;color:var(--amber);">METHODOLOGICAL HONESTY</strong><br/><br/>
   This framework measures constructive-regime versus destructive-regime dominance across observable proxies. It does not measure sin, grace, the Holy Spirit, or any spiritual state directly. The channel labels reference physics and theology because the framework claims structural isomorphism between these domains — but the <em>measurements</em> are sociological and economic, not spiritual. A high score does not mean a society is righteous. A low score does not mean a society is damned. It means the observable proxies for constructive coordination are being outpaced by the observable proxies for destructive dissolution. The explanation for <em>why</em> this is happening is a separate inquiry from the measurement that <em>it</em> is happening.
 </div>
-
 <h2>Source Anchors</h2>
 <p class="source-list">The mathematical scaffolding is anchored in Claude Shannon's information theory, Kullback and Leibler's information divergence, and Onsager's irreversible-process work. The MDA implementation is a proposed diagnostic transfer, not a claim that those authors endorsed this social model.</p>
 <table>
-  <tr><th>Anchor</th><th>Use in This Page</th><th>Reference</th></tr>
-  <tr><td>Shannon</td><td>Signal/noise framing and information-channel intuition</td><td><a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/j.1538-7305.1948.tb01338.x">A Mathematical Theory of Communication</a></td></tr>
-  <tr><td>Kullback-Leibler</td><td>Log-ratio divergence analogy for constructive/destructive regime dominance</td><td><a href="https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-22/issue-1/On-Information-and-Sufficiency/10.1214/aoms/1177729694.full">On Information and Sufficiency</a></td></tr>
-  <tr><td>Onsager</td><td>Irreversible-process analogy for restoration, resistance, and system motion</td><td><a href="https://link.aps.org/doi/10.1103/PhysRev.37.405">Reciprocal Relations in Irreversible Processes I</a></td></tr>
-  <tr><td>MDA Evidence</td><td>Public data anchors and workbook traceability for the social indicators</td><td><a href="/mda/03-evidence-chronology/MDA-005-empirical-evidence.html">MDA-005</a>, <a href="/mda/02-method-and-metrics/MDA-040-statistical-synthesis.html">MDA-040</a>, <a href="/mda/02-method-and-metrics/MDA-041-statistical-spine.html">MDA-041</a></td></tr>
+<tr><th>Anchor</th><th>Use in This Page</th><th>Reference</th></tr>
+<tr><td>Shannon</td><td>Signal/noise framing and information-channel intuition</td><td><a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/j.1538-7305.1948.tb01338.x">A Mathematical Theory of Communication</a></td></tr>
+<tr><td>Kullback-Leibler</td><td>Log-ratio divergence analogy for constructive/destructive regime dominance</td><td><a href="https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-22/issue-1/On-Information-and-Sufficiency/10.1214/aoms/1177729694.full">On Information and Sufficiency</a></td></tr>
+<tr><td>Onsager</td><td>Irreversible-process analogy for restoration, resistance, and system motion</td><td><a href="https://link.aps.org/doi/10.1103/PhysRev.37.405">Reciprocal Relations in Irreversible Processes I</a></td></tr>
+<tr><td>MDA Evidence</td><td>Public data anchors and workbook traceability for the social indicators</td><td><a href="/mda/03-evidence-chronology/MDA-005-empirical-evidence.html">MDA-005</a>, <a href="/mda/02-method-and-metrics/MDA-040-statistical-synthesis.html">MDA-040</a>, <a href="/mda/02-method-and-metrics/MDA-041-statistical-spine.html">MDA-041</a></td></tr>
 </table>
-
 <h2>Related Work</h2>
 <div class="related-grid">
-  <a href="/mda/03-evidence-chronology/MDA-005-empirical-evidence.html">MDA-005 empirical evidence packet</a>
-  <a href="/mda/02-method-and-metrics/MDA-038-coherence-metric.html">MDA-038 coherence metric</a>
-  <a href="/mda/02-method-and-metrics/MDA-040-statistical-synthesis.html">MDA-040 statistical synthesis</a>
-  <a href="/mda/02-method-and-metrics/MDA-041-statistical-spine.html">MDA-041 statistical spine</a>
-  <a href="/proof-explorer/mda-grades.html">Proof explorer grades</a>
-  <a href="/data-viz/MORAL_DECAY_MASTER.html">Master data visualization</a>
+<a href="/mda/03-evidence-chronology/MDA-005-empirical-evidence.html">MDA-005 empirical evidence packet</a>
+<a href="/mda/02-method-and-metrics/MDA-038-coherence-metric.html">MDA-038 coherence metric</a>
+<a href="/mda/02-method-and-metrics/MDA-040-statistical-synthesis.html">MDA-040 statistical synthesis</a>
+<a href="/mda/02-method-and-metrics/MDA-041-statistical-spine.html">MDA-041 statistical spine</a>
+<a href="/proof-explorer/mda-grades.html">Proof explorer grades</a>
+<a href="/data-viz/MORAL_DECAY_MASTER.html">Master data visualization</a>
 </div>
-
 <div class="blue-box">
-  <strong style="font-family:var(--head);letter-spacing:2px;color:var(--blue);">CHALLENGE THIS FRAMEWORK</strong><br><br>
-  If you believe a proxy variable is miscalibrated, a channel assignment is wrong, a historical case has been misscored, or the entire ten-law decomposition is doing no real work — we want to know. This framework is designed to be falsifiable. The permutation test is the kill switch. A challenge that holds up improves the system. A challenge that does not hold up strengthens the result.<br><br>
-  <span style="font-family:var(--mono);font-size:12px;color:var(--text2);">Contact: &nbsp;</span>
-  <a href="mailto:david@faiththruphysics.com" style="font-family:var(--mono);font-size:13px;color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(77,157,224,0.4);">david@faiththruphysics.com</a>
-  <br><span style="font-family:var(--mono);font-size:11px;color:var(--muted);display:block;margin-top:8px;">Include: channel in question · proxy variable · your proposed alternative · reasoning · sources</span>
+<strong style="font-family:var(--head);letter-spacing:2px;color:var(--blue);">CHALLENGE THIS FRAMEWORK</strong><br/><br/>
+  If you believe a proxy variable is miscalibrated, a channel assignment is wrong, a historical case has been misscored, or the entire ten-law decomposition is doing no real work — we want to know. This framework is designed to be falsifiable. The permutation test is the kill switch. A challenge that holds up improves the system. A challenge that does not hold up strengthens the result.<br/><br/>
+<span style="font-family:var(--mono);font-size:12px;color:var(--text2);">Contact:  </span>
+<a href="mailto:david@faiththruphysics.com" style="font-family:var(--mono);font-size:13px;color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(77,157,224,0.4);">david@faiththruphysics.com</a>
+<br/><span style="font-family:var(--mono);font-size:11px;color:var(--muted);display:block;margin-top:8px;">Include: channel in question · proxy variable · your proposed alternative · reasoning · sources</span>
 </div>
-
 <p style="margin-top:32px;font-size:13px;color:var(--muted);font-family:var(--mono);">MDA Coherence Diagnostic v1.0 · David Lowe (POF 2828) · June 2026 · Theophysics Research Initiative · faiththruphysics.com</p>
-</div>
-</div>
-<script>
-// ══════════════════════════════════════════════════════════
-// CHANNEL DEFINITIONS
-// ══════════════════════════════════════════════════════════
-const CHANNELS = [
-  {id:1,law:"Gravitation",pair:"Sin \u2194 Grace",
-   cLabel:"Community binding (civic org membership %)",dLabel:"Social isolation (% adults with no close friends)",
-   cVal:42,dVal:58,cSrc:"AARP Foundation Social Isolation Survey, 2024",dSrc:"Survey Center on American Life, 2024"},
-  {id:2,law:"Motion",pair:"Will \u2194 Repentance",
-   cLabel:"Recovery program participation (per 100k)",dLabel:"Active addiction prevalence (per 100k)",
-   cVal:3200,dVal:7400,cSrc:"SAMHSA NSDUH, 2023",dSrc:"SAMHSA NSDUH, 2023"},
-  {id:3,law:"Electromagnetism",pair:"Truth \u2194 Deception",
-   cLabel:"Media trust (% great deal / fair amount)",dLabel:"Misinformation weekly encounter (%)",
-   cVal:32,dVal:72,cSrc:"Gallup Media Trust Survey, 2024",dSrc:"Pew Research Center, 2024"},
-  {id:4,law:"Strong Force",pair:"Love \u2194 Captivity",
-   cLabel:"Marriage rate (per 1,000 pop)",dLabel:"Single-parent household rate (%)",
-   cVal:6.0,dVal:34,cSrc:"CDC/NCHS National Vital Statistics, 2023",dSrc:"Census Bureau ACS, 2023"},
-  {id:5,law:"Thermodynamics",pair:"Judgment \u2194 Heat Death",
-   cLabel:"Rule of law index (0\u20131 scale, \u00d7100)",dLabel:"Recidivism rate within 3 years (%)",
-   cVal:69,dVal:66,cSrc:"World Justice Project, 2024",dSrc:"Bureau of Justice Statistics, 2023"},
-  {id:6,law:"Information",pair:"Logos \u2194 Chaos",
-   cLabel:"Functional literacy rate (%)",dLabel:"Daily media consumption (hrs \u00d710)",
-   cVal:79,dVal:113,cSrc:"NCES Adult Literacy Assessment, 2023",dSrc:"Nielsen Total Audience Report, 2024"},
-  {id:7,law:"Quantum",pair:"Faith \u2194 Doubt",
-   cLabel:"Weekly religious attendance (%)",dLabel:"Religious 'nones' (%)",
-   cVal:24,dVal:30,cSrc:"Gallup Religion Survey, 2024",dSrc:"Pew Religious Landscape, 2024"},
-  {id:8,law:"Relativity",pair:"Grace \u2194 Frame Lock",
-   cLabel:"Cross-group social trust (%)",dLabel:"Political polarization index (0\u2013100)",
-   cVal:31,dVal:72,cSrc:"General Social Survey, 2023",dSrc:"Pew Political Polarization, 2024"},
-  {id:9,law:"Weak Force",pair:"Moral Conservation",
-   cLabel:"Intergenerational household stability (%)",dLabel:"Children in single-parent homes (%)",
-   cVal:18,dVal:27,cSrc:"Census Multigenerational Households, 2023",dSrc:"Census Bureau ACS, 2023"},
-  {id:10,law:"Coherence",pair:"Christ \u2194 Decoherence",
-   cLabel:"Social cohesion score (0\u2013100)",dLabel:"Fragmentation composite (Gini+distrust+isolation)",
-   cVal:38,dVal:67,cSrc:"OECD Better Life Index + Social Capital Project, 2024",dSrc:"Composite: Gini + GSS Trust + AARP, 2024"}
-];
 
-const EPS = 0.001;
-const THRESHOLD = 0.35;
+</article>
 
-// ══════════════════════════════════════════════════════════
-// HISTORICAL REGISTRY (placeholder - pending Kimi/Codex data)
-// ══════════════════════════════════════════════════════════
-const REGISTRY = [
-  {name:"United States 1950",date:"1950",chi:1.28,cls:"above",note:"Peak coherence era. All ten channels positive. Marriage rate 11.1/1000, church attendance 49%, media trust 72%."},
-  {name:"United States 1960",date:"1960",chi:1.04,cls:"above",note:"Still above threshold but early fractures visible in channels 3 and 8."},
-  {name:"United States 1970",date:"1970",chi:0.41,cls:"precarious",note:"Phase transition underway. Six channels crossed zero between 1968\u20131973. Gold standard abandoned, no-fault divorce, media fragmentation."},
-  {name:"United States 1980",date:"1980",chi:0.14,cls:"precarious",note:"Below threshold. Partial stabilization from religious revival but structural damage persists."},
-  {name:"United States 1990",date:"1990",chi:-0.02,cls:"below",note:"Aggregate crosses zero. Crime peaks, family dissolution accelerates, institutional trust collapses."},
-  {name:"United States 2000",date:"2000",chi:-0.28,cls:"below",note:"Internet era begins. Information channel (Law 6) enters negative territory."},
-  {name:"United States 2010",date:"2010",chi:-0.52,cls:"deep",note:"Post-2008 crisis. Economic, trust, and community channels all deeply negative."},
-  {name:"United States 2024",date:"2024",chi:-0.88,cls:"deep",note:"Current state. Nine of ten channels negative. Only Law 5 (rule of law) marginally positive."},
-  {name:"Josiah\u2019s Judah (pre-reform)",date:"630 BC",chi:0.22,cls:"below",note:"55 years of decline under Manasseh/Amon. Temple defiled, Torah lost, child sacrifice institutionalized."},
-  {name:"Josiah\u2019s Judah (post-reform)",date:"620 BC",chi:0.71,cls:"above",note:"Torah rediscovered, covenant renewed, institutional reform. All channels shifted positive within one generation."},
-  {name:"Colonial New England (pre-Awakening)",date:"1725",chi:0.31,cls:"precarious",note:"Declining church membership, Half-Way Covenant compromise, spiritual formalism without conviction."},
-  {name:"Colonial New England (post-Awakening)",date:"1745",chi:0.82,cls:"above",note:"Great Awakening. Internal spiritual renewal without external threat. Null hypothesis case for metaphysical recovery."},
-  {name:"Tokugawa Japan (pre-Meiji)",date:"1860",chi:0.19,cls:"below",note:"Sakoku isolation, institutional ossification, military weakness exposed by Perry Expedition."},
-  {name:"Meiji Japan (post-reform)",date:"1880",chi:0.74,cls:"above",note:"Radical transformation under existential external threat. Institutional overhaul across all channels."},
-  {name:"Clapham Sect",date:"1790",chi:0.68,cls:"above",note:"20 families, 2 million tracts. 55-year lag to measurable crime reduction. Grace-driven, no state power."},
-];
-
-let dbSort = 'chi';
-
-// ══════════════════════════════════════════════════════════
-// SCORING
-// ══════════════════════════════════════════════════════════
-function computeL(c, d) { return Math.log((c + EPS) / (d + EPS)); }
-function computeChi(Ls) { return Ls.reduce((a,b) => a+b, 0) / Ls.length; }
-function classify(chi) {
-  if (chi >= THRESHOLD) return {label:'ABOVE THRESHOLD',cls:'above'};
-  if (chi >= 0) return {label:'PRECARIOUS',cls:'precarious'};
-  if (chi >= -0.5) return {label:'BELOW THRESHOLD',cls:'below'};
-  return {label:'DEEP DECOHERENCE',cls:'deep'};
-}
-
-// ══════════════════════════════════════════════════════════
-// BUILD CALCULATOR UI
-// ══════════════════════════════════════════════════════════
-function buildInputs() {
-  const container = document.getElementById('channel-inputs');
-  container.innerHTML = CHANNELS.map(ch => `
-    <div class="channel-block" id="ch-block-${ch.id}">
-      <div class="channel-header">
-        <div><span class="channel-num">${String(ch.id).padStart(2,'0')}</span>
-        <span class="channel-name">${ch.law}</span>
-        <span class="channel-pair">${ch.pair}</span></div>
-        <span class="channel-computed" id="ch-L-${ch.id}">\u2014</span>
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+<nav class="tp-bignav">
+  <div class="tp-bignav-row">
+    <a href="#" class="tp-bignav-prev">
+      <span class="tp-bignav-arrow">←</span>
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Previous</span>
+        <span class="tp-bignav-title">Previous</span>
       </div>
-      <div class="channel-inputs">
-        <div class="input-col">
-          <label class="c-label">\u25b2 Constructive</label>
-          <div class="proxy-label">${ch.cLabel}</div>
-          <input type="text" id="c-${ch.id}" value="${ch.cVal}">
-        </div>
-        <div class="input-col">
-          <label class="d-label">\u25bc Destructive</label>
-          <div class="proxy-label">${ch.dLabel}</div>
-          <input type="text" id="d-${ch.id}" value="${ch.dVal}">
-        </div>
-      </div>
-      <button class="source-toggle" onclick="this.nextElementSibling.classList.toggle('visible')">show sources</button>
-      <div class="source-info">C: ${ch.cSrc}<br>D: ${ch.dSrc}</div>
+    </a>
+    <div class="tp-bignav-center">
+      <a href="/rigor/" class="tp-bignav-series">Rigor Home</a>
+      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
     </div>
-  `).join('');
+    <a href="#" class="tp-bignav-next">
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Next</span>
+        <span class="tp-bignav-title">Next</span>
+      </div>
+      <span class="tp-bignav-arrow">→</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="tp-sub-title">The Math Behind the Claims</div>
+  <div class="tp-sub-grid">
+    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="tp-sub-title">Everything Else</div>
+  <div class="tp-sub-grid">
+    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+  <div class="tp-series-strip">
+    <a href="/" class="active">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+  </div>
+</nav>
+
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="tp-bottom">
+  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
+  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
+  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+  <div class="tp-door-num">15 + 15 = 100</div>
+  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="tp-door-mark"></span>
+</div>
+
+<script>
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
+
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
 }
 
-function resetInputs() {
-  CHANNELS.forEach(ch => {
-    document.getElementById('c-'+ch.id).value = ch.cVal;
-    document.getElementById('d-'+ch.id).value = ch.dVal;
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
   });
-  document.getElementById('final-result').style.display = 'none';
-  document.getElementById('steps').innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--muted);padding:20px 0;">Enter values and click Compute \u03c7<sub>MDA</sub></div>';
-  CHANNELS.forEach(ch => {
-    document.getElementById('ch-L-'+ch.id).textContent = '\u2014';
-    document.getElementById('ch-block-'+ch.id).style.borderLeftColor = 'var(--border)';
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
   });
 }
-
-// ══════════════════════════════════════════════════════════
-// RUN CALCULATION
-// ══════════════════════════════════════════════════════════
-function runMDA() {
-  const name = document.getElementById('soc-name').value || 'Unknown';
-  const Ls = [];
-  const steps = [];
-
-  CHANNELS.forEach((ch, i) => {
-    const c = parseFloat(document.getElementById('c-'+ch.id).value) || 0;
-    const d = parseFloat(document.getElementById('d-'+ch.id).value) || 0;
-    const L = computeL(c, d);
-    Ls.push(L);
-
-    const el = document.getElementById('ch-L-'+ch.id);
-    el.textContent = (L>=0?'+':'') + L.toFixed(4);
-    el.style.color = L >= 0 ? 'var(--amber)' : 'var(--red)';
-    document.getElementById('ch-block-'+ch.id).style.borderLeftColor = L >= 0 ? 'var(--amber)' : 'var(--red)';
-
-    steps.push({
-      title: `Law ${String(ch.id).padStart(2,'0')} \u2014 ${ch.law} (${ch.pair})`,
-      math: `L = log((${c} + \u03b5) / (${d} + \u03b5)) = <span class="${L>=0?'val':'neg'}">${(L>=0?'+':'')}${L.toFixed(6)}</span>`,
-      note: L >= 0
-        ? `Constructive regime dominates. C/D ratio: ${(c/(d||0.001)).toFixed(2)}`
-        : `Destructive regime dominates. C/D ratio: ${(c/(d||0.001)).toFixed(2)}`
-    });
-  });
-
-  const chi = computeChi(Ls);
-  const cls = classify(chi);
-  const posCount = Ls.filter(l => l >= 0).length;
-  const negCount = 10 - posCount;
-
-  steps.push({
-    title: 'Aggregate \u2014 \u03c7_MDA',
-    math: `\u03c7 = (1/10) \u00d7 \u03a3 L\u1d62 = <span class="${chi>=0?'val':'neg'}">${(chi>=0?'+':'')}${chi.toFixed(6)}</span>`,
-    note: `${posCount} channels positive, ${negCount} negative. Threshold: \u03c7 \u2248 ${THRESHOLD}.`
-  });
-
-  const container = document.getElementById('steps');
-  container.innerHTML = '';
-  steps.forEach((s, i) => {
-    const el = document.createElement('div');
-    el.className = 'step';
-    el.innerHTML = `<div class="step-num">${String(i+1).padStart(2,'0')}</div>
-      <div class="step-body">
-        <div class="step-title">${s.title}</div>
-        <div class="step-math">${s.math}</div>
-        <div class="step-note">${s.note}</div>
-      </div>`;
-    container.appendChild(el);
-    setTimeout(() => el.classList.add('revealed'), i * 120);
-  });
-
-  setTimeout(() => {
-    document.getElementById('chi-out').textContent = (chi>=0?'+':'') + chi.toFixed(4);
-    document.getElementById('chi-out').style.color = chi >= THRESHOLD ? 'var(--green)' : chi >= 0 ? 'var(--amber)' : 'var(--red)';
-    document.getElementById('verdict-out').innerHTML = `<span class="verdict-badge badge-${cls.cls}">${cls.label}</span>`;
-    document.getElementById('interp-out').textContent =
-      chi >= THRESHOLD
-        ? `"${name}" scores above the recovery threshold (\u03c7 = ${THRESHOLD}). Historical precedent suggests self-correction through institutional reform is achievable.`
-        : chi >= 0
-          ? `"${name}" is near the threshold. Some channels remain constructive but the aggregate is precarious.`
-          : `"${name}" scores below the recovery threshold. No society in the historical dataset has self-corrected from \u03c7 = ${chi.toFixed(3)} through administrative action alone. Every recovery from below threshold required metaphysical renewal or existential external threat.`;
-    document.getElementById('final-result').style.display = 'block';
-  }, steps.length * 120 + 200);
-}
-
-// ══════════════════════════════════════════════════════════
-// REGISTRY
-// ══════════════════════════════════════════════════════════
-function renderDB() {
-  const search = (document.getElementById('db-search')?.value || '').toLowerCase();
-  let items = REGISTRY.filter(r => !search || r.name.toLowerCase().includes(search));
-
-  if (dbSort === 'chi') items.sort((a,b) => b.chi - a.chi);
-  else if (dbSort === 'date') items.sort((a,b) => {
-    const da = a.date.includes('BC') ? -parseInt(a.date) : parseInt(a.date);
-    const db = b.date.includes('BC') ? -parseInt(b.date) : parseInt(b.date);
-    return da - db;
-  });
-  else items.sort((a,b) => a.name.localeCompare(b.name));
-
-  const statsEl = document.getElementById('db-stats');
-  const above = items.filter(r => r.chi >= THRESHOLD).length;
-  const below = items.filter(r => r.chi < 0).length;
-  statsEl.innerHTML = `
-    <div class="stat-box"><div class="stat-label">Total Entries</div><div class="stat-val">${items.length}</div></div>
-    <div class="stat-box"><div class="stat-label">Above Threshold</div><div class="stat-val">${above}</div></div>
-    <div class="stat-box"><div class="stat-label">Below Zero</div><div class="stat-val">${below}</div></div>
-    <div class="stat-box"><div class="stat-label">Threshold</div><div class="stat-val">\u03c7 = ${THRESHOLD}</div></div>`;
-
-  const maxAbs = Math.max(...items.map(r => Math.abs(r.chi)), 1);
-  document.getElementById('db-grid').innerHTML = items.map((r, i) => {
-    const pct = ((r.chi + maxAbs) / (2 * maxAbs)) * 100;
-    return `
-    <div class="signal-card ${r.cls}">
-      <div class="card-rank">#${i+1}</div>
-      <div class="card-name">${r.name}</div>
-      <div class="card-chi ${r.chi>=0?'pos':'neg'}">${(r.chi>=0?'+':'')}${r.chi.toFixed(3)}</div>
-      <div class="card-bar-bg"><div class="card-bar-fill" style="width:${pct}%;background:${r.chi>=THRESHOLD?'var(--green)':r.chi>=0?'var(--amber)':'var(--red)'}"></div></div>
-      <div class="card-date">${r.date}</div>
-      <div style="clear:both;margin-top:8px;"><span class="verdict-badge badge-${r.cls}" style="font-size:9px;padding:3px 8px;">${classify(r.chi).label}</span></div>
-      <div class="card-note">${r.note}</div>
-    </div>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════════════════════════
-// TAB CONTROL
-// ══════════════════════════════════════════════════════════
-function showTab(id, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
-  if (id === 'db') renderDB();
-}
-
-// Init
-buildInputs();
 </script>
+
+<!-- MTL worker client -->
+<script src="/shared/js/mtl-worker-client.js" defer></script>
+
 </body>
 </html>

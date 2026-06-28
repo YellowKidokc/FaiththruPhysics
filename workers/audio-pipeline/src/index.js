@@ -717,7 +717,10 @@ function httpError(message, status) {
 function cleanSlug(value) {
   const text = optionalString(value);
   if (!text) return "";
-  return text.replace(/\.html$/i, "").replace(/^\/+|\/+$/g, "").replace(/[^a-zA-Z0-9/_-]/g, "-").slice(0, 180);
+  let slug = text.replace(/\.html$/i, "").replace(/^\/+|\/+$/g, "").replace(/[^a-zA-Z0-9/_-]/g, "-").slice(0, 180);
+  // Pages send path-style slugs ("series/article-slug") but D1 stores bare article slugs.
+  if (slug.includes("/")) slug = slug.split("/").pop();
+  return slug;
 }
 
 function cleanMode(value) {

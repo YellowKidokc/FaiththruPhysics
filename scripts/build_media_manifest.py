@@ -23,7 +23,7 @@ from pathlib import Path
 AUDIO_EXTS = {".mp3", ".m4a", ".wav", ".flac", ".aac", ".ogg", ".opus"}
 VIDEO_EXTS = {".mp4", ".mov", ".webm", ".mkv", ".m4v"}
 DOCUMENT_EXTS = {".pdf"}
-IMAGE_EXTS = {".png", ".webp"}
+IMAGE_EXTS = {".png", ".webp", ".jpg", ".jpeg"}
 MEDIA_EXTS = AUDIO_EXTS | VIDEO_EXTS | DOCUMENT_EXTS | IMAGE_EXTS
 
 CANONICAL_SERIES = {
@@ -54,7 +54,7 @@ CANONICAL_SERIES = {
 
 MODE_PATTERNS = [
     ("deep", re.compile(r"(^|[^a-z0-9])(dd|deep[-_ ]?dive|deep)([^a-z0-9]|$)", re.I)),
-    ("debate", re.compile(r"(^|[^a-z0-9])(debate|dbt)([^a-z0-9]|$)", re.I)),
+    ("podcast", re.compile(r"(^|[^a-z0-9])(debate|dbt|podcast|pod)([^a-z0-9]|$)", re.I)),
     ("critique", re.compile(r"(^|[^a-z0-9])(critique|critical|review)([^a-z0-9]|$)", re.I)),
     ("web", re.compile(r"(^|[^a-z0-9])(web|browser)([^a-z0-9]|$)", re.I)),
     ("tts", re.compile(r"(^|[^a-z0-9])(tts|vo|voice|read[-_ ]?aloud|narrated|full[-_ ]?read)([^a-z0-9]|$)", re.I)),

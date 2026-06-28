@@ -1,1195 +1,21 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DP-13 | Specialized Sub-Routines — The One: Duality Project</title>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-  <style>
-    /* ============================================================
-       CUSTOM PROPERTIES
-       ============================================================ */
-    :root {
-      --bg:             #0a0a0a;
-      --bg-light:       #1a1a1a;
-      --bg-mid:         #111111;
-      --border:         #2a2a2a;
-      --border-light:   #333333;
-      --text:           #e8e8e8;
-      --text-secondary: #a0a0a0;
-      --text-dim:       #666666;
-      --gold:           #d4af37;
-      --gold-dim:       rgba(212,175,55,0.10);
-      --gold-mid:       rgba(212,175,55,0.25);
-      --gold-bright:    rgba(212,175,55,0.70);
-      --teal:           #2dd4bf;
-      --teal-dim:       rgba(45,212,191,0.10);
-      --teal-mid:       rgba(45,212,191,0.20);
-      --red-dim:        rgba(220,60,60,0.15);
-      --red:            #dc3c3c;
-    }
-
-    /* ============================================================
-       RESET + BASE
-       ============================================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      line-height: 1.7;
-      min-height: 100vh;
-    }
-
-    /* ============================================================
-       PROGRESS BAR
-       ============================================================ */
-    #progress-bar {
-      position: fixed;
-      top: 0; left: 0;
-      width: 0%;
-      height: 3px;
-      background: linear-gradient(90deg, var(--gold), #f0c040);
-      z-index: 9999;
-      transition: width 0.1s linear;
-    }
-
-    /* ============================================================
-       STICKY NAV
-       ============================================================ */
-    .site-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10,10,10,0.96);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    .nav-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .nav-links-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      padding: 6px 12px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    }
-
-    .nav-link:hover {
-      color: var(--gold);
-      border-color: var(--gold-mid);
-      background: var(--gold-dim);
-    }
-
-    .nav-link.series {
-      color: var(--gold);
-      border-color: var(--gold-mid);
-      background: var(--gold-dim);
-    }
-
-    .nav-separator {
-      color: var(--border-light);
-      font-size: 0.75rem;
-      user-select: none;
-    }
-
-    .nav-links-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-link.prev-link {
-      color: var(--text-secondary);
-      border-color: var(--border);
-    }
-
-    .nav-link.prev-link:hover {
-      color: var(--gold);
-      border-color: var(--gold-mid);
-      background: var(--gold-dim);
-    }
-
-    .nav-link.next-link {
-      color: var(--teal);
-      border-color: var(--teal-mid);
-      background: var(--teal-dim);
-    }
-
-    .nav-link.next-link:hover {
-      color: #7ff0e4;
-      border-color: rgba(45,212,191,0.5);
-      background: var(--teal-mid);
-    }
-
-    /* chapter badge in nav */
-    .nav-chapter-code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--gold);
-      opacity: 0.8;
-      letter-spacing: 0.06em;
-    }
-
-    /* ============================================================
-       PAGE HEADER
-       ============================================================ */
-    .page-header {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 72px 24px 56px;
-      text-align: center;
-      position: relative;
-    }
-
-    .header-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--gold);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    .header-eyebrow::before,
-    .header-eyebrow::after {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 1px;
-      background: var(--gold-bright);
-    }
-
-    .chapter-code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      color: var(--gold);
-      letter-spacing: 0.2em;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .chapter-title {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(2.4rem, 5.5vw, 4rem);
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.15;
-      letter-spacing: 0.02em;
-      margin-bottom: 16px;
-    }
-
-    .chapter-subtitle {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.35rem;
-      font-style: italic;
-      color: var(--text-secondary);
-      letter-spacing: 0.01em;
-      margin-bottom: 36px;
-    }
-
-    .header-meta {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .meta-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      padding: 5px 14px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: var(--bg-light);
-    }
-
-    .meta-pill i { color: var(--gold); font-size: 0.72rem; }
-
-    .header-divider {
-      max-width: 1100px;
-      margin: 0 auto 0;
-      padding: 0 24px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border-light), transparent);
-    }
-
-    /* ============================================================
-       LAYER NAV TABS
-       ============================================================ */
-    .layer-nav {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 24px 0;
-      display: flex;
-      gap: 4px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .layer-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      text-decoration: none;
-      padding: 10px 18px;
-      border: 1px solid transparent;
-      border-bottom: none;
-      border-radius: 6px 6px 0 0;
-      transition: all 0.2s;
-    }
-
-    .layer-tab.narrative  { --tab-color: var(--gold); }
-    .layer-tab.simulation { --tab-color: var(--teal); }
-    .layer-tab.academic   { --tab-color: #a78bfa; }
-
-    .layer-tab:hover {
-      color: var(--tab-color);
-      background: rgba(255,255,255,0.03);
-    }
-
-    .layer-tab.active {
-      color: var(--tab-color);
-      background: var(--bg-light);
-      border-color: var(--border);
-      border-bottom-color: var(--bg-light);
-      margin-bottom: -1px;
-    }
-
-    /* ============================================================
-       MAIN CONTENT WRAPPER
-       ============================================================ */
-    .content-wrapper {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-    }
-
-    /* ============================================================
-       LAYER SECTIONS
-       ============================================================ */
-    .layer-section {
-      padding: 56px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .layer-section:last-of-type { border-bottom: none; }
-
-    /* --- Layer Header --- */
-    .layer-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-
-    .layer-number {
-      flex-shrink: 0;
-      width: 52px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Oswald', sans-serif;
-      font-size: 1.3rem;
-      font-weight: 700;
-      border-radius: 50%;
-      margin-top: 4px;
-    }
-
-    .layer-number.gold   { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-mid); }
-    .layer-number.teal   { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal-mid); }
-    .layer-number.purple { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
-
-    .layer-header-text {}
-
-    .layer-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-    .layer-label.gold   { color: var(--gold); }
-    .layer-label.teal   { color: var(--teal); }
-    .layer-label.purple { color: #a78bfa; }
-
-    .layer-title {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(1.4rem, 3vw, 1.9rem);
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.2;
-    }
-
-    /* ============================================================
-       LAYER 1 — NARRATIVE
-       ============================================================ */
-    .narrative-body {
-      max-width: 720px;
-    }
-
-    .scene-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--gold);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 28px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--gold-mid);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .scene-title::before {
-      content: '';
-      display: block;
-      width: 24px;
-      height: 2px;
-      background: var(--gold);
-    }
-
-    .scene-divider {
-      margin: 44px 0;
-      height: 1px;
-      background: linear-gradient(90deg, var(--gold-mid), transparent);
-    }
-
-    /* Prose paragraphs */
-    .narrative-body p {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.2rem;
-      line-height: 1.85;
-      color: var(--text);
-      margin-bottom: 1.5em;
-    }
-
-    /* Drop cap for first paragraph of each scene */
-    .drop-cap::first-letter {
-      font-family: 'Cinzel', serif;
-      font-size: 4.2em;
-      font-weight: 700;
-      color: var(--gold);
-      float: left;
-      line-height: 0.75;
-      margin-right: 0.08em;
-      margin-top: 0.12em;
-    }
-
-    /* Dialogue */
-    .narrative-body p.dialogue {
-      font-style: italic;
-      color: #d0d0d0;
-    }
-
-    /* Hologram / emphasis spans */
-    .word-omega {
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      color: var(--gold);
-      letter-spacing: 0.08em;
-      text-shadow: 0 0 20px rgba(212,175,55,0.5);
-    }
-
-    /* Terminal line in narrative context */
-    .narrative-terminal {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      color: var(--teal);
-      background: rgba(45,212,191,0.06);
-      border: 1px solid var(--teal-mid);
-      border-left: 3px solid var(--teal);
-      padding: 12px 16px;
-      border-radius: 0 6px 6px 0;
-      margin: 20px 0;
-    }
-
-    /* Quote callout */
-    .pullquote {
-      border-left: 3px solid var(--gold);
-      padding: 16px 24px;
-      background: var(--gold-dim);
-      border-radius: 0 8px 8px 0;
-      margin: 32px 0;
-      font-family: 'Crimson Text', serif;
-      font-size: 1.25rem;
-      font-style: italic;
-      color: #d8c980;
-      line-height: 1.7;
-    }
-
-    /* Node list in narrative */
-    .narrative-body ul.node-list {
-      list-style: none;
-      margin: 20px 0 1.5em 0;
-      padding: 0;
-    }
-
-    .narrative-body ul.node-list li {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.15rem;
-      line-height: 1.75;
-      color: var(--text);
-      padding: 8px 0 8px 18px;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-    }
-
-    .narrative-body ul.node-list li:last-child { border-bottom: none; }
-
-    .narrative-body ul.node-list li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--gold);
-    }
-
-    /* Numbered operation list */
-    .narrative-body ol.op-list {
-      list-style: none;
-      counter-reset: op-counter;
-      margin: 20px 0 1.5em 0;
-      padding: 0;
-    }
-
-    .narrative-body ol.op-list li {
-      counter-increment: op-counter;
-      font-family: 'Crimson Text', serif;
-      font-size: 1.15rem;
-      line-height: 1.75;
-      color: var(--text);
-      padding: 10px 0 10px 44px;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-    }
-
-    .narrative-body ol.op-list li:last-child { border-bottom: none; }
-
-    .narrative-body ol.op-list li::before {
-      content: counter(op-counter);
-      position: absolute;
-      left: 0;
-      top: 10px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--gold-dim);
-      border: 1px solid var(--gold-mid);
-      color: var(--gold);
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .node-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
-      color: var(--teal);
-      background: var(--teal-dim);
-      border: 1px solid var(--teal-mid);
-      border-radius: 4px;
-      padding: 1px 7px;
-      margin-right: 6px;
-    }
-
-    .bold-concept {
-      font-weight: 700;
-      color: var(--gold);
-      font-style: normal;
-    }
-
-    /* ============================================================
-       LAYER 2 — SIMULATION / TERMINAL
-       ============================================================ */
-    .terminal-shell {
-      background: #080e0d;
-      border: 1px solid rgba(45,212,191,0.25);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 40px rgba(45,212,191,0.07), 0 4px 24px rgba(0,0,0,0.6);
-    }
-
-    .terminal-titlebar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 18px;
-      background: #0d1413;
-      border-bottom: 1px solid rgba(45,212,191,0.2);
-    }
-
-    .terminal-dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-    }
-    .dot-red    { background: #ff5f56; }
-    .dot-yellow { background: #ffbd2e; }
-    .dot-green  { background: #27c93f; }
-
-    .terminal-title {
-      margin-left: auto;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: rgba(45,212,191,0.5);
-      letter-spacing: 0.1em;
-    }
-
-    .terminal-body {
-      padding: 28px 32px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.88rem;
-      line-height: 1.9;
-      color: #c0faf4;
-    }
-
-    .t-comment   { color: rgba(45,212,191,0.4); }
-    .t-label     { color: var(--teal); font-weight: 600; letter-spacing: 0.05em; }
-    .t-value     { color: #f0c040; }
-    .t-dim       { color: rgba(192,250,244,0.45); }
-    .t-red       { color: var(--red); font-weight: 600; }
-    .t-success   { color: #4ade80; font-weight: 600; }
-    .t-prompt    { color: rgba(45,212,191,0.6); }
-    .t-bold      { font-weight: 600; }
-
-    .terminal-block {
-      display: block;
-      margin-bottom: 0.15em;
-    }
-
-    .terminal-section-gap { display: block; margin: 16px 0; }
-
-    .terminal-divider {
-      display: block;
-      margin: 16px 0;
-      color: rgba(45,212,191,0.25);
-    }
-
-    /* Stat grid inside terminal */
-    .term-stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-      margin: 24px 0;
-    }
-
-    .term-stat-card {
-      background: rgba(45,212,191,0.05);
-      border: 1px solid rgba(45,212,191,0.18);
-      border-radius: 6px;
-      padding: 16px;
-      text-align: center;
-    }
-
-    .term-stat-card .stat-number {
-      font-family: 'Oswald', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--teal);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .term-stat-card.gold-card .stat-number { color: var(--gold); }
-    .term-stat-card.red-card  .stat-number { color: var(--red); }
-    .term-stat-card.green-card .stat-number { color: #4ade80; }
-
-    .term-stat-card .stat-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      color: var(--text-dim);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    /* Constraint / parameter list */
-    .constraint-list {
-      list-style: none;
-      margin: 20px 0;
-    }
-
-    .constraint-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      color: #c0faf4;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(45,212,191,0.08);
-      line-height: 1.6;
-    }
-
-    .constraint-list li:last-child { border-bottom: none; }
-
-    .constraint-num {
-      flex-shrink: 0;
-      width: 22px;
-      height: 22px;
-      border: 1px solid var(--teal-mid);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.68rem;
-      color: var(--teal);
-      margin-top: 2px;
-    }
-
-    /* Data event table */
-    .grade-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-    }
-
-    .grade-table th {
-      text-align: left;
-      color: var(--teal);
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 8px 12px;
-      border-bottom: 1px solid rgba(45,212,191,0.3);
-    }
-
-    .grade-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(45,212,191,0.08);
-      color: #c0faf4;
-      line-height: 1.5;
-    }
-
-    .grade-a    { color: #4ade80; font-weight: 700; }
-    .grade-warn { color: #fb923c; font-weight: 700; }
-    .grade-f    { color: var(--red); font-weight: 700; }
-
-    /* Anomaly callout block */
-    .anomaly-block {
-      background: rgba(220,60,60,0.07);
-      border: 1px solid rgba(220,60,60,0.3);
-      border-left: 3px solid var(--red);
-      border-radius: 0 6px 6px 0;
-      padding: 16px 20px;
-      margin: 20px 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      color: #f0a0a0;
-      line-height: 1.8;
-    }
-
-    .anomaly-block .anomaly-title {
-      color: var(--red);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    /* ============================================================
-       LAYER 3 — ACADEMIC SYNTHESIS
-       ============================================================ */
-    .academic-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 32px;
-    }
-
-    .profile-card {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .profile-card-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .profile-avatar {
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Oswald', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .avatar-kai {
-      background: rgba(59,130,246,0.15);
-      border: 1px solid rgba(59,130,246,0.35);
-      color: #60a5fa;
-    }
-
-    .avatar-mia {
-      background: var(--gold-dim);
-      border: 1px solid var(--gold-mid);
-      color: var(--gold);
-    }
-
-    .profile-name {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: 0.04em;
-    }
-
-    .profile-designation {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      letter-spacing: 0.06em;
-      margin-top: 2px;
-    }
-
-    .profile-body {
-      padding: 18px 20px;
-    }
-
-    .profile-row {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      margin-bottom: 14px;
-    }
-
-    .profile-row:last-child { margin-bottom: 0; }
-
-    .profile-key {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .profile-val {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    .profile-val.driver {
-      font-style: italic;
-      color: var(--text-secondary);
-    }
-
-    .strength-tag {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin: 2px 4px 2px 0;
-    }
-
-    .str-logic  { color: #60a5fa; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.25); }
-    .str-gold   { color: var(--gold); background: var(--gold-dim); border: 1px solid var(--gold-mid); }
-    .str-teal   { color: var(--teal); background: var(--teal-dim); border: 1px solid var(--teal-mid); }
-    .str-purple { color: #a78bfa; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2); }
-    .str-green  { color: #4ade80; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25); }
-
-    /* Insight cards — purple academic layer */
-    .insight-card {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-top: 3px solid #a78bfa;
-      border-radius: 0 0 10px 10px;
-      padding: 28px 32px;
-      margin-bottom: 24px;
-    }
-
-    .insight-card-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #a78bfa;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .insight-card-title i {
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
-
-    .insight-card p {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.1rem;
-      line-height: 1.8;
-      color: var(--text-secondary);
-      margin-bottom: 1em;
-    }
-
-    .insight-card p:last-child { margin-bottom: 0; }
-
-    .insight-card strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .insight-card .highlight {
-      color: #a78bfa;
-      font-weight: 600;
-    }
-
-    /* System log box */
-    .sys-log-box {
-      background: #06100f;
-      border: 1px solid rgba(45,212,191,0.2);
-      border-radius: 8px;
-      padding: 24px 28px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      line-height: 2;
-      margin-top: 24px;
-    }
-
-    .sys-line    { display: block; }
-    .sys-prompt  { color: rgba(45,212,191,0.45); }
-    .sys-key     { color: var(--teal); font-weight: 600; }
-    .sys-num     { color: #f0c040; font-weight: 700; }
-    .sys-action  { color: #4ade80; font-weight: 700; letter-spacing: 0.06em; }
-    .sys-note    { color: var(--text-secondary); font-style: italic; font-size: 0.82rem; }
-    .sys-warn    { color: #fb923c; }
-
-    /* Body metaphor block */
-    .body-metaphor {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin: 28px 0;
-    }
-
-    .body-node {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 14px;
-      text-align: center;
-    }
-
-    .body-node-icon {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .body-node-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .body-node-gift {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--teal);
-      background: var(--teal-dim);
-      border: 1px solid var(--teal-mid);
-      border-radius: 4px;
-      padding: 2px 6px;
-      display: inline-block;
-    }
-
-    /* Comparison bar */
-    .compare-block {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px 28px;
-      margin: 24px 0;
-    }
-
-    .compare-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-
-    .compare-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-
-    .compare-row:last-child { margin-bottom: 0; }
-
-    .compare-label {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      width: 110px;
-      flex-shrink: 0;
-    }
-
-    .compare-bar-track {
-      flex: 1;
-      height: 10px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .compare-bar-fill {
-      height: 100%;
-      border-radius: 5px;
-    }
-
-    .bar-teal  { background: linear-gradient(90deg, var(--teal), #7ff0e4); }
-    .bar-red   { background: linear-gradient(90deg, var(--red), #f87171); }
-
-    .compare-pct {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      width: 46px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    /* ============================================================
-       CHAPTER FOOTER / NAV
-       ============================================================ */
-    .chapter-footer {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 56px 24px 80px;
-    }
-
-    .footer-series-info {
-      text-align: center;
-      padding: 40px 32px;
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 40px;
-    }
-
-    .footer-series-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--gold);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .footer-series-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .footer-series-desc {
-      font-family: 'Crimson Text', serif;
-      font-size: 1.05rem;
-      color: var(--text-secondary);
-      font-style: italic;
-      max-width: 580px;
-      margin: 0 auto 20px;
-      line-height: 1.7;
-    }
-
-    .footer-chapter-count {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      letter-spacing: 0.06em;
-    }
-
-    .footer-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .footer-nav-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 14px 22px;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-
-    .footer-nav-btn.prev {
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-
-    .footer-nav-btn.prev:hover {
-      color: var(--gold);
-      border-color: var(--gold-mid);
-      background: var(--gold-dim);
-    }
-
-    .footer-nav-btn.index {
-      color: var(--gold);
-      border: 1px solid var(--gold-mid);
-      background: var(--gold-dim);
-    }
-
-    .footer-nav-btn.index:hover {
-      background: rgba(212,175,55,0.18);
-      border-color: var(--gold-bright);
-    }
-
-    .footer-nav-btn.next {
-      color: var(--teal);
-      border: 1px solid var(--teal-mid);
-      background: var(--teal-dim);
-    }
-
-    .footer-nav-btn.next:hover {
-      background: rgba(45,212,191,0.18);
-      border-color: rgba(45,212,191,0.5);
-    }
-
-    .footer-credit {
-      text-align: center;
-      margin-top: 40px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      letter-spacing: 0.08em;
-    }
-
-    /* ============================================================
-       RESPONSIVE
-       ============================================================ */
-    @media (max-width: 768px) {
-      .nav-inner { padding: 0 16px; gap: 8px; }
-      .nav-link { font-size: 0.7rem; padding: 5px 8px; }
-      .nav-separator { display: none; }
-      .nav-chapter-code { display: none; }
-
-      .page-header { padding: 48px 16px 40px; }
-      .content-wrapper { padding: 0 16px 60px; }
-      .chapter-footer { padding: 40px 16px 60px; }
-
-      .layer-nav { padding: 24px 16px 0; }
-      .layer-tab { font-size: 0.7rem; padding: 8px 12px; }
-
-      .term-stat-grid { grid-template-columns: 1fr; gap: 10px; }
-      .academic-grid  { grid-template-columns: 1fr; }
-      .body-metaphor  { grid-template-columns: 1fr 1fr; }
-
-      .footer-nav { flex-direction: column; gap: 12px; }
-      .footer-nav-btn { width: 100%; justify-content: center; }
-    }
-
-    @media (max-width: 480px) {
-      .layer-nav { flex-direction: column; border-bottom: none; }
-      .layer-tab { border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; }
-      .layer-tab.active { border-color: var(--border); margin-bottom: 4px; }
-      .body-metaphor { grid-template-columns: 1fr; }
-    }
-  </style>
-  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
-  <link rel="canonical" href="https://faiththruphysics.com/duality-project/dp-13-specialized-subroutines.html">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DP-13 | Specialized Sub-Routines — The One: Duality Project</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Oswald:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+<script data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee" defer="" src="https://analytics.faiththruphysics.com/script.js"></script>
+<link href="https://faiththruphysics.com/duality-project/dp-13-specialized-subroutines.html" rel="canonical"/>
+<link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
+<meta content="https://faiththruphysics.com/favicon.svg" property="og:image"/>
 <!-- RING NAVIGATION -->
 <style>
 .ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
@@ -1210,509 +36,550 @@
 .ring-tier-cards{display:none;padding:1rem 1.25rem;}
 .ring-tier.open .ring-tier-cards{display:block;}
 .ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+/* ═══ TP-WORKER-AUDIO-PLAYER ═══ */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+.tp-pair{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.tp-half{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid #222;border-radius:.4rem;background:#111;min-width:0;}
+.tp-half .tp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-half .tp-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;min-width:48px;}
+.tp-half .tp-play{width:24px;height:24px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-half .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-half .tp-track{height:3px;}.tp-half .tp-track:hover{height:5px;}
+.tp-half .tp-time{font-size:.55rem;min-width:28px;}
+.tp-half.tp-deep .tp-dot{background:#4a9eff;}.tp-half.tp-deep .tp-label{color:#4a9eff;}.tp-half.tp-deep .tp-play{border-color:#4a9eff;color:#4a9eff;}.tp-half.tp-deep .tp-fill{background:#4a9eff;}.tp-half.tp-deep:hover{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.08);}
+.tp-half.tp-debate .tp-dot{background:#a855f7;}.tp-half.tp-debate .tp-label{color:#a855f7;}.tp-half.tp-debate .tp-play{border-color:#a855f7;color:#a855f7;}.tp-half.tp-debate .tp-fill{background:#a855f7;}.tp-half.tp-debate:hover{border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08);}
+.tp-half.tp-critique .tp-dot{background:#22c55e;}.tp-half.tp-critique .tp-label{color:#22c55e;}.tp-half.tp-critique .tp-play{border-color:#22c55e;color:#22c55e;}.tp-half.tp-critique .tp-fill{background:#22c55e;}.tp-half.tp-critique:hover{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08);}
+.tp-pair{grid-template-columns:1fr 1fr 1fr;}
+.tp-speed{background:#111;border:1px solid #333;color:#888;font-family:'JetBrains Mono',monospace;font-size:.55rem;border-radius:.3rem;padding:.1rem .3rem;cursor:pointer;flex-shrink:0;}
+.tp-speed:hover{color:#ccc;border-color:#555;}
+.tp-sticky{position:fixed;right:-260px;top:50%;transform:translateY(-50%);width:220px;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border:1px solid #222;border-right:none;border-radius:.6rem 0 0 .6rem;padding:.75rem .8rem;z-index:9999;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.6);}
+.tp-sticky.tp-visible{right:0;}
+.tp-sticky-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem;}
+.tp-sticky .tp-sticky-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-sticky .tp-sticky-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tp-sticky .tp-sticky-close{background:none;border:none;color:#555;cursor:pointer;font-size:.65rem;padding:2px 4px;flex-shrink:0;transition:color .2s;}
+.tp-sticky .tp-sticky-close:hover{color:#e0e0e0;}
+.tp-sticky-controls{display:flex;align-items:center;gap:.5rem;}
+.tp-sticky .tp-play{width:26px;height:26px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-sticky .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-sticky .tp-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;}
+.tp-sticky .tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-sticky .tp-time{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:#555;min-width:28px;text-align:right;flex-shrink:0;}
+@media(max-width:700px){.tp-pair{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.tp-pair{grid-template-columns:1fr;}.tp-sticky{width:180px;padding:.6rem;}.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}.tp-speed{display:none;}}
 </style>
 </head>
-
 <body>
-  <!-- Progress Bar -->
-  <div id="progress-bar"></div>
-
-  <!-- =====================================================
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+<!-- =====================================================
        STICKY NAV
        ===================================================== -->
-  <nav class="site-nav" aria-label="Site navigation">
-    <div class="nav-inner">
-      <div class="nav-links-left">
-        <a href="../index.html" class="nav-link">
-          <i class="fa-solid fa-house-chimney"></i>
+<nav aria-label="Site navigation" class="site-nav">
+<div class="nav-inner">
+<div class="nav-links-left">
+<a class="nav-link" href="../index.html">
+<i class="fa-solid fa-house-chimney"></i>
           Main Index
         </a>
-        <span class="nav-separator">/</span>
-        <a href="index.html" class="nav-link series">
-          <i class="fa-solid fa-infinity"></i>
+<span class="nav-separator">/</span>
+<a class="nav-link series" href="index.html">
+<i class="fa-solid fa-infinity"></i>
           The One: Duality Project
         </a>
-        <span class="nav-separator">/</span>
-        <span class="nav-chapter-code">DP-13</span>
-      </div>
-      <div class="nav-links-right">
-        <a href="dp-12-collective-negentropy.html" class="nav-link prev-link">
-          <i class="fa-solid fa-arrow-left"></i>
+<span class="nav-separator">/</span>
+<span class="nav-chapter-code">DP-13</span>
+</div>
+<div class="nav-links-right">
+<a class="nav-link prev-link" href="dp-12-collective-negentropy.html">
+<i class="fa-solid fa-arrow-left"></i>
           Prev
         </a>
-        <a href="dp-14-evangelism-wave.html" class="nav-link next-link">
+<a class="nav-link next-link" href="dp-14-evangelism-wave.html">
           Next
           <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- =====================================================
+</a>
+</div>
+</div>
+</nav>
+<!-- =====================================================
        PAGE HEADER
        ===================================================== -->
-  <header class="page-header">
-    <div class="header-eyebrow">The One: Duality Project</div>
-    <span class="chapter-code">DP-13</span>
-    <h1 class="chapter-title">Specialized Sub-Routines</h1>
-    <p class="chapter-subtitle">Spiritual Gifts</p>
-    <div class="header-meta">
-      <span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> 12 / 28 / 2045</span>
-      <span class="meta-pill"><i class="fa-solid fa-location-dot"></i> Theophysics Research Institute, Sector 4</span>
-      <span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 3 Layers</span>
-      <span class="meta-pill"><i class="fa-solid fa-microchip"></i> DOC A-014</span>
-    </div>
-  </header>
-  <div class="header-divider"></div>
+<header class="page-header">
+<div class="header-eyebrow">The One: Duality Project</div>
+<span class="chapter-code">DP-13</span>
+<h1 class="chapter-title">Specialized Sub-Routines</h1>
+<p class="chapter-subtitle">Spiritual Gifts</p>
+<div class="header-meta">
+<span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> 12 / 28 / 2045</span>
+<span class="meta-pill"><i class="fa-solid fa-location-dot"></i> Theophysics Research Institute, Sector 4</span>
+<span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 3 Layers</span>
+<span class="meta-pill"><i class="fa-solid fa-microchip"></i> DOC A-014</span>
+</div>
+</header>
 
-  <!-- =====================================================
+<!-- TP-WORKER-AUDIO-PLAYER -->
+<div class="tp-player-block" data-audio-slug="duality-project/dp-13-specialized-subroutines" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=duality-project%2Fdp-13-specialized-subroutines" data-series-slug="duality-project" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=duality-project">
+  <div class="tp-read-aloud" data-mode="tts">
+    <div class="tp-dot"></div>
+    <span class="tp-label">Read Aloud</span>
+    <audio id="tpMainAudio" preload="none"></audio>
+    <button class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)" aria-label="Play read-aloud">
+      <i class="fas fa-play"></i>
+    </button>
+    <div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+      <div id="tpMainFill" class="tp-fill"></div>
+    </div>
+    <span id="tpMainTime" class="tp-time">0:00</span>
+    <select class="tp-speed" onchange="tpSetSpeed(this.value)" aria-label="Playback speed">
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="1.75">1.75x</option>
+      <option value="2">2x</option>
+    </select>
+    <button class="tp-mute" onclick="tpMute('tpMainAudio',this)" aria-label="Mute">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+  <div class="tp-pair">
+    <div class="tp-half tp-deep" data-mode="deep">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Deep Dive</span>
+      <audio id="tpDeepAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)" aria-label="Play deep dive">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+        <div id="tpDeepFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDeepTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-debate" data-mode="podcast">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Podcast</span>
+      <audio id="tpDebateAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)" aria-label="Play podcast">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+        <div id="tpDebateFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDebateTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-critique" data-mode="critique">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Critique</span>
+      <audio id="tpCritiqueAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)" aria-label="Play critique">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+        <div id="tpCritiqueFill" class="tp-fill"></div>
+      </div>
+      <span id="tpCritiqueTime" class="tp-time">0:00</span>
+    </div>
+  </div>
+  <div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+  </div>
+</div>
+
+
+<div class="header-divider"></div>
+<!-- =====================================================
        LAYER NAV TABS
        ===================================================== -->
-  <div class="layer-nav" role="navigation" aria-label="Chapter layers">
-    <a href="#layer-narrative" class="layer-tab narrative active">
-      <i class="fa-solid fa-book-open"></i>
+<div aria-label="Chapter layers" class="layer-nav" role="navigation">
+<a class="layer-tab narrative active" href="#layer-narrative">
+<i class="fa-solid fa-book-open"></i>
       Layer 1 — Narrative
     </a>
-    <a href="#layer-simulation" class="layer-tab simulation">
-      <i class="fa-solid fa-terminal"></i>
+<a class="layer-tab simulation" href="#layer-simulation">
+<i class="fa-solid fa-terminal"></i>
       Layer 2 — Simulation Logs
     </a>
-    <a href="#layer-academic" class="layer-tab academic">
-      <i class="fa-solid fa-flask-vial"></i>
+<a class="layer-tab academic" href="#layer-academic">
+<i class="fa-solid fa-flask-vial"></i>
       Layer 3 — Academic Synthesis
     </a>
-  </div>
-
-  <!-- =====================================================
+</div>
+<!-- =====================================================
        CONTENT
        ===================================================== -->
-  <main class="content-wrapper">
-
-    <!-- ========================================
+<main class="content-wrapper">
+<!-- ========================================
          LAYER 1: THE NARRATIVE
          ======================================== -->
-    <section class="layer-section" id="layer-narrative" aria-labelledby="narrative-title">
-
-      <div class="layer-header">
-        <div class="layer-number gold">I</div>
-        <div class="layer-header-text">
-          <div class="layer-label gold">Layer 01 — Fiction</div>
-          <h2 class="layer-title" id="narrative-title">The Narrative</h2>
-        </div>
-      </div>
-
-      <div class="narrative-body">
-
-        <!-- SCENE 1 -->
-        <h3 class="scene-title">The Swiss Army Knife of Heaven</h3>
-
-        <p class="drop-cap dialogue">"Unity is not Uniformity," Mia said, watching the Cluster from DP-12 grow. "If every node in the simulation does exactly the same thing, the system is efficient — but it's fragile. One specialized virus could take out the whole network."</p>
-
-        <p>Kai was tweaking the "Gift" variables, his fingers moving across the haptic interface with practiced economy. He nodded without looking up.</p>
-
-        <p class="dialogue">"In the early runs, we treated all H-Agents as identical clones. But the 'Pentecost Download' from DP-10 didn't just give them a generic boost. It gave them <span class="bold-concept">Specialized Sub-Routines</span>."</p>
-
-        <p>He pulled up the node-map. The Cluster lit up in the air between them — hundreds of nodes, each glowing at a slightly different frequency. Three of them stood out immediately.</p>
-
-        <ul class="node-list">
-          <li><span class="node-tag">H-01</span> was glowing with a specific frequency tuned for <strong>Healing</strong>.</li>
-          <li><span class="node-tag">H-05</span> was optimized for <strong>Pattern Recognition</strong> — what the old texts called Prophecy.</li>
-          <li><span class="node-tag">H-09</span> was running a high-bandwidth <strong>Logic-Instruction</strong> protocol — Teaching.</li>
-        </ul>
-
-        <p class="dialogue">"It's a Body," Kai said. "A biological computer. You don't want your heart to try and see, and you don't want your eyes to pump blood. You want them to do exactly what they were designed for, in perfect sync with the Head."</p>
-
-        <p class="dialogue">"The Chrome Agent is going to hate this," Mia said, leaning in. "He likes it when we're all the same. It makes us easier to categorize and conquer."</p>
-
-        <p class="dialogue">"Well," Kai said, a rare edge of satisfaction in his voice, "he's about to meet the most diverse, unified army in history."</p>
-
-        <div class="scene-divider"></div>
-
-        <!-- SCENE 2 -->
-        <h3 class="scene-title">The Operation</h3>
-
-        <div class="narrative-terminal">
-          [ SIMULATION DP-13 INITIALIZED ]<br />
-          [ ENVIRONMENT: ACTIVE MISSION ZONE ]<br />
+<section aria-labelledby="narrative-title" class="layer-section" id="layer-narrative">
+<div class="layer-header">
+<div class="layer-number gold">I</div>
+<div class="layer-header-text">
+<div class="layer-label gold">Layer 01 — Fiction</div>
+<h2 class="layer-title" id="narrative-title">The Narrative</h2>
+</div>
+</div>
+<div class="narrative-body">
+<!-- SCENE 1 -->
+<h3 class="scene-title">The Swiss Army Knife of Heaven</h3>
+<p class="drop-cap dialogue">"Unity is not Uniformity," Mia said, watching the Cluster from DP-12 grow. "If every node in the simulation does exactly the same thing, the system is efficient — but it's fragile. One specialized virus could take out the whole network."</p>
+<p>Kai was tweaking the "Gift" variables, his fingers moving across the haptic interface with practiced economy. He nodded without looking up.</p>
+<p class="dialogue">"In the early runs, we treated all H-Agents as identical clones. But the 'Pentecost Download' from DP-10 didn't just give them a generic boost. It gave them <span class="bold-concept">Specialized Sub-Routines</span>."</p>
+<p>He pulled up the node-map. The Cluster lit up in the air between them — hundreds of nodes, each glowing at a slightly different frequency. Three of them stood out immediately.</p>
+<ul class="node-list">
+<li><span class="node-tag">H-01</span> was glowing with a specific frequency tuned for <strong>Healing</strong>.</li>
+<li><span class="node-tag">H-05</span> was optimized for <strong>Pattern Recognition</strong> — what the old texts called Prophecy.</li>
+<li><span class="node-tag">H-09</span> was running a high-bandwidth <strong>Logic-Instruction</strong> protocol — Teaching.</li>
+</ul>
+<p class="dialogue">"It's a Body," Kai said. "A biological computer. You don't want your heart to try and see, and you don't want your eyes to pump blood. You want them to do exactly what they were designed for, in perfect sync with the Head."</p>
+<p class="dialogue">"The Chrome Agent is going to hate this," Mia said, leaning in. "He likes it when we're all the same. It makes us easier to categorize and conquer."</p>
+<p class="dialogue">"Well," Kai said, a rare edge of satisfaction in his voice, "he's about to meet the most diverse, unified army in history."</p>
+<div class="scene-divider"></div>
+<!-- SCENE 2 -->
+<h3 class="scene-title">The Operation</h3>
+<div class="narrative-terminal">
+          [ SIMULATION DP-13 INITIALIZED ]<br/>
+          [ ENVIRONMENT: ACTIVE MISSION ZONE ]<br/>
           [ ENTITIES: THE ECCLESIA (SPECIALIZED NODES) ]
         </div>
-
-        <p class="drop-cap">The simulation dropped the Cluster into a crisis. A massive "Entropy Wave" had hit a nearby village — sickness, confusion, and despair bleeding through every variable. The kind of cascading failure that a uniform team would bungle by all doing the same thing at once: everyone trying to heal, or everyone trying to preach, while the other needs went unmet.</p>
-
-        <p>But the <span class="bold-concept">Specialized Cluster</span> acted like a surgical team.</p>
-
-        <ol class="op-list">
-          <li>The <strong>Teachers</strong> <span class="node-tag">H-09</span> immediately began stabilizing the mental state of the villagers, providing a coherent framework to fight the confusion.</li>
-          <li>The <strong>Healers</strong> <span class="node-tag">H-01</span> moved through the crowd, their hands glowing as they performed "Local Coherence Restoration."</li>
-          <li>The <strong>Administrators</strong> <span class="node-tag">H-12</span> organized the resources, ensuring the "Bread" variables were distributed fairly and without waste.</li>
-          <li>The <strong>Prophetic Nodes</strong> <span class="node-tag">H-05</span> kept their eyes on the Chrome Agent, warning the team before he could launch a counter-attack.</li>
-        </ol>
-
-        <p class="dialogue">"Look at the efficiency," Kai noted. "By specializing, they've reduced the 'Wait Time' for the system. Every need is met as soon as it arises. It's an <span class="bold-concept">Optimized Grace Network</span>."</p>
-
-        <p>The Chrome Agent tried to sow division. He moved through the network like a whisper.</p>
-
-        <div class="pullquote">
-          He whispered to the Healers: <em>Why are you doing all the hard work while the Teachers just sit there and talk?</em><br /><br />
+<p class="drop-cap">The simulation dropped the Cluster into a crisis. A massive "Entropy Wave" had hit a nearby village — sickness, confusion, and despair bleeding through every variable. The kind of cascading failure that a uniform team would bungle by all doing the same thing at once: everyone trying to heal, or everyone trying to preach, while the other needs went unmet.</p>
+<p>But the <span class="bold-concept">Specialized Cluster</span> acted like a surgical team.</p>
+<ol class="op-list">
+<li>The <strong>Teachers</strong> <span class="node-tag">H-09</span> immediately began stabilizing the mental state of the villagers, providing a coherent framework to fight the confusion.</li>
+<li>The <strong>Healers</strong> <span class="node-tag">H-01</span> moved through the crowd, their hands glowing as they performed "Local Coherence Restoration."</li>
+<li>The <strong>Administrators</strong> <span class="node-tag">H-12</span> organized the resources, ensuring the "Bread" variables were distributed fairly and without waste.</li>
+<li>The <strong>Prophetic Nodes</strong> <span class="node-tag">H-05</span> kept their eyes on the Chrome Agent, warning the team before he could launch a counter-attack.</li>
+</ol>
+<p class="dialogue">"Look at the efficiency," Kai noted. "By specializing, they've reduced the 'Wait Time' for the system. Every need is met as soon as it arises. It's an <span class="bold-concept">Optimized Grace Network</span>."</p>
+<p>The Chrome Agent tried to sow division. He moved through the network like a whisper.</p>
+<div class="pullquote">
+          He whispered to the Healers: <em>Why are you doing all the hard work while the Teachers just sit there and talk?</em><br/><br/>
           He whispered to the Teachers: <em>You're the smart ones. Why do you have to listen to the Administrators?</em>
-        </div>
-
-        <p>But the "Body Logic" held.</p>
-
-        <p class="dialogue">H-01 replied: <em>"I am a hand. I am glad the Teacher is a mouth. If we were both hands, who would tell us where to reach?"</em></p>
-
-        <p>The unity wasn't just a feeling. It was a <span class="bold-concept">Functional Defense</span> — diversity weaponized against the one agent who needed uniformity to win.</p>
-
-      </div><!-- .narrative-body -->
-    </section>
-
-
-    <!-- ========================================
+</div>
+<p>But the "Body Logic" held.</p>
+<p class="dialogue">H-01 replied: <em>"I am a hand. I am glad the Teacher is a mouth. If we were both hands, who would tell us where to reach?"</em></p>
+<p>The unity wasn't just a feeling. It was a <span class="bold-concept">Functional Defense</span> — diversity weaponized against the one agent who needed uniformity to win.</p>
+</div><!-- .narrative-body -->
+</section>
+<!-- ========================================
          LAYER 2: SIMULATION LOGS
          ======================================== -->
-    <section class="layer-section" id="layer-simulation" aria-labelledby="simulation-title">
-
-      <div class="layer-header">
-        <div class="layer-number teal">II</div>
-        <div class="layer-header-text">
-          <div class="layer-label teal">Layer 02 — System Document</div>
-          <h2 class="layer-title" id="simulation-title">Simulation Logs</h2>
-        </div>
-      </div>
-
-      <div class="terminal-shell">
-        <div class="terminal-titlebar">
-          <span class="terminal-dot dot-red"></span>
-          <span class="terminal-dot dot-yellow"></span>
-          <span class="terminal-dot dot-green"></span>
-          <span class="terminal-title">DP-13 :: SPIRITUAL GIFTS — SIMULATION LOG :: 12/28/2045</span>
-        </div>
-
-        <div class="terminal-body">
-
-          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
-          <span class="terminal-block"><span class="t-comment">// SIMULATION DP-13 :: "Specialized Sub-Routines"</span></span>
-          <span class="terminal-block"><span class="t-comment">// Subject: Spiritual Gifts as Distributed System Architecture</span></span>
-          <span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
-
-          <span class="terminal-section-gap"></span>
-
-          <span class="terminal-block"><span class="t-label">SUBJECT</span>     <span class="t-value">DP-13 "SPIRITUAL GIFTS"</span></span>
-          <span class="terminal-block"><span class="t-label">TEAM</span>        <span class="t-value">Okonkwo / Chen</span></span>
-          <span class="terminal-block"><span class="t-label">DATE</span>        <span class="t-value">12 / 28 / 2045</span></span>
-
-          <span class="terminal-section-gap"></span>
-          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
-
-          <span class="terminal-block"><span class="t-label">PARAMETERS</span></span>
-          <span class="terminal-section-gap"></span>
-
-        </div>
-
-        <div style="padding: 0 32px 8px;">
-          <ul class="constraint-list">
-            <li>
-              <span class="constraint-num">V</span>
-              <span><span class="t-label" style="color:var(--teal);">Gift_Type</span> &nbsp;::&nbsp; Prophecy, Service, Teaching, Exhortation, Giving, Leadership, Mercy</span>
-            </li>
-            <li>
-              <span class="constraint-num">C</span>
-              <span>All gifts must report to the "Head" (Alpha-Prime Template). No autonomous override permitted.</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="terminal-body" style="padding-top: 0;">
-          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
-          <span class="terminal-block"><span class="t-label">EVENT LOG</span></span>
-          <span class="terminal-section-gap"></span>
-
-          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+00:00 — Crisis initiated. 100 Units of Entropy injected into target zone.</span></span>
-          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+05:00 — Specialized Response active. Complexity classification: HIGH.</span></span>
-          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-success">T+15:00 — System Coherence restored to 95%.</span></span>
-          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">         (Uniform control group reached only 60% in equivalent time.)</span></span>
-
-          <span class="terminal-section-gap"></span>
-          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
-          <span class="terminal-block"><span class="t-label">PERFORMANCE COMPARISON</span></span>
-        </div>
-
-        <!-- Stat grid -->
-        <div style="padding: 0 32px 16px;">
-          <div class="term-stat-grid">
-            <div class="term-stat-card green-card">
-              <span class="stat-number">95%</span>
-              <span class="stat-label">Specialized Coherence @ T+15</span>
-            </div>
-            <div class="term-stat-card red-card">
-              <span class="stat-number">60%</span>
-              <span class="stat-label">Uniform Coherence @ T+15</span>
-            </div>
-            <div class="term-stat-card gold-card">
-              <span class="stat-number">7</span>
-              <span class="stat-label">Gift Types Deployed</span>
-            </div>
+<section aria-labelledby="simulation-title" class="layer-section" id="layer-simulation">
+<div class="layer-header">
+<div class="layer-number teal">II</div>
+<div class="layer-header-text">
+<div class="layer-label teal">Layer 02 — System Document</div>
+<h2 class="layer-title" id="simulation-title">Simulation Logs</h2>
+</div>
+</div>
+<div class="terminal-shell">
+<div class="terminal-titlebar">
+<span class="terminal-dot dot-red"></span>
+<span class="terminal-dot dot-yellow"></span>
+<span class="terminal-dot dot-green"></span>
+<span class="terminal-title">DP-13 :: SPIRITUAL GIFTS — SIMULATION LOG :: 12/28/2045</span>
+</div>
+<div class="terminal-body">
+<span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+<span class="terminal-block"><span class="t-comment">// SIMULATION DP-13 :: "Specialized Sub-Routines"</span></span>
+<span class="terminal-block"><span class="t-comment">// Subject: Spiritual Gifts as Distributed System Architecture</span></span>
+<span class="terminal-block"><span class="t-comment">// ═══════════════════════════════════════════════════════════</span></span>
+<span class="terminal-section-gap"></span>
+<span class="terminal-block"><span class="t-label">SUBJECT</span> <span class="t-value">DP-13 "SPIRITUAL GIFTS"</span></span>
+<span class="terminal-block"><span class="t-label">TEAM</span> <span class="t-value">Okonkwo / Chen</span></span>
+<span class="terminal-block"><span class="t-label">DATE</span> <span class="t-value">12 / 28 / 2045</span></span>
+<span class="terminal-section-gap"></span>
+<span class="terminal-divider">──────────────────────────────────────────────────────</span>
+<span class="terminal-block"><span class="t-label">PARAMETERS</span></span>
+<span class="terminal-section-gap"></span>
+</div>
+<div style="padding: 0 32px 8px;">
+<ul class="constraint-list">
+<li>
+<span class="constraint-num">V</span>
+<span><span class="t-label" style="color:var(--teal);">Gift_Type</span>  ::  Prophecy, Service, Teaching, Exhortation, Giving, Leadership, Mercy</span>
+</li>
+<li>
+<span class="constraint-num">C</span>
+<span>All gifts must report to the "Head" (Alpha-Prime Template). No autonomous override permitted.</span>
+</li>
+</ul>
+</div>
+<div class="terminal-body" style="padding-top: 0;">
+<span class="terminal-divider">──────────────────────────────────────────────────────</span>
+<span class="terminal-block"><span class="t-label">EVENT LOG</span></span>
+<span class="terminal-section-gap"></span>
+<span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+00:00 — Crisis initiated. 100 Units of Entropy injected into target zone.</span></span>
+<span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">T+05:00 — Specialized Response active. Complexity classification: HIGH.</span></span>
+<span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-success">T+15:00 — System Coherence restored to 95%.</span></span>
+<span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-dim">         (Uniform control group reached only 60% in equivalent time.)</span></span>
+<span class="terminal-section-gap"></span>
+<span class="terminal-divider">──────────────────────────────────────────────────────</span>
+<span class="terminal-block"><span class="t-label">PERFORMANCE COMPARISON</span></span>
+</div>
+<!-- Stat grid -->
+<div style="padding: 0 32px 16px;">
+<div class="term-stat-grid">
+<div class="term-stat-card green-card">
+<span class="stat-number">95%</span>
+<span class="stat-label">Specialized Coherence @ T+15</span>
+</div>
+<div class="term-stat-card red-card">
+<span class="stat-number">60%</span>
+<span class="stat-label">Uniform Coherence @ T+15</span>
+</div>
+<div class="term-stat-card gold-card">
+<span class="stat-number">7</span>
+<span class="stat-label">Gift Types Deployed</span>
+</div>
+</div>
+</div>
+<div class="terminal-body" style="padding-top: 0;">
+<span class="terminal-divider">──────────────────────────────────────────────────────</span>
+<span class="terminal-block"><span class="t-label">ANOMALY :: RESILIENCE TO MONOCULTURE ATTACKS</span></span>
+<span class="terminal-section-gap"></span>
+</div>
+<div style="padding: 0 32px 16px;">
+<div class="anomaly-block">
+<span class="anomaly-title"><i class="fa-solid fa-triangle-exclamation"></i>   Targeted Shutdown Attempt — Healing Nodes</span>
+            The Exile attempted a "Targeted Shutdown" on the healing nodes (H-01 cluster).<br/><br/>
+<strong style="color:#f0c040;">Result:</strong> The "Mercy" nodes immediately compensated, providing palliative coherence while the "Leadership" nodes re-routed available resources to fill the gap.<br/><br/>
+<strong style="color:#4ade80;">Conclusion:</strong> Diversity creates <strong style="color:#4ade80;">System Redundancy</strong>. A monoculture has a single point of failure. The Body has none.
           </div>
-        </div>
-
-        <div class="terminal-body" style="padding-top: 0;">
-          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
-          <span class="terminal-block"><span class="t-label">ANOMALY :: RESILIENCE TO MONOCULTURE ATTACKS</span></span>
-          <span class="terminal-section-gap"></span>
-        </div>
-
-        <div style="padding: 0 32px 16px;">
-          <div class="anomaly-block">
-            <span class="anomaly-title"><i class="fa-solid fa-triangle-exclamation"></i> &nbsp; Targeted Shutdown Attempt — Healing Nodes</span>
-            The Exile attempted a "Targeted Shutdown" on the healing nodes (H-01 cluster).<br /><br />
-            <strong style="color:#f0c040;">Result:</strong> The "Mercy" nodes immediately compensated, providing palliative coherence while the "Leadership" nodes re-routed available resources to fill the gap.<br /><br />
-            <strong style="color:#4ade80;">Conclusion:</strong> Diversity creates <strong style="color:#4ade80;">System Redundancy</strong>. A monoculture has a single point of failure. The Body has none.
-          </div>
-        </div>
-
-        <div class="terminal-body" style="padding-top: 0;">
-          <span class="terminal-divider">──────────────────────────────────────────────────────</span>
-          <span class="terminal-block"><span class="t-label">SIMULATION CONCLUSION</span></span>
-          <span class="terminal-section-gap"></span>
-          <span class="terminal-block t-dim">Spiritual Gifts are not "Magic Powers." They are <span class="t-value">Customized Quantum Optimizations</span></span>
-          <span class="terminal-block t-dim">designed to ensure the Body of Christ can handle any entropic challenge.</span>
-          <span class="terminal-section-gap"></span>
-          <span class="terminal-block t-dim">The "Body of Christ" is the most resilient architecture in existence because</span>
-          <span class="terminal-block t-dim">its unity is built on the <span class="t-success">celebration of difference</span>.</span>
-          <span class="terminal-section-gap"></span>
-          <span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-action" style="color:#4ade80;font-weight:700;">STATUS: SIMULATION COMPLETE. COHERENCE THRESHOLD EXCEEDED.</span></span>
-        </div>
-
-      </div><!-- .terminal-shell -->
-    </section>
-
-
-    <!-- ========================================
+</div>
+<div class="terminal-body" style="padding-top: 0;">
+<span class="terminal-divider">──────────────────────────────────────────────────────</span>
+<span class="terminal-block"><span class="t-label">SIMULATION CONCLUSION</span></span>
+<span class="terminal-section-gap"></span>
+<span class="terminal-block t-dim">Spiritual Gifts are not "Magic Powers." They are <span class="t-value">Customized Quantum Optimizations</span></span>
+<span class="terminal-block t-dim">designed to ensure the Body of Christ can handle any entropic challenge.</span>
+<span class="terminal-section-gap"></span>
+<span class="terminal-block t-dim">The "Body of Christ" is the most resilient architecture in existence because</span>
+<span class="terminal-block t-dim">its unity is built on the <span class="t-success">celebration of difference</span>.</span>
+<span class="terminal-section-gap"></span>
+<span class="terminal-block"><span class="t-prompt">&gt; </span><span class="t-action" style="color:#4ade80;font-weight:700;">STATUS: SIMULATION COMPLETE. COHERENCE THRESHOLD EXCEEDED.</span></span>
+</div>
+</div><!-- .terminal-shell -->
+</section>
+<!-- ========================================
          LAYER 3: ACADEMIC SYNTHESIS
          ======================================== -->
-    <section class="layer-section" id="layer-academic" aria-labelledby="academic-title">
-
-      <div class="layer-header">
-        <div class="layer-number purple">III</div>
-        <div class="layer-header-text">
-          <div class="layer-label purple">Layer 03 — Research Document</div>
-          <h2 class="layer-title" id="academic-title">Academic Synthesis</h2>
-        </div>
-      </div>
-
-      <!-- Research team cards -->
-      <div class="academic-grid">
-        <div class="profile-card">
-          <div class="profile-card-header">
-            <div class="profile-avatar avatar-kai">KO</div>
-            <div>
-              <div class="profile-name">OKONKWO, KAI</div>
-              <div class="profile-designation">DOC A-014 · LEAD SYSTEMS ANALYST</div>
-            </div>
-          </div>
-          <div class="profile-body">
-            <div class="profile-row">
-              <span class="profile-key">Research Focus</span>
-              <div>
-                <span class="strength-tag str-logic">Distributed Systems</span>
-                <span class="strength-tag str-teal">Redundancy Architecture</span>
-              </div>
-            </div>
-            <div class="profile-row">
-              <span class="profile-key">Key Finding</span>
-              <span class="profile-val driver">"Gift diversity is the system's immune response to monoculture attacks."</span>
-            </div>
-            <div class="profile-row">
-              <span class="profile-key">Analogy Domain</span>
-              <span class="profile-val">Swarm robotics &amp; neural networks</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-card">
-          <div class="profile-card-header">
-            <div class="profile-avatar avatar-mia">MC</div>
-            <div>
-              <div class="profile-name">CHEN, MIA</div>
-              <div class="profile-designation">DOC A-014 · THEOLOGICAL HISTORICS</div>
-            </div>
-          </div>
-          <div class="profile-body">
-            <div class="profile-row">
-              <span class="profile-key">Research Focus</span>
-              <div>
-                <span class="strength-tag str-gold">1 Corinthians 12</span>
-                <span class="strength-tag str-purple">Body Theology</span>
-              </div>
-            </div>
-            <div class="profile-row">
-              <span class="profile-key">Key Finding</span>
-              <span class="profile-val driver">"The 'unseemly' gifts are actually the most critical nodes for system stability."</span>
-            </div>
-            <div class="profile-row">
-              <span class="profile-key">Analogy Domain</span>
-              <span class="profile-val">Human biology &amp; organ interdependence</span>
-            </div>
-          </div>
-        </div>
-      </div><!-- .academic-grid -->
-
-      <!-- Body metaphor -->
-      <div class="body-metaphor">
-        <div class="body-node">
-          <span class="body-node-icon" style="color:#60a5fa;">&#x1F5E3;</span>
-          <span class="body-node-label">Mouth</span>
-          <span class="body-node-gift">Teaching</span>
-        </div>
-        <div class="body-node">
-          <span class="body-node-icon" style="color:#4ade80;">&#x1F44B;</span>
-          <span class="body-node-label">Hand</span>
-          <span class="body-node-gift">Healing</span>
-        </div>
-        <div class="body-node">
-          <span class="body-node-icon" style="color:#a78bfa;">&#x1F441;&#xFE0F;</span>
-          <span class="body-node-label">Eye</span>
-          <span class="body-node-gift">Prophecy</span>
-        </div>
-        <div class="body-node">
-          <span class="body-node-icon" style="color:var(--gold);">&#x2764;&#xFE0F;</span>
-          <span class="body-node-label">Heart</span>
-          <span class="body-node-gift">Administration</span>
-        </div>
-      </div>
-
-      <!-- Insight card 1: The Solved Problem -->
-      <div class="insight-card">
-        <div class="insight-card-title">
-          <i class="fa-solid fa-puzzle-piece"></i>
+<section aria-labelledby="academic-title" class="layer-section" id="layer-academic">
+<div class="layer-header">
+<div class="layer-number purple">III</div>
+<div class="layer-header-text">
+<div class="layer-label purple">Layer 03 — Research Document</div>
+<h2 class="layer-title" id="academic-title">Academic Synthesis</h2>
+</div>
+</div>
+<!-- Research team cards -->
+<div class="academic-grid">
+<div class="profile-card">
+<div class="profile-card-header">
+<div class="profile-avatar avatar-kai">KO</div>
+<div>
+<div class="profile-name">OKONKWO, KAI</div>
+<div class="profile-designation">DOC A-014 · LEAD SYSTEMS ANALYST</div>
+</div>
+</div>
+<div class="profile-body">
+<div class="profile-row">
+<span class="profile-key">Research Focus</span>
+<div>
+<span class="strength-tag str-logic">Distributed Systems</span>
+<span class="strength-tag str-teal">Redundancy Architecture</span>
+</div>
+</div>
+<div class="profile-row">
+<span class="profile-key">Key Finding</span>
+<span class="profile-val driver">"Gift diversity is the system's immune response to monoculture attacks."</span>
+</div>
+<div class="profile-row">
+<span class="profile-key">Analogy Domain</span>
+<span class="profile-val">Swarm robotics &amp; neural networks</span>
+</div>
+</div>
+</div>
+<div class="profile-card">
+<div class="profile-card-header">
+<div class="profile-avatar avatar-mia">MC</div>
+<div>
+<div class="profile-name">CHEN, MIA</div>
+<div class="profile-designation">DOC A-014 · THEOLOGICAL HISTORICS</div>
+</div>
+</div>
+<div class="profile-body">
+<div class="profile-row">
+<span class="profile-key">Research Focus</span>
+<div>
+<span class="strength-tag str-gold">1 Corinthians 12</span>
+<span class="strength-tag str-purple">Body Theology</span>
+</div>
+</div>
+<div class="profile-row">
+<span class="profile-key">Key Finding</span>
+<span class="profile-val driver">"The 'unseemly' gifts are actually the most critical nodes for system stability."</span>
+</div>
+<div class="profile-row">
+<span class="profile-key">Analogy Domain</span>
+<span class="profile-val">Human biology &amp; organ interdependence</span>
+</div>
+</div>
+</div>
+</div><!-- .academic-grid -->
+<!-- Body metaphor -->
+<div class="body-metaphor">
+<div class="body-node">
+<span class="body-node-icon" style="color:#60a5fa;">🗣</span>
+<span class="body-node-label">Mouth</span>
+<span class="body-node-gift">Teaching</span>
+</div>
+<div class="body-node">
+<span class="body-node-icon" style="color:#4ade80;">👋</span>
+<span class="body-node-label">Hand</span>
+<span class="body-node-gift">Healing</span>
+</div>
+<div class="body-node">
+<span class="body-node-icon" style="color:#a78bfa;">👁️</span>
+<span class="body-node-label">Eye</span>
+<span class="body-node-gift">Prophecy</span>
+</div>
+<div class="body-node">
+<span class="body-node-icon" style="color:var(--gold);">❤️</span>
+<span class="body-node-label">Heart</span>
+<span class="body-node-gift">Administration</span>
+</div>
+</div>
+<!-- Insight card 1: The Solved Problem -->
+<div class="insight-card">
+<div class="insight-card-title">
+<i class="fa-solid fa-puzzle-piece"></i>
           The Solved Problem #13 — The 1 Corinthians 12 Theorem
         </div>
-        <p>
+<p>
           The question DP-13 answers is one you've probably felt yourself, David: <em>"Why are we so different? Why do some people have 'cool' gifts — healing, miracles, tongues — and I just have 'helping'?"</em>
-        </p>
-        <p>
+</p>
+<p>
           The simulation proves that <strong class="highlight">every gift is a critical component of the network</strong>. A "cool" gift like Healing is useless without a "hidden" gift like Administration to provide the logistical framework. Take out the Administration node and the Healers are wandering without direction. Take out the Mercy node and the wounded have no cover when the Healing nodes are under attack.
         </p>
-        <p>
+<p>
           In the simulation, the so-called "Unseemly Parts" — the quiet givers, the behind-the-scenes administrators, the people who just show up and serve — were actually the <strong>most critical nodes for system stability</strong>. They were the load-bearing walls. Everyone assumed they were decorative.
         </p>
-      </div>
-
-      <!-- Insight card 2: End of Competition -->
-      <div class="insight-card">
-        <div class="insight-card-title">
-          <i class="fa-solid fa-scale-unbalanced-flip"></i>
+</div>
+<!-- Insight card 2: End of Competition -->
+<div class="insight-card">
+<div class="insight-card-title">
+<i class="fa-solid fa-scale-unbalanced-flip"></i>
           The End of Competition
         </div>
-        <p>
+<p>
           In a fallen world (DP-05), difference produces <strong>Envy</strong>. You see someone's gift and your first instinct is to want it, minimize it, or compete with it. The Chrome Agent loves this. Envy is one of his most efficient tools — it turns the Body against itself from the inside.
         </p>
-        <p>
+<p>
           In the Church Network (DP-13), difference produces <strong class="highlight">Gratitude</strong>. The logic flips completely. When I see your gift, I don't want to steal it. I want to <em>support</em> it, because your success is literally my survival. If you're the eye, I need you to see. I can't do your job. My life depends on you doing it well.
         </p>
-        <p>
+<p>
           That shift — from envy to gratitude — is not just a moral improvement. It is a <strong>phase transition in the system's architecture</strong>. The network goes from being vulnerable to being antifragile.
         </p>
-      </div>
-
-      <!-- Performance comparison -->
-      <div class="compare-block">
-        <div class="compare-title">Response Efficiency — Specialized vs. Uniform Group (T+15:00)</div>
-        <div class="compare-row">
-          <span class="compare-label">Specialized</span>
-          <div class="compare-bar-track">
-            <div class="compare-bar-fill bar-teal" style="width: 95%;"></div>
-          </div>
-          <span class="compare-pct" style="color:var(--teal);">95%</span>
-        </div>
-        <div class="compare-row">
-          <span class="compare-label">Uniform</span>
-          <div class="compare-bar-track">
-            <div class="compare-bar-fill bar-red" style="width: 60%;"></div>
-          </div>
-          <span class="compare-pct" style="color:var(--red);">60%</span>
-        </div>
-      </div>
-
-      <!-- Insight card 3: Physics analogy -->
-      <div class="insight-card">
-        <div class="insight-card-title">
-          <i class="fa-solid fa-atom"></i>
+</div>
+<!-- Performance comparison -->
+<div class="compare-block">
+<div class="compare-title">Response Efficiency — Specialized vs. Uniform Group (T+15:00)</div>
+<div class="compare-row">
+<span class="compare-label">Specialized</span>
+<div class="compare-bar-track">
+<div class="compare-bar-fill bar-teal" style="width: 95%;"></div>
+</div>
+<span class="compare-pct" style="color:var(--teal);">95%</span>
+</div>
+<div class="compare-row">
+<span class="compare-label">Uniform</span>
+<div class="compare-bar-track">
+<div class="compare-bar-fill bar-red" style="width: 60%;"></div>
+</div>
+<span class="compare-pct" style="color:var(--red);">60%</span>
+</div>
+</div>
+<!-- Insight card 3: Physics analogy -->
+<div class="insight-card">
+<div class="insight-card-title">
+<i class="fa-solid fa-atom"></i>
           The "Body" Analogy in Physics
         </div>
-        <p>
+<p>
           The simulation models the Church as a <strong class="highlight">Coherent Multi-Agent System</strong>. Individual nodes are autonomous — they have their own will, their own function, their own decision-making capacity — but they share a "Global Objective Function." They all serve the same Head.
         </p>
-        <p>
+<p>
           This is the same principle used in swarm robotics and deep neural networks: no single node knows the full picture, but each one executes its specialized function so well that the <em>emergent behavior</em> of the system as a whole is intelligent, adaptive, and resilient far beyond what any individual could achieve.
         </p>
-        <p>
+<p>
           The difference, and it's a crucial one, is the power source. Swarm systems are powered by optimization algorithms. This one is powered by the <strong>"Holy Spirit Field"</strong> — the shared substrate that connects every node back to Alpha-Prime. That's why the Body doesn't just coordinate. It <em>communes</em>.
         </p>
-      </div>
-
-      <!-- System log: next step -->
-      <div class="sys-log-box">
-        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">DOCUMENT A-014 STATUS:</span> <span class="sys-action">COMPLETE</span></span>
-        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">The 1 Corinthians 12 Theorem: validated. Every gift is critical. No redundancy. No waste.</span></span>
-        <span class="sys-line">&nbsp;</span>
-        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">BODY STATUS:</span> <span style="color:#4ade80;font-weight:700;">HEALTHY. OPTIMIZED. READY.</span></span>
-        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">A healthy Body cannot just sit in the lab. It has to grow.</span></span>
-        <span class="sys-line">&nbsp;</span>
-        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">NEXT SIMULATION:</span> <span class="t-value">DP-14 — Evangelism Wave / Field Boundary Expansion</span></span>
-        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">The Body is ready to move beyond the lab. The mission field awaits.</span></span>
-        <span class="sys-line">&nbsp;</span>
-        <span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">INITIALIZING DP-14...</span></span>
-      </div>
-
-    </section>
-
-  </main><!-- .content-wrapper -->
-
-
-  <!-- =====================================================
+</div>
+<!-- System log: next step -->
+<div class="sys-log-box">
+<span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">DOCUMENT A-014 STATUS:</span> <span class="sys-action">COMPLETE</span></span>
+<span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">The 1 Corinthians 12 Theorem: validated. Every gift is critical. No redundancy. No waste.</span></span>
+<span class="sys-line"> </span>
+<span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">BODY STATUS:</span> <span style="color:#4ade80;font-weight:700;">HEALTHY. OPTIMIZED. READY.</span></span>
+<span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">A healthy Body cannot just sit in the lab. It has to grow.</span></span>
+<span class="sys-line"> </span>
+<span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-key">NEXT SIMULATION:</span> <span class="t-value">DP-14 — Evangelism Wave / Field Boundary Expansion</span></span>
+<span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-note">The Body is ready to move beyond the lab. The mission field awaits.</span></span>
+<span class="sys-line"> </span>
+<span class="sys-line"><span class="sys-prompt">&gt; </span><span class="sys-action">INITIALIZING DP-14...</span></span>
+</div>
+</section>
+</main><!-- .content-wrapper -->
+<!-- =====================================================
        CHAPTER FOOTER
        ===================================================== -->
-  <footer class="chapter-footer">
-
-    <div class="footer-series-info">
-      <div class="footer-series-badge">
-        <i class="fa-solid fa-infinity"></i> &nbsp; The One: Duality Project
+<footer class="chapter-footer">
+<div class="footer-series-info">
+<div class="footer-series-badge">
+<i class="fa-solid fa-infinity"></i>   The One: Duality Project
       </div>
-      <h3 class="footer-series-title">A 22-Chapter Sci-Fi Narrative</h3>
-      <p class="footer-series-desc">
+<h3 class="footer-series-title">A 22-Chapter Sci-Fi Narrative</h3>
+<p class="footer-series-desc">
         Set in 2045 at the Theophysics Research Institute, two mismatched students are handed an impossible task: find the one scenario where Evil wins. Permanently. What they discover will be far more dangerous than either of them expected.
       </p>
-      <div class="footer-chapter-count">Chapter DP-13 of 22 &nbsp;·&nbsp; Spiritual Gifts</div>
-    </div>
-
-    <div class="footer-nav">
-      <a href="dp-12-collective-negentropy.html" class="footer-nav-btn prev">
-        <i class="fa-solid fa-arrow-left"></i>
+<div class="footer-chapter-count">Chapter DP-13 of 22  ·  Spiritual Gifts</div>
+</div>
+<div class="footer-nav">
+<a class="footer-nav-btn prev" href="dp-12-collective-negentropy.html">
+<i class="fa-solid fa-arrow-left"></i>
         Previous Chapter
       </a>
-
-      <a href="index.html" class="footer-nav-btn index">
-        <i class="fa-solid fa-list"></i>
+<a class="footer-nav-btn index" href="index.html">
+<i class="fa-solid fa-list"></i>
         Series Index
       </a>
-
-      <a href="dp-14-evangelism-wave.html" class="footer-nav-btn next">
+<a class="footer-nav-btn next" href="dp-14-evangelism-wave.html">
         Next Chapter
         <i class="fa-solid fa-arrow-right"></i>
-      </a>
+</a>
+</div>
+<div class="footer-credit">
+      The One: Duality Project  ·  Theophysics Research Institute, Sector 4  ·  2045
     </div>
-
-    <div class="footer-credit">
-      The One: Duality Project &nbsp;·&nbsp; Theophysics Research Institute, Sector 4 &nbsp;·&nbsp; 2045
-    </div>
-
-  </footer>
-
-  <!-- =====================================================
+</footer>
+<!-- =====================================================
        SCRIPTS
        ===================================================== -->
-  <script>
+<script>
     // Reading progress bar
     function updateProgress() {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -1744,40 +611,182 @@
     window.addEventListener('scroll', updateActiveTabs, { passive: true });
     updateActiveTabs();
   </script>
-
-<script src="/glossary-linker.js" defer></script>
+<script defer="" src="/glossary-linker.js"></script>
 <section class="ring-nav">
-  <div class="ring-header">
-    <h2>Related Work</h2>
-    <p>Core article, supporting evidence, and broader context</p>
-  </div>
-  <div class="ring-tier ring-1 open">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 1 — This Article</span>
-      <span class="ring-tier-desc">The core argument</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
-    </div>
-    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
-  </div>
-  <div class="ring-tier ring-2">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
-      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
-    </div>
-    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
-  </div>
-  <div class="ring-tier ring-3">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 3 — Broader Context</span>
-      <span class="ring-tier-desc">Related topics across the framework</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
-    </div>
-    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
-  </div>
+<div class="ring-header">
+<h2>Related Work</h2>
+<p>Core article, supporting evidence, and broader context</p>
+</div>
+<div class="ring-tier ring-1 open">
+<div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+<div class="ring-tier-dot"></div>
+<span class="ring-tier-label">Ring 1 — This Article</span>
+<span class="ring-tier-desc">The core argument</span>
+<i class="fas fa-chevron-right ring-tier-chevron"></i>
+</div>
+<div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+</div>
+<div class="ring-tier ring-2">
+<div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+<div class="ring-tier-dot"></div>
+<span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+<span class="ring-tier-desc">Deeper dives and formal treatments</span>
+<i class="fas fa-chevron-right ring-tier-chevron"></i>
+</div>
+<div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+</div>
+<div class="ring-tier ring-3">
+<div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+<div class="ring-tier-dot"></div>
+<span class="ring-tier-label">Ring 3 — Broader Context</span>
+<span class="ring-tier-desc">Related topics across the framework</span>
+<i class="fas fa-chevron-right ring-tier-chevron"></i>
+</div>
+<div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+</div>
 </section>
+<script defer="" src="https://faiththruphysics.com/site-shell/frame.js"></script>
+
+
+<div class="tp-sticky" id="stickyPlayer">
+  <div class="tp-sticky-header">
+    <div class="tp-sticky-dot" id="stickyDot" style="background:#d4af37;"></div>
+    <span class="tp-sticky-label" id="stickyLabel" style="color:#d4af37;">Audio</span>
+    <button class="tp-sticky-close" onclick="tpCloseSticky()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="tp-sticky-controls">
+    <button class="tp-play" id="stickyPlayBtn" onclick="tpStickyToggle()" style="border-color:#d4af37;color:#d4af37;"><i class="fas fa-play"></i></button>
+    <div class="tp-track" onclick="tpStickySeek(event)">
+      <div class="tp-fill" id="stickyFill" style="background:#d4af37;"></div>
+    </div>
+    <span class="tp-time" id="stickyTime">0:00</span>
+  </div>
+</div>
+<script>
+(function(){
+let tpCurrentId=null,tpStickyDismissed=false;
+const tpColors={};
+function tpRegister(id,color,label){tpColors[id]={color:color,label:label};}
+function tpFmt(s){if(isNaN(s)||!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function tpToggle(id,btn){
+  const a=document.getElementById(id);
+  document.querySelectorAll('.tp-player-block audio').forEach(x=>{if(x.id!==id&&!x.paused){x.pause();tpUpdateBtns(x.id,false);}});
+  if(a.paused){a.play();tpCurrentId=id;tpStickyDismissed=false;tpUpdateBtns(id,true);}
+  else{a.pause();tpCurrentId=null;tpUpdateBtns(id,false);}
+}
+function tpUpdateBtns(id,playing){
+  document.querySelectorAll('[data-audio="'+id+'"]').forEach(b=>{const i=b.querySelector('i');if(i)i.className='fas fa-'+(playing?'pause':'play');});
+  if(id===tpCurrentId||!playing){const si=document.querySelector('#stickyPlayBtn i');if(si)si.className='fas fa-'+(playing?'pause':'play');}
+}
+function tpSeek(e,id){const a=document.getElementById(id);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;}
+function tpMute(id,btn){const a=document.getElementById(id);a.muted=!a.muted;btn.querySelector('i').className='fas fa-volume-'+(a.muted?'mute':'up');}
+function tpWire(id){
+  const a=document.getElementById(id);if(!a)return;
+  a.addEventListener('timeupdate',()=>{
+    const fill=document.getElementById(id.replace('Audio','Fill'));
+    const time=document.getElementById(id.replace('Audio','Time'));
+    if(fill&&a.duration)fill.style.width=(a.currentTime/a.duration*100)+'%';
+    if(time)time.textContent=tpFmt(a.currentTime);
+    if(id===tpCurrentId){const sf=document.getElementById('stickyFill');const st=document.getElementById('stickyTime');if(sf&&a.duration)sf.style.width=(a.currentTime/a.duration*100)+'%';if(st)st.textContent=tpFmt(a.currentTime);}
+  });
+  a.addEventListener('ended',()=>{tpUpdateBtns(id,false);if(tpCurrentId===id)tpCurrentId=null;});
+}
+window.tpToggle=tpToggle;window.tpSeek=tpSeek;window.tpMute=tpMute;
+window.tpSetSpeed=function(v){
+  const rate=parseFloat(v)||1;
+  document.querySelectorAll('.tp-player-block audio').forEach(a=>{a.playbackRate=rate;});
+};
+
+// Browser TTS fallback
+window.tpBrowserTts=function(){
+  const main=document.querySelector('[data-tts-source],main,article,#main-content,.content');
+  const text=main?main.innerText.replace(/\s+/g,' ').trim().slice(0,12000):'';
+  if(!text||!window.speechSynthesis){alert('Browser TTS not available');return;}
+  const u=new SpeechSynthesisUtterance(text);u.rate=1;u.pitch=1;window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
+};
+
+// Fetch tracks from worker and bind sources.
+// TTS comes from the article-level slug.
+// Deep Dive, Podcast, Critique come from the series slug as a shared track,
+// falling back to an article-level override if one exists.
+function tpBindTracks(){
+  const block=document.querySelector('.tp-player-block');
+  if(!block)return;
+  const lookup=block.dataset.audioLookup;
+  const seriesLookup=block.dataset.seriesLookup;
+  if(!lookup)return;
+
+  function toMap(tracks){
+    const m={};
+    tracks.forEach(t=>{
+      if(t.mode)m[t.mode]=t.url;
+      if(t.is_default)m['__default__']=t.url;
+    });
+    return m;
+  }
+  function setSrc(id,url){
+    if(!url)return;
+    const a=document.getElementById(id);
+    if(a){a.src=url;a.preload='metadata';}
+  }
+
+  // Fetch article tracks first, then series tracks for shared slots
+  const articleP=fetch(lookup).then(r=>r.json()).catch(()=>({tracks:[]}));
+  const seriesP=(seriesLookup&&seriesLookup!==lookup)
+    ?fetch(seriesLookup).then(r=>r.json()).catch(()=>({tracks:[]}))
+    :Promise.resolve({tracks:[]});
+
+  Promise.all([articleP,seriesP]).then(([articleData,seriesData])=>{
+    const art=toMap(articleData.tracks||[]);
+    const ser=toMap(seriesData.tracks||[]);
+
+    // TTS: article only
+    setSrc('tpMainAudio', art['tts']||art['__default__']);
+    // Deep Dive, Podcast, Critique: article overrides series, else series shared track
+    setSrc('tpDeepAudio',     art['deep']    ||ser['deep']    ||ser['__default__']);
+    setSrc('tpDebateAudio',   art['podcast'] ||ser['podcast'] ||ser['__default__']);
+    setSrc('tpCritiqueAudio', art['critique']||ser['critique']||ser['__default__']);
+
+    const anyAudio=art['tts']||art['__default__']||ser['__default__'];
+    if(!anyAudio){
+      const fb=document.getElementById('tpTtsFallback');
+      if(fb)fb.style.display='block';
+    }
+  });
+}
+
+tpRegister('tpMainAudio','#d4af37','Read Aloud');
+tpRegister('tpDeepAudio','#4a9eff','Deep Dive');
+tpRegister('tpDebateAudio','#a855f7','Podcast');
+tpRegister('tpCritiqueAudio','#22c55e','Critique');
+tpWire('tpMainAudio');tpWire('tpDeepAudio');tpWire('tpDebateAudio');tpWire('tpCritiqueAudio');
+tpBindTracks();
+
+// Sticky player
+const stickyEl=document.getElementById('stickyPlayer');
+if(stickyEl){
+  function updateSticky(){
+    if(!tpCurrentId||tpStickyDismissed){stickyEl.classList.remove('tp-visible');return;}
+    let outOfView=true;
+    document.querySelectorAll('.tp-player-block').forEach(b=>{const r=b.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight)outOfView=false;});
+    if(outOfView){
+      const info=tpColors[tpCurrentId]||{color:'#d4af37',label:'Audio'};
+      document.getElementById('stickyDot').style.background=info.color;
+      document.getElementById('stickyLabel').style.color=info.color;
+      document.getElementById('stickyLabel').textContent=info.label;
+      document.getElementById('stickyPlayBtn').style.borderColor=info.color;
+      document.getElementById('stickyPlayBtn').style.color=info.color;
+      document.getElementById('stickyFill').style.background=info.color;
+      stickyEl.classList.add('tp-visible');
+    }else{stickyEl.classList.remove('tp-visible');}
+  }
+  window.tpStickyToggle=function(){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);if(a.paused){a.play();tpUpdateBtns(tpCurrentId,true);}else{a.pause();tpUpdateBtns(tpCurrentId,false);}};
+  window.tpStickySeek=function(e){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;};
+  window.tpCloseSticky=function(){tpStickyDismissed=true;stickyEl.classList.remove('tp-visible');};
+  window.addEventListener('scroll',updateSticky,{passive:true});
+  setInterval(updateSticky,500);
+}
+})();
+</script>
 </body>
 </html>

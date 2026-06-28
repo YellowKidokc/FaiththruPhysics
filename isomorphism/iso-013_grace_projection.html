@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The grace operator G = |+1⟩⟨+1| + |+1⟩⟨−1| is idempotent (G² = G), non-unitary (G†G ≠ I), and rank-deficient — the mathematical formalization of sola gratia, ephapax (once-for-all), and the irreversibility of regeneration.">
+  <title>ISO-013 · Grace Operator — The Idempotent Projection · Theophysics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
+      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
+      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
+      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
+      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
+      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
+      --max-width:1100px; --section-gap:5rem;
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.65;}
+    .container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+    .site-header{border-bottom:1px solid var(--border);padding:.9rem 0;position:sticky;top:0;
+      background:rgba(10,10,10,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:100;}
+    .site-header .container{display:flex;align-items:center;justify-content:space-between;}
+    .site-brand{font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--text-muted);text-decoration:none;}
+    .site-brand span{color:var(--gold);}
+    .iso-badge{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);
+      border:1px solid var(--border-gold);padding:.22rem .65rem;border-radius:3px;letter-spacing:.12em;}
+    .hero{padding:5rem 0 4rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+    .hero-bg-number{position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
+      font-family:var(--font-display);font-size:clamp(12rem,28vw,26rem);font-weight:700;
+      color:var(--gold-faded);line-height:1;pointer-events:none;user-select:none;letter-spacing:-.05em;}
+    .hero-iso-id{font-family:var(--font-mono);font-size:.8rem;color:var(--gold);
+      letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
+    .hero-iso-id::after{content:'';display:inline-block;width:80px;height:1px;
+      background:linear-gradient(90deg,var(--gold),transparent);}
+    .hero-title{font-family:var(--font-display);font-size:clamp(2rem,5.5vw,3.8rem);font-weight:700;
+      text-transform:uppercase;letter-spacing:.04em;color:#fff;line-height:1.08;margin-bottom:1rem;}
+    .hero-subtitle{font-family:var(--font-mono);font-size:clamp(.85rem,2vw,1.05rem);
+      color:var(--gold);margin-bottom:2rem;letter-spacing:.06em;}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2.5rem;}
+    .tag{font-family:var(--font-display);font-size:.62rem;font-weight:500;letter-spacing:.14em;
+      text-transform:uppercase;padding:.28rem .7rem;border-radius:2px;border:1px solid;
+      display:inline-flex;align-items:center;gap:.35rem;}
+    .tag-gold{color:var(--gold);border-color:var(--border-gold);background:var(--gold-faded);}
+    .tag-green{color:var(--success);border-color:rgba(63,185,80,.25);background:rgba(63,185,80,.05);}
+    .tag-blue{color:var(--info);border-color:rgba(121,192,255,.25);background:rgba(121,192,255,.05);}
+    .tag-purple{color:var(--purple);border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.05);}
+    .tag-warn{color:var(--warn);border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.05);}
+    .hero-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+      background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;max-width:780px;}
+    .hero-meta-item{padding:1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .hero-meta-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-dim);margin-bottom:.25rem;}
+    .hero-meta-value{font-family:var(--font-display);font-size:.82rem;font-weight:500;
+      color:var(--text);letter-spacing:.04em;}
+    .hero-meta-value.gold{color:var(--gold);}
+    .hero-meta-value.green{color:var(--success);}
+    .hero-meta-value.blue{color:var(--info);}
+    .hero-meta-value.purple{color:var(--purple);}
+    .main-content{padding:0 0 7rem;}
+    .iso-section{padding:var(--section-gap) 0;border-bottom:1px solid var(--border);}
+    .iso-section:last-child{border-bottom:none;}
+    .section-header{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:2.5rem;}
+    .section-num{font-family:var(--font-display);font-size:6rem;font-weight:700;line-height:.85;
+      color:var(--gold-faded-2);letter-spacing:-.03em;user-select:none;min-width:100px;
+      text-align:right;padding-top:.1em;}
+    .section-title-group{padding-top:.3rem;}
+    .section-title{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.85rem);
+      font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:.5rem;}
+    .section-divider{height:2px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
+      border-radius:1px;margin-bottom:.5rem;}
+    .section-subtitle{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);
+      letter-spacing:.1em;text-transform:uppercase;}
+    .claim-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);
+      padding:1.75rem 2rem;border-radius:0 6px 6px 0;margin-bottom:1.5rem;font-size:1.03rem;line-height:1.75;}
+    .kill-condition{background:var(--surface-2);border:1px solid rgba(248,81,73,.25);
+      border-left:3px solid var(--danger);padding:1.25rem 1.75rem;border-radius:0 6px 6px 0;}
+    .kill-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--danger);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
+    .iso-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;}
+    .iso-table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:580px;}
+    .iso-table thead tr{background:var(--surface-2);border-bottom:1px solid var(--border-gold);}
+    .iso-table thead th{font-family:var(--font-display);font-size:.62rem;font-weight:600;
+      letter-spacing:.16em;text-transform:uppercase;padding:.9rem 1.1rem;text-align:left;}
+    .iso-table thead th.col-physics{color:var(--info);}
+    .iso-table thead th.col-theology{color:var(--purple);}
+    .iso-table thead th.col-label{color:var(--text-muted);}
+    .iso-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+    .iso-table tbody tr:last-child{border-bottom:none;}
+    .iso-table tbody tr:hover{background:rgba(212,175,55,.04);}
+    .iso-table td{padding:.9rem 1.1rem;vertical-align:top;line-height:1.58;}
+    .td-label{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--gold);
+      text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
+    .td-physics{color:var(--info);}
+    .td-theology{color:var(--purple);}
+    .equation-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1.25rem 1.5rem;margin-bottom:1rem;overflow-x:auto;}
+    .equation-block .eq-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;}
+    .equation{font-family:var(--font-mono);font-size:1rem;color:var(--gold);line-height:1.8;white-space:pre-wrap;}
+    .eq-note{font-size:.82rem;color:var(--text-muted);margin-top:.5rem;line-height:1.55;}
+    .accent-block{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;
+      border-radius:0 6px 6px 0;margin-bottom:1rem;}
+    .accent-block.gold{border-left:3px solid var(--gold);}
+    .accent-block.green{border-left:3px solid var(--success);}
+    .accent-block.warn{border-left:3px solid var(--warn);}
+    .accent-block.blue{border-left:3px solid var(--info);}
+    .accent-block.danger{border-left:3px solid var(--danger);}
+    .accent-label{font-family:var(--font-display);font-size:.63rem;font-weight:600;
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
+    .accent-block.gold .accent-label{color:var(--gold);}
+    .accent-block.green .accent-label{color:var(--success);}
+    .accent-block.warn .accent-label{color:var(--warn);}
+    .accent-block.blue .accent-label{color:var(--info);}
+    .accent-block.danger .accent-label{color:var(--danger);}
+    .accent-block p{font-size:.9rem;line-height:1.65;}
+    .iso-quote{font-family:var(--font-quote);font-style:italic;font-size:1.05rem;color:var(--text);
+      padding:1.25rem 1.5rem;background:var(--gold-faded-2);border:1px solid var(--border-gold);
+      border-radius:6px;line-height:1.75;margin-bottom:1rem;}
+    .iso-quote-source{font-family:var(--font-mono);font-style:normal;font-size:.65rem;
+      letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:.5rem;display:block;}
+    .classification-banner{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;
+      text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;}
+    .classification-banner::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold);}
+    .classification-banner::after{content:'';display:inline-block;flex:1;height:1px;
+      background:linear-gradient(90deg,var(--border-gold),transparent);}
+    .test-grid{display:grid;gap:.75rem;margin-bottom:1.5rem;}
+    .test-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;}
+    .test-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:.1rem;}
+    .test-icon.pass{background:rgba(63,185,80,.12);color:var(--success);border:1px solid rgba(63,185,80,.25);}
+    .test-icon.warn{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+    .test-label{font-family:var(--font-display);font-size:.68rem;font-weight:600;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.25rem;}
+    .test-text{font-size:.88rem;color:var(--text);line-height:1.6;}
+    .ref-block{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;
+      padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1rem;align-items:flex-start;}
+    .ref-icon{font-size:.85rem;color:var(--gold);margin-top:.1rem;flex-shrink:0;}
+    .ref-content{flex:1;}
+    .ref-title{font-family:var(--font-display);font-size:.78rem;font-weight:600;letter-spacing:.08em;
+      text-transform:uppercase;color:var(--text);margin-bottom:.2rem;}
+    .ref-detail{font-size:.8rem;color:var(--text-muted);line-height:1.55;}
+    .page-footer{border-top:1px solid var(--border);padding:2.5rem 0;}
+    .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
+    .footer-meta{font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);line-height:1.9;}
+    .footer-meta span{color:var(--text-muted);}
+    .footer-back{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;padding:.5rem .8rem;border:1px solid var(--border);border-radius:4px;transition:all .2s;}
+    .footer-back:hover{color:var(--gold);border-color:var(--border-gold);}
+    .back-link{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;margin-bottom:2rem;transition:color .2s;}
+    .back-link:hover{color:var(--gold);}
+    .scroll-top{position:fixed;bottom:1.75rem;right:1.75rem;width:38px;height:38px;
+      background:var(--surface);border:1px solid var(--border);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;color:var(--text-muted);
+      cursor:pointer;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
+      font-size:.75rem;z-index:50;}
+    .scroll-top.visible{opacity:1;visibility:visible;}
+    .scroll-top:hover{border-color:var(--border-gold);color:var(--gold);}
+    code{font-family:var(--font-mono);font-size:.85em;color:var(--gold);
+      background:var(--gold-faded);padding:.1em .4em;border-radius:3px;}
+    .section-intro{font-size:.95rem;line-height:1.78;color:var(--text);margin-bottom:2rem;
+      padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+    p{margin-bottom:1rem;}
+    p:last-child{margin-bottom:0;}
+    strong{color:#e6edf3;font-weight:600;}
+    .prose{font-size:.95rem;line-height:1.75;color:var(--text);margin-bottom:1.5rem;}
+    ul{padding-left:1.4rem;margin-bottom:1rem;}
+    ul li{margin-bottom:.4rem;font-size:.92rem;line-height:1.65;}
+    @media(max-width:768px){
+      .container{padding:0 1.1rem;}
+      .hero{padding:3rem 0 2.5rem;}
+      :root{--section-gap:3.5rem;}
+      .section-header{grid-template-columns:1fr;gap:.4rem;}
+      .section-num{font-size:3.8rem;text-align:left;min-width:auto;line-height:1;}
+    }
+    @media(max-width:520px){
+      .hero-title{font-size:1.9rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
+      <div class="iso-badge">ISO-013</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      <div aria-hidden="true" class="hero-bg-number">013</div>
+      <div class="hero-iso-id"><i class="fas fa-project-diagram"></i> ISO-013 &middot; Linear Algebra &harr; Soteriology</div>
+      <h1 class="hero-title">Grace Operator &mdash; The Idempotent Projection</h1>
+      <p class="hero-subtitle">G&sup2; = G, G&dagger;G &ne; I &mdash; Why Once Is Enough</p>
+      <div class="hero-tags">
+        <span class="tag tag-gold"><i class="fas fa-flask"></i> Status: Testing</span>
+        <span class="tag tag-blue">Linear Algebra</span>
+        <span class="tag tag-blue">Operator Theory</span>
+        <span class="tag tag-purple">Reformed Soteriology</span>
+        <span class="tag tag-gold">Ephapax</span>
+        <span class="tag tag-green">Medium Confidence</span>
+        <span class="tag tag-gold">Structural ISO &middot; L3</span>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">ID</div>
+          <div class="hero-meta-value gold">ISO-013</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Type</div>
+          <div class="hero-meta-value">Structural ISO</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain A</div>
+          <div class="hero-meta-value blue">Linear Algebra</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain B</div>
+          <div class="hero-meta-value purple">Reformed Soteriology</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Level</div>
+          <div class="hero-meta-value gold">L3</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Scope</div>
+          <div class="hero-meta-value" style="color:var(--warn);">Reformed Only</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- SECTION 01: THE CLAIM -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">01</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Claim</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">What is being asserted &mdash; and its scope limitation</div>
+          </div>
+        </div>
+
+        <div class="classification-banner">
+          <span>Structural Isomorphism &middot; Non-Unitary Projection &middot; Sola Gratia &middot; Registry Entry ISO-013</span>
+        </div>
+
+        <div class="claim-block">
+          <p>Define the grace operator G as a non-unitary projection that maps both moral eigenstates to the redeemed state |+1&rang;. This operator has four mathematically derivable properties: <strong>G&sup2; = G</strong> (idempotent &mdash; applying it twice is identical to applying it once), <strong>G&dagger;G &ne; I</strong> (non-unitary &mdash; it breaks time-reversal symmetry and is therefore irreversible), <strong>rank-deficient</strong> (information about the prior state is destroyed), and <strong>external origin</strong> (G is not generated by the system's own Hamiltonian &mdash; see ISO-012).</p>
+          <p>These four mathematical properties map exactly onto four theological claims about grace in the Reformed tradition: (1) once is enough (ephapax), (2) regeneration is irreversible, (3) the old self is genuinely destroyed ("new creation"), and (4) grace originates outside the human condition. The mapping is structural, not metaphorical. The math derives the theology independently.</p>
+        </div>
+
+        <div class="accent-block warn">
+          <div class="accent-label"><i class="fas fa-exclamation-triangle"></i> Scope Limitation &mdash; Reformed Framework</div>
+          <p>Catholic sacramental theology models grace as <strong>continuous</strong> &mdash; dispensed through repeated sacraments over a lifetime, not as a one-shot operator. The idempotent mapping is specifically <strong>Protestant-Reformed</strong>. A Catholic formalization would use a different operator structure (perhaps a continuous semigroup rather than an idempotent projection). This is not a flaw in the isomorphism but a scope limitation: it maps Reformed soteriology, not all Christian soteriology.</p>
+        </div>
+
+        <div class="kill-condition">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
+          <p>If grace effects were shown to be <strong>reversible by internal operations alone</strong> &mdash; that is, if the fallen state could be restored by self-generated evolution after grace application &mdash; the mapping breaks. This would require G to be unitary, contradicting G&dagger;G &ne; I. The kill condition is: a documented case of genuine regeneration followed by genuine de-regeneration through purely internal (non-apostate, non-external-cause) means.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 02: DOMAIN A — MATHEMATICS -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">02</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Domain A &mdash; Mathematics</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">The grace operator: definition, matrix form, and derived properties</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          In the two-dimensional Hilbert space from ISO-012 with basis {|+1&rang;, |&minus;1&rang;}, define the grace operator G as the map that sends both eigenstates to the redeemed state |+1&rang;.
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Grace Operator &mdash; Dirac Notation</div>
+          <div class="equation">G = |+1&rang;&lang;+1| + |+1&rang;&lang;&minus;1|</div>
+          <div class="eq-note">G maps the redeemed state to itself (G|+1&rang; = |+1&rang;) and maps the fallen state to the redeemed state (G|&minus;1&rang; = |+1&rang;). All states map to the same output: redemption.</div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Matrix Form in the {|+1&rang;, |&minus;1&rang;} Basis</div>
+          <div class="equation">G = [[1, 1],
+     [0, 0]]</div>
+          <div class="eq-note">Row 1 maps both inputs to the +1 component. Row 2 maps both inputs to zero. The matrix is rank-1 (rank-deficient): both columns are proportional. This is the matrix of a projection onto the line spanned by |+1&rang;, obliquely along |&minus;1&rang;.</div>
+        </div>
+
+        <p class="prose">From this definition, four key properties follow as mathematical theorems:</p>
+
+        <div class="equation-block">
+          <div class="eq-label">Property 1 &mdash; Idempotency: G&sup2; = G</div>
+          <div class="equation">G&sup2; = [[1,1],[0,0]] &middot; [[1,1],[0,0]] = [[1,1],[0,0]] = G</div>
+          <div class="eq-note">Applying G twice produces the same result as applying it once. The second application finds the system already in the redeemed state and maps it to itself. Idempotency is the algebraic signature of "once is enough."</div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Property 2 &mdash; Non-Unitarity: G&dagger;G &ne; I</div>
+          <div class="equation">G&dagger; = [[1,0],[1,0]]
+
+G&dagger;G = [[1,0],[1,0]] &middot; [[1,1],[0,0]] = [[1,1],[1,1]] &ne; [[1,0],[0,1]] = I</div>
+          <div class="eq-note">A unitary operator preserves inner products and is reversible. G is not unitary: G&dagger;G &ne; I. This means G breaks time-reversal symmetry &mdash; there is no G&minus;&sup1; that "undoes" grace. The operation is physically and mathematically irreversible.</div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Property 3 &mdash; Rank Deficiency</div>
+          <div class="equation">rank(G) = 1  (not 2)
+
+det(G) = (1)(0) &minus; (1)(0) = 0
+
+G is not invertible.</div>
+          <div class="eq-note">G has rank 1: its image is a one-dimensional subspace (the redeemed state). The null space of G contains |&minus;1&rang; &minus; |+1&rang;. Information about whether the input was +1 or &minus;1 is destroyed in the output. Both inputs map to the same output.</div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Property 4 &mdash; External Origin (from ISO-012)</div>
+          <div class="equation">G is NOT generated by any H_system:
+
+If G = e^(&minus;iH_system t/&hbar;) for some H_system,
+then G would be unitary. But G is non-unitary.
+
+Therefore G cannot be generated by the system's own Hamiltonian.</div>
+          <div class="eq-note">Non-unitarity proves externality. Any operator that can be written as e^(&minus;iHt) for a Hermitian H is unitary by construction. Since G is non-unitary, it cannot come from within the system. The externality of grace is a mathematical theorem, not merely a theological assertion.</div>
+        </div>
+      </section>
+
+      <!-- SECTION 03: DOMAIN B — THEOLOGY -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">03</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Domain B &mdash; Theology</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Reformed grace: the four corresponding theological properties</div>
+          </div>
+        </div>
+
+        <div class="iso-quote">
+          For by grace you have been saved through faith. And this is not your own doing; it is the gift of God, not a result of works, so that no one may boast.
+          <span class="iso-quote-source">Ephesians 2:8&ndash;9 (ESV)</span>
+        </div>
+
+        <p class="prose">Reformed theology attributes four structural properties to saving grace. These four properties map exactly onto the four mathematical properties of G derived above:</p>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-1"></i> Externality (Ephesians 2:8&ndash;9)</div>
+          <p>Grace originates entirely outside the human system. It is "not your own doing" and "not a result of works." The mathematical equivalent: G cannot be generated by H_human. Any operator generated from within the system is unitary; G is non-unitary; therefore G comes from outside. <em>Sola gratia</em> is mathematically entailed by G's non-unitarity.</p>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-2"></i> Sufficiency &mdash; Ephapax (Hebrews 10:14)</div>
+          <p>"By a single offering he has perfected for all time those who are being sanctified." The Greek word <em>ephapax</em> means "once for all." The mathematical equivalent: G&sup2; = G. Applying grace a second time produces the same result as applying it once. Once-for-all-ness is idempotency.</p>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-3"></i> Irrevocability (Romans 11:29)</div>
+          <p>"The gifts and the calling of God are irrevocable." The mathematical equivalent: G&dagger;G &ne; I. Since G is non-unitary, there exists no G&minus;&sup1;. Once applied, the operator cannot be undone by any internal process. The irrevocability of grace is the theological statement of G's non-invertibility.</p>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-4"></i> New Creation (2 Corinthians 5:17)</div>
+          <p>"If anyone is in Christ, he is a new creation; the old has passed away." The mathematical equivalent: G is rank-deficient. Information about the prior state (fallen, |&minus;1&rang;) is destroyed in the output. The new creation is not the old creation modified &mdash; it is a rank-collapse, an information-theoretic new start. The old has genuinely "passed away."</p>
+        </div>
+      </section>
+
+      <!-- SECTION 04: PROPERTY MAPPING TABLE -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">04</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Property Mapping</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Mathematical properties mapped to theological properties</div>
+          </div>
+        </div>
+
+        <div class="iso-table-wrap">
+          <table class="iso-table">
+            <thead>
+              <tr>
+                <th class="col-physics">Mathematical Property</th>
+                <th class="col-theology">Theological Property</th>
+                <th class="col-label" style="width:200px;">Scripture</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-physics"><strong>G&sup2; = G</strong> (idempotent) &mdash; applying twice = applying once; once is mathematically sufficient</td>
+                <td class="td-theology">Ephapax &mdash; once is enough; "by a single offering he has perfected for all time"</td>
+                <td style="color:var(--text-muted);font-size:.8rem;">Hebrews 10:14; Hebrews 7:27; Romans 6:10</td>
+              </tr>
+              <tr>
+                <td class="td-physics"><strong>G&dagger;G &ne; I</strong> (non-unitary) &mdash; breaks time-reversal symmetry; operation cannot be undone by any internal process</td>
+                <td class="td-theology">Irrevocable &mdash; "the gifts and the calling of God are irrevocable"</td>
+                <td style="color:var(--text-muted);font-size:.8rem;">Romans 11:29; John 10:28&ndash;29; Phil 1:6</td>
+              </tr>
+              <tr>
+                <td class="td-physics"><strong>External origin</strong> &mdash; non-unitarity proves G cannot be generated by H_system; must come from outside</td>
+                <td class="td-theology">Sola gratia &mdash; "not your own doing; it is the gift of God, not a result of works"</td>
+                <td style="color:var(--text-muted);font-size:.8rem;">Ephesians 2:8&ndash;9; Titus 3:5; John 1:13</td>
+              </tr>
+              <tr>
+                <td class="td-physics"><strong>Rank-deficient</strong> (rank 1) &mdash; information about prior state (|&minus;1&rang;) is destroyed; both inputs map to same output</td>
+                <td class="td-theology">New creation &mdash; "old has passed away; behold, the new has come"; not modification but replacement</td>
+                <td style="color:var(--text-muted);font-size:.8rem;">2 Corinthians 5:17; Galatians 2:20; Romans 6:6</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 05: SEMI-PELAGIAN TEST -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">05</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Semi-Pelagian Test</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">What happens when human effort is mixed with grace</div>
+          </div>
+        </div>
+
+        <p class="prose">Semi-Pelagianism holds that salvation requires a mixture of divine grace and human effort. Define the mixed operator G' &mdash; a blend of the grace operator G and the self-evolution operator U:</p>
+
+        <div class="equation-block">
+          <div class="eq-label">The Semi-Pelagian Mixed Operator</div>
+          <div class="equation">G' = &alpha;G + (1 &minus; &alpha;)U       where 0 &lt; &alpha; &lt; 1</div>
+          <div class="eq-note">&alpha; represents the "grace fraction" (how much of salvation comes from grace) and (1&minus;&alpha;) represents the human effort fraction. Semi-Pelagianism requires &alpha; strictly between 0 and 1.</div>
+        </div>
+
+        <p class="prose">Now compute G'&sup2;:</p>
+
+        <div class="equation-block">
+          <div class="eq-label">Computing (G')&sup2;</div>
+          <div class="equation">G'&sup2; = (&alpha;G + (1&minus;&alpha;)U)&sup2;
+     = &alpha;&sup2;G&sup2; + &alpha;(1&minus;&alpha;)GU + &alpha;(1&minus;&alpha;)UG + (1&minus;&alpha;)&sup2;U&sup2;
+     = &alpha;&sup2;G + &alpha;(1&minus;&alpha;)GU + &alpha;(1&minus;&alpha;)UG + (1&minus;&alpha;)&sup2;U&sup2;</div>
+          <div class="eq-note">Using G&sup2; = G and U&sup2; = I (if U is unitary). The cross terms GU and UG do not simplify to G in general since G and U do not commute.</div>
+        </div>
+
+        <div class="accent-block danger">
+          <div class="accent-label"><i class="fas fa-times-circle"></i> Result: The Semi-Pelagian Operator is NOT Idempotent</div>
+          <p><strong>G'&sup2; &ne; G' unless &alpha; = 1.</strong> The mixed operator requires repeated application to converge &mdash; it is not self-sufficient in a single application. This contradicts the <em>ephapax</em> (once-for-all) character of grace. <strong>Mathematical sola gratia: only &alpha; = 1 preserves idempotency.</strong> Any admixture of self-effort destroys the once-for-all property.</p>
+        </div>
+
+        <div class="accent-block warn">
+          <div class="accent-label"><i class="fas fa-balance-scale"></i> Honest Scope Note</div>
+          <p>This is not a refutation of Catholic sacramental theology per se. It is a demonstration that the idempotent formalism specifically captures <em>Protestant Reformed</em> soteriology. Catholic theology models grace through a continuous sacramental semigroup &mdash; a different mathematical structure that may be equally valid as a formalization of a different theological tradition. The isomorphism maps Reformed claims; it does not adjudicate between Reformed and Catholic theology.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 06: SEPARATOR TESTS + SCRIPTURE -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">06</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Separator Tests &amp; Scripture</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Within the Reformed framework, tests pass cleanly</div>
+          </div>
+        </div>
+
+        <div class="test-grid">
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Swap Test &mdash; PASSED (within Reformed Framework)</div>
+              <div class="test-text">Replace "idempotent non-unitary projection" with "saving grace" and "eigenvalue flip" with "regeneration" &mdash; the mathematical properties of idempotency, non-unitarity, externality, and rank-deficiency map bidirectionally onto the four Reformed grace properties (ephapax, irrevocability, sola gratia, new creation) without distortion in either direction.</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Bidirectional Prediction &mdash; PASSED</div>
+              <div class="test-text">Math &rarr; Theology: Non-unitarity predicts irrevocability &mdash; and Reformed theology independently claims grace is irrevocable (perseverance of the saints). Theology &rarr; Math: The ephapax ("once for all") claim predicts idempotency &mdash; and G&sup2; = G is derivable independently from the definition of the operator. Neither domain borrowed the property from the other.</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon warn"><i class="fas fa-exclamation"></i></div>
+            <div>
+              <div class="test-label">Scope Limitation &mdash; Reformed Only</div>
+              <div class="test-text">The idempotent formalism is scoped to Reformed soteriology. Arminian theology (conditional security), Catholic sacramental theology (continuous grace through sacraments), and Eastern Orthodox theosis (gradual participation) each require different operator structures. This is an honest constraint, not a fatal flaw: it tells us something about what Reformed theology is formally claiming.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kill-condition">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Falsification Condition</div>
+          <p>If grace effects were shown to be <strong>reversible by internal operations alone</strong> &mdash; that is, if a genuinely regenerated person could return to the unregenerate state through their own internal process without any external undoing &mdash; the mapping breaks. This would require the existence of G&minus;&sup1;, contradicting G&dagger;G &ne; I. (Apostasy does not falsify this: apostasy involves the abandonment of what was merely professed, not the reversal of genuine regeneration &mdash; a claim that is itself part of the Reformed framework, and part of what the formalism is formalizing.)</p>
+        </div>
+
+        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Scripture Correspondences</h3>
+
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book-open"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Ephesians 2:8&ndash;9 &mdash; Externality</div>
+            <div class="ref-detail">"By grace you have been saved through faith. And this is not your own doing; it is the gift of God, not a result of works." The "not your own doing" is the theological statement of G's non-unitarity: the operator cannot originate from within the system.</div>
+          </div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book-open"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Hebrews 10:14 &mdash; Idempotency</div>
+            <div class="ref-detail">"By a single offering he has perfected for all time those who are being sanctified." Ephapax: once-for-all. G&sup2; = G: applying grace twice = applying it once. The single offering is mathematically sufficient by idempotency.</div>
+          </div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book-open"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Romans 11:29 &mdash; Non-Invertibility</div>
+            <div class="ref-detail">"The gifts and the calling of God are irrevocable." Irrevocability = G&minus;&sup1; does not exist. The mathematical irrevocability (non-existence of an inverse) maps to the theological irrevocability of divine gifts.</div>
+          </div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book-open"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">2 Corinthians 5:17 &mdash; Rank Deficiency</div>
+            <div class="ref-detail">"If anyone is in Christ, he is a new creation; the old has passed away; behold, the new has come." Rank-deficiency: the output no longer carries information about the prior state. "Old has passed away" = prior-state information destroyed in the projection.</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          <div><span>ID</span> ISO-013 &mdash; Grace Operator: The Idempotent Projection</div>
+          <div><span>Type</span> Structural Isomorphism &middot; Level L3</div>
+          <div><span>Domain A</span> Linear Algebra / Operator Theory</div>
+          <div><span>Domain B</span> Reformed Soteriology</div>
+          <div><span>Scope</span> Protestant-Reformed; not all Christian traditions</div>
+          <div><span>Connects</span> ISO-012 (Sign Operator) &middot; ISO-016 (Eschatological Attractors) &middot; ISO-033 (Pharmacology/Grace)</div>
+          <div><span>Registry</span> Theophysics Isomorphism Registry &middot; faiththruphysics.com</div>
+        </div>
+        <a href="index.html" class="footer-back"><i class="fas fa-arrow-left"></i> Back to Registry</a>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script>
+    const st = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) st.classList.add('visible');
+      else st.classList.remove('visible');
+    });
+  </script>
+</body>
+</html>

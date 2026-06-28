@@ -1,1044 +1,1218 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>The Coherence Metric — A Physics-Based Framework for Measuring Structural Integrity</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                dark: '#050505',
-                card: '#0a0a0a',
-                cardHover: '#111111',
-                accent: '#dc2626',
-                accentDim: '#991b1b',
-                amber: '#f59e0b',
-                amberDim: '#b45309',
-            },
-            fontFamily: {
-                serif: ['Crimson Text', 'Georgia', 'serif'],
-                sans: ['Inter', 'system-ui', 'sans-serif'],
-                display: ['Oswald', 'Impact', 'sans-serif'],
-                mono: ['JetBrains Mono', 'monospace'],
-            }
-        }
-    }
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
 }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
+
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
+
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+</style>
+<base target="_blank">
+
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
+  }
+};
 </script>
-<style>
-    html { scroll-behavior: smooth; }
-    body { background-color: #050505; }
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
 
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #050505; }
-    ::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #dc2626; }
-
-    .gradient-line {
-        height: 3px;
-        background: linear-gradient(90deg, #991b1b, #dc2626, #f59e0b, #dc2626, #991b1b);
-    }
-    .hero-gradient {
-        background: radial-gradient(ellipse at 50% 0%, rgba(220,38,38,0.08) 0%, transparent 60%);
-    }
-    .pullquote {
-        border-left: 3px solid #dc2626;
-        background: linear-gradient(90deg, rgba(220,38,38,0.05), transparent);
-    }
-    .data-callout {
-        border: 1px solid rgba(245,158,11,0.2);
-        background: linear-gradient(135deg, rgba(245,158,11,0.03), transparent);
-    }
-    .stat-glow {
-        box-shadow: 0 0 20px rgba(220,38,38,0.1), inset 0 1px 0 rgba(245,158,11,0.1);
-    }
-
-    .prose-body p {
-        font-family: 'Crimson Text', Georgia, serif;
-        font-size: 1.2rem;
-        line-height: 1.85;
-        color: #d1d5db;
-        margin-bottom: 1.5rem;
-    }
-    .prose-body strong {
-        color: #f9fafb;
-        font-weight: 600;
-    }
-    .prose-body em {
-        color: #e5e7eb;
-    }
-
-    .section-divider {
-        border: none;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(220,38,38,0.3), rgba(245,158,11,0.2), rgba(220,38,38,0.3), transparent);
-        margin: 3rem 0;
-    }
-
-    .equation-block {
-        background: linear-gradient(135deg, rgba(220,38,38,0.05), rgba(245,158,11,0.03));
-        border: 1px solid rgba(220,38,38,0.15);
-        border-radius: 0.75rem;
-        padding: 1.5rem 2rem;
-        text-align: center;
-        margin: 2rem 0;
-    }
-
-    .series-card {
-        background: #0a0a0a;
-        border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.3s ease;
-    }
-    .series-card:hover {
-        background: #111111;
-        border-color: rgba(220,38,38,0.3);
-    }
-
-    .dark-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.85rem;
-    }
-    .dark-table th {
-        background: rgba(220,38,38,0.08);
-        color: #f9fafb;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 0.75rem 1rem;
-        border: 1px solid rgba(255,255,255,0.07);
-        text-align: left;
-    }
-    .dark-table td {
-        padding: 0.65rem 1rem;
-        border: 1px solid rgba(255,255,255,0.05);
-        color: #d1d5db;
-        vertical-align: top;
-    }
-    .dark-table tr:hover td {
-        background: rgba(220,38,38,0.03);
-    }
-    .dark-table td strong {
-        color: #f59e0b;
-        font-weight: 600;
-    }
-</style>
-  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
-  <link rel="canonical" href="https://faiththruphysics.com/mda/02-method-and-metrics/MDA-038-coherence-metric.html"/>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
-<!-- RING NAVIGATION -->
-<style>
-.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
-.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
-.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
-.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
-.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
-.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
-.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
-.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.ring-1 .ring-tier-dot{background:#d4af37;}
-.ring-2 .ring-tier-dot{background:#4a9eff;}
-.ring-3 .ring-tier-dot{background:#8b7fc2;}
-.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
-.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
-.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
-.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
-.ring-tier-cards{display:none;padding:1rem 1.25rem;}
-.ring-tier.open .ring-tier-cards{display:block;}
-.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
-</style>
-<link rel="stylesheet" href="/mda/components/tp-pill-player.css">
-<link rel="stylesheet" href="/mda/components/mtl-reader-bar.css">
-<link rel="stylesheet" href="/shared/css/mtl-equation.css">
-<link rel="stylesheet" href="/shared/css/mtl-claims.css">
 </head>
-<body class="text-gray-300 font-serif">
-</div>
+<body>
 
-<!-- Sticky Nav -->
-<nav style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:1px solid #222;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
-  <div style="display:flex;gap:1rem;align-items:center;">
-    <a href="../index.html" style="color:#999;text-decoration:none;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#999'">&#8592; Main Index</a>
-    <span style="color:#333;">|</span>
-    <a href="../index.html" style="color:#dc2626;text-decoration:none;font-weight:500;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#dc2626'">Moral Decline</a>
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="tp-top">
+  <div class="tp-top-inner">
+    <a href="https://faiththruphysics.com" class="tp-brand">
+      <span class="tp-brand-chi">χ</span>
+      <span class="tp-brand-name">Faith thru Physics</span>
+    </a>
+    <span class="tp-div"></span>
+    <div class="tp-nav-links">
+      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
+      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
+      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
+    </div>
+    <span class="tp-div"></span>
+    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
+      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
+        Series <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="tp-subdomain-panel" role="menu">
+        <div class="tp-subdomain-grid">
+          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
+          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
+          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
+          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
+          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
+          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
+          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
+          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
+        </div>
+      </div>
+    </div>
+    <span class="tp-spacer"></span>
+    <div class="tp-levels" role="tablist">
+      <button class="tp-level active" data-level="highschool">High School</button>
+      <button class="tp-level" data-level="college">College</button>
+      <button class="tp-level" data-level="phd">PhD</button>
+    </div>
+    <span class="tp-div"></span>
+    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
   </div>
-  <div style="display:flex;gap:1rem;align-items:center;">
-    <span style="color:#555;font-size:.75rem;">Core Paper</span>
-  </div>
-</nav>
+</header>
 
-<!-- Hero -->
-</div>
 
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- TP PILL PLAYER BAR — inject after <body>; requires /mda/components/tp-pill-player.css and /mda/components/tp-pill-player.js -->
-<div class="tp-pill-bar" id="tpPillBar" data-audio-slug="MDA-038-coherence-metric">
-  <div class="tp-pill-strip">
-    <button class="tp-pill" data-mode="deep" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-facts-paper.m4a" data-label="Deep Dive"><span class="dot"></span>Deep Dive</button>
-    <button class="tp-pill" data-mode="debate" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-facts-paper.m4a" data-label="Debate"><span class="dot"></span>Debate</button>
-    <button class="tp-pill" data-mode="critique" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-facts-paper.m4a" data-label="Critique"><span class="dot"></span>Critique</button>
-    <button class="tp-pill active" data-mode="tts" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-facts-paper.m4a" data-label="TTS"><span class="dot"></span>TTS</button>
-    <button class="tp-pill" data-mode="web" data-src="https://pub-5b15c954dc1642f18573a365cf6dc2c5.r2.dev/audio/moral-decline-facts-paper.m4a" data-label="Web"><span class="dot"></span>Web</button>
-  </div>
-  <div class="tp-bar-controls">
-    <button class="tp-bar-play"><i class="fas fa-play"></i></button>
-    <div class="tp-bar-track"><div class="tp-bar-fill"></div></div>
-    <span class="tp-bar-time">0:00 / 0:00</span>
-    <select class="tp-bar-speed">
-      <option value="0.5">0.5x</option>
-      <option value="0.75">0.75x</option>
-      <option value="1" selected>1x</option>
-      <option value="1.25">1.25x</option>
-      <option value="1.5">1.5x</option>
-      <option value="1.75">1.75x</option>
-      <option value="2">2x</option>
-    </select>
-  </div>
-  <audio preload="metadata"></audio>
-</div>
-
-<!-- MTL READER MODE BAR — requires /shared/css/mtl-equation.css and /shared/js/mtl-equation.js -->
+<!-- ═══════ MTL READER BAR ═══════ -->
 <div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
-  <span class="mtl-reader-label">Math layer</span>
+  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
   <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
-    <button class="mtl-reader-tab" type="button" data-reader-mode="easy" aria-selected="false">Easy</button>
-    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard</button>
-    <button class="mtl-reader-tab active" type="button" data-reader-mode="academic" aria-selected="true">Academic</button>
+    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
     <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
   </div>
 </div>
 
-<header class="hero-gradient pt-28 pb-16">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-        <div class="inline-block mb-6">
-            <span class="font-mono text-xs tracking-[0.3em] uppercase text-accent/70 border border-accent/20 px-4 py-1.5 rounded-full">
-                Theophysics Research &bull; Core Paper
-            </span>
-        </div>
-        <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] mb-4">
-            The Coherence<br>
-            <span class="text-accent">Metric</span>
-        </h1>
-        <p class="text-xl md:text-2xl text-gray-400 font-light max-w-2xl mx-auto leading-relaxed mb-2">
-            A Physics-Based Framework for Measuring Structural Integrity Across Domains
-        </p>
-        <p class="text-lg text-gray-500 italic mb-6">When constraint is removed, coherence does not decline. It collapses.</p>
-        <p class="font-sans text-sm text-gray-600 tracking-wide">
-            David Lowe &bull; Theophysics Research &bull; January 2025
-        </p>
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-class-nav">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
     </div>
-    <div class="gradient-line mt-12 max-w-4xl mx-auto"></div>
-</header>
+    <a href="#" class="tp-class-nav">Next →</a>
+  </div>
+</div>
 
-<!-- Main Content -->
-<main class="max-w-4xl mx-auto px-6 py-16">
-
-    <!-- Abstract -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-scroll text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Abstract</h2>
-        </div>
-
-        <div class="data-callout rounded-xl p-8 stat-glow prose-body">
-            <p class="text-gray-300 leading-relaxed" style="font-family:'Crimson Text',Georgia,serif;font-size:1.15rem;line-height:1.85;">
-                This paper introduces the <strong>Coherence Metric</strong> (&#967;), a quantitative measure of structural integrity derived from phase transition physics. We demonstrate that the same mathematical relationship governing critical phenomena in physical systems accurately describes decay patterns across nine independent social domains. Analysis of historical data from 1900&ndash;2025 reveals synchronized threshold-crossing events clustered within the <strong>1968&ndash;1973 window</strong>, suggesting a unified underlying mechanism rather than independent decay processes. The framework provides falsifiable predictions and measurement criteria independent of political interpretation.
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+  <h1>The CoherenceMetric</h1>
+  <p class="subtitle"></p>
+  <div class="byline">A Physics-Based Framework for Measuring Structural Integrity</div>
+  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=02-method-and-metrics%2FMDA-038-coherence-metric-academic" data-audio-slug="02-method-and-metrics/MDA-038-coherence-metric-academic" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=02-method-and-metrics" data-series-slug="02-method-and-metrics">
+<div class="tp-read-aloud" data-mode="tts">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="tpMainAudio" preload="none"></audio>
+<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+<div class="tp-fill" id="tpMainFill"></div>
+</div>
+<span class="tp-time" id="tpMainTime">0:00</span>
+<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
+<option value="0.75">0.75x</option>
+<option selected="" value="1">1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+<option value="1.75">1.75x</option>
+<option value="2">2x</option>
+</select>
+<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
+<i class="fas fa-volume-up"></i>
+</button>
+</div>
+<div class="tp-pair">
+<div class="tp-half tp-deep" data-mode="deep">
+<div class="tp-dot"></div>
+<span class="tp-label">Deep Dive</span>
+<audio id="tpDeepAudio" preload="none"></audio>
+<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+<div class="tp-fill" id="tpDeepFill"></div>
+</div>
+<span class="tp-time" id="tpDeepTime">0:00</span>
+</div>
+<div class="tp-half tp-debate" data-mode="podcast">
+<div class="tp-dot"></div>
+<span class="tp-label">Podcast</span>
+<audio id="tpDebateAudio" preload="none"></audio>
+<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+<div class="tp-fill" id="tpDebateFill"></div>
+</div>
+<span class="tp-time" id="tpDebateTime">0:00</span>
+</div>
+<div class="tp-half tp-critique" data-mode="critique">
+<div class="tp-dot"></div>
+<span class="tp-label">Critique</span>
+<audio id="tpCritiqueAudio" preload="none"></audio>
+<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+<div class="tp-fill" id="tpCritiqueFill"></div>
+</div>
+<span class="tp-time" id="tpCritiqueTime">0:00</span>
+</div>
+</div>
+<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+</div>
+</div>
+  
+ Abstract 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-scroll text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Abstract</h2>
+</div>
+<div class="data-callout rounded-xl p-8 stat-glow prose-body">
+<p class="text-gray-300 leading-relaxed" style="font-family:'Crimson Text',Georgia,serif;font-size:1.15rem;line-height:1.85;">
+                This paper introduces the <strong>Coherence Metric</strong> (χ), a quantitative measure of structural integrity derived from phase transition physics. We demonstrate that the same mathematical relationship governing critical phenomena in physical systems accurately describes decay patterns across nine independent social domains. Analysis of historical data from 1900–2025 reveals synchronized threshold-crossing events clustered within the <strong>1968–1973 window</strong>, suggesting a unified underlying mechanism rather than independent decay processes. The framework provides falsifiable predictions and measurement criteria independent of political interpretation.
             </p>
-            <p class="font-mono text-xs text-gray-500 mt-4 uppercase tracking-wider">
-                Keywords: coherence &bull; phase transitions &bull; critical phenomena &bull; social physics &bull; structural integrity
+<p class="font-mono text-xs text-gray-500 mt-4 uppercase tracking-wider">
+                Keywords: coherence • phase transitions • critical phenomena • social physics • structural integrity
             </p>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 1: Introduction -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-question-circle text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">1. Introduction</h2>
-        </div>
-
-        <div class="prose-body">
-            <p class="text-2xl leading-relaxed text-gray-200">
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 1: Introduction 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-question-circle text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">1. Introduction</h2>
+</div>
+<div class="prose-body">
+<p class="text-2xl leading-relaxed text-gray-200">
                 The question this paper addresses is precise: <strong>whether phase-transition physics provides a formal measurement framework for civilizational coherence decay.</strong>
-            </p>
-            <p>
+</p>
+<p>
                 Not as metaphor or analogy. As formal measurement with falsifiable predictions.
             </p>
-            <p>
-                The claim is that structural integrity &mdash; whether in engineered systems, biological organisms, or social civilizations &mdash; follows isomorphic mathematical laws. Constraint removal does not produce gradual decay; rather, systems exhibit apparent stability until the control parameter crosses a critical threshold (P<sub>c</sub>), at which point coherence collapses rapidly. This is not a normative claim. It is the empirical content of Landau's theory of phase transitions (1937) and subsequent universality class research (Stanley, 1971).
+<p>
+                The claim is that structural integrity — whether in engineered systems, biological organisms, or social civilizations — follows isomorphic mathematical laws. Constraint removal does not produce gradual decay; rather, systems exhibit apparent stability until the control parameter crosses a critical threshold (P<sub>c</sub>), at which point coherence collapses rapidly. This is not a normative claim. It is the empirical content of Landau's theory of phase transitions (1937) and subsequent universality class research (Stanley, 1971).
             </p>
-        </div>
-
-        <div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
-            <p class="text-xl italic text-gray-200 leading-relaxed font-serif">
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif">
                 The political interpretation is irrelevant. You can vote for gravity or against gravity. Gravity does not care. It pulls.
             </p>
-        </div>
-
-        <!-- <a href="/glossary/?term=master-equation" class="glossary-link" title="See glossary: Master Equation">Master Equation</a> -->
-        <div class="equation-block">
-            <p class="font-mono text-sm text-gray-500 uppercase tracking-wider mb-3">The Coherence Master Equation</p>
-            <div class="text-2xl md:text-3xl text-white font-bold mb-4">
+</div>
+<!-- <a href="/glossary/?term=master-equation" class="glossary-link" title="See glossary: Master Equation">Master Equation</a> -->
+<div class="equation-block">
+<p class="font-mono text-sm text-gray-500 uppercase tracking-wider mb-3">The Coherence Master Equation</p>
+<div class="text-2xl md:text-3xl text-white font-bold mb-4">
                 \[ \chi \approx |P - P_c|^{\beta} \]
             </div>
-            <p class="text-sm text-gray-400 font-sans max-w-xl mx-auto">
-                Coherence (&#967;) is determined by the distance of the control parameter (P) from its critical threshold (P<sub>c</sub>), raised to the scaling exponent (&beta;). The same structure that governs superconductors and ferromagnets governs civilizations.
+<p class="text-sm text-gray-400 font-sans max-w-xl mx-auto">
+                Coherence (χ) is determined by the distance of the control parameter (P) from its critical threshold (P<sub>c</sub>), raised to the scaling exponent (β). The same structure that governs superconductors and ferromagnets governs civilizations.
             </p>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Framework Variables -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
-                <i class="fas fa-cogs text-amber text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Framework Variables</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-            <div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
-                <div class="font-mono text-3xl font-bold text-amber mb-2">&#967;</div>
-                <h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Chi / Coherence</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">The order parameter quantifying the degree to which a system maintains internal structural alignment against entropic dissolution.</p>
-            </div>
-            <div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
-                <div class="font-mono text-3xl font-bold text-amber mb-2">P</div>
-                <h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Control Parameter</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">The control parameter: the current magnitude of constraint operative within a domain. In social systems: law, covenant, normative standard, or institutional anchor.</p>
-            </div>
-            <div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
-                <div class="font-mono text-3xl font-bold text-accent mb-2">P<sub style="font-size:.6em">c</sub></div>
-                <h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Critical Threshold</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">The critical threshold value at which phase transition occurs. Below P<sub>c</sub>, coherence is sustained; above it, collapse accelerates nonlinearly.</p>
-            </div>
-            <div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
-                <div class="font-mono text-3xl font-bold text-amber mb-2">&beta;</div>
-                <h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Scaling Exponent</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">The critical exponent governing collapse acceleration near the critical threshold. Empirical mean &beta;&nbsp;=&nbsp;0.41 (&plusmn;0.05) across nine domains; consistent with the Ising universality class (&beta;&nbsp;&asymp;&nbsp;0.326&ndash;0.5).</p>
-            </div>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Domain Mapping Table -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-th text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Nine-Domain Mapping</h2>
-        </div>
-
-        <div class="prose-body mb-6">
-            <p>
-                The power-law relationship &#967;&nbsp;&asymp;&nbsp;|P&nbsp;&minus;&nbsp;P<sub>c</sub>|<sup>&beta;</sup> is not domain-specific. Coherence collapse is domain-general: the same mathematical structure governs any system in which a constraint parameter governs the transition between ordered and disordered states.
+</div>
+</section>
+<hr class="section-divider"/>
+ Framework Variables 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-cogs text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Framework Variables</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">χ</div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Chi / Coherence</h3>
+<p class="text-sm text-gray-500 leading-relaxed">The order parameter quantifying the degree to which a system maintains internal structural alignment against entropic dissolution.</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">P</div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Control Parameter</h3>
+<p class="text-sm text-gray-500 leading-relaxed">The control parameter: the current magnitude of constraint operative within a domain. In social systems: law, covenant, normative standard, or institutional anchor.</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-accent mb-2">P<sub style="font-size:.6em">c</sub></div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Critical Threshold</h3>
+<p class="text-sm text-gray-500 leading-relaxed">The critical threshold value at which phase transition occurs. Below P<sub>c</sub>, coherence is sustained; above it, collapse accelerates nonlinearly.</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">β</div>
+<h3 class="font-sans font-semibold text-white text-sm uppercase tracking-wider mb-2">Scaling Exponent</h3>
+<p class="text-sm text-gray-500 leading-relaxed">The critical exponent governing collapse acceleration near the critical threshold. Empirical mean β = 0.41 (±0.05) across nine domains; consistent with the Ising universality class (β ≈ 0.326–0.5).</p>
+</div>
+</div>
+</section>
+<hr class="section-divider"/>
+ Domain Mapping Table 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-th text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Nine-Domain Mapping</h2>
+</div>
+<div class="prose-body mb-6">
+<p>
+                The power-law relationship χ ≈ |P − P<sub>c</sub>|<sup>β</sup> is not domain-specific. Coherence collapse is domain-general: the same mathematical structure governs any system in which a constraint parameter governs the transition between ordered and disordered states.
             </p>
-        </div>
-
-        <div class="overflow-x-auto rounded-xl border border-gray-800">
-            <table class="dark-table">
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-layer-group mr-2 text-accent/50"></i>Domain</th>
-                        <th>Constraint (P)</th>
-                        <th>Coherence (&#967;)</th>
-                        <th>Entropy Indicator</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Moral</strong></td>
-                        <td>Divine / Natural Law</td>
-                        <td>Social Trust</td>
-                        <td>Crime, Breakdown</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Somatic</strong></td>
-                        <td>Biological Rhythm</td>
-                        <td>Metabolic Health</td>
-                        <td>Obesity, Addiction</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Semantic</strong></td>
-                        <td>Fixed Definitions</td>
-                        <td>Communication Fidelity</td>
-                        <td>Polarization, Noise</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Educational</strong></td>
-                        <td>Rigorous Standards</td>
-                        <td>Competence Transfer</td>
-                        <td>Credentialism, Skill Loss</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Familial</strong></td>
-                        <td>Marriage Covenant</td>
-                        <td>Intergenerational Stability</td>
-                        <td>Divorce, Fragmentation</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Economic</strong></td>
-                        <td>Sound Money</td>
-                        <td>Purchasing Power</td>
-                        <td>Inflation, Debt</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Institutional</strong></td>
-                        <td>Constitutional Limits</td>
-                        <td>Public Trust</td>
-                        <td>Corruption, Capture</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Psychological</strong></td>
-                        <td>Reality Anchoring</td>
-                        <td>Mental Stability</td>
-                        <td>Anxiety, Dissociation</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Spiritual</strong></td>
-                        <td>Transcendent Reference</td>
-                        <td>Meaning Coherence</td>
-                        <td>Despair, Nihilism</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 2: The Synchronization Problem -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-sync-alt text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">2. The Synchronization Problem</h2>
-        </div>
-
-        <div class="prose-body">
-            <p>
-                Under the null hypothesis of independent decay &mdash; i.e., if divorce rates, violent crime rates, metabolic disease rates, institutional trust metrics, and educational outcome measures were responding to independent domain-specific causes &mdash; their inflection points would be uniformly distributed across the 125-year observation window (1900&ndash;2025).
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800">
+<table class="dark-table">
+<thead>
+<tr>
+<th><i class="fas fa-layer-group mr-2 text-accent/50"></i>Domain</th>
+<th>Constraint (P)</th>
+<th>Coherence (χ)</th>
+<th>Entropy Indicator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Moral</strong></td>
+<td>Divine / Natural Law</td>
+<td>Social Trust</td>
+<td>Crime, Breakdown</td>
+</tr>
+<tr>
+<td><strong>Somatic</strong></td>
+<td>Biological Rhythm</td>
+<td>Metabolic Health</td>
+<td>Obesity, Addiction</td>
+</tr>
+<tr>
+<td><strong>Semantic</strong></td>
+<td>Fixed Definitions</td>
+<td>Communication Fidelity</td>
+<td>Polarization, Noise</td>
+</tr>
+<tr>
+<td><strong>Educational</strong></td>
+<td>Rigorous Standards</td>
+<td>Competence Transfer</td>
+<td>Credentialism, Skill Loss</td>
+</tr>
+<tr>
+<td><strong>Familial</strong></td>
+<td>Marriage Covenant</td>
+<td>Intergenerational Stability</td>
+<td>Divorce, Fragmentation</td>
+</tr>
+<tr>
+<td><strong>Economic</strong></td>
+<td>Sound Money</td>
+<td>Purchasing Power</td>
+<td>Inflation, Debt</td>
+</tr>
+<tr>
+<td><strong>Institutional</strong></td>
+<td>Constitutional Limits</td>
+<td>Public Trust</td>
+<td>Corruption, Capture</td>
+</tr>
+<tr>
+<td><strong>Psychological</strong></td>
+<td>Reality Anchoring</td>
+<td>Mental Stability</td>
+<td>Anxiety, Dissociation</td>
+</tr>
+<tr>
+<td><strong>Spiritual</strong></td>
+<td>Transcendent Reference</td>
+<td>Meaning Coherence</td>
+<td>Despair, Nihilism</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 2: The Synchronization Problem 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-sync-alt text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">2. The Synchronization Problem</h2>
+</div>
+<div class="prose-body">
+<p>
+                Under the null hypothesis of independent decay — i.e., if divorce rates, violent crime rates, metabolic disease rates, institutional trust metrics, and educational outcome measures were responding to independent domain-specific causes — their inflection points would be uniformly distributed across the 125-year observation window (1900–2025).
             </p>
-            <p>
+<p>
                 They are not.
             </p>
-            <p>
-                Between 1968 and 1973, nine operationally independent metrics crossed their domain-specific critical thresholds within a 5-year window &mdash; a clustering inconsistent with the null hypothesis at p &lt; 10&#8315;&#8310;.
+<p>
+                Between 1968 and 1973, nine operationally independent metrics crossed their domain-specific critical thresholds within a 5-year window — a clustering inconsistent with the null hypothesis at p &lt; 10⁻⁶.
             </p>
-        </div>
-
-        <div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
-            <p class="text-xl italic text-gray-200 leading-relaxed font-serif">
-                The probability of this occurring by chance is vanishingly small (p &lt; 10&#8315;&#8310;). This is the signature of a system failure, not a collection of unrelated problems.
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif">
+                The probability of this occurring by chance is vanishingly small (p &lt; 10⁻⁶). This is the signature of a system failure, not a collection of unrelated problems.
             </p>
-        </div>
-
-        <!-- Synchronization Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-10">
-            <div class="data-callout rounded-xl p-6 stat-glow text-center">
-                <div class="font-mono text-4xl font-bold text-accent mb-2">1970.0</div>
-                <p class="font-mono text-xs uppercase tracking-wider text-gray-500">Mean Break Year</p>
-                <p class="text-sm text-gray-400 mt-2 font-sans">Across all nine domains</p>
-            </div>
-            <div class="data-callout rounded-xl p-6 stat-glow text-center">
-                <div class="font-mono text-4xl font-bold text-amber mb-2">3.2 yrs</div>
-                <p class="font-mono text-xs uppercase tracking-wider text-gray-500">Standard Deviation</p>
-                <p class="text-sm text-gray-400 mt-2 font-sans">Tight clustering confirms synchronization</p>
-            </div>
-            <div class="data-callout rounded-xl p-6 stat-glow text-center">
-                <div class="font-mono text-4xl font-bold text-accent mb-2">10&#8315;&#8310;</div>
-                <p class="font-mono text-xs uppercase tracking-wider text-gray-500">p-value</p>
-                <p class="text-sm text-gray-400 mt-2 font-sans">Vanishingly improbable by chance</p>
-            </div>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 3: Methodology -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
-                <i class="fas fa-flask text-amber text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">3. Methodology</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-card rounded-xl p-6 border border-white/5">
-                <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center mb-4">
-                    <i class="fas fa-database text-accent text-xs"></i>
-                </div>
-                <h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.1 Data Sources</h3>
-                <p class="text-sm text-gray-400 font-sans leading-relaxed">
-                    Nine domains operationalized using longitudinal datasets spanning 1900&ndash;2025. CDC, Pew, Gallup, NORC GSS, BGSU NCFMR, BLS. See Appendix A for complete source list.
+</div>
+<!-- Synchronization Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-10">
+<div class="data-callout rounded-xl p-6 stat-glow text-center">
+<div class="font-mono text-4xl font-bold text-accent mb-2">1970.0</div>
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500">Mean Break Year</p>
+<p class="text-sm text-gray-400 mt-2 font-sans">Across all nine domains</p>
+</div>
+<div class="data-callout rounded-xl p-6 stat-glow text-center">
+<div class="font-mono text-4xl font-bold text-amber mb-2">3.2 yrs</div>
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500">Standard Deviation</p>
+<p class="text-sm text-gray-400 mt-2 font-sans">Tight clustering confirms synchronization</p>
+</div>
+<div class="data-callout rounded-xl p-6 stat-glow text-center">
+<div class="font-mono text-4xl font-bold text-accent mb-2">10⁻⁶</div>
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500">p-value</p>
+<p class="text-sm text-gray-400 mt-2 font-sans">Vanishingly improbable by chance</p>
+</div>
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 3: Methodology 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-flask text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">3. Methodology</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-card rounded-xl p-6 border border-white/5">
+<div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center mb-4">
+<i class="fas fa-database text-accent text-xs"></i>
+</div>
+<h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.1 Data Sources</h3>
+<p class="text-sm text-gray-400 font-sans leading-relaxed">
+                    Nine domains operationalized using longitudinal datasets spanning 1900–2025. CDC, Pew, Gallup, NORC GSS, BGSU NCFMR, BLS. See Appendix A for complete source list.
                 </p>
-            </div>
-            <div class="bg-card rounded-xl p-6 border border-white/5">
-                <div class="w-8 h-8 rounded bg-amber/10 flex items-center justify-center mb-4">
-                    <i class="fas fa-ruler-combined text-amber text-xs"></i>
-                </div>
-                <h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.2 Normalization</h3>
-                <p class="text-sm text-gray-400 font-sans leading-relaxed">
-                    Z-score transformation to a 1940&ndash;1949 baseline, allowing cross-domain comparison on a common coherence scale.
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5">
+<div class="w-8 h-8 rounded bg-amber/10 flex items-center justify-center mb-4">
+<i class="fas fa-ruler-combined text-amber text-xs"></i>
+</div>
+<h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.2 Normalization</h3>
+<p class="text-sm text-gray-400 font-sans leading-relaxed">
+                    Z-score transformation to a 1940–1949 baseline, allowing cross-domain comparison on a common coherence scale.
                 </p>
-            </div>
-            <div class="bg-card rounded-xl p-6 border border-white/5">
-                <div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center mb-4">
-                    <i class="fas fa-chart-line text-accent text-xs"></i>
-                </div>
-                <h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.3 Curve-Fitting</h3>
-                <p class="text-sm text-gray-400 font-sans leading-relaxed">
-                    Nonlinear least squares regression with bootstrap confidence intervals (n = 1,000 iterations) to the power-law form &#967; &#8776; |P &minus; P<sub>c</sub>|<sup>&beta;</sup>.
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5">
+<div class="w-8 h-8 rounded bg-accent/10 flex items-center justify-center mb-4">
+<i class="fas fa-chart-line text-accent text-xs"></i>
+</div>
+<h3 class="font-display text-sm font-semibold text-white tracking-wide uppercase mb-3">3.3 Curve-Fitting</h3>
+<p class="text-sm text-gray-400 font-sans leading-relaxed">
+                    Nonlinear least squares regression with bootstrap confidence intervals (n = 1,000 iterations) to the power-law form χ ≈ |P − P<sub>c</sub>|<sup>β</sup>.
                 </p>
-            </div>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 4: Results -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-chart-bar text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">4. Results</h2>
-        </div>
-
-        <!-- Key Findings -->
-        <h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
-            <i class="fas fa-bullseye text-accent/60 mr-2"></i>Key Findings by Domain
+</div>
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 4: Results 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-chart-bar text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">4. Results</h2>
+</div>
+<!-- Key Findings -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-bullseye text-accent/60 mr-2"></i>Key Findings by Domain
         </h3>
-
-        <div class="space-y-4 mb-10">
-            <div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
-                <h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
-                    <i class="fas fa-home mr-2 text-accent/60"></i>Familial
+<div class="space-y-4 mb-10">
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-home mr-2 text-accent/60"></i>Familial
                 </h4>
-                <p class="text-sm text-gray-300 font-sans leading-relaxed">
+<p class="text-sm text-gray-300 font-sans leading-relaxed">
                     Divorce rate peaked at <span class="font-mono text-amber font-bold">22.6 per 1,000</span> (1981). Non-marital births rose from <span class="font-mono text-amber font-bold">10.7%</span> (1970) to <span class="font-mono text-accent font-bold">40%</span> (2023). The marriage covenant as a constraint parameter has been systematically attenuated through legislative (no-fault divorce statutes), cultural (expressive individualism norms), and technological (contraceptive decoupling of sexuality from reproductive consequence) mechanisms.
                 </p>
-            </div>
-
-            <div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
-                <h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
-                    <i class="fas fa-landmark mr-2 text-accent/60"></i>Institutional Trust
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-landmark mr-2 text-accent/60"></i>Institutional Trust
                 </h4>
-                <p class="text-sm text-gray-300 font-sans leading-relaxed">
-                    Public trust in government fell from <span class="font-mono text-amber font-bold">77%</span> (1964) to <span class="font-mono text-accent font-bold">16%</span> (2023). An 80-percentage-point collapse over six decades constitutes one of the largest documented institutional trust declines in democratic history. Granger causality analysis indicates constitutional constraint removal precedes trust collapse at t-lag = 4&ndash;7 years.
+<p class="text-sm text-gray-300 font-sans leading-relaxed">
+                    Public trust in government fell from <span class="font-mono text-amber font-bold">77%</span> (1964) to <span class="font-mono text-accent font-bold">16%</span> (2023). An 80-percentage-point collapse over six decades constitutes one of the largest documented institutional trust declines in democratic history. Granger causality analysis indicates constitutional constraint removal precedes trust collapse at t-lag = 4–7 years.
                 </p>
-            </div>
-
-            <div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
-                <h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
-                    <i class="fas fa-comment-dots mr-2 text-accent/60"></i>Semantic Coherence
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-comment-dots mr-2 text-accent/60"></i>Semantic Coherence
                 </h4>
-                <p class="text-sm text-gray-300 font-sans leading-relaxed">
-                    <span class="font-mono text-amber font-bold">74%</span> of virtue-related words show declining frequency in English-language text post-1960 (Google Ngram analysis, UPenn Language Log). Language constitutes the primary medium of shared meaning (Wittgenstein, 1953; Searle, 1995). When definitional anchoring erodes &mdash; as semantic drift analysis documents at 74% of virtue-related terms post-1960 &mdash; communication degrades from Shannon signal toward noise: information density decreases, and shared understanding requires increasingly costly meta-level negotiation.
+<p class="text-sm text-gray-300 font-sans leading-relaxed">
+<span class="font-mono text-amber font-bold">74%</span> of virtue-related words show declining frequency in English-language text post-1960 (Google Ngram analysis, UPenn Language Log). Language constitutes the primary medium of shared meaning (Wittgenstein, 1953; Searle, 1995). When definitional anchoring erodes — as semantic drift analysis documents at 74% of virtue-related terms post-1960 — communication degrades from Shannon signal toward noise: information density decreases, and shared understanding requires increasingly costly meta-level negotiation.
                 </p>
-            </div>
-
-            <div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
-                <h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
-                    <i class="fas fa-coins mr-2 text-accent/60"></i>Economic Coherence
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 hover:border-accent/20 transition-all">
+<h4 class="font-display text-sm font-semibold text-accent tracking-wider uppercase mb-3">
+<i class="fas fa-coins mr-2 text-accent/60"></i>Economic Coherence
                 </h4>
-                <p class="text-sm text-gray-300 font-sans leading-relaxed">
-                    Dollar purchasing power: <span class="font-mono text-amber font-bold">$1.00</span> (1971) to <span class="font-mono text-accent font-bold">$0.14</span> (2024). Nixon's closure of the gold window severed the constraint anchoring currency to physical reality. The purchasing-power trajectory maps to the coherence equation with the Bretton Woods gold-exchange standard as P<sub>c</sub>: constraint removal in 1971 corresponds to the inflection point (t&#8320; = 1971 &plusmn; 0.5 years, R&sup2; = 0.94).
+<p class="text-sm text-gray-300 font-sans leading-relaxed">
+                    Dollar purchasing power: <span class="font-mono text-amber font-bold">$1.00</span> (1971) to <span class="font-mono text-accent font-bold">$0.14</span> (2024). Nixon's closure of the gold window severed the constraint anchoring currency to physical reality. The purchasing-power trajectory maps to the coherence equation with the Bretton Woods gold-exchange standard as P<sub>c</sub>: constraint removal in 1971 corresponds to the inflection point (t₀ = 1971 ± 0.5 years, R² = 0.94).
                 </p>
-            </div>
-        </div>
-
-        <!-- Aggregate Results Callout -->
-        <div class="data-callout rounded-xl p-8 stat-glow mb-10">
-            <p class="font-mono text-xs uppercase tracking-wider text-gray-500 mb-6">Aggregate Statistical Results</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-mono">
-                <div>
-                    <div class="text-3xl font-bold text-amber mb-1">0.88</div>
-                    <div class="text-xs text-gray-500 uppercase tracking-wider">Mean R&#178;</div>
-                    <div class="text-xs text-gray-600 mt-1">Curve-fit quality across domains</div>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-amber mb-1">0.41</div>
-                    <div class="text-xs text-gray-500 uppercase tracking-wider">Mean &beta;</div>
-                    <div class="text-xs text-gray-600 mt-1">Scaling exponent (consistent with Ising universality class)</div>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-accent mb-1">0.73</div>
-                    <div class="text-xs text-gray-500 uppercase tracking-wider">Cross-Domain R</div>
-                    <div class="text-xs text-gray-600 mt-1">Correlation (p &lt; 10&#8315;&#8313;)</div>
-                </div>
-            </div>
-            <p class="text-xs text-gray-600 mt-6 text-center italic font-sans">Preliminary curve-fit on polarization data achieves R&#178;&nbsp;=&nbsp;0.87. Full nine-domain visualization pending.</p>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 5: Assertions -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
-                <i class="fas fa-check-double text-amber text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">5. Core Assertions</h2>
-        </div>
-
-        <div class="space-y-4">
-            <div class="series-card rounded-xl p-5 flex items-start gap-4">
-                <span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A1</span>
-                <div>
-                    <p class="text-gray-300 font-sans text-sm leading-relaxed">Coherence (&#967;) is measurable across all nine domains using domain-specific empirical indicators.</p>
-                </div>
-            </div>
-            <div class="series-card rounded-xl p-5 flex items-start gap-4">
-                <span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A2</span>
-                <div>
-                    <p class="text-gray-300 font-sans text-sm leading-relaxed">The relationship &#967; &#8776; |P &minus; P<sub>c</sub>|<sup>&beta;</sup> holds <em>empirically</em>, not merely metaphorically.</p>
-                </div>
-            </div>
-            <div class="series-card rounded-xl p-5 flex items-start gap-4">
-                <span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A3</span>
-                <div>
-                    <p class="text-gray-300 font-sans text-sm leading-relaxed">The 1968&ndash;1973 window represents a <strong class="text-white">synchronized phase transition</strong> across domains&mdash;not independent random decay processes.</p>
-                </div>
-            </div>
-            <div class="series-card rounded-xl p-5 flex items-start gap-4">
-                <span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A4</span>
-                <div>
-                    <p class="text-gray-300 font-sans text-sm leading-relaxed">Decay in one domain propagates to adjacent domains through coupling mechanisms. Cross-domain contagion follows percolation transition mathematics.</p>
-                </div>
-            </div>
-            <div class="series-card rounded-xl p-5 flex items-start gap-4">
-                <span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A5</span>
-                <div>
-                    <p class="text-gray-300 font-sans text-sm leading-relaxed">Recovery requires <strong class="text-white">constraint restoration</strong> (increasing P toward P<sub>c</sub>), not symptom management. Treating entropy without restoring constraint is perpetual maintenance of collapse.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 6: Falsification Tests -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-vial text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">6. Falsification Criteria</h2>
-        </div>
-
-        <div class="prose-body mb-6">
-            <p>
+</div>
+</div>
+<!-- Aggregate Results Callout -->
+<div class="data-callout rounded-xl p-8 stat-glow mb-10">
+<p class="font-mono text-xs uppercase tracking-wider text-gray-500 mb-6">Aggregate Statistical Results</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-mono">
+<div>
+<div class="text-3xl font-bold text-amber mb-1">0.88</div>
+<div class="text-xs text-gray-500 uppercase tracking-wider">Mean R²</div>
+<div class="text-xs text-gray-600 mt-1">Curve-fit quality across domains</div>
+</div>
+<div>
+<div class="text-3xl font-bold text-amber mb-1">0.41</div>
+<div class="text-xs text-gray-500 uppercase tracking-wider">Mean β</div>
+<div class="text-xs text-gray-600 mt-1">Scaling exponent (consistent with Ising universality class)</div>
+</div>
+<div>
+<div class="text-3xl font-bold text-accent mb-1">0.73</div>
+<div class="text-xs text-gray-500 uppercase tracking-wider">Cross-Domain R</div>
+<div class="text-xs text-gray-600 mt-1">Correlation (p &lt; 10⁻⁹)</div>
+</div>
+</div>
+<p class="text-xs text-gray-600 mt-6 text-center italic font-sans">Preliminary curve-fit on polarization data achieves R² = 0.87. Full nine-domain visualization pending.</p>
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 5: Assertions 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-check-double text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">5. Core Assertions</h2>
+</div>
+<div class="space-y-4">
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A1</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">Coherence (χ) is measurable across all nine domains using domain-specific empirical indicators.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A2</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">The relationship χ ≈ |P − P<sub>c</sub>|<sup>β</sup> holds <em>empirically</em>, not merely metaphorically.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A3</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">The 1968–1973 window represents a <strong class="text-white">synchronized phase transition</strong> across domains—not independent random decay processes.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A4</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">Decay in one domain propagates to adjacent domains through coupling mechanisms. Cross-domain contagion follows percolation transition mathematics.</p>
+</div>
+</div>
+<div class="series-card rounded-xl p-5 flex items-start gap-4">
+<span class="font-display text-xl font-bold text-accent/60 w-10 flex-shrink-0">A5</span>
+<div>
+<p class="text-gray-300 font-sans text-sm leading-relaxed">Recovery requires <strong class="text-white">constraint restoration</strong> (increasing P toward P<sub>c</sub>), not symptom management. Treating entropy without restoring constraint is perpetual maintenance of collapse.</p>
+</div>
+</div>
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 6: Falsification Tests 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-vial text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">6. Falsification Criteria</h2>
+</div>
+<div class="prose-body mb-6">
+<p>
                 This framework is scientific in the Popperian sense: it generates predictions that can be disconfirmed. If the falsification tests below fail, the framework is disconfirmed. Independent replication attempts are explicitly invited.
             </p>
-        </div>
-
-        <div class="overflow-x-auto rounded-xl border border-gray-800">
-            <table class="dark-table">
-                <thead>
-                    <tr>
-                        <th>Test</th>
-                        <th>Prediction</th>
-                        <th>Kill Condition</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>T1</strong></td>
-                        <td>Nine-domain overlay shows synchronized inflection at 1968&ndash;1973</td>
-                        <td>Inflection points are randomly distributed (p &gt; 0.05)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>T2</strong></td>
-                        <td>&#967; curve-fit to |P &minus; P<sub>c</sub>|<sup>&beta;</sup> achieves R&#178; &gt; 0.85 across domains</td>
-                        <td>Curve fit fails (R&#178; &lt; 0.70)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>T3</strong></td>
-                        <td>Cross-domain correlation matrix shows statistically significant clustering</td>
-                        <td>Domains are statistically independent</td>
-                    </tr>
-                    <tr>
-                        <td><strong>T4</strong></td>
-                        <td>Constraint removal events <em>precede</em> coherence collapse (Granger causality)</td>
-                        <td>Collapse precedes constraint removal</td>
-                    </tr>
-                    <tr>
-                        <td><strong>T5</strong></td>
-                        <td>Partial constraint restoration produces measurable &#967; increase</td>
-                        <td>No coherence response to constraint restoration</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 7: Theoretical Connections -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
-                <i class="fas fa-project-diagram text-amber text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">7. Theoretical Connections</h2>
-        </div>
-
-        <div class="overflow-x-auto rounded-xl border border-gray-800 mb-10">
-            <table class="dark-table">
-                <thead>
-                    <tr>
-                        <th>Framework</th>
-                        <th>Connection</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Phase Transition Physics</strong></td>
-                        <td>&#967; &#8776; |P &minus; P<sub>c</sub>|<sup>&beta;</sup> derives from Landau theory of critical phenomena. Same math governs ferromagnetism, superconductivity, and civilization coherence.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Information Theory</strong></td>
-                        <td>Semantic coherence maps to Shannon channel capacity. As constraint degrades, signal-to-noise collapses. Communication becomes heat rather than information.</td>
-                    </tr>
-                    <tr>
-                        <td><strong><a href="/glossary/?term=thermodynamics" class="glossary-link" title="See glossary: Thermodynamics">Thermodynamics</a></strong></td>
-                        <td>Social entropy follows Second Law dynamics under constraint removal. Without a constraint boundary, systems disperse toward maximum entropy spontaneously.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Network Theory</strong></td>
-                        <td>Cross-domain coupling follows percolation transition mathematics. As domain coherence falls below critical density, network-wide failure cascades.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Biblical Framework</strong></td>
-                        <td>Constraint structure maps to Decalogue boundary conditions. The Ten Laws are not arbitrary moral preferences&mdash;they are the minimum constraint set for civilization coherence.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 8: Discussion -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-comments text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">8. Discussion</h2>
-        </div>
-
-        <!-- Constraint Removal Events -->
-        <h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
-            <i class="fas fa-calendar-times text-accent/60 mr-2"></i>The 1968&ndash;1973 Constraint Removal Cluster
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800">
+<table class="dark-table">
+<thead>
+<tr>
+<th>Test</th>
+<th>Prediction</th>
+<th>Kill Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>T1</strong></td>
+<td>Nine-domain overlay shows synchronized inflection at 1968–1973</td>
+<td>Inflection points are randomly distributed (p &gt; 0.05)</td>
+</tr>
+<tr>
+<td><strong>T2</strong></td>
+<td>χ curve-fit to |P − P<sub>c</sub>|<sup>β</sup> achieves R² &gt; 0.85 across domains</td>
+<td>Curve fit fails (R² &lt; 0.70)</td>
+</tr>
+<tr>
+<td><strong>T3</strong></td>
+<td>Cross-domain correlation matrix shows statistically significant clustering</td>
+<td>Domains are statistically independent</td>
+</tr>
+<tr>
+<td><strong>T4</strong></td>
+<td>Constraint removal events <em>precede</em> coherence collapse (Granger causality)</td>
+<td>Collapse precedes constraint removal</td>
+</tr>
+<tr>
+<td><strong>T5</strong></td>
+<td>Partial constraint restoration produces measurable χ increase</td>
+<td>No coherence response to constraint restoration</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 7: Theoretical Connections 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-project-diagram text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">7. Theoretical Connections</h2>
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800 mb-10">
+<table class="dark-table">
+<thead>
+<tr>
+<th>Framework</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phase Transition Physics</strong></td>
+<td>χ ≈ |P − P<sub>c</sub>|<sup>β</sup> derives from Landau theory of critical phenomena. Same math governs ferromagnetism, superconductivity, and civilization coherence.</td>
+</tr>
+<tr>
+<td><strong>Information Theory</strong></td>
+<td>Semantic coherence maps to Shannon channel capacity. As constraint degrades, signal-to-noise collapses. Communication becomes heat rather than information.</td>
+</tr>
+<tr>
+<td><strong><a class="glossary-link" href="/glossary/?term=thermodynamics" title="See glossary: Thermodynamics">Thermodynamics</a></strong></td>
+<td>Social entropy follows Second Law dynamics under constraint removal. Without a constraint boundary, systems disperse toward maximum entropy spontaneously.</td>
+</tr>
+<tr>
+<td><strong>Network Theory</strong></td>
+<td>Cross-domain coupling follows percolation transition mathematics. As domain coherence falls below critical density, network-wide failure cascades.</td>
+</tr>
+<tr>
+<td><strong>Biblical Framework</strong></td>
+<td>Constraint structure maps to Decalogue boundary conditions. The Ten Laws are not arbitrary moral preferences—they are the minimum constraint set for civilization coherence.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 8: Discussion 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-comments text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">8. Discussion</h2>
+</div>
+<!-- Constraint Removal Events -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-calendar-times text-accent/60 mr-2"></i>The 1968–1973 Constraint Removal Cluster
         </h3>
-
-        <div class="prose-body mb-8">
-            <p>
-                Synchronized threshold-crossing across nine operationally independent domains demands a common structural cause or a strong coupling mechanism. The 1968&ndash;1973 window produced a historically identifiable cluster of constraint-removal events across legal, monetary, familial, and institutional domains. The following are documented dates, not interpretive assignments.
+<div class="prose-body mb-8">
+<p>
+                Synchronized threshold-crossing across nine operationally independent domains demands a common structural cause or a strong coupling mechanism. The 1968–1973 window produced a historically identifiable cluster of constraint-removal events across legal, monetary, familial, and institutional domains. The following are documented dates, not interpretive assignments.
             </p>
-        </div>
-
-        <div class="space-y-3 mb-10">
-            <div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                <span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1965</span>
-                <p class="text-sm text-gray-300 font-sans"><strong class="text-white">Griswold v. Connecticut</strong> &mdash; Decoupled contraception from the state's interest in marriage, weakening the familial constraint structure.</p>
-            </div>
-            <div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                <span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1968</span>
-                <p class="text-sm text-gray-300 font-sans"><strong class="text-white">Vietnam / Civil Unrest</strong> &mdash; Institutional authority collapsed publicly. Trust in government began its terminal decline from 62% toward 16%.</p>
-            </div>
-            <div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                <span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1970</span>
-                <p class="text-sm text-gray-300 font-sans"><strong class="text-white">No-Fault Divorce</strong> &mdash; California's Family Law Act removed permanence from the marriage covenant. Divorce rate began vertical climb.</p>
-            </div>
-            <div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                <span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1971</span>
-                <p class="text-sm text-gray-300 font-sans"><strong class="text-white">Gold Window Closure</strong> &mdash; Nixon severed the dollar's constraint anchor. Currency decoupled from physical reality. $1.00 became $0.14 over 53 years.</p>
-            </div>
-            <div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                <span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1972</span>
-                <p class="text-sm text-gray-300 font-sans"><strong class="text-white">Eisenstadt v. Baird</strong> &mdash; Extended contraceptive access to unmarried individuals, completing the legal decoupling of sexuality from covenant.</p>
-            </div>
-            <div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
-                <span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1973</span>
-                <p class="text-sm text-gray-300 font-sans"><strong class="text-white">Roe v. Wade</strong> &mdash; Removed the final institutional constraint on the consequences of decoupled sexuality. Nine domains show synchronized inflection within this window.</p>
-            </div>
-        </div>
-
-        <!-- Limitations -->
-        <h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
-            <i class="fas fa-exclamation-triangle text-amber/60 mr-2"></i>Limitations
+</div>
+<div class="space-y-3 mb-10">
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1965</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Griswold v. Connecticut</strong> — Decoupled contraception from the state's interest in marriage, weakening the familial constraint structure.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1968</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Vietnam / Civil Unrest</strong> — Institutional authority collapsed publicly. Trust in government began its terminal decline from 62% toward 16%.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1970</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">No-Fault Divorce</strong> — California's Family Law Act removed permanence from the marriage covenant. Divorce rate began vertical climb.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1971</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Gold Window Closure</strong> — Nixon severed the dollar's constraint anchor. Currency decoupled from physical reality. $1.00 became $0.14 over 53 years.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1972</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Eisenstadt v. Baird</strong> — Extended contraceptive access to unmarried individuals, completing the legal decoupling of sexuality from covenant.</p>
+</div>
+<div class="bg-card rounded-xl p-4 border border-white/5 flex items-center gap-4">
+<span class="font-mono text-sm text-accent/70 w-12 flex-shrink-0">1973</span>
+<p class="text-sm text-gray-300 font-sans"><strong class="text-white">Roe v. Wade</strong> — Removed the final institutional constraint on the consequences of decoupled sexuality. Nine domains show synchronized inflection within this window.</p>
+</div>
+</div>
+<!-- Limitations -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-exclamation-triangle text-amber/60 mr-2"></i>Limitations
         </h3>
-
-        <div class="data-callout rounded-xl p-6 mb-8">
-            <div class="space-y-4 font-sans text-sm">
-                <div class="flex gap-3">
-                    <span class="text-accent font-bold flex-shrink-0">1.</span>
-                    <p class="text-gray-400"><strong class="text-white">Correlation is not causation.</strong> Synchronization is statistically anomalous, but the causal mechanism requires further formal analysis beyond Granger causality.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="text-accent font-bold flex-shrink-0">2.</span>
-                    <p class="text-gray-400"><strong class="text-white">Measurement validity.</strong> Domain operationalizations involve index construction choices that affect results. Alternative operationalizations should be tested.</p>
-                </div>
-                <div class="flex gap-3">
-                    <span class="text-accent font-bold flex-shrink-0">3.</span>
-                    <p class="text-gray-400"><strong class="text-white">&beta; universality requires replication.</strong> The mean &beta; = 0.41 is consistent with known universality classes but requires independent replication across additional longitudinal datasets.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Control Group -->
-        <h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
-            <i class="fas fa-flask text-amber/60 mr-2"></i>Control Group: The Amish Proof
+<div class="data-callout rounded-xl p-6 mb-8">
+<div class="space-y-4 font-sans text-sm">
+<div class="flex gap-3">
+<span class="text-accent font-bold flex-shrink-0">1.</span>
+<p class="text-gray-400"><strong class="text-white">Correlation is not causation.</strong> Synchronization is statistically anomalous, but the causal mechanism requires further formal analysis beyond Granger causality.</p>
+</div>
+<div class="flex gap-3">
+<span class="text-accent font-bold flex-shrink-0">2.</span>
+<p class="text-gray-400"><strong class="text-white">Measurement validity.</strong> Domain operationalizations involve index construction choices that affect results. Alternative operationalizations should be tested.</p>
+</div>
+<div class="flex gap-3">
+<span class="text-accent font-bold flex-shrink-0">3.</span>
+<p class="text-gray-400"><strong class="text-white">β universality requires replication.</strong> The mean β = 0.41 is consistent with known universality classes but requires independent replication across additional longitudinal datasets.</p>
+</div>
+</div>
+</div>
+<!-- Control Group -->
+<h3 class="font-display text-lg font-semibold text-white tracking-wide uppercase mb-6">
+<i class="fas fa-flask text-amber/60 mr-2"></i>Control Group: The Amish Proof
         </h3>
-
-        <div class="prose-body mb-6">
-            <p>
-                Amish communities constituted a self-selected population that maintained the constraint set the wider American culture systematically removed across the 1968&ndash;1973 window. They did not adopt no-fault divorce statutes, did not participate in the post-1971 fiat monetary system, and did not experience the semantic drift documented in the broader culture. This produces a natural experiment with a clearly observable outcome.
+<div class="prose-body mb-6">
+<p>
+                Amish communities constituted a self-selected population that maintained the constraint set the wider American culture systematically removed across the 1968–1973 window. They did not adopt no-fault divorce statutes, did not participate in the post-1971 fiat monetary system, and did not experience the semantic drift documented in the broader culture. This produces a natural experiment with a clearly observable outcome.
             </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
-                <div class="font-mono text-3xl font-bold text-amber mb-2">~0%</div>
-                <p class="font-sans text-xs uppercase tracking-wider text-gray-500">Divorce Rate</p>
-                <p class="text-xs text-gray-600 mt-1">vs. 45% national average</p>
-            </div>
-            <div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
-                <div class="font-mono text-3xl font-bold text-amber mb-2">85%</div>
-                <p class="font-sans text-xs uppercase tracking-wider text-gray-500">Community Retention</p>
-                <p class="text-xs text-gray-600 mt-1">Fastest-growing demographic in North America</p>
-            </div>
-            <div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
-                <div class="font-mono text-3xl font-bold text-amber mb-2">20 yr</div>
-                <p class="font-sans text-xs uppercase tracking-wider text-gray-500">Population Doubling</p>
-                <p class="text-xs text-gray-600 mt-1">Structural coherence = demographic survival</p>
-            </div>
-        </div>
-
-        <div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
-            <p class="text-xl italic text-gray-200 leading-relaxed font-serif">
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">~0%</div>
+<p class="font-sans text-xs uppercase tracking-wider text-gray-500">Divorce Rate</p>
+<p class="text-xs text-gray-600 mt-1">vs. 45% national average</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">85%</div>
+<p class="font-sans text-xs uppercase tracking-wider text-gray-500">Community Retention</p>
+<p class="text-xs text-gray-600 mt-1">Fastest-growing demographic in North America</p>
+</div>
+<div class="bg-card rounded-xl p-6 border border-white/5 text-center stat-glow">
+<div class="font-mono text-3xl font-bold text-amber mb-2">20 yr</div>
+<p class="font-sans text-xs uppercase tracking-wider text-gray-500">Population Doubling</p>
+<p class="text-xs text-gray-600 mt-1">Structural coherence = demographic survival</p>
+</div>
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif">
                 The equation works in reverse. Restore constraints, coherence returns. The Amish are not a curiosity. They are the experimental proof.
             </p>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- Section 9: Conclusion -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-flag-checkered text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">9. Conclusion</h2>
-        </div>
-
-        <div class="prose-body">
-            <p>
-                The Coherence Metric provides a falsifiable, measurement-based framework for evaluating structural integrity across social domains. The synchronized threshold-crossing pattern observed in the 1968&ndash;1973 window &mdash; statistically inconsistent with independent decay at p &lt; 10&#8315;&#8310; &mdash; is consistent with a unified underlying mechanism: the coordinated removal of constraint parameters across multiple domains.
+</div>
+</section>
+<hr class="section-divider"/>
+ Section 9: Conclusion 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-flag-checkered text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">9. Conclusion</h2>
+</div>
+<div class="prose-body">
+<p>
+                The Coherence Metric provides a falsifiable, measurement-based framework for evaluating structural integrity across social domains. The synchronized threshold-crossing pattern observed in the 1968–1973 window — statistically inconsistent with independent decay at p &lt; 10⁻⁶ — is consistent with a unified underlying mechanism: the coordinated removal of constraint parameters across multiple domains.
             </p>
-            <p>
+<p>
                 The framework makes predictions. The predictions can be tested. The tests can fail.
             </p>
-        </div>
-
-        <div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
-            <p class="text-xl italic text-gray-200 leading-relaxed font-serif">
+</div>
+<div class="pullquote pl-6 py-4 my-10 rounded-r-lg">
+<p class="text-xl italic text-gray-200 leading-relaxed font-serif">
                 This is science, not politics.
             </p>
-        </div>
-
-        <div class="prose-body">
-            <p>
+</div>
+<div class="prose-body">
+<p>
                 The political interpretation of these findings is left to the reader. The equation does not care about your interpretation. It measures what is. If the constraints that produced coherence are restored, coherence returns. If they are not restored, the equation continues to run, and the output continues toward zero.
             </p>
-        </div>
-    </section>
+</div>
+</section>
+<hr class="section-divider"/>
+ Current Status 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
+<i class="fas fa-tasks text-amber text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Framework Status</h2>
+</div>
+<div class="overflow-x-auto rounded-xl border border-gray-800">
+<table class="dark-table">
+<thead>
+<tr>
+<th>Element</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Framework</strong></td>
+<td><span class="text-amber font-mono text-sm">Complete</span></td>
+</tr>
+<tr>
+<td><strong>Nine-Domain Data</strong></td>
+<td><span class="text-amber font-mono text-sm">Compiled (1900–2025)</span></td>
+</tr>
+<tr>
+<td><strong>Curve Fitting</strong></td>
+<td><span class="text-amber font-mono text-sm">Preliminary — R² = 0.87 on polarization data</span></td>
+</tr>
+<tr>
+<td><strong>Synchronization Analysis</strong></td>
+<td><span class="text-gray-500 font-mono text-sm">Pending visualization</span></td>
+</tr>
+<tr>
+<td><strong>Peer Review</strong></td>
+<td><span class="text-gray-400 font-mono text-sm">Open (this publication)</span></td>
+</tr>
+<tr>
+<td><strong>Falsification Attempts</strong></td>
+<td><span class="text-accent font-mono text-sm">Invited</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="section-divider"/>
+ References 
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+<i class="fas fa-book text-accent text-sm"></i>
+</div>
+<h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">References &amp; Data Sources</h2>
+</div>
+<div class="bg-card rounded-xl p-8 border border-white/5">
+<ol class="space-y-3 font-sans text-sm text-gray-400 list-decimal list-inside">
+<li>CDC / NCHS Vital Statistics Reports — Divorce and birth rate longitudinal data</li>
+<li>Pew Research Center: <em>Public Trust in Government 1958–2024</em></li>
+<li>Language Log / Google Books Ngram Viewer (UPenn) — Semantic frequency analysis</li>
+<li>NORC General Social Survey (GSS) — Confidence in Institutions</li>
+<li>BGSU National Center for Family &amp; Marriage Research (NCFMR) — Divorce Statistics</li>
+<li>Gallup — Institutional Confidence Annual Tracking</li>
+<li>Bai, J. &amp; Perron, P. (1998). Estimating and Testing Linear Models with Multiple Structural Changes. <em>Econometrica</em>, 66(1), 47–78.</li>
+<li>Stanley, H.E. (1971). <em>Introduction to Phase Transitions and Critical Phenomena</em>. Oxford University Press.</li>
+</ol>
+</div>
+</section>
 
-    <hr class="section-divider">
+</article>
 
-    <!-- Current Status -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
-                <i class="fas fa-tasks text-amber text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">Framework Status</h2>
-        </div>
-
-        <div class="overflow-x-auto rounded-xl border border-gray-800">
-            <table class="dark-table">
-                <thead>
-                    <tr>
-                        <th>Element</th>
-                        <th>State</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Framework</strong></td>
-                        <td><span class="text-amber font-mono text-sm">Complete</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Nine-Domain Data</strong></td>
-                        <td><span class="text-amber font-mono text-sm">Compiled (1900&ndash;2025)</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Curve Fitting</strong></td>
-                        <td><span class="text-amber font-mono text-sm">Preliminary &mdash; R&#178; = 0.87 on polarization data</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Synchronization Analysis</strong></td>
-                        <td><span class="text-gray-500 font-mono text-sm">Pending visualization</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Peer Review</strong></td>
-                        <td><span class="text-gray-400 font-mono text-sm">Open (this publication)</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Falsification Attempts</strong></td>
-                        <td><span class="text-accent font-mono text-sm">Invited</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <hr class="section-divider">
-
-    <!-- References -->
-    <section class="mb-12">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <i class="fas fa-book text-accent text-sm"></i>
-            </div>
-            <h2 class="font-display text-2xl font-semibold text-white tracking-wide uppercase">References &amp; Data Sources</h2>
-        </div>
-
-        <div class="bg-card rounded-xl p-8 border border-white/5">
-            <ol class="space-y-3 font-sans text-sm text-gray-400 list-decimal list-inside">
-                <li>CDC / NCHS Vital Statistics Reports &mdash; Divorce and birth rate longitudinal data</li>
-                <li>Pew Research Center: <em>Public Trust in Government 1958&ndash;2024</em></li>
-                <li>Language Log / Google Books Ngram Viewer (UPenn) &mdash; Semantic frequency analysis</li>
-                <li>NORC General Social Survey (GSS) &mdash; Confidence in Institutions</li>
-                <li>BGSU National Center for Family &amp; Marriage Research (NCFMR) &mdash; Divorce Statistics</li>
-                <li>Gallup &mdash; Institutional Confidence Annual Tracking</li>
-                <li>Bai, J. &amp; Perron, P. (1998). Estimating and Testing Linear Models with Multiple Structural Changes. <em>Econometrica</em>, 66(1), 47&ndash;78.</li>
-                <li>Stanley, H.E. (1971). <em>Introduction to Phase Transitions and Critical Phenomena</em>. Oxford University Press.</li>
-            </ol>
-        </div>
-    </section>
-
-</main>
-
-<!-- Bottom Navigation -->
-<div class="gradient-line max-w-4xl mx-auto"></div>
-<nav class="max-w-4xl mx-auto px-6 py-10">
-    <div class="flex items-center justify-between">
-        <a href="../index.html" class="flex items-center gap-3 text-gray-500 hover:text-accent transition-colors font-sans text-sm group">
-            <i class="fas fa-th-list text-xs group-hover:-translate-x-1 transition-transform"></i>
-            <span>Moral Decline Index</span>
-        </a>
-        <div class="text-center">
-            <span class="font-mono text-xs text-gray-600">Core Paper</span>
-        </div>
-        <a href="../90-appendices-and-source-packets/MDA-900-appendix-original-introduction.html" class="flex items-center gap-3 text-gray-500 hover:text-amber transition-colors font-sans text-sm group">
-            <div class="text-right">
-                <span class="block">Series: Part 1</span>
-                <span class="block text-xs text-gray-600">The Equation Nobody Wanted</span>
-            </div>
-            <i class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
-        </a>
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+<nav class="tp-bignav">
+  <div class="tp-bignav-row">
+    <a href="#" class="tp-bignav-prev">
+      <span class="tp-bignav-arrow">←</span>
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Previous</span>
+        <span class="tp-bignav-title">Previous</span>
+      </div>
+    </a>
+    <div class="tp-bignav-center">
+      <a href="/moral-decline/" class="tp-bignav-series">MDA Series Home</a>
+      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
     </div>
+    <a href="#" class="tp-bignav-next">
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Next</span>
+        <span class="tp-bignav-title">Next</span>
+      </div>
+      <span class="tp-bignav-arrow">→</span>
+    </a>
+  </div>
 </nav>
 
-<!-- Footer -->
-<footer class="border-t border-white/5 mt-4">
-    <div class="max-w-4xl mx-auto px-6 py-10 text-center">
-        <p class="font-display text-sm tracking-widest uppercase text-gray-600">
-            <i class="fas fa-atom text-accent/40 mr-2"></i>Genesis to Quantum &bull; Theophysics Institute
-        </p>
-        <p class="text-xs text-gray-700 mt-2 font-sans">David Lowe &bull; Theophysics Research &bull; January 2025</p>
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
     </div>
-</footer>
-
-<script src="/glossary-linker.js" defer></script>
-<section class="ring-nav">
-  <div class="ring-header">
-    <h2>Related Work</h2>
-    <p>Core article, supporting evidence, and broader context</p>
-  </div>
-  <div class="ring-tier ring-1 open">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 1 — This Article</span>
-      <span class="ring-tier-desc">The core argument</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
+      </div>
     </div>
-    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
-  </div>
-  <div class="ring-tier ring-2">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
-      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
-    </div>
-    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
-  </div>
-  <div class="ring-tier ring-3">
-    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
-      <div class="ring-tier-dot"></div>
-      <span class="ring-tier-label">Ring 3 — Broader Context</span>
-      <span class="ring-tier-desc">Related topics across the framework</span>
-      <i class="fas fa-chevron-right ring-tier-chevron"></i>
-    </div>
-    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
   </div>
 </section>
-<script src="/mda/components/tp-pill-player.js" defer></script>
-<script src="/shared/js/mtl-equation.js"></script>
-<script src="/shared/js/mtl-claims.js"></script>
-<script src="/shared/js/mtl-overlay-loader.js"></script>
-<script src="/shared/js/mtl-overlay.js"></script>
+
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="tp-sub-title">The Math Behind the Claims</div>
+  <div class="tp-sub-grid">
+    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="tp-sub-title">Everything Else</div>
+  <div class="tp-sub-grid">
+    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+  <div class="tp-series-strip">
+    <a href="/" class="active">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+  </div>
+</nav>
+
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="tp-bottom">
+  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
+  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
+  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+  <div class="tp-door-num">15 + 15 = 100</div>
+  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="tp-door-mark"></span>
+</div>
+
+<script>
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
+
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
+
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
+</script>
+
+<!-- MTL worker client -->
+<script src="/shared/js/mtl-worker-client.js" defer></script>
+
 </body>
 </html>

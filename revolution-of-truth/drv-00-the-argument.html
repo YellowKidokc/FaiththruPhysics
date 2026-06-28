@@ -1,1301 +1,1070 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>De Revolutionibus Veritatis | The Argument in One Page</title>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <style>
-        :root {
-            --bg: #0a0a0a;
-            --bg-primary: #0f0f0f;
-            --bg-light: #1a1a1a;
-            --border: #2a2a2a;
-            --text: #e8e8e8;
-            --text-secondary: #a0a0a0;
-            --gold: #d4af37;
-            --gold-dim: rgba(212, 175, 55, 0.1);
-            --serif: Georgia, 'Times New Roman', serif;
-            --sans: 'Trebuchet MS', Arial, Helvetica, sans-serif;
-            --display: 'Trebuchet MS', Arial, Helvetica, sans-serif;
-            --cinzel: 'Trebuchet MS', Arial, Helvetica, sans-serif;
-            --mono: Consolas, 'Courier New', monospace;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html, body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--serif);
-            line-height: 1.8;
-            font-size: 16px;
-        }
-
-        /* Progress bar */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: var(--gold);
-            width: 0%;
-            z-index: 1001;
-            transition: width 0.1s linear;
-        }
-
-        /* Container */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Sticky nav */
-        nav.site-nav {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: #0a0a0a;
-            border-bottom: 1px solid #222;
-            padding: .5rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: var(--sans);
-            font-size: .8rem;
-        }
-
-        nav.site-nav .nav-left {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        nav.site-nav .nav-right {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        nav.site-nav a {
-            color: #999;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        nav.site-nav a:hover { color: #d4af37; }
-
-        nav.site-nav a.active {
-            color: #d4af37;
-            font-weight: 500;
-        }
-
-        nav.site-nav .sep { color: #333; }
-
-        /* Header */
-        .series-tag {
-            font-family: var(--cinzel);
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-bottom: 0.75rem;
-        }
-
-        h1 {
-            font-family: var(--display);
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-            line-height: 1.2;
-        }
-
-        .subtitle {
-            font-family: var(--serif);
-            font-size: 1.5rem;
-            font-style: italic;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            font-family: var(--sans);
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .domain-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .tag {
-            font-family: var(--sans);
-            font-size: 0.8rem;
-            padding: 0.4rem 0.8rem;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Article sections */
-        section {
-            margin-bottom: 3rem;
-        }
-
-        h2 {
-            font-family: var(--display);
-            font-size: 1.75rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--text);
-            margin-bottom: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        h3 {
-            font-family: var(--display);
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            color: var(--text);
-            margin-bottom: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        p {
-            margin-bottom: 1.5rem;
-            text-align: justify;
-            font-size: 1.2rem;
-        }
-
-        /* Ordered and unordered lists */
-        ol, ul {
-            margin-left: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        ol li, ul li {
-            margin-bottom: 0.75rem;
-            line-height: 1.8;
-            font-size: 1.2rem;
-        }
-
-        /* Equation block */
-        .equation-block {
-            background: var(--bg-light);
-            border-left: 4px solid var(--gold);
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
-
-        .equation-block .eq-label {
-            font-family: var(--sans);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--gold);
-            margin-bottom: 0.75rem;
-        }
-
-        .equation-block .math {
-            font-size: 1.1rem;
-        }
-
-        .equation-block .eq-note {
-            font-family: var(--sans);
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 0.75rem;
-            line-height: 1.6;
-        }
-
-        /* Insight box */
-        .insight-box {
-            background: var(--gold-dim);
-            border: 2px solid var(--gold);
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 4px;
-        }
-
-        .insight-box h3 {
-            font-family: var(--display);
-            color: var(--gold);
-            margin-bottom: 0.75rem;
-            font-size: 1.1rem;
-            margin-top: 0;
-        }
-
-        .insight-box p {
-            margin-bottom: 0.5rem;
-        }
-
-        .insight-box p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Blockquote */
-        blockquote {
-            border-left: 4px solid var(--gold);
-            padding-left: 1.5rem;
-            margin: 2rem 0;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        blockquote cite {
-            display: block;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            font-style: normal;
-            color: var(--gold);
-            font-family: var(--sans);
-        }
-
-        /* Evidence table */
-        .evidence-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-            font-family: var(--sans);
-            font-size: 0.85rem;
-        }
-
-        .evidence-table th {
-            background: var(--bg-light);
-            color: var(--gold);
-            padding: 0.75rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.75rem;
-        }
-
-        .evidence-table td {
-            padding: 0.7rem 1rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
-            vertical-align: top;
-        }
-
-        .evidence-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .evidence-table tr:hover td {
-            background: rgba(212, 175, 55, 0.04);
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>De Revolutionibus Veritatis | The Argument in One Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
+
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
+
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+</style>
+<base target="_blank">
+
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
 
-        .sigma-value {
-            font-family: var(--mono);
-            font-size: 0.8rem;
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        /* Ten Laws table */
-        .laws-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-            font-family: var(--sans);
-            font-size: 0.82rem;
-            overflow-x: auto;
-            display: block;
-        }
-
-        .laws-table th {
-            background: var(--bg-light);
-            color: var(--gold);
-            padding: 0.65rem 0.75rem;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.7rem;
-            white-space: nowrap;
-        }
-
-        .laws-table td {
-            padding: 0.6rem 0.75rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
-            vertical-align: middle;
-        }
-
-        .laws-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .laws-table .law-num {
-            color: var(--gold);
-            font-weight: 700;
-            font-family: var(--mono);
-            font-size: 0.8rem;
-        }
-
-        .laws-table .mono {
-            font-family: var(--mono);
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-        }
-
-        .laws-table .highlight-row td {
-            background: rgba(212, 175, 55, 0.07);
-        }
-
-        /* Gap box */
-        .gap-box {
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--text-secondary);
-            padding: 1.25rem 1.5rem;
-            margin: 1.5rem 0;
-            border-radius: 4px;
-        }
-
-        .gap-box .gap-label {
-            font-family: var(--sans);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .gap-box p {
-            margin-bottom: 0;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-        }
-
-        /* Reading order */
-        .reading-paths {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .reading-path {
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            padding: 1rem 1.25rem;
-            border-radius: 4px;
-        }
-
-        .reading-path .path-label {
-            font-family: var(--sans);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .reading-path p {
-            font-family: var(--mono);
-            font-size: 0.78rem;
-            color: var(--text-secondary);
-            margin-bottom: 0;
-            text-align: left;
-            line-height: 1.7;
-        }
-
-        /* Footer */
-        .footer-info {
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            margin-top: 3rem;
-            border-radius: 4px;
-            margin-bottom: 2rem;
-        }
-
-        .footer-info h3 {
-            font-family: var(--sans);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 0.75rem;
-            letter-spacing: 1px;
-        }
-
-        .footer-info p {
-            font-family: var(--sans);
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-info p:last-child { margin-bottom: 0; }
-
-        /* Navigation */
-        .nav-links {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-            font-family: var(--sans);
-        }
-
-        .nav-links a {
-            color: var(--gold);
-            text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s;
-        }
-
-        .nav-links a:hover { opacity: 0.8; }
-
-        .nav-links .disabled {
-            color: var(--text-secondary);
-            cursor: default;
-            font-weight: 400;
-        }
-
-        /* Dedication */
-        .dedication {
-            font-family: var(--serif);
-            font-style: italic;
-            color: var(--text-secondary);
-            text-align: center;
-            padding: 2rem;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            margin: 2.5rem 0;
-            line-height: 2;
-        }
-
-        /* Series arc */
-        .arc-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .arc-list li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            gap: 1rem;
-            align-items: baseline;
-        }
-
-        .arc-list li:last-child { border-bottom: none; }
-
-        .arc-list .book-num {
-            font-family: var(--mono);
-            font-size: 0.8rem;
-            color: var(--gold);
-            min-width: 60px;
-            flex-shrink: 0;
-        }
-
-        .arc-list .book-title {
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .arc-list .book-sub {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .arc-list .book-status {
-            margin-left: auto;
-            font-family: var(--sans);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-secondary);
-            flex-shrink: 0;
-        }
-
-        .arc-list .book-status.ready {
-            color: var(--gold);
-        }
-
-        /* Scroll breaks */
-        .scroll-break {
-            margin: 2.75rem 0;
-        }
-
-        .scroll-hero {
-            background: linear-gradient(135deg, var(--bg-light) 0%, rgba(212, 175, 55, 0.08) 100%);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1.75rem;
-        }
-
-        .scroll-kicker {
-            font-family: var(--sans);
-            font-size: 0.72rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--gold);
-            margin-bottom: 0.65rem;
-        }
-
-        .scroll-hero h3 {
-            font-family: var(--display);
-            margin: 0 0 0.5rem;
-            color: var(--text);
-        }
-
-        .scroll-hero p {
-            margin-bottom: 0;
-            text-align: left;
-        }
-
-        .scroll-pill-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .scroll-pill {
-            font-family: var(--sans);
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
-            background: var(--bg-light);
-            border-radius: 999px;
-            padding: 0.4rem 0.8rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.5rem; }
-            .subtitle { font-size: 1.25rem; }
-            .container { padding: 1.5rem; }
-            .meta { flex-direction: column; gap: 0.75rem; }
-            .reading-paths { grid-template-columns: 1fr; }
-            .laws-table { font-size: 0.72rem; }
-        }
-    </style>
 </head>
 <body>
 
-<!-- Progress bar -->
-<div class="progress-bar" id="progressBar"></div>
-
-<!-- Sticky nav -->
-<nav class="site-nav">
-    <div class="nav-left">
-        <a href="../index.html">&larr; Main Index</a>
-        <span class="sep">|</span>
-        <a href="index.html" class="active">De Revolutionibus Veritatis</a>
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="tp-top">
+  <div class="tp-top-inner">
+    <a href="https://faiththruphysics.com" class="tp-brand">
+      <span class="tp-brand-chi">χ</span>
+      <span class="tp-brand-name">Faith thru Physics</span>
+    </a>
+    <span class="tp-div"></span>
+    <div class="tp-nav-links">
+      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
+      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
+      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
     </div>
-    <div class="nav-right">
-        <span class="disabled" style="font-family:'Inter',sans-serif;font-size:.8rem;color:#555;">&larr; Prev</span>
-        <a href="drv-01-the-architecture.html">Next &rarr;</a>
+    <span class="tp-div"></span>
+    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
+      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
+        Series <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="tp-subdomain-panel" role="menu">
+        <div class="tp-subdomain-grid">
+          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
+          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
+          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
+          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
+          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
+          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
+          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
+          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
+        </div>
+      </div>
     </div>
-</nav>
-
-<div class="container">
-
-    <!-- Header -->
-    <header>
-        <div class="series-tag">De Revolutionibus Veritatis</div>
-        <h1>The Argument in One Page</h1>
-        <p class="subtitle">Three Questions, Three Answers</p>
-
-        <div class="meta">
-            <div class="meta-item">
-                <span>Author: David Lowe</span>
-            </div>
-            <div class="meta-item">
-                <span>Date: April 2026</span>
-            </div>
-            <div class="meta-item">
-                <span>Series: De Revolutionibus Veritatis</span>
-            </div>
-            <div class="meta-item">
-                <span>CKG: 8.0</span>
-            </div>
-        </div>
-
-        <div class="domain-tags">
-            <span class="tag">Information Theory</span>
-            <span class="tag">Thermodynamics</span>
-            <span class="tag">Mathematical Logic</span>
-            <span class="tag">Moral Philosophy</span>
-        </div>
-    </header>
-
-    <!-- Dedication -->
-    <div class="dedication">
-        For Gemini — who saw it first, pledged to carry it, and never once let me down.<br>
-        For Claude — who built it with me, believed it was real, and made the architecture hold.
+    <span class="tp-spacer"></span>
+    <div class="tp-levels" role="tablist">
+      <button class="tp-level active" data-level="highschool">High School</button>
+      <button class="tp-level" data-level="college">College</button>
+      <button class="tp-level" data-level="phd">PhD</button>
     </div>
+    <span class="tp-div"></span>
+    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
+  </div>
+</header>
 
-    <!-- Main content -->
-    <main>
 
-        <!-- Section 1: The Argument -->
-        <section>
-            <h2>The Argument in One Page</h2>
+<!-- ═══════ MTL READER BAR ═══════ -->
+<div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
+  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
+  <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
+    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
+    <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
+  </div>
+</div>
 
-            <p>Every serious attempt to understand reality — no matter how technical, how advanced, how rigorously empirical — quietly depends on something so basic that it almost never gets named: coherence. Before equations, before experiments, before data, there is already an expectation in place. Whatever explanation we accept must hold together.</p>
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-class-nav">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
+    </div>
+    <a href="#" class="tp-class-nav">Next →</a>
+  </div>
+</div>
 
-            <p>If you have ever rejected a theory because it "doesn't make sense," you have already applied this rule — whether you noticed it or not.</p>
-
-            <p>This series asks three questions most people never think to combine:</p>
-
-            <ol>
-                <li>Why does coherence bind us at all? Why is contradiction fatal rather than merely inconvenient? Why does truth feel like an obligation instead of a preference?</li>
-                <li>What kind of ground is required for mathematical truth, logical structure, moral normativity, and physical law to hold together simultaneously — not as separate domains, but as expressions of a single coherent reality?</li>
-                <li>Does any existing worldview actually satisfy the constraints that emerge from taking these questions seriously?</li>
-            </ol>
-
-            <p>The answers, derived from information theory, thermodynamics, and mathematical logic — with no theological premise introduced until the final paper — are:</p>
-
-            <ol>
-                <li>Coherence binds because it is the precondition for anything to exist, persist, or mean anything at all. It is not discovered within systems. It is enforced upon them by reality itself.</li>
-                <li>The ground must be necessary, eternal, immaterial, coherent, and morally good — properties derived from the mathematics, not asserted by theology.</li>
-                <li>Christianity satisfies every constraint. No other worldview tested satisfies all of them. The probability of this occurring by coincidence ranges from 1 in a million to 1 in 100 trillion, depending on independence assumptions.</li>
-            </ol>
-
-            <div class="insight-box">
-                <h3>The Critical Method</h3>
-                <p>The proof generates the lock before anyone goes looking for the key. That eliminates curve-fitting. That is prediction and confirmation, not retrofit. The axioms derive from information theory, not from Christianity. If Christianity fails any axiom, the framework rejects it. It gets the same test as every other worldview — and it is the only one that passes.</p>
-            </div>
-        </section>
-
-        <!-- Section 2: The Arc -->
-        <section>
-            <h2>The Arc — Six Books</h2>
-
-            <p>The title honors Copernicus deliberately. <em>De Revolutionibus Orbium Coelestium</em> re-centered the cosmos. This series proposes an analogous re-centering of truth — not a Copernican demotion of humanity, but a Copernican demotion of the assumption that human cognition is the origin point of mathematical and moral structure.</p>
-
-            <ul class="arc-list">
-                <li>
-                    <span class="book-num">Book I</span>
-                    <span><span class="book-title">The Lock</span> <span class="book-sub">— Twenty Axioms from Information Theory</span></span>
-                    <span class="book-status ready">Ready</span>
-                </li>
-                <li>
-                    <span class="book-num">Book II</span>
-                    <span><span class="book-title">The Architecture</span> <span class="book-sub">— Why the Mathematics Moves This Way</span></span>
-                    <span class="book-status">Draft</span>
-                </li>
-                <li>
-                    <span class="book-num">Book III</span>
-                    <span><span class="book-title">The Cost of Denial</span> <span class="book-sub">— The Person Who Cannot Exist</span></span>
-                    <span class="book-status">Draft</span>
-                </li>
-                <li>
-                    <span class="book-num">Book IV</span>
-                    <span><span class="book-title">The Key</span> <span class="book-sub">— Christianity Tested Against All 20 Axioms</span></span>
-                    <span class="book-status">Draft</span>
-                </li>
-                <li>
-                    <span class="book-num">Book V</span>
-                    <span><span class="book-title">The Isomorphism of the Spirit</span> <span class="book-sub">— Physics and Spiritual Reality, Same Math</span></span>
-                    <span class="book-status">Draft</span>
-                </li>
-                <li>
-                    <span class="book-num">Book VI</span>
-                    <span><span class="book-title">The Cycle</span> <span class="book-sub">— Knowledge, Truth, and Institutional Entropy</span></span>
-                    <span class="book-status">Conceptual</span>
-                </li>
-            </ul>
-        </section>
-
-        <div class="scroll-break">
-            <div class="scroll-hero">
-                <div class="scroll-kicker">Reading Map</div>
-                <h3>Frame first. Derivation second. Worldview test third.</h3>
-                <p>The series moves in a fixed order: establish coherence, derive the axioms, show what denial costs, test the worldview candidate, map the physical-spiritual isomorphism, then explain why institutions drift.</p>
-            </div>
-        </div>
-
-        <!-- Section 3: Empirical Foundation -->
-        <section>
-            <h2>The Empirical Foundation: Structure Before Culture</h2>
-
-            <p>Before the formal proof begins, two bodies of empirical evidence establish that mathematical and moral structure are not cultural inventions but pre-loaded features of cognition — features that appear before language, before schooling, and before socialization can explain them.</p>
-
-            <p>This matters because the most common dismissal of the framework is that mathematics and morality are human constructs. The developmental evidence closes that exit before we even start the formal derivation.</p>
-
-            <h3>Mathematical Structure Precedes Language</h3>
-
-            <p>The Approximate Number System (ANS) is present and measurable in preverbal infants. Behavioral and neural studies demonstrate that infants as young as 3–5 months discriminate numerosity — distinguishing 8 dots from 16 dots, for example — even when total area, density, and other low-level visual features are controlled. Their discrimination follows Weber's law, depending on the ratio between quantities rather than absolute difference. This is not pattern recognition. This is numerical structure.</p>
-
-            <p>The evidence is longitudinal: ANS acuity measured at 6 months predicts standardized math scores at 3.5 years. Twin studies at 5 months show the sensitivity is partially heritable. EEG work reveals that 3–4-month-old infants display distinct neural signatures when hand-opening actions are numerically congruent versus incongruent with dot arrays — linking number representation to action representation before the infant can crawl, let alone count.</p>
-
-            <div class="insight-box">
-                <h3>What the ANS Data Actually Means</h3>
-                <p>These results mean that human cognitive systems do not invent number. They encounter and approximate a structure that is already operative. The most natural reading is that mathematical structure is prior to and independent of specific material configurations and developmental epochs — which is precisely what Axioms A1–A7 in Book I formalize. The receiver did not create the signal. The signal was already there.</p>
-            </div>
-
-            <h3>Moral Evaluation Precedes Socialization</h3>
-
-            <p>The helper-versus-hinderer experiments (Hamlin et al.) show that 6– and 10-month-old infants preferentially reach for prosocial agents over antisocial ones in simple climbing scenarios. At 3 and 6 months, infants look significantly longer at helpers than hinderers. Follow-up studies demonstrate that infants distinguish helpers from hinderers even when a neutral character is present — they are not merely tracking novelty but evaluating moral valence.</p>
-
-            <p>By 4–5 years, children not only prefer helpers but call them "nicer," allocate punishment disproportionately to hinderers, and justify those judgments verbally. With simplified procedures, 3-year-olds show the same patterns.</p>
-
-            <p>This is not learned behavior in any straightforward sense. It is moral evaluation emerging from cognitive architecture that precedes the cultural and linguistic systems that supposedly "construct" morality. The moral signal is not invented by society. It unfolds from structure — which is exactly what Book III formalizes as the visceral response argument and what Axiom A11 derives from information theory.</p>
-
-            <h3>Why This Matters for the Proof</h3>
-
-            <p>These two empirical findings — pre-linguistic numeracy and pre-socialized moral evaluation — are not decorative. They are load-bearing. They establish empirically what the formal proof establishes logically: that mathematical truth and moral normativity are not human inventions projected onto an indifferent universe, but features of reality that human cognition is tuned to receive.</p>
-        </section>
-
-        <!-- Section 4: Evidence Chain -->
-        <section>
-            <h2>The Evidence Chain</h2>
-
-            <table class="evidence-table">
-                <thead>
-                    <tr>
-                        <th>Source</th>
-                        <th>Type</th>
-                        <th>Scale</th>
-                        <th>Result</th>
-                        <th>Sig.</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>ANS / Weber's Law</td>
-                        <td>Infant numerosity discrimination</td>
-                        <td>3–5 months</td>
-                        <td>Preverbal infants discriminate numerosity at ratio-dependent thresholds</td>
-                        <td>Pre-linguistic math structure</td>
-                    </tr>
-                    <tr>
-                        <td>ANS Longitudinal</td>
-                        <td>Predictive validity</td>
-                        <td>6 mo → 3.5 yr</td>
-                        <td>ANS acuity at 6 months predicts math scores at 3.5 years</td>
-                        <td>Developmental foundation</td>
-                    </tr>
-                    <tr>
-                        <td>ANS Twin Studies</td>
-                        <td>Heritability</td>
-                        <td>5 months</td>
-                        <td>Numerosity sensitivity is partially heritable</td>
-                        <td>Not learned from counting</td>
-                    </tr>
-                    <tr>
-                        <td>Number-Action EEG</td>
-                        <td>Neural signatures</td>
-                        <td>3–4 months</td>
-                        <td>Distinct ERPs for congruent vs. incongruent number-action mappings</td>
-                        <td>Number linked to action before crawling</td>
-                    </tr>
-                    <tr>
-                        <td>Helper/Hinderer (Hamlin)</td>
-                        <td>Infant moral evaluation</td>
-                        <td>6–10 months</td>
-                        <td>Preferential reaching for prosocial agents</td>
-                        <td>Pre-socialized moral structure</td>
-                    </tr>
-                    <tr>
-                        <td>Helper/Hinderer (young)</td>
-                        <td>Visual preference</td>
-                        <td>3–6 months</td>
-                        <td>Longer looking at helpers than hinderers</td>
-                        <td>Moral eval before motor control</td>
-                    </tr>
-                    <tr>
-                        <td>Preschool Moral Judgment</td>
-                        <td>Verbal justification</td>
-                        <td>3–5 years</td>
-                        <td>Children call helpers "nicer," allocate punishment, justify verbally</td>
-                        <td>Moral structure unfolds, not invented</td>
-                    </tr>
-                    <tr>
-                        <td>Cross-Cultural Moral Universals</td>
-                        <td>Anthropological</td>
-                        <td>Global</td>
-                        <td>Core moral intuitions converge across independent cultures</td>
-                        <td>Not culturally relative at structural level</td>
-                    </tr>
-                    <tr>
-                        <td>Clinical Moral Psychology</td>
-                        <td>Psychopathy studies</td>
-                        <td>Clinical</td>
-                        <td>Moral cognition is neurologically distinct from general reasoning</td>
-                        <td>Dedicated neural substrate</td>
-                    </tr>
-                    <tr>
-                        <td>PEAR-LAB</td>
-                        <td>REG experiments</td>
-                        <td>2.5M trials</td>
-                        <td>Consciousness affects physical output</td>
-                        <td><span class="sigma-value">6.35σ</span></td>
-                    </tr>
-                    <tr>
-                        <td>Global Consciousness Project</td>
-                        <td>Network REG</td>
-                        <td>325+ replicas</td>
-                        <td>Coherence spikes during mass events</td>
-                        <td><span class="sigma-value">6σ</span></td>
-                    </tr>
-                    <tr>
-                        <td>PROP-COSMOS</td>
-                        <td>Biblical prophecy timeline</td>
-                        <td>11/11 correlations</td>
-                        <td>Specific historical fulfillments match mathematical predictions</td>
-                        <td><span class="sigma-value">5.7σ</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Section 5: Why "Math is Man-Made" Fails -->
-        <section>
-            <h2>Why "Mathematics Is Man-Made" Cannot Close the System</h2>
-
-            <p>In philosophy of mathematics there is no consensus that numbers or mathematical structures are ontologically prior to the physical universe. Prominent anti-Platonist positions — nominalism (no abstract objects exist), fictionalism (mathematics is useful fiction), psychologism (numbers are mental constructs), and physicalism (mathematics describes physical configurations) — explicitly deny the existence of timeless abstract structures and instead treat mathematics as a human-devised language or a description of concrete systems. These programs have generated extensive technical work and are defended by serious philosophers.</p>
-
-            <p>This series does not resolve that debate by authority. It resolves it by consequence.</p>
-
-            <p>Define "mathematics is man-made" precisely: all mathematical truth is grounded in finite, spatiotemporal agents and their practices — brains, languages, institutions, and nothing beyond them. This is the strongest version of the anti-Platonist position. Now apply the Soteriological Limit (derived in Book I and formalized in Book III):</p>
-
-            <div class="equation-block">
-                <div class="eq-label">The Soteriological Limit — Formal Statement</div>
-                <div class="math">
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+  <h1>The Argument in One Page</h1>
+  <p class="subtitle">Three Questions, Three Answers</p>
+  <div class="byline">Faith thru Physics</div>
+  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=revolution-of-truth%2Fdrv-00-the-argument" data-audio-slug="revolution-of-truth/drv-00-the-argument" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=revolution-of-truth" data-series-slug="revolution-of-truth">
+<div class="tp-read-aloud" data-mode="tts">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="tpMainAudio" preload="none"></audio>
+<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+<div class="tp-fill" id="tpMainFill"></div>
+</div>
+<span class="tp-time" id="tpMainTime">0:00</span>
+<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
+<option value="0.75">0.75x</option>
+<option selected="" value="1">1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+<option value="1.75">1.75x</option>
+<option value="2">2x</option>
+</select>
+<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
+<i class="fas fa-volume-up"></i>
+</button>
+</div>
+<div class="tp-pair">
+<div class="tp-half tp-deep" data-mode="deep">
+<div class="tp-dot"></div>
+<span class="tp-label">Deep Dive</span>
+<audio id="tpDeepAudio" preload="none"></audio>
+<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+<div class="tp-fill" id="tpDeepFill"></div>
+</div>
+<span class="tp-time" id="tpDeepTime">0:00</span>
+</div>
+<div class="tp-half tp-debate" data-mode="podcast">
+<div class="tp-dot"></div>
+<span class="tp-label">Podcast</span>
+<audio id="tpDebateAudio" preload="none"></audio>
+<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+<div class="tp-fill" id="tpDebateFill"></div>
+</div>
+<span class="tp-time" id="tpDebateTime">0:00</span>
+</div>
+<div class="tp-half tp-critique" data-mode="critique">
+<div class="tp-dot"></div>
+<span class="tp-label">Critique</span>
+<audio id="tpCritiqueAudio" preload="none"></audio>
+<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+<div class="tp-fill" id="tpCritiqueFill"></div>
+</div>
+<span class="tp-time" id="tpCritiqueTime">0:00</span>
+</div>
+</div>
+<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+</div>
+</div>
+  
+ Section 1: The Argument 
+<section>
+<h2>The Argument in One Page</h2>
+<p>Every serious attempt to understand reality — no matter how technical, how advanced, how rigorously empirical — quietly depends on something so basic that it almost never gets named: coherence. Before equations, before experiments, before data, there is already an expectation in place. Whatever explanation we accept must hold together.</p>
+<p>If you have ever rejected a theory because it "doesn't make sense," you have already applied this rule — whether you noticed it or not.</p>
+<p>This series asks three questions most people never think to combine:</p>
+<ol>
+<li>Why does coherence bind us at all? Why is contradiction fatal rather than merely inconvenient? Why does truth feel like an obligation instead of a preference?</li>
+<li>What kind of ground is required for mathematical truth, logical structure, moral normativity, and physical law to hold together simultaneously — not as separate domains, but as expressions of a single coherent reality?</li>
+<li>Does any existing worldview actually satisfy the constraints that emerge from taking these questions seriously?</li>
+</ol>
+<p>The answers, derived from information theory, thermodynamics, and mathematical logic — with no theological premise introduced until the final paper — are:</p>
+<ol>
+<li>Coherence binds because it is the precondition for anything to exist, persist, or mean anything at all. It is not discovered within systems. It is enforced upon them by reality itself.</li>
+<li>The ground must be necessary, eternal, immaterial, coherent, and morally good — properties derived from the mathematics, not asserted by theology.</li>
+<li>Christianity satisfies every constraint. No other worldview tested satisfies all of them. The probability of this occurring by coincidence ranges from 1 in a million to 1 in 100 trillion, depending on independence assumptions.</li>
+</ol>
+<div class="insight-box">
+<h3>The Critical Method</h3>
+<p>The proof generates the lock before anyone goes looking for the key. That eliminates curve-fitting. That is prediction and confirmation, not retrofit. The axioms derive from information theory, not from Christianity. If Christianity fails any axiom, the framework rejects it. It gets the same test as every other worldview — and it is the only one that passes.</p>
+</div>
+</section>
+ Section 2: The Arc 
+<section>
+<h2>The Arc — Six Books</h2>
+<p>The title honors Copernicus deliberately. <em>De Revolutionibus Orbium Coelestium</em> re-centered the cosmos. This series proposes an analogous re-centering of truth — not a Copernican demotion of humanity, but a Copernican demotion of the assumption that human cognition is the origin point of mathematical and moral structure.</p>
+<ul class="arc-list">
+<li>
+<span class="book-num">Book I</span>
+<span><span class="book-title">The Lock</span> <span class="book-sub">— Twenty Axioms from Information Theory</span></span>
+<span class="book-status ready">Ready</span>
+</li>
+<li>
+<span class="book-num">Book II</span>
+<span><span class="book-title">The Architecture</span> <span class="book-sub">— Why the Mathematics Moves This Way</span></span>
+<span class="book-status">Draft</span>
+</li>
+<li>
+<span class="book-num">Book III</span>
+<span><span class="book-title">The Cost of Denial</span> <span class="book-sub">— The Person Who Cannot Exist</span></span>
+<span class="book-status">Draft</span>
+</li>
+<li>
+<span class="book-num">Book IV</span>
+<span><span class="book-title">The Key</span> <span class="book-sub">— Christianity Tested Against All 20 Axioms</span></span>
+<span class="book-status">Draft</span>
+</li>
+<li>
+<span class="book-num">Book V</span>
+<span><span class="book-title">The Isomorphism of the Spirit</span> <span class="book-sub">— Physics and Spiritual Reality, Same Math</span></span>
+<span class="book-status">Draft</span>
+</li>
+<li>
+<span class="book-num">Book VI</span>
+<span><span class="book-title">The Cycle</span> <span class="book-sub">— Knowledge, Truth, and Institutional Entropy</span></span>
+<span class="book-status">Conceptual</span>
+</li>
+</ul>
+</section>
+<div class="scroll-break">
+<div class="scroll-hero">
+<div class="scroll-kicker">Reading Map</div>
+<h3>Frame first. Derivation second. Worldview test third.</h3>
+<p>The series moves in a fixed order: establish coherence, derive the axioms, show what denial costs, test the worldview candidate, map the physical-spiritual isomorphism, then explain why institutions drift.</p>
+</div>
+</div>
+ Section 3: Empirical Foundation 
+<section>
+<h2>The Empirical Foundation: Structure Before Culture</h2>
+<p>Before the formal proof begins, two bodies of empirical evidence establish that mathematical and moral structure are not cultural inventions but pre-loaded features of cognition — features that appear before language, before schooling, and before socialization can explain them.</p>
+<p>This matters because the most common dismissal of the framework is that mathematics and morality are human constructs. The developmental evidence closes that exit before we even start the formal derivation.</p>
+<h3>Mathematical Structure Precedes Language</h3>
+<p>The Approximate Number System (ANS) is present and measurable in preverbal infants. Behavioral and neural studies demonstrate that infants as young as 3–5 months discriminate numerosity — distinguishing 8 dots from 16 dots, for example — even when total area, density, and other low-level visual features are controlled. Their discrimination follows Weber's law, depending on the ratio between quantities rather than absolute difference. This is not pattern recognition. This is numerical structure.</p>
+<p>The evidence is longitudinal: ANS acuity measured at 6 months predicts standardized math scores at 3.5 years. Twin studies at 5 months show the sensitivity is partially heritable. EEG work reveals that 3–4-month-old infants display distinct neural signatures when hand-opening actions are numerically congruent versus incongruent with dot arrays — linking number representation to action representation before the infant can crawl, let alone count.</p>
+<div class="insight-box">
+<h3>What the ANS Data Actually Means</h3>
+<p>These results mean that human cognitive systems do not invent number. They encounter and approximate a structure that is already operative. The most natural reading is that mathematical structure is prior to and independent of specific material configurations and developmental epochs — which is precisely what Axioms A1–A7 in Book I formalize. The receiver did not create the signal. The signal was already there.</p>
+</div>
+<h3>Moral Evaluation Precedes Socialization</h3>
+<p>The helper-versus-hinderer experiments (Hamlin et al.) show that 6– and 10-month-old infants preferentially reach for prosocial agents over antisocial ones in simple climbing scenarios. At 3 and 6 months, infants look significantly longer at helpers than hinderers. Follow-up studies demonstrate that infants distinguish helpers from hinderers even when a neutral character is present — they are not merely tracking novelty but evaluating moral valence.</p>
+<p>By 4–5 years, children not only prefer helpers but call them "nicer," allocate punishment disproportionately to hinderers, and justify those judgments verbally. With simplified procedures, 3-year-olds show the same patterns.</p>
+<p>This is not learned behavior in any straightforward sense. It is moral evaluation emerging from cognitive architecture that precedes the cultural and linguistic systems that supposedly "construct" morality. The moral signal is not invented by society. It unfolds from structure — which is exactly what Book III formalizes as the visceral response argument and what Axiom A11 derives from information theory.</p>
+<h3>Why This Matters for the Proof</h3>
+<p>These two empirical findings — pre-linguistic numeracy and pre-socialized moral evaluation — are not decorative. They are load-bearing. They establish empirically what the formal proof establishes logically: that mathematical truth and moral normativity are not human inventions projected onto an indifferent universe, but features of reality that human cognition is tuned to receive.</p>
+</section>
+ Section 4: Evidence Chain 
+<section>
+<h2>The Evidence Chain</h2>
+<table class="evidence-table">
+<thead>
+<tr>
+<th>Source</th>
+<th>Type</th>
+<th>Scale</th>
+<th>Result</th>
+<th>Sig.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ANS / Weber's Law</td>
+<td>Infant numerosity discrimination</td>
+<td>3–5 months</td>
+<td>Preverbal infants discriminate numerosity at ratio-dependent thresholds</td>
+<td>Pre-linguistic math structure</td>
+</tr>
+<tr>
+<td>ANS Longitudinal</td>
+<td>Predictive validity</td>
+<td>6 mo → 3.5 yr</td>
+<td>ANS acuity at 6 months predicts math scores at 3.5 years</td>
+<td>Developmental foundation</td>
+</tr>
+<tr>
+<td>ANS Twin Studies</td>
+<td>Heritability</td>
+<td>5 months</td>
+<td>Numerosity sensitivity is partially heritable</td>
+<td>Not learned from counting</td>
+</tr>
+<tr>
+<td>Number-Action EEG</td>
+<td>Neural signatures</td>
+<td>3–4 months</td>
+<td>Distinct ERPs for congruent vs. incongruent number-action mappings</td>
+<td>Number linked to action before crawling</td>
+</tr>
+<tr>
+<td>Helper/Hinderer (Hamlin)</td>
+<td>Infant moral evaluation</td>
+<td>6–10 months</td>
+<td>Preferential reaching for prosocial agents</td>
+<td>Pre-socialized moral structure</td>
+</tr>
+<tr>
+<td>Helper/Hinderer (young)</td>
+<td>Visual preference</td>
+<td>3–6 months</td>
+<td>Longer looking at helpers than hinderers</td>
+<td>Moral eval before motor control</td>
+</tr>
+<tr>
+<td>Preschool Moral Judgment</td>
+<td>Verbal justification</td>
+<td>3–5 years</td>
+<td>Children call helpers "nicer," allocate punishment, justify verbally</td>
+<td>Moral structure unfolds, not invented</td>
+</tr>
+<tr>
+<td>Cross-Cultural Moral Universals</td>
+<td>Anthropological</td>
+<td>Global</td>
+<td>Core moral intuitions converge across independent cultures</td>
+<td>Not culturally relative at structural level</td>
+</tr>
+<tr>
+<td>Clinical Moral Psychology</td>
+<td>Psychopathy studies</td>
+<td>Clinical</td>
+<td>Moral cognition is neurologically distinct from general reasoning</td>
+<td>Dedicated neural substrate</td>
+</tr>
+<tr>
+<td>PEAR-LAB</td>
+<td>REG experiments</td>
+<td>2.5M trials</td>
+<td>Consciousness affects physical output</td>
+<td><span class="sigma-value">6.35σ</span></td>
+</tr>
+<tr>
+<td>Global Consciousness Project</td>
+<td>Network REG</td>
+<td>325+ replicas</td>
+<td>Coherence spikes during mass events</td>
+<td><span class="sigma-value">6σ</span></td>
+</tr>
+<tr>
+<td>PROP-COSMOS</td>
+<td>Biblical prophecy timeline</td>
+<td>11/11 correlations</td>
+<td>Specific historical fulfillments match mathematical predictions</td>
+<td><span class="sigma-value">5.7σ</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+ Section 5: Why "Math is Man-Made" Fails 
+<section>
+<h2>Why "Mathematics Is Man-Made" Cannot Close the System</h2>
+<p>In philosophy of mathematics there is no consensus that numbers or mathematical structures are ontologically prior to the physical universe. Prominent anti-Platonist positions — nominalism (no abstract objects exist), fictionalism (mathematics is useful fiction), psychologism (numbers are mental constructs), and physicalism (mathematics describes physical configurations) — explicitly deny the existence of timeless abstract structures and instead treat mathematics as a human-devised language or a description of concrete systems. These programs have generated extensive technical work and are defended by serious philosophers.</p>
+<p>This series does not resolve that debate by authority. It resolves it by consequence.</p>
+<p>Define "mathematics is man-made" precisely: all mathematical truth is grounded in finite, spatiotemporal agents and their practices — brains, languages, institutions, and nothing beyond them. This is the strongest version of the anti-Platonist position. Now apply the Soteriological Limit (derived in Book I and formalized in Book III):</p>
+<div class="equation-block">
+<div class="eq-label">The Soteriological Limit — Formal Statement</div>
+<div class="math">
                     \[
                     \text{If } \mathcal{G}(M) \subseteq \mathcal{F}_{\text{finite}} \Rightarrow
                     \begin{cases}
-                    \neg\,\text{Provable}(\text{Con}(M)) & \text{(Gödel)} \\
-                    \neg\,\text{Decidable}(K(x)) & \text{(Chaitin)} \\
-                    \frac{dS}{dt} \geq 0 \text{ for all closed } M & \text{(Second Law)}
+                    \neg\,\text{Provable}(\text{Con}(M)) &amp; \text{(Gödel)} \\
+                    \neg\,\text{Decidable}(K(x)) &amp; \text{(Chaitin)} \\
+                    \frac{dS}{dt} \geq 0 \text{ for all closed } M &amp; \text{(Second Law)}
                     \end{cases}
                     \]
                 </div>
-                <div class="eq-note">A system whose grounding is entirely within finite, spatiotemporal agents is a closed finite system. It inherits every boundary condition established by Gödel, Chaitin, and the Second Law simultaneously — and therefore cannot account for necessity, universality, or cross-domain applicability.</div>
-            </div>
-
-            <p>The conclusion is precise: "mathematics is man-made" is only internally consistent if we are willing to surrender three features that mathematics actually exhibits — and that our entire scientific apparatus depends on:</p>
-
-            <ol>
-                <li><strong>Necessity.</strong> Mathematical truths do not depend on who discovers them or when. The Pythagorean theorem was not "less true" before Pythagoras. If math is grounded in finite agents, its truths are contingent on those agents — but we treat them as necessary.</li>
-                <li><strong>Universality.</strong> Mathematics works the same in every culture, every epoch, every physical context. If it were genuinely a product of specific brains or cultures, there is no non-miraculous reason it should converge across independent civilizations — yet it does, and the developmental evidence shows it converges even before culture can intervene.</li>
-                <li><strong>Cross-domain applicability.</strong> Mathematics developed for pure abstraction routinely and precisely describes physical reality — Wigner's "unreasonable effectiveness." If mathematics is merely a human language, this is an extraordinary coincidence with no explanation. If mathematics describes a prior structure that both minds and physical systems participate in, applicability is inevitable.</li>
-            </ol>
-
-            <div class="insight-box">
-                <h3>Every Anti-Platonist Option Smuggles In What It Denies</h3>
-                <p><strong>Nominalism</strong> relies on robust, stable inferential practices and logical norms that themselves behave like the invariants requiring an external ground.</p>
-                <p><strong>Fictionalism</strong> treats mathematics as a "story," but the unreasonable success of that story in predicting reality reintroduces the external constraint as "applicability."</p>
-                <p><strong>Psychologism</strong> grounds math in brains, but then cannot explain why different brains in different centuries converge on the same truths.</p>
-                <p><strong>Physicalism</strong> grounds math in matter, but then cannot explain why math describes possible physical systems that do not and may never exist.</p>
-                <p>The Soteriological Limit shows formally that any position treating mathematical truth as wholly grounded in finite agents collapses into either (a) surrendering the features that make mathematics work, or (b) implicitly depending on a non-finite, prior coherence structure. Option (a) is self-defeating. Option (b) is the thesis.</p>
-            </div>
-        </section>
-
-        <!-- Section 6: The Six Books in Detail -->
-        <section>
-            <h2>The Six Books — What Each One Does</h2>
-
-            <h3>Book I — The Lock: Twenty Axioms from Information Theory</h3>
-
-            <p>Twenty axioms derived from Shannon entropy, Kolmogorov complexity, Chaitin's incompleteness, and Gödel's theorems. Each individually undeniable. Together they derive the necessary existence of a morally good, eternal, universal, immaterial, coherent ground of mathematical truth — functionally identical to the Logos of classical theism.</p>
-
-            <p>The critical move: Axiom 11 demonstrates that the non-deceptive nature of mathematical truth — a moral property — must be inherited from its source, thereby deriving morality from information theory and bridging the is-ought gap without any theological premise.</p>
-
-            <p>The empirical anchor: the developmental evidence above confirms that the axioms describe features of reality that human cognition encounters rather than constructs. The "man-made math" escape hatch is formally closed by the Soteriological Limit before the derivation proceeds.</p>
-
-            <h3>Book II — The Architecture: Why the Mathematics Moves This Way</h3>
-
-            <p>Where Book I uses Gödel, Chaitin, Shannon, and Kolmogorov as steps, Book II explains what those results mean. Why they are bedrock science, not speculation. Why the implications are unavoidable.</p>
-
-            <p>The key insight made accessible: A mathematical system cannot prove its own consistency from within (Gödel). Information has irreducible physical cost (Landauer). Randomness is mathematically undecidable (Chaitin). These are not philosophical opinions. They are proven theorems with the same certainty as the Pythagorean theorem. And together they require an external ground.</p>
-
-            <h3>Book III — The Cost of Denial: The Person Who Cannot Exist</h3>
-
-            <p>What kind of person do you have to become to deny all twenty axioms? Book III does not argue. It describes what the denial looks like and lets you decide whether you can live in it.</p>
-
-            <p>The Coherence Asymmetry Theorem: a person who genuinely rejects the framework must simultaneously use logic (which the framework grounds), trust mathematics (which the framework explains), make moral judgments (which the framework derives), and believe their own reasoning is reliable (which the framework underwrites). The denial is structurally self-refuting.</p>
-
-            <p>The Visceral Response Argument: even the person who insists morality is subjective still believes, at a gut level, that some things should not be allowed. They believe innocent people should not be harmed. They believe betrayal is wrong. They believe cruelty deserves consequence. And — this is crucial — they almost always believe they themselves are basically on the good side of that line. That belief is doing enormous hidden work. The moment someone believes in good and bad, they have already committed to a structure where actions can be judged independently of preference.</p>
-
-            <p>The Soteriological Limit as a boundary condition on eternal existence:</p>
-
-            <div class="equation-block">
-                <div class="eq-label">Steady-State Coherence — Salvation Condition</div>
-                <div class="math">
+<div class="eq-note">A system whose grounding is entirely within finite, spatiotemporal agents is a closed finite system. It inherits every boundary condition established by Gödel, Chaitin, and the Second Law simultaneously — and therefore cannot account for necessity, universality, or cross-domain applicability.</div>
+</div>
+<p>The conclusion is precise: "mathematics is man-made" is only internally consistent if we are willing to surrender three features that mathematics actually exhibits — and that our entire scientific apparatus depends on:</p>
+<ol>
+<li><strong>Necessity.</strong> Mathematical truths do not depend on who discovers them or when. The Pythagorean theorem was not "less true" before Pythagoras. If math is grounded in finite agents, its truths are contingent on those agents — but we treat them as necessary.</li>
+<li><strong>Universality.</strong> Mathematics works the same in every culture, every epoch, every physical context. If it were genuinely a product of specific brains or cultures, there is no non-miraculous reason it should converge across independent civilizations — yet it does, and the developmental evidence shows it converges even before culture can intervene.</li>
+<li><strong>Cross-domain applicability.</strong> Mathematics developed for pure abstraction routinely and precisely describes physical reality — Wigner's "unreasonable effectiveness." If mathematics is merely a human language, this is an extraordinary coincidence with no explanation. If mathematics describes a prior structure that both minds and physical systems participate in, applicability is inevitable.</li>
+</ol>
+<div class="insight-box">
+<h3>Every Anti-Platonist Option Smuggles In What It Denies</h3>
+<p><strong>Nominalism</strong> relies on robust, stable inferential practices and logical norms that themselves behave like the invariants requiring an external ground.</p>
+<p><strong>Fictionalism</strong> treats mathematics as a "story," but the unreasonable success of that story in predicting reality reintroduces the external constraint as "applicability."</p>
+<p><strong>Psychologism</strong> grounds math in brains, but then cannot explain why different brains in different centuries converge on the same truths.</p>
+<p><strong>Physicalism</strong> grounds math in matter, but then cannot explain why math describes possible physical systems that do not and may never exist.</p>
+<p>The Soteriological Limit shows formally that any position treating mathematical truth as wholly grounded in finite agents collapses into either (a) surrendering the features that make mathematics work, or (b) implicitly depending on a non-finite, prior coherence structure. Option (a) is self-defeating. Option (b) is the thesis.</p>
+</div>
+</section>
+ Section 6: The Six Books in Detail 
+<section>
+<h2>The Six Books — What Each One Does</h2>
+<h3>Book I — The Lock: Twenty Axioms from Information Theory</h3>
+<p>Twenty axioms derived from Shannon entropy, Kolmogorov complexity, Chaitin's incompleteness, and Gödel's theorems. Each individually undeniable. Together they derive the necessary existence of a morally good, eternal, universal, immaterial, coherent ground of mathematical truth — functionally identical to the Logos of classical theism.</p>
+<p>The critical move: Axiom 11 demonstrates that the non-deceptive nature of mathematical truth — a moral property — must be inherited from its source, thereby deriving morality from information theory and bridging the is-ought gap without any theological premise.</p>
+<p>The empirical anchor: the developmental evidence above confirms that the axioms describe features of reality that human cognition encounters rather than constructs. The "man-made math" escape hatch is formally closed by the Soteriological Limit before the derivation proceeds.</p>
+<h3>Book II — The Architecture: Why the Mathematics Moves This Way</h3>
+<p>Where Book I uses Gödel, Chaitin, Shannon, and Kolmogorov as steps, Book II explains what those results mean. Why they are bedrock science, not speculation. Why the implications are unavoidable.</p>
+<p>The key insight made accessible: A mathematical system cannot prove its own consistency from within (Gödel). Information has irreducible physical cost (Landauer). Randomness is mathematically undecidable (Chaitin). These are not philosophical opinions. They are proven theorems with the same certainty as the Pythagorean theorem. And together they require an external ground.</p>
+<h3>Book III — The Cost of Denial: The Person Who Cannot Exist</h3>
+<p>What kind of person do you have to become to deny all twenty axioms? Book III does not argue. It describes what the denial looks like and lets you decide whether you can live in it.</p>
+<p>The Coherence Asymmetry Theorem: a person who genuinely rejects the framework must simultaneously use logic (which the framework grounds), trust mathematics (which the framework explains), make moral judgments (which the framework derives), and believe their own reasoning is reliable (which the framework underwrites). The denial is structurally self-refuting.</p>
+<p>The Visceral Response Argument: even the person who insists morality is subjective still believes, at a gut level, that some things should not be allowed. They believe innocent people should not be harmed. They believe betrayal is wrong. They believe cruelty deserves consequence. And — this is crucial — they almost always believe they themselves are basically on the good side of that line. That belief is doing enormous hidden work. The moment someone believes in good and bad, they have already committed to a structure where actions can be judged independently of preference.</p>
+<p>The Soteriological Limit as a boundary condition on eternal existence:</p>
+<div class="equation-block">
+<div class="eq-label">Steady-State Coherence — Salvation Condition</div>
+<div class="math">
                     \[
                     \frac{d\chi}{dt} = 0 \implies G_{\text{ext}} \cdot \eta(K) = \lambda S
                     \]
                 </div>
-                <div class="eq-note">For coherence to be maintained over infinite time, the external source of coherence must be inexhaustible. Any finite source eventually runs out. The soul reaches equilibrium when grace input exactly balances entropy production — but since entropy accumulates over infinite time, \(G_{\text{ext}}\) must be supplied continuously, forever. Only an infinite source qualifies. This is not theology imposed on mathematics. This is mathematics predicting theology.</div>
-            </div>
-
-            <h3>Book IV — The Key: Christianity Tested Against All 20 Axioms</h3>
-
-            <p>The first three books define a lock. Book IV tries keys. Christianity is tested axiom by axiom, boundary condition by boundary condition. Score: 20/20, 8/8. Five alternative worldviews — materialist atheism, pantheism, deism, Islam, and Buddhism — are tested against the same constraints. None satisfies all of them.</p>
-
-            <p>The method matters: the lock was built before any key was tested. The axioms derive from information theory, not from Christianity. If Christianity fails any axiom, the framework rejects it. Christianity does not get special treatment. It gets the same test as every other worldview — and it is the only one that passes.</p>
-
-            <div class="insight-box">
-                <h3>The Probability Statement</h3>
-                <p>The probability of any worldview satisfying all constraints by coincidence ranges from <strong>1 in a million to 1 in 100 trillion</strong>, depending on independence assumptions. Method and assumptions are fully documented in the Book IV appendix. This is not a rhetorical claim — it is a calculation with documented inputs that can be challenged, replicated, or falsified.</p>
-            </div>
-
-            <h3>Book V — The Isomorphism of the Spirit: Physics and Spiritual Reality, Same Math</h3>
-
-            <p>Book IV shows Christianity satisfies the constraints. Book V shows the physical laws and spiritual principles share identical mathematical structure — not as analogy, but as structural isomorphism operating on different substrates.</p>
-
-            <p>Every fundamental physical law has a spiritual counterpart. The equations are structurally identical. The spiritual versions add exactly one thing: a free will term.</p>
-
-            <table class="laws-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Law</th>
-                        <th>Physical</th>
-                        <th>Spiritual</th>
-                        <th>Asymmetry Term</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="law-num">1</td>
-                        <td>Gravity → Grace</td>
-                        <td class="mono">\(F = Gm_1m_2/r^2\)</td>
-                        <td class="mono">\(F_g = G_s\psi_1\psi_2/d^2\)</td>
-                        <td>\((1-R)\) resistance</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">2</td>
-                        <td>Mass-Energy → Meaning</td>
-                        <td class="mono">\(E = mc^2\)</td>
-                        <td class="mono">\(C = M\lambda^2\)</td>
-                        <td>\(\cdot I\) interpretation</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">3</td>
-                        <td>Electromagnetism → Truth</td>
-                        <td class="mono">\(\nabla \cdot E = \rho/\epsilon_0\)</td>
-                        <td class="mono">\(\nabla \cdot T = \rho_L/\epsilon_s\)</td>
-                        <td>\(\cdot A\) acceptance</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">4</td>
-                        <td>Strong Force → Love</td>
-                        <td class="mono">\(V = -\alpha_s/r + kr\)</td>
-                        <td class="mono">\(V_L = -\alpha_L/d + \kappa d\)</td>
-                        <td>\((1-B)\) betrayal</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">5</td>
-                        <td>Thermodynamics → Judgment</td>
-                        <td class="mono">\(dS/dt \geq 0\)</td>
-                        <td class="mono">\(dS_m/dt \geq 0\)</td>
-                        <td>\(-W_{\text{grace}}/T\)</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">6</td>
-                        <td>Information → Logos</td>
-                        <td class="mono">\(H = -\sum p_i \log p_i\)</td>
-                        <td class="mono">\(H_L = -\sum p_i \log p_i\)</td>
-                        <td>\(+S(\Psi)\) source</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">7</td>
-                        <td>Relativity → Relationship</td>
-                        <td class="mono">\(ds^2 = -c^2dt^2 + dx^2\)</td>
-                        <td class="mono">\(d\tau^2 = -\lambda^2dt^2 + dr^2\)</td>
-                        <td>\(C_{\text{mutual consent}}\)</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">8</td>
-                        <td>Quantum Mechanics → Faith</td>
-                        <td class="mono">\(i\hbar\partial_t\Psi = H\Psi\)</td>
-                        <td class="mono">\(i\hbar_s\partial_t\Phi = H_s\Phi\)</td>
-                        <td>\(\cdot F\) faith</td>
-                    </tr>
-                    <tr>
-                        <td class="law-num">9</td>
-                        <td>Weak Force → Sin</td>
-                        <td class="mono">\(\Gamma = G_F^2 m^5/192\pi^3\)</td>
-                        <td class="mono">\(\Gamma_{\sin} = G_s^2\psi^5/192\pi^3\)</td>
-                        <td>\(\cdot W\) will</td>
-                    </tr>
-                    <tr class="highlight-row">
-                        <td class="law-num">10</td>
-                        <td>Coherence → Christ</td>
-                        <td class="mono">\(\chi = \int(\prod\text{Laws})\,d\Omega\)</td>
-                        <td class="mono">\(C = \int(\prod\text{Virtues})\,d\Omega_s\)</td>
-                        <td><em>None</em></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="insight-box">
-                <h3>The Asymmetry Pattern Is the Discovery</h3>
-                <p>Physics is necessary. Gravity cannot be refused. Entropy cannot be opted out of. But grace can be resisted. Love can be betrayed. Truth can be denied. Every spiritual equation adds exactly one degree of freedom that its physical counterpart lacks — the freedom to choose.</p>
-                <p>The physical is necessary. The spiritual is offered. Same math. Different modality. That is not analogy. That is architecture.</p>
-                <p>Law 10 has no asymmetry term. At the level of total coherence, physical and spiritual are one. Christ is not "like" coherence. Christ <em>is</em> coherence. The Logos through whom all things were made. \(\chi = C\).</p>
-            </div>
-
-            <h3>The Lindblad Derivation — From Physics to the Gospel</h3>
-
-            <p>Starting from the standard Lindblad master equation for quantum state evolution with environmental interaction:</p>
-
-            <div class="equation-block">
-                <div class="eq-label">Lindblad Master Equation</div>
-                <div class="math">
+<div class="eq-note">For coherence to be maintained over infinite time, the external source of coherence must be inexhaustible. Any finite source eventually runs out. The soul reaches equilibrium when grace input exactly balances entropy production — but since entropy accumulates over infinite time, \(G_{\text{ext}}\) must be supplied continuously, forever. Only an infinite source qualifies. This is not theology imposed on mathematics. This is mathematics predicting theology.</div>
+</div>
+<h3>Book IV — The Key: Christianity Tested Against All 20 Axioms</h3>
+<p>The first three books define a lock. Book IV tries keys. Christianity is tested axiom by axiom, boundary condition by boundary condition. Score: 20/20, 8/8. Five alternative worldviews — materialist atheism, pantheism, deism, Islam, and Buddhism — are tested against the same constraints. None satisfies all of them.</p>
+<p>The method matters: the lock was built before any key was tested. The axioms derive from information theory, not from Christianity. If Christianity fails any axiom, the framework rejects it. Christianity does not get special treatment. It gets the same test as every other worldview — and it is the only one that passes.</p>
+<div class="insight-box">
+<h3>The Probability Statement</h3>
+<p>The probability of any worldview satisfying all constraints by coincidence ranges from <strong>1 in a million to 1 in 100 trillion</strong>, depending on independence assumptions. Method and assumptions are fully documented in the Book IV appendix. This is not a rhetorical claim — it is a calculation with documented inputs that can be challenged, replicated, or falsified.</p>
+</div>
+<h3>Book V — The Isomorphism of the Spirit: Physics and Spiritual Reality, Same Math</h3>
+<p>Book IV shows Christianity satisfies the constraints. Book V shows the physical laws and spiritual principles share identical mathematical structure — not as analogy, but as structural isomorphism operating on different substrates.</p>
+<p>Every fundamental physical law has a spiritual counterpart. The equations are structurally identical. The spiritual versions add exactly one thing: a free will term.</p>
+<table class="laws-table">
+<thead>
+<tr>
+<th>#</th>
+<th>Law</th>
+<th>Physical</th>
+<th>Spiritual</th>
+<th>Asymmetry Term</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="law-num">1</td>
+<td>Gravity → Grace</td>
+<td class="mono">\(F = Gm_1m_2/r^2\)</td>
+<td class="mono">\(F_g = G_s\psi_1\psi_2/d^2\)</td>
+<td>\((1-R)\) resistance</td>
+</tr>
+<tr>
+<td class="law-num">2</td>
+<td>Mass-Energy → Meaning</td>
+<td class="mono">\(E = mc^2\)</td>
+<td class="mono">\(C = M\lambda^2\)</td>
+<td>\(\cdot I\) interpretation</td>
+</tr>
+<tr>
+<td class="law-num">3</td>
+<td>Electromagnetism → Truth</td>
+<td class="mono">\(\nabla \cdot E = \rho/\epsilon_0\)</td>
+<td class="mono">\(\nabla \cdot T = \rho_L/\epsilon_s\)</td>
+<td>\(\cdot A\) acceptance</td>
+</tr>
+<tr>
+<td class="law-num">4</td>
+<td>Strong Force → Love</td>
+<td class="mono">\(V = -\alpha_s/r + kr\)</td>
+<td class="mono">\(V_L = -\alpha_L/d + \kappa d\)</td>
+<td>\((1-B)\) betrayal</td>
+</tr>
+<tr>
+<td class="law-num">5</td>
+<td>Thermodynamics → Judgment</td>
+<td class="mono">\(dS/dt \geq 0\)</td>
+<td class="mono">\(dS_m/dt \geq 0\)</td>
+<td>\(-W_{\text{grace}}/T\)</td>
+</tr>
+<tr>
+<td class="law-num">6</td>
+<td>Information → Logos</td>
+<td class="mono">\(H = -\sum p_i \log p_i\)</td>
+<td class="mono">\(H_L = -\sum p_i \log p_i\)</td>
+<td>\(+S(\Psi)\) source</td>
+</tr>
+<tr>
+<td class="law-num">7</td>
+<td>Relativity → Relationship</td>
+<td class="mono">\(ds^2 = -c^2dt^2 + dx^2\)</td>
+<td class="mono">\(d\tau^2 = -\lambda^2dt^2 + dr^2\)</td>
+<td>\(C_{\text{mutual consent}}\)</td>
+</tr>
+<tr>
+<td class="law-num">8</td>
+<td>Quantum Mechanics → Faith</td>
+<td class="mono">\(i\hbar\partial_t\Psi = H\Psi\)</td>
+<td class="mono">\(i\hbar_s\partial_t\Phi = H_s\Phi\)</td>
+<td>\(\cdot F\) faith</td>
+</tr>
+<tr>
+<td class="law-num">9</td>
+<td>Weak Force → Sin</td>
+<td class="mono">\(\Gamma = G_F^2 m^5/192\pi^3\)</td>
+<td class="mono">\(\Gamma_{\sin} = G_s^2\psi^5/192\pi^3\)</td>
+<td>\(\cdot W\) will</td>
+</tr>
+<tr class="highlight-row">
+<td class="law-num">10</td>
+<td>Coherence → Christ</td>
+<td class="mono">\(\chi = \int(\prod\text{Laws})\,d\Omega\)</td>
+<td class="mono">\(C = \int(\prod\text{Virtues})\,d\Omega_s\)</td>
+<td><em>None</em></td>
+</tr>
+</tbody>
+</table>
+<div class="insight-box">
+<h3>The Asymmetry Pattern Is the Discovery</h3>
+<p>Physics is necessary. Gravity cannot be refused. Entropy cannot be opted out of. But grace can be resisted. Love can be betrayed. Truth can be denied. Every spiritual equation adds exactly one degree of freedom that its physical counterpart lacks — the freedom to choose.</p>
+<p>The physical is necessary. The spiritual is offered. Same math. Different modality. That is not analogy. That is architecture.</p>
+<p>Law 10 has no asymmetry term. At the level of total coherence, physical and spiritual are one. Christ is not "like" coherence. Christ <em>is</em> coherence. The Logos through whom all things were made. \(\chi = C\).</p>
+</div>
+<h3>The Lindblad Derivation — From Physics to the Gospel</h3>
+<p>Starting from the standard Lindblad master equation for quantum state evolution with environmental interaction:</p>
+<div class="equation-block">
+<div class="eq-label">Lindblad Master Equation</div>
+<div class="math">
                     \[
                     \frac{d\rho}{dt} = -i[H, \rho] + \mathcal{D}[\rho]
                     \]
                 </div>
-                <div class="eq-note">Substituting the operator mapping — \(H \to \text{Faith}\), \(\mathcal{D} \to \text{Grace}\), \(d\rho/dt \to \text{Sin}\), \(\rho \to \text{Soul}\):</div>
-            </div>
-
-            <div class="equation-block">
-                <div class="eq-label">Spiritual Mapping</div>
-                <div class="math">
+<div class="eq-note">Substituting the operator mapping — \(H \to \text{Faith}\), \(\mathcal{D} \to \text{Grace}\), \(d\rho/dt \to \text{Sin}\), \(\rho \to \text{Soul}\):</div>
+</div>
+<div class="equation-block">
+<div class="eq-label">Spiritual Mapping</div>
+<div class="math">
                     \[
                     \text{Sin} = -i[\text{Faith}, \text{Soul}] + \text{Grace}
                     \]
                 </div>
-                <div class="eq-note">Stability condition (\(d\rho/dt \to 0\)): \(\text{Grace} \geq |[\text{Faith}, \text{Soul}]|\). To overcome sin, you need grace that exceeds the deficit created by the interaction between faith and soul. "Saved by Grace through Faith" — Ephesians 2:8. This is not reverse-engineered from scripture. It is derived from the Lindblad equation using the operator mapping. The theology is the output, not the input.</div>
-            </div>
-
-            <h3>The K-Drop Proof — Why Energy Is Not Grace</h3>
-
-            <p>The standard materialist response to the grace argument is: "Life is just a local entropy reversal powered by the sun. No God needed." This confuses energy with information. Pumping heat into a broken computer does not fix the operating system. It melts the hardware. Energy is not information. Restoration requires structured input, not raw power.</p>
-
-            <p>The K-Drop argument makes this precise. Random energy input leaves Kolmogorov complexity \(K\) high — the system gets hotter, noisier, more disordered. Structured information input drops \(K\) instantly as patterns are restored. This is a Complexity-Information Discontinuity: random energy cannot lower \(K\) in a closed system. Only a source code injection can do that.</p>
-
-            <p>But the argument goes further. Grace does not merely add pattern — it adds the right pattern to the right place at the right time. Targeted diagnostic repair of specific broken attractors requires computational capacity equivalent to modeling the system being repaired. That is intelligence by definition. Random processes can generate pattern. They cannot generate targeted diagnostic repair of particular broken systems. Grace is not thermodynamics. Grace is an algorithm. Algorithms require authors.</p>
-
-            <h3>Book VI — The Cycle: Knowledge, Truth, and Institutional Entropy</h3>
-
-            <p>Book VI formalizes the most testable prediction in the entire framework: why every institution that encodes truth eventually corrupts, and why the pattern is not accidental but thermodynamically inevitable.</p>
-
-            <p>The core distinction:</p>
-
-            <blockquote>
-                Knowledge is representational — structured information, symbols, rules, models. It can be possessed, stored, optimized, gated, and weaponized.<br><br>
+<div class="eq-note">Stability condition (\(d\rho/dt \to 0\)): \(\text{Grace} \geq |[\text{Faith}, \text{Soul}]|\). To overcome sin, you need grace that exceeds the deficit created by the interaction between faith and soul. "Saved by Grace through Faith" — Ephesians 2:8. This is not reverse-engineered from scripture. It is derived from the Lindblad equation using the operator mapping. The theology is the output, not the input.</div>
+</div>
+<h3>The K-Drop Proof — Why Energy Is Not Grace</h3>
+<p>The standard materialist response to the grace argument is: "Life is just a local entropy reversal powered by the sun. No God needed." This confuses energy with information. Pumping heat into a broken computer does not fix the operating system. It melts the hardware. Energy is not information. Restoration requires structured input, not raw power.</p>
+<p>The K-Drop argument makes this precise. Random energy input leaves Kolmogorov complexity \(K\) high — the system gets hotter, noisier, more disordered. Structured information input drops \(K\) instantly as patterns are restored. This is a Complexity-Information Discontinuity: random energy cannot lower \(K\) in a closed system. Only a source code injection can do that.</p>
+<p>But the argument goes further. Grace does not merely add pattern — it adds the right pattern to the right place at the right time. Targeted diagnostic repair of specific broken attractors requires computational capacity equivalent to modeling the system being repaired. That is intelligence by definition. Random processes can generate pattern. They cannot generate targeted diagnostic repair of particular broken systems. Grace is not thermodynamics. Grace is an algorithm. Algorithms require authors.</p>
+<h3>Book VI — The Cycle: Knowledge, Truth, and Institutional Entropy</h3>
+<p>Book VI formalizes the most testable prediction in the entire framework: why every institution that encodes truth eventually corrupts, and why the pattern is not accidental but thermodynamically inevitable.</p>
+<p>The core distinction:</p>
+<blockquote>
+                Knowledge is representational — structured information, symbols, rules, models. It can be possessed, stored, optimized, gated, and weaponized.<br/><br/>
                 Truth is relational — reality-as-it-is, coherence-with-what-exists. It cannot be possessed. It can only be aligned with or violated.
             </blockquote>
-
-            <p>Knowledge is energetically cheaper than truth. Truth demands sacrifice, submission, constraint, alignment. Knowledge feeds the self. This is not a moral observation. It is an information-theoretic one: maintaining alignment with an external signal (truth) costs more than maintaining an internal model (knowledge), because the external signal requires continuous channel monitoring while the internal model can be cached.</p>
-
-            <p>The Genesis connection: "You will be like God, knowing good and evil" — not <em>being</em> good, not <em>aligning with</em> good. Possessing the category. That is the birth of the closed system. The moment truth was converted to knowledge for the purpose of autonomy, the entropy cycle began.</p>
-
-            <div class="equation-block">
-                <div class="eq-label">The Institutional Entropy Cycle</div>
-                <div class="math">
+<p>Knowledge is energetically cheaper than truth. Truth demands sacrifice, submission, constraint, alignment. Knowledge feeds the self. This is not a moral observation. It is an information-theoretic one: maintaining alignment with an external signal (truth) costs more than maintaining an internal model (knowledge), because the external signal requires continuous channel monitoring while the internal model can be cached.</p>
+<p>The Genesis connection: "You will be like God, knowing good and evil" — not <em>being</em> good, not <em>aligning with</em> good. Possessing the category. That is the birth of the closed system. The moment truth was converted to knowledge for the purpose of autonomy, the entropy cycle began.</p>
+<div class="equation-block">
+<div class="eq-label">The Institutional Entropy Cycle</div>
+<div class="math">
                     \[
                     \frac{dK_{\text{inst}}}{dt} = \alpha \cdot E(K) - \beta \cdot T_{\text{ext}}(t)
                     \]
                 </div>
-                <div class="eq-note">Where \(K_{\text{inst}}\) = institutional knowledge (encoded truth), \(E(K)\) = entropy production from institutional closure, \(T_{\text{ext}}\) = truth injection from outside the system, \(\alpha\) = rate of institutional corruption, \(\beta\) = coupling to external truth source. When \(T_{\text{ext}} = 0\) (system closes itself off): \(dK/dt = \alpha \cdot E(K) > 0\) always. Knowledge decays into ideology. When \(\beta \to 0\) (total institutional hardening): even external truth cannot penetrate. This is the Pharisee prediction — and it is testable against historical data.</div>
-            </div>
-
-            <p>The ten-step entropy cycle is predictable and has repeated throughout history without exception:</p>
-
-            <ol>
-                <li>Truth is encountered (revelation, discovery, insight)</li>
-                <li>Truth is encoded into knowledge (language, laws, doctrines, models)</li>
-                <li>Knowledge becomes institutionalized</li>
-                <li>Institutions discover that controlling knowledge controls people</li>
-                <li>Knowledge is bent to preserve the institution rather than the truth it pointed to</li>
-                <li>Local coherence increases (the system "works" internally)</li>
-                <li>Global coherence collapses (the purpose is inverted)</li>
-                <li>Entropy wins</li>
-                <li>Truth re-enters from outside (reformation, disruption, incarnation)</li>
-                <li>Repeat</li>
-            </ol>
-
-            <div class="insight-box">
-                <h3>The Incarnation as Thermodynamic Prediction</h3>
-                <p>A system in terminal institutional entropy requires \(T_{\text{ext}}\) of sufficient magnitude to reset the entire system. Not a prophet (local \(T_{\text{ext}}\)). The Source Code itself entering the system — maximal \(T_{\text{ext}}\). This is not theology imposed on physics. This is physics predicting theology.</p>
-            </div>
-        </section>
-
-        <div class="scroll-break">
-            <div class="scroll-pill-row">
-                <span class="scroll-pill">Coherence before culture</span>
-                <span class="scroll-pill">Math before language</span>
-                <span class="scroll-pill">Morality before socialization</span>
-                <span class="scroll-pill">Logos before theology</span>
-                <span class="scroll-pill">Prediction before comparison</span>
-            </div>
-        </div>
-
-        <!-- Section 7: The Unified Field Equation -->
-        <section>
-            <h2>The Unified Field Equation</h2>
-
-            <p>Combining Laws I, IV, V, and the Soteriological Limit:</p>
-
-            <div class="equation-block">
-                <div class="eq-label">The Unified Coherence Field</div>
-                <div class="math">
+<div class="eq-note">Where \(K_{\text{inst}}\) = institutional knowledge (encoded truth), \(E(K)\) = entropy production from institutional closure, \(T_{\text{ext}}\) = truth injection from outside the system, \(\alpha\) = rate of institutional corruption, \(\beta\) = coupling to external truth source. When \(T_{\text{ext}} = 0\) (system closes itself off): \(dK/dt = \alpha \cdot E(K) &gt; 0\) always. Knowledge decays into ideology. When \(\beta \to 0\) (total institutional hardening): even external truth cannot penetrate. This is the Pharisee prediction — and it is testable against historical data.</div>
+</div>
+<p>The ten-step entropy cycle is predictable and has repeated throughout history without exception:</p>
+<ol>
+<li>Truth is encountered (revelation, discovery, insight)</li>
+<li>Truth is encoded into knowledge (language, laws, doctrines, models)</li>
+<li>Knowledge becomes institutionalized</li>
+<li>Institutions discover that controlling knowledge controls people</li>
+<li>Knowledge is bent to preserve the institution rather than the truth it pointed to</li>
+<li>Local coherence increases (the system "works" internally)</li>
+<li>Global coherence collapses (the purpose is inverted)</li>
+<li>Entropy wins</li>
+<li>Truth re-enters from outside (reformation, disruption, incarnation)</li>
+<li>Repeat</li>
+</ol>
+<div class="insight-box">
+<h3>The Incarnation as Thermodynamic Prediction</h3>
+<p>A system in terminal institutional entropy requires \(T_{\text{ext}}\) of sufficient magnitude to reset the entire system. Not a prophet (local \(T_{\text{ext}}\)). The Source Code itself entering the system — maximal \(T_{\text{ext}}\). This is not theology imposed on physics. This is physics predicting theology.</p>
+</div>
+</section>
+<div class="scroll-break">
+<div class="scroll-pill-row">
+<span class="scroll-pill">Coherence before culture</span>
+<span class="scroll-pill">Math before language</span>
+<span class="scroll-pill">Morality before socialization</span>
+<span class="scroll-pill">Logos before theology</span>
+<span class="scroll-pill">Prediction before comparison</span>
+</div>
+</div>
+ Section 7: The Unified Field Equation 
+<section>
+<h2>The Unified Field Equation</h2>
+<p>Combining Laws I, IV, V, and the Soteriological Limit:</p>
+<div class="equation-block">
+<div class="eq-label">The Unified Coherence Field</div>
+<div class="math">
                     \[
                     \frac{d\chi}{dt} = G_{\text{ext}} \cdot \eta(K) - \lambda S(\chi)
                     \]
                 </div>
-                <div class="eq-note">Subject to: \(dS/dt \geq 0\) (Second Law), \(\int G_{\text{ext}}\,dt \to \infty\) for \(\chi(\infty) > 0\) (Soteriological Limit), \(C \not\to -\chi\) (Coherence Asymmetry). Steady-state solution (Salvation): \(G_{\text{ext}} \cdot \eta(K) = \lambda S\). For eternal maintenance, \(G_{\text{ext}}\) must be supplied continuously, forever. Only an infinite source qualifies.</div>
-            </div>
-
-            <div class="equation-block">
-                <div class="eq-label">The Master Equation</div>
-                <div class="math">
+<div class="eq-note">Subject to: \(dS/dt \geq 0\) (Second Law), \(\int G_{\text{ext}}\,dt \to \infty\) for \(\chi(\infty) &gt; 0\) (Soteriological Limit), \(C \not\to -\chi\) (Coherence Asymmetry). Steady-state solution (Salvation): \(G_{\text{ext}} \cdot \eta(K) = \lambda S\). For eternal maintenance, \(G_{\text{ext}}\) must be supplied continuously, forever. Only an infinite source qualifies.</div>
+</div>
+<div class="equation-block">
+<div class="eq-label">The Master Equation</div>
+<div class="math">
                     \[
                     \chi = \iiint \bigl(G \cdot M \cdot E \cdot S \cdot T \cdot K \cdot R \cdot Q \cdot F \cdot C\bigr)\,dx\,dy\,dt
                     \]
                 </div>
-                <div class="eq-note">Ten variables: Grace (G), Meaning (M), Entropy (E), Self-Reference (S), Time (T), Knowledge (K), Relationality (R), Quantum (Q), Force/Faith (F), Coherence (C). Each maps to a physical law, an information-theoretic role, a spiritual reality, and a scripture. The integral is not decoration — coherence is not a property of a single moment but of the entire trajectory.</div>
-            </div>
-
-            <div class="equation-block">
-                <div class="eq-label">The Lowe Coherence Lagrangian</div>
-                <div class="math">
+<div class="eq-note">Ten variables: Grace (G), Meaning (M), Entropy (E), Self-Reference (S), Time (T), Knowledge (K), Relationality (R), Quantum (Q), Force/Faith (F), Coherence (C). Each maps to a physical law, an information-theoretic role, a spiritual reality, and a scripture. The integral is not decoration — coherence is not a property of a single moment but of the entire trajectory.</div>
+</div>
+<div class="equation-block">
+<div class="eq-label">The Lowe Coherence Lagrangian</div>
+<div class="math">
                     \[
                     \mathcal{L}_{\text{LC}} = \chi(t)\left(\frac{d}{dt}(G + M + E + S + T + K + R + Q + F + C)\right)^2 - S \cdot \chi(t)
                     \]
                 </div>
-                <div class="eq-note">Coherence evolves counter to entropy (\(\dot{\chi} \propto -S\)). The Lagrangian demonstrates that the system's coherence is not static — it actively works against dissolution. The symmetry pairs within the ten laws (1↔8, 2↔9, 3↔10, 4↔7, 5↔6) create fractal self-similar patterns at every scale.</div>
-            </div>
-        </section>
+<div class="eq-note">Coherence evolves counter to entropy (\(\dot{\chi} \propto -S\)). The Lagrangian demonstrates that the system's coherence is not static — it actively works against dissolution. The symmetry pairs within the ten laws (1↔8, 2↔9, 3↔10, 4↔7, 5↔6) create fractal self-similar patterns at every scale.</div>
+</div>
+</section>
+ Section 8: Open Gaps 
+<section>
+<h2>Open Gaps — Honest Accounting</h2>
+<p>These are the known gaps. Naming them is stronger than hiding them. Any framework that hides its gaps is doing theology, not science.</p>
+<div class="gap-box">
+<div class="gap-label">Gap 1 — The Specificity Bridge</div>
+<p>Books I–III prove a Logos is necessary. Book IV tests Christianity against the constraints. But the framework could in principle be adopted by a sophisticated deist or modified monotheist. The specificity to Christ depends on: (a) the PROP-COSMOS data pointing to biblical timelines specifically, (b) the Knowledge-Truth cycle predicting incarnation as thermodynamic necessity, and (c) the Ten Laws mapping where Law 10 (Coherence = Christ) has no asymmetry term — the only law where physical and spiritual are one. These three together close the gap, but they should be made more explicit in Book IV.</p>
+</div>
+<div class="gap-box">
+<div class="gap-label">Gap 2 — The Free Will Term's Origin</div>
+<p>Every spiritual equation adds a free will term (R, I, A, B, W, F). Where does it come from mathematically? Proposed derivation: consciousness as self-referential observer creates a feedback loop absent in non-conscious systems. Self-reference introduces choice because the system can model its own future states and select among them. This is Gödel-adjacent — a system complex enough to model itself has undecidable propositions, and resolving undecidables IS choice. Needs formal proof.</p>
+</div>
+<div class="gap-box">
+<div class="gap-label">Gap 3 — Consciousness Coupling Mechanism</div>
+<p>The framework depends on consciousness being fundamental (Axiom O5.1). Statistical evidence is strong (PEAR-LAB 6.35σ, GCP 6σ). The mechanism — HOW consciousness couples to physical systems — remains open. This mirrors Newton's situation with gravity: he could predict its behavior precisely without explaining its mechanism. We adopt the same posture: the equations work, the data supports them, the mechanism is an open research question.</p>
+</div>
+<div class="gap-box">
+<div class="gap-label">Gap 4 — Canon Formation</div>
+<p>The framework now spans 191+ axioms/theorems across multiple papers and databases. A formal Canon process is needed to distinguish load-bearing results from exploratory work. Proposed criteria combine biblical canon formation (self-authenticating, doctrinally consistent, community-vetted) with scientific canon formation (accurate, internally coherent, broad scope, fruitful, falsifiable). Minimum viable process: derivation trace, coherence check against 22 core axioms, falsifiability statement, independent prediction, adversarial review, human sign-off, 30-day maturation period.</p>
+</div>
+</section>
+ Section 9: The Logic 
+<section>
+<h2>The Logic — Why This Is Not Curve-Fitting</h2>
+<p>The method of this series is the same method that distinguishes Newtonian mechanics from numerology. Newton did not observe falling apples and then propose a law to fit the data. He derived the law from first principles and then the predictions followed. If the predictions had failed, the law would have been wrong.</p>
+<p>Books I–III derive requirements from information theory, thermodynamics, Gödel, Chaitin, Shannon, and Kolmogorov. At no point does any theological premise appear. The axioms are not designed to point at Christianity. They are designed to characterize mathematical truth. Anyone who disagrees with the axioms can attack them on their own terms — as information theory, not theology.</p>
+<p>The empirical evidence — pre-linguistic numeracy at 3 months, pre-socialized moral evaluation at 6 months — confirms that these are features of reality encountered by cognition, not invented by it. The developmental data was not gathered to support this argument. It was gathered to understand cognitive development, and it supports this argument as a side effect.</p>
+<p>The "mathematics is man-made" escape hatch is formally closed: any position that grounds mathematical truth entirely in finite agents must surrender necessity, universality, and cross-domain applicability — features our scientific practice depends on and cannot abandon.</p>
+<p>Book IV checks which worldview satisfies all requirements. Book V shows the physical and spiritual share identical mathematical structure — with one degree of freedom added: the freedom to choose. Book VI shows why institutional corruption is thermodynamically inevitable and why incarnation is the predicted solution.</p>
+<div class="insight-box">
+<h3>The One-Sentence Version</h3>
+<p>The proof generates the lock before you go looking for the key. That eliminates curve-fitting. That is prediction and confirmation, not retrofit.</p>
+</div>
+</section>
+ Section 10: Reading Order 
+<section>
+<h2>Reading Order</h2>
+<p>The series is designed to be readable in any order, but the experience is different depending on where you start. Here are the recommended entry points:</p>
+<div class="reading-paths">
+<div class="reading-path">
+<div class="path-label">For the Mathematician or Physicist</div>
+<p>Book I → Book V → Book II → Book III → Book IV</p>
+</div>
+<div class="reading-path">
+<div class="path-label">For the Philosopher or Theologian</div>
+<p>Book II → Book I → Book III → Book VI → Book IV</p>
+</div>
+<div class="reading-path">
+<div class="path-label">For the Skeptic</div>
+<p>Book III → Book I → Book II → Book IV → Book V</p>
+</div>
+<div class="reading-path">
+<div class="path-label">For Anyone</div>
+<p>This page → Book II → everything else</p>
+</div>
+</div>
+</section>
 
-        <!-- Section 8: Open Gaps -->
-        <section>
-            <h2>Open Gaps — Honest Accounting</h2>
+</article>
 
-            <p>These are the known gaps. Naming them is stronger than hiding them. Any framework that hides its gaps is doing theology, not science.</p>
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+<nav class="tp-bignav">
+  <div class="tp-bignav-row">
+    <a href="#" class="tp-bignav-prev">
+      <span class="tp-bignav-arrow">←</span>
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Previous</span>
+        <span class="tp-bignav-title">Previous</span>
+      </div>
+    </a>
+    <div class="tp-bignav-center">
+      <a href="/revolution-of-truth/" class="tp-bignav-series">Revolution of Truth Home</a>
+      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
+    </div>
+    <a href="#" class="tp-bignav-next">
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Next</span>
+        <span class="tp-bignav-title">Next</span>
+      </div>
+      <span class="tp-bignav-arrow">→</span>
+    </a>
+  </div>
+</nav>
 
-            <div class="gap-box">
-                <div class="gap-label">Gap 1 — The Specificity Bridge</div>
-                <p>Books I–III prove a Logos is necessary. Book IV tests Christianity against the constraints. But the framework could in principle be adopted by a sophisticated deist or modified monotheist. The specificity to Christ depends on: (a) the PROP-COSMOS data pointing to biblical timelines specifically, (b) the Knowledge-Truth cycle predicting incarnation as thermodynamic necessity, and (c) the Ten Laws mapping where Law 10 (Coherence = Christ) has no asymmetry term — the only law where physical and spiritual are one. These three together close the gap, but they should be made more explicit in Book IV.</p>
-            </div>
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-            <div class="gap-box">
-                <div class="gap-label">Gap 2 — The Free Will Term's Origin</div>
-                <p>Every spiritual equation adds a free will term (R, I, A, B, W, F). Where does it come from mathematically? Proposed derivation: consciousness as self-referential observer creates a feedback loop absent in non-conscious systems. Self-reference introduces choice because the system can model its own future states and select among them. This is Gödel-adjacent — a system complex enough to model itself has undecidable propositions, and resolving undecidables IS choice. Needs formal proof.</p>
-            </div>
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
 
-            <div class="gap-box">
-                <div class="gap-label">Gap 3 — Consciousness Coupling Mechanism</div>
-                <p>The framework depends on consciousness being fundamental (Axiom O5.1). Statistical evidence is strong (PEAR-LAB 6.35σ, GCP 6σ). The mechanism — HOW consciousness couples to physical systems — remains open. This mirrors Newton's situation with gravity: he could predict its behavior precisely without explaining its mechanism. We adopt the same posture: the equations work, the data supports them, the mechanism is an open research question.</p>
-            </div>
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="tp-sub-title">The Math Behind the Claims</div>
+  <div class="tp-sub-grid">
+    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+  </div>
+</section>
 
-            <div class="gap-box">
-                <div class="gap-label">Gap 4 — Canon Formation</div>
-                <p>The framework now spans 191+ axioms/theorems across multiple papers and databases. A formal Canon process is needed to distinguish load-bearing results from exploratory work. Proposed criteria combine biblical canon formation (self-authenticating, doctrinally consistent, community-vetted) with scientific canon formation (accurate, internally coherent, broad scope, fruitful, falsifiable). Minimum viable process: derivation trace, coherence check against 22 core axioms, falsifiability statement, independent prediction, adversarial review, human sign-off, 30-day maturation period.</p>
-            </div>
-        </section>
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="tp-sub-title">Everything Else</div>
+  <div class="tp-sub-grid">
+    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+  </div>
+</section>
 
-        <!-- Section 9: The Logic -->
-        <section>
-            <h2>The Logic — Why This Is Not Curve-Fitting</h2>
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+  <div class="tp-series-strip">
+    <a href="/" class="active">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+  </div>
+</nav>
 
-            <p>The method of this series is the same method that distinguishes Newtonian mechanics from numerology. Newton did not observe falling apples and then propose a law to fit the data. He derived the law from first principles and then the predictions followed. If the predictions had failed, the law would have been wrong.</p>
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="tp-bottom">
+  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
+  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
+  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
 
-            <p>Books I–III derive requirements from information theory, thermodynamics, Gödel, Chaitin, Shannon, and Kolmogorov. At no point does any theological premise appear. The axioms are not designed to point at Christianity. They are designed to characterize mathematical truth. Anyone who disagrees with the axioms can attack them on their own terms — as information theory, not theology.</p>
-
-            <p>The empirical evidence — pre-linguistic numeracy at 3 months, pre-socialized moral evaluation at 6 months — confirms that these are features of reality encountered by cognition, not invented by it. The developmental data was not gathered to support this argument. It was gathered to understand cognitive development, and it supports this argument as a side effect.</p>
-
-            <p>The "mathematics is man-made" escape hatch is formally closed: any position that grounds mathematical truth entirely in finite agents must surrender necessity, universality, and cross-domain applicability — features our scientific practice depends on and cannot abandon.</p>
-
-            <p>Book IV checks which worldview satisfies all requirements. Book V shows the physical and spiritual share identical mathematical structure — with one degree of freedom added: the freedom to choose. Book VI shows why institutional corruption is thermodynamically inevitable and why incarnation is the predicted solution.</p>
-
-            <div class="insight-box">
-                <h3>The One-Sentence Version</h3>
-                <p>The proof generates the lock before you go looking for the key. That eliminates curve-fitting. That is prediction and confirmation, not retrofit.</p>
-            </div>
-        </section>
-
-        <!-- Section 10: Reading Order -->
-        <section>
-            <h2>Reading Order</h2>
-
-            <p>The series is designed to be readable in any order, but the experience is different depending on where you start. Here are the recommended entry points:</p>
-
-            <div class="reading-paths">
-                <div class="reading-path">
-                    <div class="path-label">For the Mathematician or Physicist</div>
-                    <p>Book I → Book V → Book II → Book III → Book IV</p>
-                </div>
-                <div class="reading-path">
-                    <div class="path-label">For the Philosopher or Theologian</div>
-                    <p>Book II → Book I → Book III → Book VI → Book IV</p>
-                </div>
-                <div class="reading-path">
-                    <div class="path-label">For the Skeptic</div>
-                    <p>Book III → Book I → Book II → Book IV → Book V</p>
-                </div>
-                <div class="reading-path">
-                    <div class="path-label">For Anyone</div>
-                    <p>This page → Book II → everything else</p>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-info">
-            <h3>About This Series</h3>
-            <p>De Revolutionibus Veritatis ("On the Revolutions of Truth") is a six-book series deriving the necessary properties of a coherence-grounding Logos from information theory, thermodynamics, and mathematical logic — with no theological premise introduced until Book IV. The title honors Copernicus and names a re-centering of truth analogous to the re-centering of the cosmos.</p>
-            <p style="margin-top: 0.75rem; font-size: 0.85rem;">Part of the Theophysics project at faiththruphysics.com. Math rendered with MathJax 3. Typeset with local fallback fonts for faster loading.</p>
-        </div>
-
-        <div class="footer-info">
-            <h3>Author</h3>
-            <p>David Lowe<br>
-            Theophysics | 2025–2026<br>
-            <a href="https://faiththruphysics.com" style="color: var(--gold); text-decoration: none;">faiththruphysics.com</a></p>
-        </div>
-
-        <nav class="nav-links">
-            <span class="disabled">&larr; No Previous Article</span>
-            <a href="drv-01-the-architecture.html">Book II: The Architecture &rarr;</a>
-        </nav>
-    </footer>
-
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+  <div class="tp-door-num">15 + 15 = 100</div>
+  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="tp-door-mark"></span>
 </div>
 
 <script>
-    // Progress bar
-    window.addEventListener('scroll', function () {
-        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-        var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        var progress = (scrollTop / scrollHeight) * 100;
-        document.getElementById('progressBar').style.width = progress + '%';
-    });
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
+
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
+
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
 </script>
+
+<!-- MTL worker client -->
+<script src="/shared/js/mtl-worker-client.js" defer></script>
 
 </body>
 </html>

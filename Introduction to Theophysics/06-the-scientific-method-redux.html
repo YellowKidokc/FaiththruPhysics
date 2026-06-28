@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Scientific Method Redux — David Lowe</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+<style>
+/* ═══ TP-WORKER-AUDIO-PLAYER ═══ */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+.tp-pair{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.tp-half{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border:1px solid #222;border-radius:.4rem;background:#111;min-width:0;}
+.tp-half .tp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-half .tp-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;min-width:48px;}
+.tp-half .tp-play{width:24px;height:24px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-half .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-half .tp-track{height:3px;}.tp-half .tp-track:hover{height:5px;}
+.tp-half .tp-time{font-size:.55rem;min-width:28px;}
+.tp-half.tp-deep .tp-dot{background:#4a9eff;}.tp-half.tp-deep .tp-label{color:#4a9eff;}.tp-half.tp-deep .tp-play{border-color:#4a9eff;color:#4a9eff;}.tp-half.tp-deep .tp-fill{background:#4a9eff;}.tp-half.tp-deep:hover{border-color:rgba(74,158,255,.3);background:rgba(74,158,255,.08);}
+.tp-half.tp-debate .tp-dot{background:#a855f7;}.tp-half.tp-debate .tp-label{color:#a855f7;}.tp-half.tp-debate .tp-play{border-color:#a855f7;color:#a855f7;}.tp-half.tp-debate .tp-fill{background:#a855f7;}.tp-half.tp-debate:hover{border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08);}
+.tp-half.tp-critique .tp-dot{background:#22c55e;}.tp-half.tp-critique .tp-label{color:#22c55e;}.tp-half.tp-critique .tp-play{border-color:#22c55e;color:#22c55e;}.tp-half.tp-critique .tp-fill{background:#22c55e;}.tp-half.tp-critique:hover{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08);}
+.tp-pair{grid-template-columns:1fr 1fr 1fr;}
+.tp-speed{background:#111;border:1px solid #333;color:#888;font-family:'JetBrains Mono',monospace;font-size:.55rem;border-radius:.3rem;padding:.1rem .3rem;cursor:pointer;flex-shrink:0;}
+.tp-speed:hover{color:#ccc;border-color:#555;}
+.tp-sticky{position:fixed;right:-260px;top:50%;transform:translateY(-50%);width:220px;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border:1px solid #222;border-right:none;border-radius:.6rem 0 0 .6rem;padding:.75rem .8rem;z-index:9999;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 24px rgba(0,0,0,.6);}
+.tp-sticky.tp-visible{right:0;}
+.tp-sticky-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem;}
+.tp-sticky .tp-sticky-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tp-sticky .tp-sticky-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tp-sticky .tp-sticky-close{background:none;border:none;color:#555;cursor:pointer;font-size:.65rem;padding:2px 4px;flex-shrink:0;transition:color .2s;}
+.tp-sticky .tp-sticky-close:hover{color:#e0e0e0;}
+.tp-sticky-controls{display:flex;align-items:center;gap:.5rem;}
+.tp-sticky .tp-play{width:26px;height:26px;border-radius:50%;border:1.5px solid;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;transition:all .2s;}
+.tp-sticky .tp-play:hover{box-shadow:0 0 10px currentColor;}
+.tp-sticky .tp-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;}
+.tp-sticky .tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-sticky .tp-time{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:#555;min-width:28px;text-align:right;flex-shrink:0;}
+@media(max-width:700px){.tp-pair{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.tp-pair{grid-template-columns:1fr;}.tp-sticky{width:180px;padding:.6rem;}.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}.tp-speed{display:none;}}
+</style>
+</head>
+<body>
+<nav class="top-bar">
+<div class="inner">
+<div class="series-mark"><span>Cross-Domain</span> Coherence Series</div>
+<div class="top-nav">
+<a href="05-fruits-of-the-spirit.html">Prev</a>
+<a class="on" href="#">06 of 12</a>
+</div>
+</div>
+</nav>
+<header class="hero page">
+<div class="hero-number">06</div>
+<span class="hero-tag">Cross-Domain Coherence Project · Paper 06</span>
+<h1>The Scientific Method <em>Redux</em></h1>
+<p class="subtitle" data-chi-unit-id="06-the-scientific-method-redux::p0001" id="p-0001">Why We Are Breaking the Rules to Fix Science</p>
+<p class="byline" data-chi-unit-id="06-the-scientific-method-redux::p0002" id="p-0002"><strong>David Lowe</strong> · December 2025</p>
+</header>
+
+<!-- TP-WORKER-AUDIO-PLAYER -->
+<div class="tp-player-block" data-audio-slug="Introduction-to-Theophysics/06-the-scientific-method-redux" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=Introduction-to-Theophysics%2F06-the-scientific-method-redux" data-series-slug="Introduction-to-Theophysics" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=Introduction-to-Theophysics">
+  <div class="tp-read-aloud" data-mode="tts">
+    <div class="tp-dot"></div>
+    <span class="tp-label">Read Aloud</span>
+    <audio id="tpMainAudio" preload="none"></audio>
+    <button class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)" aria-label="Play read-aloud">
+      <i class="fas fa-play"></i>
+    </button>
+    <div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+      <div id="tpMainFill" class="tp-fill"></div>
+    </div>
+    <span id="tpMainTime" class="tp-time">0:00</span>
+    <select class="tp-speed" onchange="tpSetSpeed(this.value)" aria-label="Playback speed">
+      <option value="0.75">0.75x</option>
+      <option value="1" selected>1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="1.75">1.75x</option>
+      <option value="2">2x</option>
+    </select>
+    <button class="tp-mute" onclick="tpMute('tpMainAudio',this)" aria-label="Mute">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+  <div class="tp-pair">
+    <div class="tp-half tp-deep" data-mode="deep">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Deep Dive</span>
+      <audio id="tpDeepAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)" aria-label="Play deep dive">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+        <div id="tpDeepFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDeepTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-debate" data-mode="podcast">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Podcast</span>
+      <audio id="tpDebateAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)" aria-label="Play podcast">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+        <div id="tpDebateFill" class="tp-fill"></div>
+      </div>
+      <span id="tpDebateTime" class="tp-time">0:00</span>
+    </div>
+    <div class="tp-half tp-critique" data-mode="critique">
+      <div class="tp-dot"></div>
+      <span class="tp-label">Critique</span>
+      <audio id="tpCritiqueAudio" preload="none"></audio>
+      <button class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)" aria-label="Play critique">
+        <i class="fas fa-play"></i>
+      </button>
+      <div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+        <div id="tpCritiqueFill" class="tp-fill"></div>
+      </div>
+      <span id="tpCritiqueTime" class="tp-time">0:00</span>
+    </div>
+  </div>
+  <div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+  </div>
+</div>
+
+
+<article class="page">
+<!-- I. THE CRISIS -->
+<section class="section">
+<span class="section-num">01</span>
+<h2><span class="part-label">Section I</span>The Crisis</h2>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0003" id="p-0003">Science is broken. Not because the math is wrong, but because the method is blind.</p>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0004" id="p-0004">They told us to "Shut up and calculate." They told us "Why" is a religious question, not a scientific one.</p>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0005" id="p-0005"><strong>Look at the cost of that silence:</strong></p>
+<div class="crisis-card">
+<span class="domain">Quantum Mechanics</span>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0006" id="p-0006">100 years of arguing about 12 different realities because we're afraid to ask what's actually happening.</p>
+</div>
+<div class="crisis-card">
+<span class="domain">Cosmology</span>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0007" id="p-0007">Inventing invisible "Dark Matter" to fix broken equations instead of admitting the theory is flawed. This is ontological accounting fraud.</p>
+</div>
+<div class="crisis-card">
+<span class="domain">Neuroscience</span>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0008" id="p-0008">Pretending the mind is just a machine while ignoring the fact that <em>you are reading this.</em></p>
+</div>
+<div class="pull-quote">
+<p data-chi-unit-id="06-the-scientific-method-redux::p0009" id="p-0009">They have fragmented reality. They have built silos so high that a physicist can't talk to a biologist, and neither can talk to a philosopher.</p>
+</div>
+</section>
+<!-- II. THE THEOPHYSICS METHOD -->
+<section class="section">
+<span class="section-num">02</span>
+<h2><span class="part-label">Section II</span>The Theophysics Method</h2>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0010" id="p-0010">We are tearing down the silos. We are restoring the only question that matters: <strong>Why?</strong></p>
+<div class="method-card">
+<span class="num">1</span>
+<div>
+<h4>Meta-Patterns</h4>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0011" id="p-0011">If the same pattern shows up in Physics and Theology, it's the same Truth.</p>
+</div>
+</div>
+<div class="method-card">
+<span class="num">2</span>
+<div>
+<h4>Universal Language</h4>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0012" id="p-0012">Information Theory is the code of reality. It explains Atoms <em>and</em> Angels.</p>
+</div>
+</div>
+<div class="method-card">
+<span class="num">3</span>
+<div>
+<h4>New Words</h4>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0013" id="p-0013">We aren't using their broken vocabulary. We are building a new lexicon for a new reality.</p>
+</div>
+</div>
+<div class="method-card">
+<span class="num">4</span>
+<div>
+<h4>Causal Truth</h4>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0014" id="p-0014">We don't want correlations. We want the Cause.</p>
+</div>
+</div>
+<div class="method-card">
+<span class="num">5</span>
+<div>
+<h4>Occam's Veto</h4>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0015" id="p-0015">If your theory needs 100 dimensions to work (String Theory), it's a fiction. Reality is elegant.</p>
+</div>
+</div>
+<div class="method-card">
+<span class="num">6</span>
+<div>
+<h4>No Surrender</h4>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0016" id="p-0016">We don't stop until the paradox is dead.</p>
+</div>
+</div>
+</section>
+<!-- III. THE PROOF -->
+<section class="section">
+<span class="section-num">03</span>
+<h2><span class="part-label">Section III</span>The Proof</h2>
+<div class="proof-block">
+<p class="proof-line" data-chi-unit-id="06-the-scientific-method-redux::p0017" id="p-0017">They said you can't unify Physics and Faith. <strong>We did.</strong></p>
+<p class="proof-line" data-chi-unit-id="06-the-scientific-method-redux::p0018" id="p-0018">They said you can't solve the Hubble Tension without Dark Energy. <strong>We did.</strong></p>
+<p class="proof-line" data-chi-unit-id="06-the-scientific-method-redux::p0019" id="p-0019">They said Prophecy is just guessing. <strong>We proved it's Math.</strong></p>
+<p class="proof-final" data-chi-unit-id="06-the-scientific-method-redux::p0020" id="p-0020">Theophysics isn't a theory. It's a Method.<br/>And the results speak for themselves.</p>
+</div>
+</section>
+<!-- IV. THE UNIFIED FIELD MESH -->
+<section class="section">
+<span class="section-num">04</span>
+<h2><span class="part-label">Section IV</span>The Unified Field Mesh</h2>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0021" id="p-0021" style="font-style:italic;color:var(--cream-d)">This paper is part of a 4-Domain Synthesis.</p>
+<table class="mesh-table">
+<thead>
+<tr><th>Domain</th><th>Connection</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td class="here">Science</td><td class="here">You Are Here</td><td>The Rallying Cry</td></tr>
+<tr><td>Psychology</td><td>The Consequence</td><td>The Unified Crisis</td></tr>
+<tr><td>Theology</td><td>The Solution</td><td>The Physics of Hope</td></tr>
+<tr><td>Logic</td><td>The Axiom</td><td>Where Does Truth Live?</td></tr>
+</tbody>
+</table>
+</section>
+</article>
+<footer>
+<div class="page">
+<p data-chi-unit-id="06-the-scientific-method-redux::p0022" id="p-0022">Cross-Domain Coherence Series · Paper 06 of 12</p>
+<p data-chi-unit-id="06-the-scientific-method-redux::p0023" id="p-0023" style="margin-top:.5rem">Theophysics Research Program · David Lowe · 2026</p>
+</div>
+</footer>
+<script id="chi-qi-v5-profile" type="application/json+chi">{"domain_vector": [{"tag": "physics", "pct": 11, "label": "Physics", "color": "#4a9eff"}, {"tag": "grace", "pct": 8, "label": "Grace", "color": "#22c55e"}, {"tag": "cross-domain", "pct": 8, "label": "Cross-Domain", "color": "#e2725b"}, {"tag": "story", "pct": 8, "label": "Story", "color": "#f5d0a9"}, {"tag": "me_E_truth", "pct": 8, "label": "E — Truth", "color": "#60a5fa"}, {"tag": "me_C_coherence", "pct": 8, "label": "C — Coherence", "color": "#d4af37"}, {"tag": "law_10_coherence_christ", "pct": 8, "label": "Law 10 — Coherence/Christ", "color": "#f0c659"}, {"tag": "math", "pct": 5, "label": "Math", "color": "#a855f7"}, {"tag": "method", "pct": 5, "label": "Method", "color": "#9a7c3a"}, {"tag": "me_Q_faith", "pct": 5, "label": "Q — Faith", "color": "#38bdf8"}, {"tag": "law_7_quantum_faith", "pct": 5, "label": "Law 7 — Quantum/Faith", "color": "#a78bfa"}, {"tag": "theology", "pct": 3, "label": "Theology", "color": "#c87050"}, {"tag": "info-theory", "pct": 3, "label": "Info-Theory", "color": "#3bb39a"}, {"tag": "consciousness", "pct": 3, "label": "Consciousness", "color": "#f59e0b"}, {"tag": "evidence", "pct": 3, "label": "Evidence", "color": "#2dd4bf"}, {"tag": "law_6_info_logos", "pct": 3, "label": "Law 6 — Info/Logos", "color": "#38bdf8"}, {"tag": "axiom", "pct": 3, "label": "Axiom", "color": "#9a7c3a"}, {"tag": "formal_proof", "pct": 3, "label": "Formal Proof", "color": "#a855f7"}], "chi_vector": {"E": 3, "Q": 2, "C": 3}, "law_vector": {"L06": 1, "L07": 2, "L10": 3}, "fruit_vector": {}, "isomorphism_score": 0, "axiom_score": 1, "experimental_score": 0, "formal_proof_score": 1, "routing": {"deep_audit": false, "reasons": []}}</script>
+<script data-chi-qi-v5-profile="loader">window.CHI_QI_V5_PROFILE=JSON.parse(document.getElementById("chi-qi-v5-profile").textContent);</script>
+<span class="tp-time" id="stickyTime">0:00</span>
+<span class="tp-time" id="stickyTime">0:00</span>
+<script defer="" src="https://faiththruphysics.com/site-shell/frame.js"></script>
+
+
+<div class="tp-sticky" id="stickyPlayer">
+  <div class="tp-sticky-header">
+    <div class="tp-sticky-dot" id="stickyDot" style="background:#d4af37;"></div>
+    <span class="tp-sticky-label" id="stickyLabel" style="color:#d4af37;">Audio</span>
+    <button class="tp-sticky-close" onclick="tpCloseSticky()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="tp-sticky-controls">
+    <button class="tp-play" id="stickyPlayBtn" onclick="tpStickyToggle()" style="border-color:#d4af37;color:#d4af37;"><i class="fas fa-play"></i></button>
+    <div class="tp-track" onclick="tpStickySeek(event)">
+      <div class="tp-fill" id="stickyFill" style="background:#d4af37;"></div>
+    </div>
+    <span class="tp-time" id="stickyTime">0:00</span>
+  </div>
+</div>
+<script>
+(function(){
+let tpCurrentId=null,tpStickyDismissed=false;
+const tpColors={};
+function tpRegister(id,color,label){tpColors[id]={color:color,label:label};}
+function tpFmt(s){if(isNaN(s)||!isFinite(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
+function tpToggle(id,btn){
+  const a=document.getElementById(id);
+  document.querySelectorAll('.tp-player-block audio').forEach(x=>{if(x.id!==id&&!x.paused){x.pause();tpUpdateBtns(x.id,false);}});
+  if(a.paused){a.play();tpCurrentId=id;tpStickyDismissed=false;tpUpdateBtns(id,true);}
+  else{a.pause();tpCurrentId=null;tpUpdateBtns(id,false);}
+}
+function tpUpdateBtns(id,playing){
+  document.querySelectorAll('[data-audio="'+id+'"]').forEach(b=>{const i=b.querySelector('i');if(i)i.className='fas fa-'+(playing?'pause':'play');});
+  if(id===tpCurrentId||!playing){const si=document.querySelector('#stickyPlayBtn i');if(si)si.className='fas fa-'+(playing?'pause':'play');}
+}
+function tpSeek(e,id){const a=document.getElementById(id);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;}
+function tpMute(id,btn){const a=document.getElementById(id);a.muted=!a.muted;btn.querySelector('i').className='fas fa-volume-'+(a.muted?'mute':'up');}
+function tpWire(id){
+  const a=document.getElementById(id);if(!a)return;
+  a.addEventListener('timeupdate',()=>{
+    const fill=document.getElementById(id.replace('Audio','Fill'));
+    const time=document.getElementById(id.replace('Audio','Time'));
+    if(fill&&a.duration)fill.style.width=(a.currentTime/a.duration*100)+'%';
+    if(time)time.textContent=tpFmt(a.currentTime);
+    if(id===tpCurrentId){const sf=document.getElementById('stickyFill');const st=document.getElementById('stickyTime');if(sf&&a.duration)sf.style.width=(a.currentTime/a.duration*100)+'%';if(st)st.textContent=tpFmt(a.currentTime);}
+  });
+  a.addEventListener('ended',()=>{tpUpdateBtns(id,false);if(tpCurrentId===id)tpCurrentId=null;});
+}
+window.tpToggle=tpToggle;window.tpSeek=tpSeek;window.tpMute=tpMute;
+window.tpSetSpeed=function(v){
+  const rate=parseFloat(v)||1;
+  document.querySelectorAll('.tp-player-block audio').forEach(a=>{a.playbackRate=rate;});
+};
+
+// Browser TTS fallback
+window.tpBrowserTts=function(){
+  const main=document.querySelector('[data-tts-source],main,article,#main-content,.content');
+  const text=main?main.innerText.replace(/\s+/g,' ').trim().slice(0,12000):'';
+  if(!text||!window.speechSynthesis){alert('Browser TTS not available');return;}
+  const u=new SpeechSynthesisUtterance(text);u.rate=1;u.pitch=1;window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
+};
+
+// Fetch tracks from worker and bind sources.
+// TTS comes from the article-level slug.
+// Deep Dive, Podcast, Critique come from the series slug as a shared track,
+// falling back to an article-level override if one exists.
+function tpBindTracks(){
+  const block=document.querySelector('.tp-player-block');
+  if(!block)return;
+  const lookup=block.dataset.audioLookup;
+  const seriesLookup=block.dataset.seriesLookup;
+  if(!lookup)return;
+
+  function toMap(tracks){
+    const m={};
+    tracks.forEach(t=>{
+      if(t.mode)m[t.mode]=t.url;
+      if(t.is_default)m['__default__']=t.url;
+    });
+    return m;
+  }
+  function setSrc(id,url){
+    if(!url)return;
+    const a=document.getElementById(id);
+    if(a){a.src=url;a.preload='metadata';}
+  }
+
+  // Fetch article tracks first, then series tracks for shared slots
+  const articleP=fetch(lookup).then(r=>r.json()).catch(()=>({tracks:[]}));
+  const seriesP=(seriesLookup&&seriesLookup!==lookup)
+    ?fetch(seriesLookup).then(r=>r.json()).catch(()=>({tracks:[]}))
+    :Promise.resolve({tracks:[]});
+
+  Promise.all([articleP,seriesP]).then(([articleData,seriesData])=>{
+    const art=toMap(articleData.tracks||[]);
+    const ser=toMap(seriesData.tracks||[]);
+
+    // TTS: article only
+    setSrc('tpMainAudio', art['tts']||art['__default__']);
+    // Deep Dive, Podcast, Critique: article overrides series, else series shared track
+    setSrc('tpDeepAudio',     art['deep']    ||ser['deep']    ||ser['__default__']);
+    setSrc('tpDebateAudio',   art['podcast'] ||ser['podcast'] ||ser['__default__']);
+    setSrc('tpCritiqueAudio', art['critique']||ser['critique']||ser['__default__']);
+
+    const anyAudio=art['tts']||art['__default__']||ser['__default__'];
+    if(!anyAudio){
+      const fb=document.getElementById('tpTtsFallback');
+      if(fb)fb.style.display='block';
+    }
+  });
+}
+
+tpRegister('tpMainAudio','#d4af37','Read Aloud');
+tpRegister('tpDeepAudio','#4a9eff','Deep Dive');
+tpRegister('tpDebateAudio','#a855f7','Podcast');
+tpRegister('tpCritiqueAudio','#22c55e','Critique');
+tpWire('tpMainAudio');tpWire('tpDeepAudio');tpWire('tpDebateAudio');tpWire('tpCritiqueAudio');
+tpBindTracks();
+
+// Sticky player
+const stickyEl=document.getElementById('stickyPlayer');
+if(stickyEl){
+  function updateSticky(){
+    if(!tpCurrentId||tpStickyDismissed){stickyEl.classList.remove('tp-visible');return;}
+    let outOfView=true;
+    document.querySelectorAll('.tp-player-block').forEach(b=>{const r=b.getBoundingClientRect();if(r.bottom>0&&r.top<window.innerHeight)outOfView=false;});
+    if(outOfView){
+      const info=tpColors[tpCurrentId]||{color:'#d4af37',label:'Audio'};
+      document.getElementById('stickyDot').style.background=info.color;
+      document.getElementById('stickyLabel').style.color=info.color;
+      document.getElementById('stickyLabel').textContent=info.label;
+      document.getElementById('stickyPlayBtn').style.borderColor=info.color;
+      document.getElementById('stickyPlayBtn').style.color=info.color;
+      document.getElementById('stickyFill').style.background=info.color;
+      stickyEl.classList.add('tp-visible');
+    }else{stickyEl.classList.remove('tp-visible');}
+  }
+  window.tpStickyToggle=function(){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);if(a.paused){a.play();tpUpdateBtns(tpCurrentId,true);}else{a.pause();tpUpdateBtns(tpCurrentId,false);}};
+  window.tpStickySeek=function(e){if(!tpCurrentId)return;const a=document.getElementById(tpCurrentId);const r=e.currentTarget.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));if(a.duration)a.currentTime=p*a.duration;};
+  window.tpCloseSticky=function(){tpStickyDismissed=true;stickyEl.classList.remove('tp-visible');};
+  window.addEventListener('scroll',updateSticky,{passive:true});
+  setInterval(updateSticky,500);
+}
+})();
+</script>
+</body>
+</html>
