@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS audio_tracks (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   article_slug TEXT NOT NULL,           -- e.g. "MDA-001-story-introduction"
   series TEXT,                          -- e.g. "mda"
-  mode TEXT NOT NULL,                   -- "deep" | "debate" | "critique" | "tts" | "web"
+  mode TEXT NOT NULL,                   -- "deep" | "podcast" | "critique" | "tts" | "web"
   url TEXT NOT NULL,
   title TEXT,
   duration_seconds INTEGER,
@@ -25,7 +25,7 @@ CREATE INDEX IF NOT EXISTS idx_audio_tracks_series ON audio_tracks(series);
 INSERT INTO audio_tracks (article_slug, series, mode, url, title, is_default)
 VALUES
   ('mda-series-home', 'mda', 'deep',  'https://pub-6e138de4ad2a4ad3917f2c404502b9e1.r2.dev/audio/moral-decline-of-america.m4a', 'Series Overview: Deep Dive', TRUE),
-  ('mda-series-home', 'mda', 'debate','https://pub-6e138de4ad2a4ad3917f2c404502b9e1.r2.dev/audio/moral-decline-of-america.m4a', 'Series Overview: Debate', TRUE),
+  ('mda-series-home', 'mda', 'podcast','https://pub-6e138de4ad2a4ad3917f2c404502b9e1.r2.dev/audio/moral-decline-of-america.m4a', 'Series Overview: Podcast', TRUE),
   ('mda-series-home', 'mda', 'critique','https://pub-6e138de4ad2a4ad3917f2c404502b9e1.r2.dev/audio/moral-decline-of-america.m4a', 'Series Overview: Critique', TRUE),
   ('mda-series-home', 'mda', 'tts',   'https://pub-6e138de4ad2a4ad3917f2c404502b9e1.r2.dev/audio/moral-decline-of-america.m4a', 'Series Overview: TTS', TRUE),
   ('mda-series-home', 'mda', 'web',   'https://pub-6e138de4ad2a4ad3917f2c404502b9e1.r2.dev/audio/moral-decline-of-america.m4a', 'Series Overview: Web', TRUE)

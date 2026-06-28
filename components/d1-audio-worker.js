@@ -28,9 +28,19 @@ export default {
       return new Response(null, { headers: CORS_HEADERS });
     }
 
+    if (path === "/health") {
+      return json({ status: "ok", timestamp: new Date().toISOString() });
+    }
+
     if (path === "/api/audio") {
-      const slug = url.searchParams.get("slug");
+      let slug = url.searchParams.get("slug");
       const mode = url.searchParams.get("mode");
+
+      // Normalize path-style slugs: "genesis-to-quantum/gtq-01-foo" → "gtq-01-foo"
+      // Pages send folder/filename slugs but D1 stores bare article slugs.
+      if (slug && slug.includes("/")) {
+        slug = slug.split("/").pop();
+      }
 
       if (!slug) {
         return json({ error: "Missing ?slug parameter" }, 400);
