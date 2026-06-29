@@ -275,6 +275,457 @@ window.MathJax = {
     <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
   </div>
 </header>
+<!-- ═══════ VERIFICATION BAR ═══════ -->
+<!-- 
+  THEOPHYSICS VERIFICATION BAR
+  Inline collapsible component for article pages.
+  Goes BELOW reading-level tabs, ABOVE article content.
+  
+  Consumes JSON output from the 13-station pipeline.
+  Shows: axiom coverage, Law mapping, isomorphism hits, chi score.
+  
+  POF 2828 | faiththruphysics.com
+-->
+
+<style>
+.verification-bar {
+  border: 1px solid var(--border, #222);
+  border-radius: 8px;
+  margin: 0 auto 2rem;
+  max-width: var(--max, 1100px);
+  background: var(--surface, #0a0a0a);
+  overflow: hidden;
+}
+
+.verification-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--surface2, #111);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.verification-toggle:hover {
+  background: var(--surface3, #1a1a1a);
+}
+
+.verification-toggle.open {
+  border-bottom-color: var(--border, #222);
+}
+
+.verification-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.verification-label {
+  font-family: var(--mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim, #9a9a9a);
+}
+
+.v-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: var(--mono, monospace);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.v-badge.pass {
+  background: rgba(59, 179, 154, 0.12);
+  color: #3bb39a;
+  border: 1px solid rgba(59, 179, 154, 0.25);
+}
+
+.v-badge.partial {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold, #d4af37);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.v-badge.fail {
+  background: rgba(201, 64, 64, 0.1);
+  color: var(--red, #c94040);
+  border: 1px solid rgba(201, 64, 64, 0.2);
+}
+
+.v-badge.info {
+  background: rgba(91, 155, 213, 0.1);
+  color: var(--blue, #5b9bd5);
+  border: 1px solid rgba(91, 155, 213, 0.2);
+}
+
+.v-chevron {
+  color: var(--text-muted, #5a5a5a);
+  transition: transform 0.2s;
+  font-size: 14px;
+}
+
+.verification-toggle.open .v-chevron {
+  transform: rotate(180deg);
+}
+
+.verification-body {
+  display: none;
+  padding: 20px;
+}
+
+.verification-body.open {
+  display: block;
+}
+
+.v-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.v-card {
+  background: var(--surface2, #111);
+  border: 1px solid var(--border, #222);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.v-card-title {
+  font-family: var(--display, 'Oswald', sans-serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold, #d4af37);
+  margin-bottom: 10px;
+}
+
+.v-card-body {
+  font-family: var(--sans, 'Inter', sans-serif);
+  font-size: 13px;
+  color: var(--text, #e5e3df);
+  line-height: 1.6;
+}
+
+.v-law-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.v-law-tag {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: var(--mono, monospace);
+  font-size: 10px;
+  background: var(--surface3, #1a1a1a);
+  border: 1px solid var(--border-2, #2a2a2a);
+  color: var(--text-dim, #9a9a9a);
+}
+
+.v-law-tag.active {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: var(--gold, #d4af37);
+}
+
+.v-meter {
+  width: 100%;
+  height: 6px;
+  background: var(--surface3, #1a1a1a);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.v-meter-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.v-meter-fill.high { background: #3bb39a; }
+.v-meter-fill.mid { background: var(--gold, #d4af37); }
+.v-meter-fill.low { background: var(--red, #c94040); }
+
+.v-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border, #222);
+  font-size: 12px;
+}
+
+.v-row:last-child { border-bottom: none; }
+.v-row-label { color: var(--text-dim, #9a9a9a); }
+.v-row-value { color: var(--text, #e5e3df); font-family: var(--mono, monospace); }
+
+.v-proof-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 14px;
+  border: 1px solid var(--gold, #d4af37);
+  border-radius: 4px;
+  color: var(--gold, #d4af37);
+  font-family: var(--sans, sans-serif);
+  font-size: 12px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.v-proof-link:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+</style>
+
+<div class="verification-bar" id="verificationBar">
+  <div class="verification-toggle" id="verificationToggle" onclick="toggleVerification()">
+    <div class="verification-badge-row">
+      <span class="verification-label">Verified</span>
+      <!-- These get populated by loadVerification() -->
+      <span class="v-badge pass" id="vb-axioms">—</span>
+      <span class="v-badge info" id="vb-laws">—</span>
+      <span class="v-badge info" id="vb-chi">—</span>
+      <span class="v-badge info" id="vb-iso">—</span>
+    </div>
+    <span class="v-chevron">▼</span>
+  </div>
+
+  <div class="verification-body" id="verificationBody">
+    <div class="v-grid">
+      
+      <!-- CARD 1: Axiom Coverage -->
+      <div class="v-card">
+        <div class="v-card-title">Axiom Coverage</div>
+        <div class="v-card-body">
+          <div class="v-row">
+            <span class="v-row-label">Axioms Tested</span>
+            <span class="v-row-value" id="vc-axiom-count">—/188</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Coverage</span>
+            <span class="v-row-value" id="vc-axiom-pct">—%</span>
+          </div>
+          <div class="v-meter">
+            <div class="v-meter-fill high" id="vc-axiom-meter" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Law Mapping -->
+      <div class="v-card">
+        <div class="v-card-title">Ten Laws Mapping</div>
+        <div class="v-card-body">
+          <div class="v-law-list" id="vc-laws">
+            <span class="v-law-tag" data-law="1">L1 Gravity/Grace</span>
+            <span class="v-law-tag" data-law="2">L2 Mass/Meaning</span>
+            <span class="v-law-tag" data-law="3">L3 EM/Truth</span>
+            <span class="v-law-tag" data-law="4">L4 Strong/Love</span>
+            <span class="v-law-tag" data-law="5">L5 Thermo/Judgment</span>
+            <span class="v-law-tag" data-law="6">L6 Info/Logos</span>
+            <span class="v-law-tag" data-law="7">L7 Quantum/Faith</span>
+            <span class="v-law-tag" data-law="8">L8 Relativity/Relationship</span>
+            <span class="v-law-tag" data-law="9">L9 Weak/Conservation</span>
+            <span class="v-law-tag" data-law="10">L10 Coherence/Christ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: Chi Score -->
+      <div class="v-card">
+        <div class="v-card-title">Chi Coherence Score</div>
+        <div class="v-card-body">
+          <div class="v-row">
+            <span class="v-row-label">Raw Score</span>
+            <span class="v-row-value" id="vc-chi-raw">—</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Normalized</span>
+            <span class="v-row-value" id="vc-chi-norm">—/10</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Fruits Score</span>
+            <span class="v-row-value" id="vc-fruits">—/9</span>
+          </div>
+          <div class="v-meter">
+            <div class="v-meter-fill high" id="vc-chi-meter" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4: Isomorphism Detection -->
+      <div class="v-card">
+        <div class="v-card-title">Isomorphism Detection</div>
+        <div class="v-card-body">
+          <div class="v-row">
+            <span class="v-row-label">Cross-Domain Bridges</span>
+            <span class="v-row-value" id="vc-iso-count">—</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Physics Processes</span>
+            <span class="v-row-value" id="vc-physics">—</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Trinity Mappings</span>
+            <span class="v-row-value" id="vc-trinity">—</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Master Eq Variables</span>
+            <span class="v-row-value" id="vc-meq-vars">—/10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 5: Claims & Falsification -->
+      <div class="v-card">
+        <div class="v-card-title">Claims & Kill Conditions</div>
+        <div class="v-card-body">
+          <div class="v-row">
+            <span class="v-row-label">Claims Extracted</span>
+            <span class="v-row-value" id="vc-claims">—</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Load-Bearing</span>
+            <span class="v-row-value" id="vc-load-bearing">—</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Kill Conditions</span>
+            <span class="v-row-value" id="vc-kill">—</span>
+          </div>
+          <div class="v-row">
+            <span class="v-row-label">Contradictions</span>
+            <span class="v-row-value" id="vc-contradictions">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 6: Domain Coverage -->
+      <div class="v-card">
+        <div class="v-card-title">Domain Distribution</div>
+        <div class="v-card-body" id="vc-domains">
+          <!-- Populated by JS from Station 11 output -->
+        </div>
+      </div>
+
+    </div>
+
+    <a class="v-proof-link" id="vc-proof-link" href="#">
+      <i class="fa-solid fa-flask"></i> Full Proof Explorer →
+    </a>
+  </div>
+</div>
+
+<script>
+function toggleVerification() {
+  const toggle = document.getElementById('verificationToggle');
+  const body = document.getElementById('verificationBody');
+  toggle.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+function loadVerification(data) {
+  // data = merged JSON from pipeline station outputs
+  // Called by the article page after loading station JSONs
+  
+  // Badge row (collapsed view)
+  const axiomCount = data.axioms?.tested || 0;
+  const axiomTotal = data.axioms?.total || 188;
+  const axiomPct = Math.round((axiomCount / axiomTotal) * 100);
+  document.getElementById('vb-axioms').textContent = axiomCount + '/' + axiomTotal + ' axioms';
+  document.getElementById('vb-axioms').className = 'v-badge ' + (axiomPct > 50 ? 'pass' : axiomPct > 20 ? 'partial' : 'info');
+  
+  const lawCount = data.laws?.active?.length || 0;
+  document.getElementById('vb-laws').textContent = lawCount + '/10 laws';
+  document.getElementById('vb-laws').className = 'v-badge ' + (lawCount >= 3 ? 'pass' : 'info');
+  
+  const chiNorm = data.chi?.normalized || 0;
+  document.getElementById('vb-chi').textContent = 'χ ' + chiNorm.toFixed(1);
+  document.getElementById('vb-chi').className = 'v-badge ' + (chiNorm >= 7 ? 'pass' : chiNorm >= 4 ? 'partial' : 'fail');
+  
+  const isoCount = data.isomorphisms?.count || 0;
+  document.getElementById('vb-iso').textContent = isoCount + ' bridges';
+  
+  // Expanded cards
+  document.getElementById('vc-axiom-count').textContent = axiomCount + '/' + axiomTotal;
+  document.getElementById('vc-axiom-pct').textContent = axiomPct + '%';
+  document.getElementById('vc-axiom-meter').style.width = axiomPct + '%';
+  document.getElementById('vc-axiom-meter').className = 'v-meter-fill ' + (axiomPct > 50 ? 'high' : axiomPct > 20 ? 'mid' : 'low');
+  
+  // Laws
+  if (data.laws?.active) {
+    data.laws.active.forEach(function(lawNum) {
+      const tag = document.querySelector('.v-law-tag[data-law="' + lawNum + '"]');
+      if (tag) tag.classList.add('active');
+    });
+  }
+  
+  // Chi
+  document.getElementById('vc-chi-raw').textContent = (data.chi?.raw || '—');
+  document.getElementById('vc-chi-norm').textContent = chiNorm.toFixed(1) + '/10';
+  document.getElementById('vc-fruits').textContent = (data.fruits?.score || '—') + '/9';
+  document.getElementById('vc-chi-meter').style.width = (chiNorm * 10) + '%';
+  document.getElementById('vc-chi-meter').className = 'v-meter-fill ' + (chiNorm >= 7 ? 'high' : chiNorm >= 4 ? 'mid' : 'low');
+  
+  // Isomorphisms
+  document.getElementById('vc-iso-count').textContent = isoCount;
+  document.getElementById('vc-physics').textContent = data.isomorphisms?.physics_processes || '—';
+  document.getElementById('vc-trinity').textContent = data.isomorphisms?.trinity_mappings || '—';
+  document.getElementById('vc-meq-vars').textContent = (data.isomorphisms?.meq_variables || '—') + '/10';
+  
+  // Claims
+  document.getElementById('vc-claims').textContent = data.claims?.total || '—';
+  document.getElementById('vc-load-bearing').textContent = data.claims?.load_bearing || '—';
+  document.getElementById('vc-kill').textContent = data.claims?.kill_conditions || '—';
+  document.getElementById('vc-contradictions').textContent = data.claims?.contradictions || '0';
+  
+  // Domains (from Station 11)
+  if (data.domains) {
+    const container = document.getElementById('vc-domains');
+    container.innerHTML = '';
+    Object.entries(data.domains).sort(function(a,b) { return b[1] - a[1]; }).forEach(function(entry) {
+      const row = document.createElement('div');
+      row.className = 'v-row';
+      row.innerHTML = '<span class="v-row-label">' + entry[0] + '</span><span class="v-row-value">' + entry[1] + '%</span>';
+      container.appendChild(row);
+    });
+  }
+  
+  // Proof link
+  if (data.slug) {
+    document.getElementById('vc-proof-link').href = '/proof-explorer/' + data.slug + '/';
+  }
+}
+</script>
+
+<script>
+(function() {
+  function initVerification() {
+    fetch('/data-viz/salvation-algorithm.canonical.verification.json')
+      .then(r => { if (!r.ok) throw new Error('status ' + r.status); return r.json(); })
+      .then(data => { if (typeof loadVerification === 'function') loadVerification(data); })
+      .catch(err => { console.warn('Verification data unavailable for salvation-algorithm.canonical:', err); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVerification);
+  } else {
+    initVerification();
+  }
+})();
+</script>
+<!-- ═══════ END VERIFICATION BAR ═══════ -->
+
 
 
 <!-- ═══════ MTL READER BAR ═══════ -->
