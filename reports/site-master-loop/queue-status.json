@@ -1,0 +1,185 @@
+{
+  "generated_at": "2026-07-01T06:12:17.629744+00:00",
+  "stages": [
+    {
+      "stage": "labels",
+      "priority": 10,
+      "worker_type": "api_structural",
+      "pending": 452,
+      "locked": 0,
+      "done": 2,
+      "failed": 0,
+      "depends_on": [],
+      "min_upstream_done": 0,
+      "upstream_done": {},
+      "unlocked": true,
+      "blocking_reason": ""
+    },
+    {
+      "stage": "headers",
+      "priority": 20,
+      "worker_type": "api_shell",
+      "pending": 1,
+      "locked": 0,
+      "done": 1,
+      "failed": 0,
+      "depends_on": [
+        "labels"
+      ],
+      "min_upstream_done": 5,
+      "upstream_done": {
+        "labels": 2
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(labels:2/5)"
+    },
+    {
+      "stage": "footers",
+      "priority": 30,
+      "worker_type": "api_shell",
+      "pending": 1,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "labels"
+      ],
+      "min_upstream_done": 5,
+      "upstream_done": {
+        "labels": 2
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(labels:2/5)"
+    },
+    {
+      "stage": "audit",
+      "priority": 40,
+      "worker_type": "api_audit",
+      "pending": 1,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "headers",
+        "footers"
+      ],
+      "min_upstream_done": 5,
+      "upstream_done": {
+        "headers": 1,
+        "footers": 0
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(headers:1/5, footers:0/5)"
+    },
+    {
+      "stage": "score",
+      "priority": 50,
+      "worker_type": "coherence_engine",
+      "pending": 0,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "audit"
+      ],
+      "min_upstream_done": 5,
+      "upstream_done": {
+        "audit": 0
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(audit:0/5)"
+    },
+    {
+      "stage": "pressure",
+      "priority": 60,
+      "worker_type": "pressure_engine",
+      "pending": 0,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "score"
+      ],
+      "min_upstream_done": 5,
+      "upstream_done": {
+        "score": 0
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(score:0/5)"
+    },
+    {
+      "stage": "predict",
+      "priority": 70,
+      "worker_type": "prediction_ensemble",
+      "pending": 0,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "pressure"
+      ],
+      "min_upstream_done": 5,
+      "upstream_done": {
+        "pressure": 0
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(pressure:0/5)"
+    },
+    {
+      "stage": "blocks",
+      "priority": 80,
+      "worker_type": "api_layout",
+      "pending": 0,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "predict"
+      ],
+      "min_upstream_done": 10,
+      "upstream_done": {
+        "predict": 0
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(predict:0/10)"
+    },
+    {
+      "stage": "dashboard",
+      "priority": 90,
+      "worker_type": "api_dashboard",
+      "pending": 0,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "predict"
+      ],
+      "min_upstream_done": 10,
+      "upstream_done": {
+        "predict": 0
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(predict:0/10)"
+    },
+    {
+      "stage": "verify",
+      "priority": 100,
+      "worker_type": "verification",
+      "pending": 0,
+      "locked": 0,
+      "done": 0,
+      "failed": 0,
+      "depends_on": [
+        "blocks",
+        "dashboard"
+      ],
+      "min_upstream_done": 5,
+      "upstream_done": {
+        "blocks": 0,
+        "dashboard": 0
+      },
+      "unlocked": false,
+      "blocking_reason": "waiting_for_lead(blocks:0/5, dashboard:0/5)"
+    }
+  ]
+}
