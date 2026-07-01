@@ -42,6 +42,14 @@
     --shell-gold:#d4af37; --shell-gold-rgb:212,175,55;
     --shell-blue:#4a9eff; --shell-purple:#a855f7; --shell-teal:#2dd4bf; --shell-red:#dc2626;
   }
+  html {
+    background:#050505 !important;
+    color:var(--shell-text);
+  }
+  body {
+    background:#050505 !important;
+    color:var(--shell-text);
+  }
   html { scroll-padding-top: var(--shell-topbar-h); }
   body { padding-top: var(--shell-topbar-h); padding-bottom: var(--shell-dock-h); }
 

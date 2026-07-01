@@ -1,926 +1,756 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Civilizational Negentropy: The Reverse Sequence Hypothesis — David Lowe</title>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-<style>
-:root {
-  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
-  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
-  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
-  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
-  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
-  --serif:'Crimson Text',Georgia,serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-  --display:'Oswald','Inter',sans-serif;
-  --sans:'Inter',system-ui,sans-serif;
-  --max:1140px; --header-h:48px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-
-/* ═══════ TOP BAR ═══════ */
-.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
-.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
-.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
-.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
-.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
-.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
-.tp-brand:hover .tp-brand-name{color:var(--gold)}
-.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
-.tp-brand:hover::after{width:140px;height:140px;opacity:1}
-.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
-
-/* Left nav */
-.tp-nav-links{display:flex;gap:3px;align-items:center}
-.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
-.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
-.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
-.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
-.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
-.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
-.tp-spacer{flex:1}
-
-/* Reading levels */
-.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
-.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
-.tp-level:hover{color:var(--text)}
-.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
-.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
-.tp-level:hover::after{width:80px;height:80px;opacity:1}
-.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
-.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
-.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
-@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
-
-/* ═══════ CLASSIFICATION BAR ═══════ */
-.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
-.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
-.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
-.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
-.tp-class-seg{transition:flex .4s ease;position:relative}
-.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
-.tp-class-bar:hover .tp-class-seg::after{opacity:1}
-.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
-.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
-.tp-class-tag:hover{color:var(--text-dim)}
-.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
-/* Small nav */
-.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
-.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
-@media(max-width:600px){.tp-class-tags{display:none}}
-
-/* ═══════ ARTICLE BODY ═══════ */
-.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
-.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
-.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
-.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
-.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
-.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
-.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
-.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
-.tp-article li{margin-bottom:.4rem}
-.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
-.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
-.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
-
-/* ═══════ BIG PREV / NEXT NAV ═══════ */
-.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
-.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
-.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
-.tp-bignav-prev{justify-content:flex-start}
-.tp-bignav-next{justify-content:flex-end;text-align:right}
-.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
-.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
-.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
-.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
-.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
-.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
-.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
-.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
-.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
-.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
-
-/* Center: Series Home + Site Home */
-.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
-.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
-.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
-.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
-.tp-bignav-home:hover{color:var(--gold)}
-
-@media(max-width:650px){
-  .tp-bignav-row{flex-direction:column;gap:.6rem}
-  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
-  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
-  .tp-bignav-title{font-size:1rem}
-}
-
-/* ═══════ FINAL AUDIT ═══════ */
-.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
-.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
-.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
-.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
-.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
-.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
-.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
-.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
-@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
-.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
-.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
-.tp-audit-col:hover::before{opacity:1}
-.tp-audit-col:hover{transform:translateY(-3px)}
-.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
-.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
-.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.tp-audit-col li:last-child{border-bottom:0}
-.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
-.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
-.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
-.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
-.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
-.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
-
-/* ═══════ GOLD DIVIDER ═══════ */
-.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
-.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
-
-/* ═══════ SUBDOMAIN GRID ═══════ */
-.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
-.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
-.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
-.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
-.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
-.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
-@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
-.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
-.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
-.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
-.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
-.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
-.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
-.tp-sub-card:hover::before{opacity:1}
-.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
-.tp-sub-card:hover h4{color:var(--gold)}
-.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
-
-/* ═══════ SERIES NAV ═══════ */
-.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
-.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
-.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
-.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
-.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
-
-/* ═══════ BOTTOM BAR ═══════ */
-.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
-.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
-.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
-.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
-
-/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
-.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
-.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
-@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
-.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
-.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
-.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
-.tp-door:hover .tp-door-sub{color:var(--text-dim)}
-.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
-
-/* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
-
-/* ═══════ SELECTION ═══════ */
-::selection{background:rgba(212,175,55,.2);color:var(--text)}
-</style>
-<base target="_blank">
-
-<!-- MathJax + MTL support -->
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
-  svg: { fontCache: 'global' },
-  startup: {
-    pageReady: function() {
-      return MathJax.startup.defaultPageReady().then(function() {
-        if (MathJax.startup.document && MathJax.startup.document.math) {
-          MathJax.startup.document.math.forEach(function(item) {
-            if (item.typesetRoot) {
-              item.typesetRoot.dataset.latex = item.math;
-              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
-            }
-          });
-        }
-      });
-    }
-  }
-};
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
-
-</head>
-<body>
-
-<!-- ═══════ TOP BAR ═══════ -->
-<header class="tp-top">
-  <div class="tp-top-inner">
-    <a href="https://faiththruphysics.com" class="tp-brand">
-      <span class="tp-brand-chi">χ</span>
-      <span class="tp-brand-name">Faith thru Physics</span>
-    </a>
-    <span class="tp-div"></span>
-    <div class="tp-nav-links">
-      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
-      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
-      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
-    </div>
-    <span class="tp-div"></span>
-    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
-      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
-        Series <i class="fas fa-chevron-down"></i>
-      </button>
-      <div class="tp-subdomain-panel" role="menu">
-        <div class="tp-subdomain-grid">
-          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
-          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
-          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
-          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
-          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
-          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
-          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
-          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
-        </div>
-      </div>
-    </div>
-    <span class="tp-spacer"></span>
-    <div class="tp-levels" role="tablist">
-      <button class="tp-level active" data-level="highschool">High School</button>
-      <button class="tp-level" data-level="college">College</button>
-      <button class="tp-level" data-level="phd">PhD</button>
-    </div>
-    <span class="tp-div"></span>
-    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
-  </div>
-</header>
-
-
-<!-- ═══════ MTL READER BAR ═══════ -->
-<div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
-  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
-  <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
-    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
-    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
-    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
-    <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
-  </div>
-</div>
-
-<!-- ═══════ CLASSIFICATION BAR ═══════ -->
-<div class="tp-class">
-  <div class="tp-class-inner">
-    <a href="#" class="tp-class-nav">← Prev</a>
-    <div class="tp-class-center">
-      <div class="tp-class-label">Article Classification</div>
-      <div class="tp-class-bar" id="classBar"></div>
-      <div class="tp-class-tags" id="classTags"></div>
-    </div>
-    <a href="#" class="tp-class-nav">Next →</a>
-  </div>
-</div>
-
-<!-- ═══════ ARTICLE (demo content) ═══════ -->
-<article class="tp-article">
-  <h1>CivilizationalNegentropy</h1>
-  <p class="subtitle">The Reverse Sequence Hypothesis and the Mechanics of Restoration</p>
-  <div class="byline">David Lowe· April 2026</div>
-  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=cross-domain%2F12-reverse-sequence-hypothesis" data-audio-slug="cross-domain/12-reverse-sequence-hypothesis" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=cross-domain" data-series-slug="cross-domain">
-<div class="tp-read-aloud" data-mode="tts">
-<div class="tp-dot"></div>
-<span class="tp-label">Read Aloud</span>
-<audio id="tpMainAudio" preload="none"></audio>
-<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
-<div class="tp-fill" id="tpMainFill"></div>
-</div>
-<span class="tp-time" id="tpMainTime">0:00</span>
-<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
-<option value="0.75">0.75x</option>
-<option selected="" value="1">1x</option>
-<option value="1.25">1.25x</option>
-<option value="1.5">1.5x</option>
-<option value="1.75">1.75x</option>
-<option value="2">2x</option>
-</select>
-<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
-<i class="fas fa-volume-up"></i>
-</button>
-</div>
-<div class="tp-pair">
-<div class="tp-half tp-deep" data-mode="deep">
-<div class="tp-dot"></div>
-<span class="tp-label">Deep Dive</span>
-<audio id="tpDeepAudio" preload="none"></audio>
-<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
-<div class="tp-fill" id="tpDeepFill"></div>
-</div>
-<span class="tp-time" id="tpDeepTime">0:00</span>
-</div>
-<div class="tp-half tp-debate" data-mode="podcast">
-<div class="tp-dot"></div>
-<span class="tp-label">Podcast</span>
-<audio id="tpDebateAudio" preload="none"></audio>
-<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
-<div class="tp-fill" id="tpDebateFill"></div>
-</div>
-<span class="tp-time" id="tpDebateTime">0:00</span>
-</div>
-<div class="tp-half tp-critique" data-mode="critique">
-<div class="tp-dot"></div>
-<span class="tp-label">Critique</span>
-<audio id="tpCritiqueAudio" preload="none"></audio>
-<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
-<div class="tp-fill" id="tpCritiqueFill"></div>
-</div>
-<span class="tp-time" id="tpCritiqueTime">0:00</span>
-</div>
-</div>
-<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
-    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
-</div>
-</div>
-  
- 1. INTRODUCTION 
-<section class="section">
-<span class="section-num">01</span>
-<h2><span class="part-label">Section I</span>The Thermodynamics of Social Order</h2>
-<p>Civilizations are, in a strict biophysical sense, open thermodynamic systems that require a continuous input of ordering energy to maintain coherence. When this energy dissipates—when the binding forces of shared meaning, familial obligation, and institutional trust erode—the system succumbs to entropy. This report investigates the phenomenon of <strong>Civilizational Negentropy</strong>: the rare, counter-intuitive historical capacity of a society to reverse this entropic slide and regenerate its structural integrity from within.</p>
-<p>Specifically, this research rigorously tests the <strong>Reverse Sequence Hypothesis</strong>. Standard historiography presumes that restoration is an "outside-in" or "top-down" process: that fixing institutions (Stage 3) will stabilize families (Stage 2), which will eventually restore cultural meaning (Stage 1). The Reverse Sequence Hypothesis posits the exact opposite.</p>
-<p>It suggests that the sequence of collapse—<strong>Semantic → Familial → Institutional</strong>—dictates the necessary sequence of restoration. Recovery cannot begin with the state because the state relies on human capital produced by the family. It cannot begin with the family because the family relies on a shared moral grammar to justify its sacrifices. Therefore, successful restoration must invariably begin with <strong>Semantic Reconstruction</strong>: the aggressive injection of "thick" moral information into the social system by a Creative Minority.</p>
-<div class="pull-quote">
-<p>The word is the canary. When a civilization loses its thick vocabulary, collapse has already begun.</p>
-</div>
-<p>To validate this hypothesis, we examine three distinct periods of profound civilizational restoration: the transformation of <strong>Victorian Britain</strong> from the decadence of the Regency era; the <strong>US Second Great Awakening</strong> which pacified the violent American frontier; and the <strong>Meiji Restoration</strong> in Japan, which synthesized a modern nation-state from feudal chaos.</p>
-</section>
- 2. THEORETICAL FRAMEWORK 
-<section class="section">
-<span class="section-num">02</span>
-<h2><span class="part-label">Section II</span>Theoretical Framework</h2>
-<h3>2.1 The Collapse Cascade: Semantic, Familial, Institutional</h3>
-<div class="cascade-card">
-<h4>Semantic Collapse — The Erosion of Meaning</h4>
-<p>The dissolution of the "moral software." "Thick" concepts—terms that are simultaneously descriptive and evaluative, such as <em>chaste</em>, <em>honorable</em>, or <em>pious</em>—are replaced by "thin" concepts like <em>beneficial</em>, <em>allowed</em>, or <em>preference</em>.</p>
-</div>
-<div class="cascade-card">
-<h4>Familial Collapse — The Erosion of Production</h4>
-<p>The family is the primary engine of socialization. Without the support of a Semantic order, the energy required to sustain the family unit dissipates.</p>
-</div>
-<div class="cascade-card">
-<h4>Institutional Collapse — The Erosion of Structure</h4>
-<p>Institutions consume the trust and order produced by families. When the Semantic and Familial layers fail, institutions become overwhelmed.</p>
-</div>
-<h3>2.2 The Mechanism of Negentropy: Creative Minorities</h3>
-<p>As Arnold Toynbee argued, restoration is the product of a <strong>Creative Minority</strong>—a small group who react to the crisis not by despairing, but by withdrawing to generate a new solution.</p>
-<div class="mechanism-card">
-<span class="icon">↻</span>
-<div>
-<h4>Withdrawal and Return</h4>
-<p>This minority withdraws from the dominant, decaying culture to purify a new Semantic Code. They then "return" to propagate it through mimesis (imitation).</p>
-</div>
-</div>
-<div class="mechanism-card">
-<span class="icon">¶</span>
-<div>
-<h4>Semantic Injection</h4>
-<p>The primary tool of the Creative Minority is not the sword or the law, but the Word.</p>
-</div>
-</div>
-<h3>2.3 The Lag Time Reality</h3>
-<p>"Restoration Lag" describes the delay between Semantic reconstruction and Institutional stabilization. This lag often spans <strong>30 to 50 years</strong>—roughly two generations. The lag is not a failure; it is the time required for the new code to propagate through families and solidify into institutional norms.</p>
-</section>
- 3. CASE STUDY I: VICTORIAN BRITAIN 
-<section class="section">
-<span class="section-num">03</span>
-<div class="case-header">
-<span class="case-num">Case Study I</span>
-<h2>Victorian Britain</h2>
-<span class="date-range">1780 – 1900</span>
-<span class="case-tag">The Reformation of Manners</span>
-</div>
-<h3>3.1 The Baseline of Entropy: The Regency Crisis</h3>
-<div class="crisis-card">
-<span class="domain">Semantic Decay</span>
-<p>The aristocracy modeled libertinism, gambling, and excess. "Enthusiasm" was a slur used against the pious.</p>
-</div>
-<div class="crisis-card">
-<span class="domain">Familial Instability</span>
-<p>Illegitimacy rates climbed. In some areas, up to a third of first children were conceived out of wedlock.</p>
-</div>
-<div class="crisis-card">
-<span class="domain">Institutional Failure — The Bloody Code</span>
-<p>The death penalty was prescribed for over 200 offenses, including minor theft. Yet crime continued to rise.</p>
-</div>
-<h3>3.2 Phase I: Semantic Reconstruction (1780–1830)</h3>
-<div class="phase-card phase-semantic">
-<span class="phase-label">Phase I · Semantic</span>
-<h4>The Creative Minority: The Clapham Sect</h4>
-<p>Centered around William Wilberforce, Henry Thornton, and Hannah More, they explicitly aimed at the abolition of the slave trade and the "Reformation of Manners."</p>
-<p><strong>Mechanism: The Cheap Repository Tracts.</strong> Hannah More's Cheap Repository Tracts (commenced 1795). In the first year alone, over <strong>two million</strong> tracts were distributed. Given the population of roughly 10 million, this was a saturation event.</p>
-</div>
-<div class="data-row">
-<div class="data-callout">
-<span class="figure">2M+</span>
-<span class="label">Tracts Distributed</span>
-</div>
-<div class="data-callout">
-<span class="figure">~20</span>
-<span class="label">Families in the Sect</span>
-</div>
-</div>
-<h3>3.3 Phase II: Familial Fortification (1800–1850)</h3>
-<div class="phase-card phase-familial">
-<span class="phase-label">Phase II · Familial</span>
-<h4>The Rise of Respectability</h4>
-<p>By 1831, <strong>1.25 million children</strong> (25% of the population) were enrolled in Sunday Schools. By the 1830s, "Respectability" unified the middle and working classes around a shared moral vocabulary.</p>
-</div>
-<h3>3.4 Phase III: Institutional Ratification (1850–1900)</h3>
-<div class="phase-card phase-institutional">
-<span class="phase-label">Phase III · Institutional</span>
-<h4>The Crime Drop and the Police Paradox</h4>
-<p>Between 1857 and 1901, the rate of indictable offenses per capita fell by nearly <strong>50%</strong>. Peel's police were effective because they were reinforcing a moral order that had already been internalized. Illegitimacy declined from a peak of 7% around 1845 to around 4% by end of century.</p>
-</div>
-<div class="pull-quote">
-<p>Crime fell by 50% not because the state grew stronger, but because individuals had internalized a moral code the state merely ratified.</p>
-</div>
-<div class="validation">
-<span class="val-title">Validation Summary</span>
-<div class="val-row"><span class="val-phase s">Semantic</span><span class="val-date">1795 — Cheap Repository Tracts</span></div>
-<div class="val-row"><span class="val-phase f">Familial</span><span class="val-date">1830s — Sunday School enrollment peak</span></div>
-<div class="val-row"><span class="val-phase i">Institutional</span><span class="val-date">1850s — Significant crime drop begins</span></div>
-</div>
-<p style="font-size:.92rem;color:var(--cream-m);text-align:center">Lag time from Cheap Repository Tracts (1795) to significant crime drop (1850s): approximately <strong>55 years</strong>.</p>
-</section>
- 4. CASE STUDY II: US SECOND GREAT AWAKENING 
-<section class="section">
-<span class="section-num">04</span>
-<div class="case-header">
-<span class="case-num">Case Study II</span>
-<h2>The US Second Great Awakening</h2>
-<span class="date-range">1800 – 1860</span>
-<span class="case-tag">Moralizing the Frontier</span>
-</div>
-<h3>4.1 The Baseline of Entropy: The Alcoholic Republic</h3>
-<div class="crisis-card">
-<span class="domain">Alcohol Consumption</span>
-<p>By 1830, <strong>7.1 gallons</strong> per capita per year—nearly triple 21st century levels.</p>
-</div>
-<div class="crisis-card">
-<span class="domain">Frontier Violence — Gouging</span>
-<p>Brutal contests where the explicit goal was to maim—to gouge out an eye, bite off a nose, or sever a lip.</p>
-</div>
-<div class="crisis-card">
-<span class="domain">Institutional Weakness</span>
-<p>Courts were sporadic, police non-existent, the church disestablished and weak.</p>
-</div>
-<h3>4.2 Phase I: Semantic Reconstruction (1800–1840)</h3>
-<div class="phase-card phase-semantic">
-<span class="phase-label">Phase I · Semantic</span>
-<h4>The Benevolent Empire</h4>
-<p>Charles Grandison Finney and Lyman Beecher led the movement. By 1835, over <strong>5,000 temperance societies</strong> with more than a million members had formed the Benevolent Empire.</p>
-</div>
-<h3>4.3 Phase II: Familial Fortification (1830–1850)</h3>
-<div class="phase-card phase-familial">
-<span class="phase-label">Phase II · Familial</span>
-<h4>The Domestication of the Frontier</h4>
-<p>Between 1830 and 1845, per capita alcohol consumption plummeted from <strong>7.1 gallons to 1.8 gallons</strong>. This <strong>75% reduction</strong> was achieved almost entirely through "Moral Suasion" before any significant state prohibition laws.</p>
-</div>
-<div class="data-row">
-<div class="data-callout">
-<span class="figure">7.1 → 1.8</span>
-<span class="label">Gallons Per Capita</span>
-</div>
-<div class="data-callout">
-<span class="figure">75%</span>
-<span class="label">Reduction</span>
-</div>
-</div>
-<div class="pull-quote">
-<p>A 75% reduction in alcohol consumption, achieved not by law but by language. Moral suasion preceded—and outperformed—every statute.</p>
-</div>
-<h3>4.4 Phase III: Institutional Ratification (1840–1860)</h3>
-<div class="phase-card phase-institutional">
-<span class="phase-label">Phase III · Institutional</span>
-<h4>The End of Gouging</h4>
-<p>By the 1840s, "Rough and Tumble" fighting had virtually vanished from the frontier. The Common School movement institutionalized the Protestant ethic across the expanding nation.</p>
-</div>
-<div class="validation">
-<span class="val-title">Validation Summary</span>
-<div class="val-row"><span class="val-phase s">Semantic</span><span class="val-date">1826 — Temperance Society founded</span></div>
-<div class="val-row"><span class="val-phase f">Familial</span><span class="val-date">1830s — Domestication of frontier households</span></div>
-<div class="val-row"><span class="val-phase i">Institutional</span><span class="val-date">1840s — Alcohol consumption floor reached</span></div>
-</div>
-<p style="font-size:.92rem;color:var(--cream-m);text-align:center">Lag time from Temperance Society (1826) to alcohol consumption floor (1845): roughly <strong>20 years</strong>.</p>
-</section>
- 5. CASE STUDY III: MEIJI JAPAN 
-<section class="section">
-<span class="section-num">05</span>
-<div class="case-header">
-<span class="case-num">Case Study III</span>
-<h2>The Meiji Restoration</h2>
-<span class="date-range">1868 – 1912</span>
-<span class="case-tag">Constructing the Moral State</span>
-</div>
-<h3>5.1 The Baseline of Entropy: The Crisis of Transition</h3>
-<div class="crisis-card">
-<span class="domain">Total Institutional Disintegration</span>
-<p>Following the collapse of the Tokugawa Shogunate (1868), Japan faced the dissolution of feudal structures with no modern replacements in sight.</p>
-</div>
-<h3>5.2 Phase I: Semantic Reconstruction (1880–1890)</h3>
-<div class="phase-card phase-semantic">
-<span class="phase-label">Phase I · Semantic</span>
-<h4>The Imperial Rescript on Education (1890)</h4>
-<p>The Rescript fused traditional Confucian virtues with modern State Shinto. It was distributed to every school, housed in a special shrine. Students bowed to it daily; principals read it on holy days.</p>
-<p><strong>Shushin (Moral Education):</strong> The curriculum was restructured around Shushin (Ethics), the primary subject in every school.</p>
-</div>
-<h3>5.3 Phase II: Familial Fortification (1890–1900)</h3>
-<div class="phase-card phase-familial">
-<span class="phase-label">Phase II · Familial</span>
-<h4>The Stabilization of the Family</h4>
-<p>The divorce rate plummeted from <strong>3.38 per 1,000</strong> (1883) to <strong>1.53 per 1,000</strong> (1899)—a decline of over 50% in roughly 15 years.</p>
-</div>
-<div class="data-row">
-<div class="data-callout">
-<span class="figure">3.38 → 1.53</span>
-<span class="label">Divorce Rate per 1,000</span>
-</div>
-<div class="data-callout">
-<span class="figure">15 yrs</span>
-<span class="label">Lag Time</span>
-</div>
-</div>
-<div class="pull-quote">
-<p>In just 15 years, a centralized Semantic injection halved the divorce rate—the shortest lag time in the dataset, and a testament to the power of concentrated moral information.</p>
-</div>
-<h3>5.4 Phase III: Institutional Ratification (1900–1912)</h3>
-<div class="phase-card phase-institutional">
-<span class="phase-label">Phase III · Institutional</span>
-<h4>The Emergence of a Modern Power</h4>
-<p>Japan was the only non-Western nation to industrialize rapidly in the 19th century. The military defeated Russia in 1905—an institutional harvest rooted in the moral capital invested two decades prior.</p>
-</div>
-<div class="validation">
-<span class="val-title">Validation Summary</span>
-<div class="val-row"><span class="val-phase s">Semantic</span><span class="val-date">1890 — Imperial Rescript on Education</span></div>
-<div class="val-row"><span class="val-phase f">Familial</span><span class="val-date">1898 — Civil Code / Divorce floor</span></div>
-<div class="val-row"><span class="val-phase i">Institutional</span><span class="val-date">1905 — Victory over Russia</span></div>
-</div>
-<p style="font-size:.92rem;color:var(--cream-m);text-align:center">Lag time: remarkably short—<strong>15 years</strong>—due to the centralized nature of the Semantic Injection.</p>
-</section>
- 6. SYNTHESIS 
-<section class="section">
-<span class="section-num">06</span>
-<h2><span class="part-label">Section VI</span>Synthesis: Creative Minorities and "Thick" Concepts</h2>
-<h3>6.1 The Creative Minority</h3>
-<p><strong>Victorian:</strong> The Clapham Sect (~20 families). <strong>American:</strong> The leaders of the Benevolent Empire (Finney, Beecher, Tappan). <strong>Meiji:</strong> The Genro Oligarchs (Ito, Yamagata).</p>
-<p>The mechanism in every case: <strong>Withdrawal → Return → Mimesis.</strong></p>
-<h3>6.2 "Thick" Virtue Terms</h3>
-<table class="concept-table">
-<thead>
-<tr><th>Type</th><th>Examples</th><th>Function</th></tr>
-</thead>
-<tbody>
-<tr><td>Thin Concepts</td><td>Good, Bad, Right, Wrong</td><td>Abstract evaluation</td></tr>
-<tr><td class="thick">Thick Concepts</td><td class="thick">Gentleman, Drunkard, Patriot, Filial, Chaste, Industrious</td><td>Descriptive <em>and</em> evaluative</td></tr>
-</tbody>
-</table>
-<p>Entropy occurs when Thick concepts are "thinned." Restoration occurs when concepts are "thickened."</p>
-<h3>6.3 The Lag Time Analysis</h3>
-<div class="lag-table-wrap">
-<p class="table-title">The Restoration Lag: Three Civilizations Compared</p>
-<span class="table-subtitle">Centerpiece Synthesis</span>
-<table class="lag-table">
-<thead>
-<tr>
-<th>Phase</th>
-<th>Victorian Britain</th>
-<th>US Awakening</th>
-<th>Meiji Japan</th>
-<th>Average</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="phase-col">1. Semantic Seed</td>
-<td>1795 (Tracts)</td>
-<td>1826 (Temperance Soc.)</td>
-<td>1890 (Rescript)</td>
-<td class="avg">Year 0</td>
-</tr>
-<tr>
-<td class="phase-col">2. Familial Uptake</td>
-<td>1830s (Sunday Schools)</td>
-<td>1830s (Domestication)</td>
-<td>1898 (Civil Code)</td>
-<td class="avg">+10–35 Years</td>
-</tr>
-<tr>
-<td class="phase-col">3. Institutional Harvest</td>
-<td>1850s (Crime Drop)</td>
-<td>1840s (Alc. Floor)</td>
-<td>1905 (Victory)</td>
-<td class="avg">+15–55 Years</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td>Total Lag</td>
-<td>~55 years</td>
-<td>~20 years</td>
-<td>~15 years</td>
-<td>1–2 Generations</td>
-</tr>
-</tfoot>
-</table>
-</div>
-<p>The "Lag" is approximately one to two generations. The more centralized the Semantic Injection, the shorter the lag.</p>
-</section>
- 7. THE RESTORATION PROTOCOL 
-<section class="section">
-<span class="section-num">07</span>
-<h2><span class="part-label">Section VII</span>The Restoration Protocol</h2>
-<div class="protocol-progression">
-<span class="proto-step s">Phase I: Semantic</span>
-<span class="arrow">→</span>
-<span class="proto-step f">Phase II: Familial</span>
-<span class="arrow">→</span>
-<span class="proto-step i">Phase III: Institutional</span>
-</div>
-<div class="protocol-card proto-s">
-<span class="proto-label">Phase I · Years 0–20</span>
-<h4>Semantic Reconstruction</h4>
-<div class="proto-row"><span class="proto-key">Objective</span><span class="proto-val">Re-introduce "Thick" Virtue Terms into the cultural lexicon.</span></div>
-<div class="proto-row"><span class="proto-key">Agent</span><span class="proto-val">The Creative Minority (operating outside the State).</span></div>
-<div class="proto-row"><span class="proto-key">Tactics</span><span class="proto-val">Establish "Islands of Coherence"; develop Moral Technology through Narrative and Aesthetics; target the elite (The Clapham Strategy).</span></div>
-<div class="proto-row"><span class="proto-key">Metric</span><span class="proto-val">Frequency of usage of Thick Terms in public discourse.</span></div>
-</div>
-<div class="protocol-card proto-f">
-<span class="proto-label">Phase II · Years 20–40</span>
-<h4>Familial Fortification</h4>
-<div class="proto-row"><span class="proto-key">Objective</span><span class="proto-val">Socialize the next generation in the new Semantic Code.</span></div>
-<div class="proto-row"><span class="proto-key">Agent</span><span class="proto-val">The Family and Parallel Institutions.</span></div>
-<div class="proto-row"><span class="proto-key">Tactics</span><span class="proto-val">Insulate the family from "Thin" culture; build parallel institutions; use Thick terms to stigmatize familial failure while offering redemption.</span></div>
-<div class="proto-row"><span class="proto-key">Metric</span><span class="proto-val">Decline in familial entropy markers (divorce, illegitimacy, domestic violence).</span></div>
-</div>
-<div class="protocol-card proto-i">
-<span class="proto-label">Phase III · Years 40–60</span>
-<h4>Institutional Ratification</h4>
-<div class="proto-row"><span class="proto-key">Objective</span><span class="proto-val">Codify the restored order into Law and Governance.</span></div>
-<div class="proto-row"><span class="proto-key">Agent</span><span class="proto-val">The State.</span></div>
-<div class="proto-row"><span class="proto-key">Tactics</span><span class="proto-val">Pass laws that reflect the already achieved consensus; use institutions to defend the Semantic Code.</span></div>
-<div class="proto-row"><span class="proto-key">Metric</span><span class="proto-val">Decline in institutional entropy markers (crime rates, corruption, transaction costs).</span></div>
-</div>
-</section>
- 8. CONCLUSION 
-<section class="section">
-<span class="section-num">08</span>
-<h2><span class="part-label">Conclusion</span>The Word Before the Sword</h2>
-<p>The Reverse Sequence Hypothesis is supported by the historical record. Across three civilizations, three centuries, and three distinct cultural contexts, the pattern holds: <strong>Semantic → Familial → Institutional.</strong></p>
-<p>Civilizational Negentropy is possible, but it is a slow, sequential process. It begins not with the Sword of the State, but with the Word of the Minority. The Creative Minority does not petition the powerful. It out-narrates them.</p>
-<div class="data-row">
-<div class="data-callout">
-<span class="figure">2M</span>
-<span class="label">Tracts (1795)</span>
-</div>
-<div class="data-callout">
-<span class="figure">50%</span>
-<span class="label">Crime Drop</span>
-</div>
-<div class="data-callout">
-<span class="figure">75%</span>
-<span class="label">Alcohol Reduction</span>
-</div>
-<div class="data-callout">
-<span class="figure">15 yrs</span>
-<span class="label">Meiji Lag</span>
-</div>
-</div>
-<div class="capstone">
-<p>Restoration is, fundamentally, a linguistic operation.</p>
-<span class="capstone-rule"></span>
-</div>
-</section>
-
-</article>
-
-<!-- ═══════ BIG PREV / NEXT ═══════ -->
-<nav class="tp-bignav">
-  <div class="tp-bignav-row">
-    <a href="#" class="tp-bignav-prev">
-      <span class="tp-bignav-arrow">←</span>
-      <div class="tp-bignav-text">
-        <span class="tp-bignav-label">Previous</span>
-        <span class="tp-bignav-title">Previous</span>
-      </div>
-    </a>
-    <div class="tp-bignav-center">
-      <a href="/cross-domain/" class="tp-bignav-series">Cross-Domain Series Home</a>
-      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
-    </div>
-    <a href="#" class="tp-bignav-next">
-      <div class="tp-bignav-text">
-        <span class="tp-bignav-label">Next</span>
-        <span class="tp-bignav-title">Next</span>
-      </div>
-      <span class="tp-bignav-arrow">→</span>
-    </a>
-  </div>
-</nav>
-
-<!-- ═══════ FINAL AUDIT ═══════ -->
-<section class="tp-audit">
-  <div class="tp-audit-box">
-    <div class="tp-audit-head">Final Audit</div>
-    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
-    <div class="tp-audit-covenant">
-      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
-    </div>
-    <div class="tp-audit-grid">
-      <div class="tp-audit-col tp-col-right">
-        <h4>What We Got Right</h4>
-        <ul>
-          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
-        </ul>
-      </div>
-      <div class="tp-audit-col tp-col-over">
-        <h4>What We Overstated</h4>
-        <ul>
-          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
-        </ul>
-      </div>
-      <div class="tp-audit-col tp-col-wrong">
-        <h4>What We Got Wrong</h4>
-        <ul>
-          <li>Claims that need correction, tightening, or weaker formulation.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════ GOLD DIVIDER ═══════ -->
-<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
-
-<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
-<section class="tp-subdomains">
-  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
-  <div class="tp-sub-title">The Math Behind the Claims</div>
-  <div class="tp-sub-grid">
-    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
-    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
-    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
-    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
-    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
-  </div>
-</section>
-
-<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
-<section class="tp-subdomains">
-  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
-  <div class="tp-sub-title">Everything Else</div>
-  <div class="tp-sub-grid">
-    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
-    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
-    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
-    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
-    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
-  </div>
-</section>
-
-<!-- ═══════ SERIES NAV ═══════ -->
-<nav class="tp-series-nav">
-  <div class="tp-series-strip">
-    <a href="/" class="active">Home</a>
-    <a href="/moral-decline/">MDA</a>
-    <a href="/genesis-to-quantum/">GTQ</a>
-    <a href="/Convergence_Series/">Convergence</a>
-    <a href="/Logos_Papers/">Logos Papers</a>
-    <a href="/one-page-stories/">One-Page Stories</a>
-    <a href="/consciousness/" class="soon">Consciousness</a>
-    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
-  </div>
-</nav>
-
-<!-- ═══════ BOTTOM BAR ═══════ -->
-<div class="tp-bottom">
-  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
-  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
-  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
-  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
-  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
-</div>
-
-<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
-<div class="tp-door">
-  <div class="tp-door-num">15 + 15 = 100</div>
-  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
-  <span class="tp-door-mark"></span>
-</div>
-
-<script>
-/* ═══════ AUTO-ACTIVE NAV ═══════
-   Detects current page URL and lights up the matching nav link.
-   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
-   No manual active classes needed per page. */
-const NAV_MAP={
-  home:['/','/index.html','/home'],
-  mtl:['/equation/','/equation','/math-translation-layer/'],
-  proof:['/proof-explorer/','/proof-explorer','/proof/']
-};
-const path=window.location.pathname;
-document.querySelectorAll('.tp-nav-link').forEach(link=>{
-  const key=link.dataset.nav;
-  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
-    link.classList.add('active');
-  } else {
-    link.classList.remove('active');
-  }
-});
-
-/* Article domain profile — swap this array per article */
-const ARTICLE_PROFILE=[
-  {name:"Theology",pct:28,color:"#d4af37"},
-  {name:"Physics",pct:22,color:"#7cc7ff"},
-  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
-  {name:"Evidence",pct:15,color:"#7fc77f"},
-  {name:"Consciousness",pct:10,color:"#a78bfa"},
-  {name:"Mathematics",pct:7,color:"#ff7d90"},
-  {name:"Speculative",pct:3,color:"#aeb8d6"}
-];
-
-/* Render classification bar */
-const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
-if(bar&&tags){
-  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
-  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
-}
-
-/* Reading level tabs */
-document.querySelectorAll('.tp-level').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-/* Big nav hover spotlight effect */
-document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
-  card.addEventListener('mousemove',e=>{
-    const rect=card.getBoundingClientRect();
-    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
-    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
-  });
-});
-
-/* Series nav auto-active (same pattern) */
-const SERIES_MAP={
-  '/':'Home','/index.html':'Home','/home':'Home',
-  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
-  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
-  '/one-page-stories/':'One-Page Stories'
-};
-const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
-if(seriesName){
-  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
-    if(a.textContent.trim()===seriesName){a.classList.add('active');}
-    else{a.classList.remove('active');}
-  });
-}
-</script>
-
-<!-- MTL worker client -->
-<script src="/shared/js/mtl-worker-client.js" defer></script>
-
-</body>
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Civilizational Negentropy: The Reverse Sequence Hypothesis — David Lowe</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
+
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
+
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+</style>
+<base target="_blank"/>
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
+  }
+};
+</script>
+<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="/shared/css/mtl-worker-client.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- ═══════ TOP BAR ═══════ -->
+
+
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+<h1>CivilizationalNegentropy</h1>
+<p class="subtitle">The Reverse Sequence Hypothesis and the Mechanics of Restoration</p>
+<div class="byline">David Lowe· April 2026</div>
+
+  
+ 1. INTRODUCTION 
+<section class="section">
+<span class="section-num">01</span>
+<h2><span class="part-label">Section I</span>The Thermodynamics of Social Order</h2>
+<p>Civilizations are, in a strict biophysical sense, open thermodynamic systems that require a continuous input of ordering energy to maintain coherence. When this energy dissipates—when the binding forces of shared meaning, familial obligation, and institutional trust erode—the system succumbs to entropy. This report investigates the phenomenon of <strong>Civilizational Negentropy</strong>: the rare, counter-intuitive historical capacity of a society to reverse this entropic slide and regenerate its structural integrity from within.</p>
+<p>Specifically, this research rigorously tests the <strong>Reverse Sequence Hypothesis</strong>. Standard historiography presumes that restoration is an "outside-in" or "top-down" process: that fixing institutions (Stage 3) will stabilize families (Stage 2), which will eventually restore cultural meaning (Stage 1). The Reverse Sequence Hypothesis posits the exact opposite.</p>
+<p>It suggests that the sequence of collapse—<strong>Semantic → Familial → Institutional</strong>—dictates the necessary sequence of restoration. Recovery cannot begin with the state because the state relies on human capital produced by the family. It cannot begin with the family because the family relies on a shared moral grammar to justify its sacrifices. Therefore, successful restoration must invariably begin with <strong>Semantic Reconstruction</strong>: the aggressive injection of "thick" moral information into the social system by a Creative Minority.</p>
+<div class="pull-quote">
+<p>The word is the canary. When a civilization loses its thick vocabulary, collapse has already begun.</p>
+</div>
+<p>To validate this hypothesis, we examine three distinct periods of profound civilizational restoration: the transformation of <strong>Victorian Britain</strong> from the decadence of the Regency era; the <strong>US Second Great Awakening</strong> which pacified the violent American frontier; and the <strong>Meiji Restoration</strong> in Japan, which synthesized a modern nation-state from feudal chaos.</p>
+</section>
+ 2. THEORETICAL FRAMEWORK 
+<section class="section">
+<span class="section-num">02</span>
+<h2><span class="part-label">Section II</span>Theoretical Framework</h2>
+<h3>2.1 The Collapse Cascade: Semantic, Familial, Institutional</h3>
+<div class="cascade-card">
+<h4>Semantic Collapse — The Erosion of Meaning</h4>
+<p>The dissolution of the "moral software." "Thick" concepts—terms that are simultaneously descriptive and evaluative, such as <em>chaste</em>, <em>honorable</em>, or <em>pious</em>—are replaced by "thin" concepts like <em>beneficial</em>, <em>allowed</em>, or <em>preference</em>.</p>
+</div>
+<div class="cascade-card">
+<h4>Familial Collapse — The Erosion of Production</h4>
+<p>The family is the primary engine of socialization. Without the support of a Semantic order, the energy required to sustain the family unit dissipates.</p>
+</div>
+<div class="cascade-card">
+<h4>Institutional Collapse — The Erosion of Structure</h4>
+<p>Institutions consume the trust and order produced by families. When the Semantic and Familial layers fail, institutions become overwhelmed.</p>
+</div>
+<h3>2.2 The Mechanism of Negentropy: Creative Minorities</h3>
+<p>As Arnold Toynbee argued, restoration is the product of a <strong>Creative Minority</strong>—a small group who react to the crisis not by despairing, but by withdrawing to generate a new solution.</p>
+<div class="mechanism-card">
+<span class="icon">↻</span>
+<div>
+<h4>Withdrawal and Return</h4>
+<p>This minority withdraws from the dominant, decaying culture to purify a new Semantic Code. They then "return" to propagate it through mimesis (imitation).</p>
+</div>
+</div>
+<div class="mechanism-card">
+<span class="icon">¶</span>
+<div>
+<h4>Semantic Injection</h4>
+<p>The primary tool of the Creative Minority is not the sword or the law, but the Word.</p>
+</div>
+</div>
+<h3>2.3 The Lag Time Reality</h3>
+<p>"Restoration Lag" describes the delay between Semantic reconstruction and Institutional stabilization. This lag often spans <strong>30 to 50 years</strong>—roughly two generations. The lag is not a failure; it is the time required for the new code to propagate through families and solidify into institutional norms.</p>
+</section>
+ 3. CASE STUDY I: VICTORIAN BRITAIN 
+<section class="section">
+<span class="section-num">03</span>
+<div class="case-header">
+<span class="case-num">Case Study I</span>
+<h2>Victorian Britain</h2>
+<span class="date-range">1780 – 1900</span>
+<span class="case-tag">The Reformation of Manners</span>
+</div>
+<h3>3.1 The Baseline of Entropy: The Regency Crisis</h3>
+<div class="crisis-card">
+<span class="domain">Semantic Decay</span>
+<p>The aristocracy modeled libertinism, gambling, and excess. "Enthusiasm" was a slur used against the pious.</p>
+</div>
+<div class="crisis-card">
+<span class="domain">Familial Instability</span>
+<p>Illegitimacy rates climbed. In some areas, up to a third of first children were conceived out of wedlock.</p>
+</div>
+<div class="crisis-card">
+<span class="domain">Institutional Failure — The Bloody Code</span>
+<p>The death penalty was prescribed for over 200 offenses, including minor theft. Yet crime continued to rise.</p>
+</div>
+<h3>3.2 Phase I: Semantic Reconstruction (1780–1830)</h3>
+<div class="phase-card phase-semantic">
+<span class="phase-label">Phase I · Semantic</span>
+<h4>The Creative Minority: The Clapham Sect</h4>
+<p>Centered around William Wilberforce, Henry Thornton, and Hannah More, they explicitly aimed at the abolition of the slave trade and the "Reformation of Manners."</p>
+<p><strong>Mechanism: The Cheap Repository Tracts.</strong> Hannah More's Cheap Repository Tracts (commenced 1795). In the first year alone, over <strong>two million</strong> tracts were distributed. Given the population of roughly 10 million, this was a saturation event.</p>
+</div>
+<div class="data-row">
+<div class="data-callout">
+<span class="figure">2M+</span>
+<span class="label">Tracts Distributed</span>
+</div>
+<div class="data-callout">
+<span class="figure">~20</span>
+<span class="label">Families in the Sect</span>
+</div>
+</div>
+<h3>3.3 Phase II: Familial Fortification (1800–1850)</h3>
+<div class="phase-card phase-familial">
+<span class="phase-label">Phase II · Familial</span>
+<h4>The Rise of Respectability</h4>
+<p>By 1831, <strong>1.25 million children</strong> (25% of the population) were enrolled in Sunday Schools. By the 1830s, "Respectability" unified the middle and working classes around a shared moral vocabulary.</p>
+</div>
+<h3>3.4 Phase III: Institutional Ratification (1850–1900)</h3>
+<div class="phase-card phase-institutional">
+<span class="phase-label">Phase III · Institutional</span>
+<h4>The Crime Drop and the Police Paradox</h4>
+<p>Between 1857 and 1901, the rate of indictable offenses per capita fell by nearly <strong>50%</strong>. Peel's police were effective because they were reinforcing a moral order that had already been internalized. Illegitimacy declined from a peak of 7% around 1845 to around 4% by end of century.</p>
+</div>
+<div class="pull-quote">
+<p>Crime fell by 50% not because the state grew stronger, but because individuals had internalized a moral code the state merely ratified.</p>
+</div>
+<div class="validation">
+<span class="val-title">Validation Summary</span>
+<div class="val-row"><span class="val-phase s">Semantic</span><span class="val-date">1795 — Cheap Repository Tracts</span></div>
+<div class="val-row"><span class="val-phase f">Familial</span><span class="val-date">1830s — Sunday School enrollment peak</span></div>
+<div class="val-row"><span class="val-phase i">Institutional</span><span class="val-date">1850s — Significant crime drop begins</span></div>
+</div>
+<p style="font-size:.92rem;color:var(--cream-m);text-align:center">Lag time from Cheap Repository Tracts (1795) to significant crime drop (1850s): approximately <strong>55 years</strong>.</p>
+</section>
+ 4. CASE STUDY II: US SECOND GREAT AWAKENING 
+<section class="section">
+<span class="section-num">04</span>
+<div class="case-header">
+<span class="case-num">Case Study II</span>
+<h2>The US Second Great Awakening</h2>
+<span class="date-range">1800 – 1860</span>
+<span class="case-tag">Moralizing the Frontier</span>
+</div>
+<h3>4.1 The Baseline of Entropy: The Alcoholic Republic</h3>
+<div class="crisis-card">
+<span class="domain">Alcohol Consumption</span>
+<p>By 1830, <strong>7.1 gallons</strong> per capita per year—nearly triple 21st century levels.</p>
+</div>
+<div class="crisis-card">
+<span class="domain">Frontier Violence — Gouging</span>
+<p>Brutal contests where the explicit goal was to maim—to gouge out an eye, bite off a nose, or sever a lip.</p>
+</div>
+<div class="crisis-card">
+<span class="domain">Institutional Weakness</span>
+<p>Courts were sporadic, police non-existent, the church disestablished and weak.</p>
+</div>
+<h3>4.2 Phase I: Semantic Reconstruction (1800–1840)</h3>
+<div class="phase-card phase-semantic">
+<span class="phase-label">Phase I · Semantic</span>
+<h4>The Benevolent Empire</h4>
+<p>Charles Grandison Finney and Lyman Beecher led the movement. By 1835, over <strong>5,000 temperance societies</strong> with more than a million members had formed the Benevolent Empire.</p>
+</div>
+<h3>4.3 Phase II: Familial Fortification (1830–1850)</h3>
+<div class="phase-card phase-familial">
+<span class="phase-label">Phase II · Familial</span>
+<h4>The Domestication of the Frontier</h4>
+<p>Between 1830 and 1845, per capita alcohol consumption plummeted from <strong>7.1 gallons to 1.8 gallons</strong>. This <strong>75% reduction</strong> was achieved almost entirely through "Moral Suasion" before any significant state prohibition laws.</p>
+</div>
+<div class="data-row">
+<div class="data-callout">
+<span class="figure">7.1 → 1.8</span>
+<span class="label">Gallons Per Capita</span>
+</div>
+<div class="data-callout">
+<span class="figure">75%</span>
+<span class="label">Reduction</span>
+</div>
+</div>
+<div class="pull-quote">
+<p>A 75% reduction in alcohol consumption, achieved not by law but by language. Moral suasion preceded—and outperformed—every statute.</p>
+</div>
+<h3>4.4 Phase III: Institutional Ratification (1840–1860)</h3>
+<div class="phase-card phase-institutional">
+<span class="phase-label">Phase III · Institutional</span>
+<h4>The End of Gouging</h4>
+<p>By the 1840s, "Rough and Tumble" fighting had virtually vanished from the frontier. The Common School movement institutionalized the Protestant ethic across the expanding nation.</p>
+</div>
+<div class="validation">
+<span class="val-title">Validation Summary</span>
+<div class="val-row"><span class="val-phase s">Semantic</span><span class="val-date">1826 — Temperance Society founded</span></div>
+<div class="val-row"><span class="val-phase f">Familial</span><span class="val-date">1830s — Domestication of frontier households</span></div>
+<div class="val-row"><span class="val-phase i">Institutional</span><span class="val-date">1840s — Alcohol consumption floor reached</span></div>
+</div>
+<p style="font-size:.92rem;color:var(--cream-m);text-align:center">Lag time from Temperance Society (1826) to alcohol consumption floor (1845): roughly <strong>20 years</strong>.</p>
+</section>
+ 5. CASE STUDY III: MEIJI JAPAN 
+<section class="section">
+<span class="section-num">05</span>
+<div class="case-header">
+<span class="case-num">Case Study III</span>
+<h2>The Meiji Restoration</h2>
+<span class="date-range">1868 – 1912</span>
+<span class="case-tag">Constructing the Moral State</span>
+</div>
+<h3>5.1 The Baseline of Entropy: The Crisis of Transition</h3>
+<div class="crisis-card">
+<span class="domain">Total Institutional Disintegration</span>
+<p>Following the collapse of the Tokugawa Shogunate (1868), Japan faced the dissolution of feudal structures with no modern replacements in sight.</p>
+</div>
+<h3>5.2 Phase I: Semantic Reconstruction (1880–1890)</h3>
+<div class="phase-card phase-semantic">
+<span class="phase-label">Phase I · Semantic</span>
+<h4>The Imperial Rescript on Education (1890)</h4>
+<p>The Rescript fused traditional Confucian virtues with modern State Shinto. It was distributed to every school, housed in a special shrine. Students bowed to it daily; principals read it on holy days.</p>
+<p><strong>Shushin (Moral Education):</strong> The curriculum was restructured around Shushin (Ethics), the primary subject in every school.</p>
+</div>
+<h3>5.3 Phase II: Familial Fortification (1890–1900)</h3>
+<div class="phase-card phase-familial">
+<span class="phase-label">Phase II · Familial</span>
+<h4>The Stabilization of the Family</h4>
+<p>The divorce rate plummeted from <strong>3.38 per 1,000</strong> (1883) to <strong>1.53 per 1,000</strong> (1899)—a decline of over 50% in roughly 15 years.</p>
+</div>
+<div class="data-row">
+<div class="data-callout">
+<span class="figure">3.38 → 1.53</span>
+<span class="label">Divorce Rate per 1,000</span>
+</div>
+<div class="data-callout">
+<span class="figure">15 yrs</span>
+<span class="label">Lag Time</span>
+</div>
+</div>
+<div class="pull-quote">
+<p>In just 15 years, a centralized Semantic injection halved the divorce rate—the shortest lag time in the dataset, and a testament to the power of concentrated moral information.</p>
+</div>
+<h3>5.4 Phase III: Institutional Ratification (1900–1912)</h3>
+<div class="phase-card phase-institutional">
+<span class="phase-label">Phase III · Institutional</span>
+<h4>The Emergence of a Modern Power</h4>
+<p>Japan was the only non-Western nation to industrialize rapidly in the 19th century. The military defeated Russia in 1905—an institutional harvest rooted in the moral capital invested two decades prior.</p>
+</div>
+<div class="validation">
+<span class="val-title">Validation Summary</span>
+<div class="val-row"><span class="val-phase s">Semantic</span><span class="val-date">1890 — Imperial Rescript on Education</span></div>
+<div class="val-row"><span class="val-phase f">Familial</span><span class="val-date">1898 — Civil Code / Divorce floor</span></div>
+<div class="val-row"><span class="val-phase i">Institutional</span><span class="val-date">1905 — Victory over Russia</span></div>
+</div>
+<p style="font-size:.92rem;color:var(--cream-m);text-align:center">Lag time: remarkably short—<strong>15 years</strong>—due to the centralized nature of the Semantic Injection.</p>
+</section>
+ 6. SYNTHESIS 
+<section class="section">
+<span class="section-num">06</span>
+<h2><span class="part-label">Section VI</span>Synthesis: Creative Minorities and "Thick" Concepts</h2>
+<h3>6.1 The Creative Minority</h3>
+<p><strong>Victorian:</strong> The Clapham Sect (~20 families). <strong>American:</strong> The leaders of the Benevolent Empire (Finney, Beecher, Tappan). <strong>Meiji:</strong> The Genro Oligarchs (Ito, Yamagata).</p>
+<p>The mechanism in every case: <strong>Withdrawal → Return → Mimesis.</strong></p>
+<h3>6.2 "Thick" Virtue Terms</h3>
+<table class="concept-table">
+<thead>
+<tr><th>Type</th><th>Examples</th><th>Function</th></tr>
+</thead>
+<tbody>
+<tr><td>Thin Concepts</td><td>Good, Bad, Right, Wrong</td><td>Abstract evaluation</td></tr>
+<tr><td class="thick">Thick Concepts</td><td class="thick">Gentleman, Drunkard, Patriot, Filial, Chaste, Industrious</td><td>Descriptive <em>and</em> evaluative</td></tr>
+</tbody>
+</table>
+<p>Entropy occurs when Thick concepts are "thinned." Restoration occurs when concepts are "thickened."</p>
+<h3>6.3 The Lag Time Analysis</h3>
+<div class="lag-table-wrap">
+<p class="table-title">The Restoration Lag: Three Civilizations Compared</p>
+<span class="table-subtitle">Centerpiece Synthesis</span>
+<table class="lag-table">
+<thead>
+<tr>
+<th>Phase</th>
+<th>Victorian Britain</th>
+<th>US Awakening</th>
+<th>Meiji Japan</th>
+<th>Average</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="phase-col">1. Semantic Seed</td>
+<td>1795 (Tracts)</td>
+<td>1826 (Temperance Soc.)</td>
+<td>1890 (Rescript)</td>
+<td class="avg">Year 0</td>
+</tr>
+<tr>
+<td class="phase-col">2. Familial Uptake</td>
+<td>1830s (Sunday Schools)</td>
+<td>1830s (Domestication)</td>
+<td>1898 (Civil Code)</td>
+<td class="avg">+10–35 Years</td>
+</tr>
+<tr>
+<td class="phase-col">3. Institutional Harvest</td>
+<td>1850s (Crime Drop)</td>
+<td>1840s (Alc. Floor)</td>
+<td>1905 (Victory)</td>
+<td class="avg">+15–55 Years</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td>Total Lag</td>
+<td>~55 years</td>
+<td>~20 years</td>
+<td>~15 years</td>
+<td>1–2 Generations</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<p>The "Lag" is approximately one to two generations. The more centralized the Semantic Injection, the shorter the lag.</p>
+</section>
+ 7. THE RESTORATION PROTOCOL 
+<section class="section">
+<span class="section-num">07</span>
+<h2><span class="part-label">Section VII</span>The Restoration Protocol</h2>
+<div class="protocol-progression">
+<span class="proto-step s">Phase I: Semantic</span>
+<span class="arrow">→</span>
+<span class="proto-step f">Phase II: Familial</span>
+<span class="arrow">→</span>
+<span class="proto-step i">Phase III: Institutional</span>
+</div>
+<div class="protocol-card proto-s">
+<span class="proto-label">Phase I · Years 0–20</span>
+<h4>Semantic Reconstruction</h4>
+<div class="proto-row"><span class="proto-key">Objective</span><span class="proto-val">Re-introduce "Thick" Virtue Terms into the cultural lexicon.</span></div>
+<div class="proto-row"><span class="proto-key">Agent</span><span class="proto-val">The Creative Minority (operating outside the State).</span></div>
+<div class="proto-row"><span class="proto-key">Tactics</span><span class="proto-val">Establish "Islands of Coherence"; develop Moral Technology through Narrative and Aesthetics; target the elite (The Clapham Strategy).</span></div>
+<div class="proto-row"><span class="proto-key">Metric</span><span class="proto-val">Frequency of usage of Thick Terms in public discourse.</span></div>
+</div>
+<div class="protocol-card proto-f">
+<span class="proto-label">Phase II · Years 20–40</span>
+<h4>Familial Fortification</h4>
+<div class="proto-row"><span class="proto-key">Objective</span><span class="proto-val">Socialize the next generation in the new Semantic Code.</span></div>
+<div class="proto-row"><span class="proto-key">Agent</span><span class="proto-val">The Family and Parallel Institutions.</span></div>
+<div class="proto-row"><span class="proto-key">Tactics</span><span class="proto-val">Insulate the family from "Thin" culture; build parallel institutions; use Thick terms to stigmatize familial failure while offering redemption.</span></div>
+<div class="proto-row"><span class="proto-key">Metric</span><span class="proto-val">Decline in familial entropy markers (divorce, illegitimacy, domestic violence).</span></div>
+</div>
+<div class="protocol-card proto-i">
+<span class="proto-label">Phase III · Years 40–60</span>
+<h4>Institutional Ratification</h4>
+<div class="proto-row"><span class="proto-key">Objective</span><span class="proto-val">Codify the restored order into Law and Governance.</span></div>
+<div class="proto-row"><span class="proto-key">Agent</span><span class="proto-val">The State.</span></div>
+<div class="proto-row"><span class="proto-key">Tactics</span><span class="proto-val">Pass laws that reflect the already achieved consensus; use institutions to defend the Semantic Code.</span></div>
+<div class="proto-row"><span class="proto-key">Metric</span><span class="proto-val">Decline in institutional entropy markers (crime rates, corruption, transaction costs).</span></div>
+</div>
+</section>
+ 8. CONCLUSION 
+<section class="section">
+<span class="section-num">08</span>
+<h2><span class="part-label">Conclusion</span>The Word Before the Sword</h2>
+<p>The Reverse Sequence Hypothesis is supported by the historical record. Across three civilizations, three centuries, and three distinct cultural contexts, the pattern holds: <strong>Semantic → Familial → Institutional.</strong></p>
+<p>Civilizational Negentropy is possible, but it is a slow, sequential process. It begins not with the Sword of the State, but with the Word of the Minority. The Creative Minority does not petition the powerful. It out-narrates them.</p>
+<div class="data-row">
+<div class="data-callout">
+<span class="figure">2M</span>
+<span class="label">Tracts (1795)</span>
+</div>
+<div class="data-callout">
+<span class="figure">50%</span>
+<span class="label">Crime Drop</span>
+</div>
+<div class="data-callout">
+<span class="figure">75%</span>
+<span class="label">Alcohol Reduction</span>
+</div>
+<div class="data-callout">
+<span class="figure">15 yrs</span>
+<span class="label">Meiji Lag</span>
+</div>
+</div>
+<div class="capstone">
+<p>Restoration is, fundamentally, a linguistic operation.</p>
+<span class="capstone-rule"></span>
+</div>
+</section>
+</article>
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+<div class="tp-audit-box">
+<div class="tp-audit-head">Final Audit</div>
+<p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+<div class="tp-audit-covenant">
+<b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+<div class="tp-audit-grid">
+<div class="tp-audit-col tp-col-right">
+<h4>What We Got Right</h4>
+<ul>
+<li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+</ul>
+</div>
+<div class="tp-audit-col tp-col-over">
+<h4>What We Overstated</h4>
+<ul>
+<li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+</ul>
+</div>
+<div class="tp-audit-col tp-col-wrong">
+<h4>What We Got Wrong</h4>
+<ul>
+<li>Claims that need correction, tightening, or weaker formulation.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+<div class="tp-sub-title">The Math Behind the Claims</div>
+<div class="tp-sub-grid">
+<a class="tp-sub-card" href="/equation/"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+<a class="tp-sub-card" href="/isomorphism/"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+<a class="tp-sub-card" href="/proof-explorer/"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+<a class="tp-sub-card" href="/rigor/"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+<a class="tp-sub-card" href="/lean4/"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+</div>
+</section>
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+<div class="tp-sub-title">Everything Else</div>
+<div class="tp-sub-grid">
+<a class="tp-sub-card" href="/glossary/"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+<a class="tp-sub-card" href="/media/"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+<a class="tp-sub-card" href="/podcast/"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+<a class="tp-sub-card" href="/audio/"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+<a class="tp-sub-card" href="/subdomains/"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+</div>
+</section>
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+<div class="tp-series-strip">
+<a class="active" href="/">Home</a>
+<a href="/moral-decline/">MDA</a>
+<a href="/genesis-to-quantum/">GTQ</a>
+<a href="/Convergence_Series/">Convergence</a>
+<a href="/Logos_Papers/">Logos Papers</a>
+<a href="/one-page-stories/">One-Page Stories</a>
+<a class="soon" href="/consciousness/">Consciousness</a>
+<a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+</div>
+</nav>
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+<div class="tp-door-num">15 + 15 = 100</div>
+<div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+<span class="tp-door-mark"></span>
+</div>
+<script>
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
+
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
+
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
+</script>
+<!-- MTL worker client -->
+<script defer="" src="/shared/js/mtl-worker-client.js"></script>
+<script defer="" src="/site-shell/frame.js"></script></body>
 </html>

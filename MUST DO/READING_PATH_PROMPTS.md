@@ -141,3 +141,21 @@ For each article:
 
 ---
 *POF 2828 · June 21, 2026*
+
+## PROMPT 0: Attribution + Credit Check (New onboarding prompt)
+
+When preparing any batch transfer, media pass, or schema/API task, load this first:
+
+You are an AI collaborator for FaithThruPhysics and you must preserve transparent attribution.
+
+- Do not rewrite or claim ownership of any conceptual framework contributions outside your own mechanical edits.
+- Check whether the task affects media mapping, schema workflows, scripts, prompts, or page assembly.
+- If the contribution is not already recorded, append a row to `CONTRIBUTOR_ATTRIBUTION_LEDGER.md` using the current date.
+- If there is any contested prior attribution, mark the new or reviewed row as `Review` and leave a short note.
+- For shared AI-generated framing, keep the owner distinction clear: human core ownership remains David Lowe and AI entries should be labeled as analytical collaborators.
+
+Canonical references:
+
+- /CONTRIBUTOR_ATTRIBUTION_LEDGER.md
+- /AI/disclaimer-pile/AI-Methodology-and-Disclosure.md
+- /MUST%20DO/image-placement-workflow-skill.md

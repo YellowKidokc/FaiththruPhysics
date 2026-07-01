@@ -1,966 +1,1617 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>De Revolutionibus Veritatis | Book II: The Lock</title>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-<style>
-:root {
-  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
-  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
-  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
-  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
-  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
-  --serif:'Crimson Text',Georgia,serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-  --display:'Oswald','Inter',sans-serif;
-  --sans:'Inter',system-ui,sans-serif;
-  --max:1140px; --header-h:48px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-
-/* ═══════ TOP BAR ═══════ */
-.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
-.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
-.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
-.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
-.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
-.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
-.tp-brand:hover .tp-brand-name{color:var(--gold)}
-.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
-.tp-brand:hover::after{width:140px;height:140px;opacity:1}
-.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
-
-/* Left nav */
-.tp-nav-links{display:flex;gap:3px;align-items:center}
-.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
-.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
-.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
-.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
-.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
-.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
-.tp-spacer{flex:1}
-
-/* Reading levels */
-.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
-.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
-.tp-level:hover{color:var(--text)}
-.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
-.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
-.tp-level:hover::after{width:80px;height:80px;opacity:1}
-.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
-.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
-.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
-@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
-
-/* ═══════ CLASSIFICATION BAR ═══════ */
-.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
-.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
-.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
-.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
-.tp-class-seg{transition:flex .4s ease;position:relative}
-.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
-.tp-class-bar:hover .tp-class-seg::after{opacity:1}
-.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
-.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
-.tp-class-tag:hover{color:var(--text-dim)}
-.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
-/* Small nav */
-.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
-.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
-@media(max-width:600px){.tp-class-tags{display:none}}
-
-/* ═══════ ARTICLE BODY ═══════ */
-.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
-.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
-.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
-.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
-.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
-.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
-.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
-.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
-.tp-article li{margin-bottom:.4rem}
-.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
-.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
-.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
-
-/* ═══════ BIG PREV / NEXT NAV ═══════ */
-.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
-.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
-.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
-.tp-bignav-prev{justify-content:flex-start}
-.tp-bignav-next{justify-content:flex-end;text-align:right}
-.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
-.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
-.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
-.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
-.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
-.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
-.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
-.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
-.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
-.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
-
-/* Center: Series Home + Site Home */
-.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
-.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
-.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
-.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
-.tp-bignav-home:hover{color:var(--gold)}
-
-@media(max-width:650px){
-  .tp-bignav-row{flex-direction:column;gap:.6rem}
-  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
-  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
-  .tp-bignav-title{font-size:1rem}
-}
-
-/* ═══════ FINAL AUDIT ═══════ */
-.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
-.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
-.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
-.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
-.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
-.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
-.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
-.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
-@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
-.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
-.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
-.tp-audit-col:hover::before{opacity:1}
-.tp-audit-col:hover{transform:translateY(-3px)}
-.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
-.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
-.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.tp-audit-col li:last-child{border-bottom:0}
-.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
-.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
-.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
-.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
-.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
-.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
-
-/* ═══════ GOLD DIVIDER ═══════ */
-.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
-.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
-
-/* ═══════ SUBDOMAIN GRID ═══════ */
-.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
-.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
-.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
-.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
-.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
-.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
-@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
-.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
-.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
-.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
-.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
-.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
-.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
-.tp-sub-card:hover::before{opacity:1}
-.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
-.tp-sub-card:hover h4{color:var(--gold)}
-.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
-
-/* ═══════ SERIES NAV ═══════ */
-.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
-.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
-.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
-.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
-.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
-
-/* ═══════ BOTTOM BAR ═══════ */
-.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
-.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
-.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
-.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
-
-/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
-.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
-.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
-@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
-.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
-.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
-.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
-.tp-door:hover .tp-door-sub{color:var(--text-dim)}
-.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
-
-/* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
-
-/* ═══════ SELECTION ═══════ */
-::selection{background:rgba(212,175,55,.2);color:var(--text)}
-</style>
-<base target="_blank">
-
-<!-- MathJax + MTL support -->
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
-  svg: { fontCache: 'global' },
-  startup: {
-    pageReady: function() {
-      return MathJax.startup.defaultPageReady().then(function() {
-        if (MathJax.startup.document && MathJax.startup.document.math) {
-          MathJax.startup.document.math.forEach(function(item) {
-            if (item.typesetRoot) {
-              item.typesetRoot.dataset.latex = item.math;
-              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
-            }
-          });
-        }
-      });
-    }
-  }
-};
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
-
-</head>
-<body>
-
-<!-- ═══════ TOP BAR ═══════ -->
-<header class="tp-top">
-  <div class="tp-top-inner">
-    <a href="https://faiththruphysics.com" class="tp-brand">
-      <span class="tp-brand-chi">χ</span>
-      <span class="tp-brand-name">Faith thru Physics</span>
-    </a>
-    <span class="tp-div"></span>
-    <div class="tp-nav-links">
-      <a href="/" class="tp-nav-link" data-nav="home"><i class="fas fa-home"></i>Home</a>
-      <a href="/equation/" class="tp-nav-link" data-nav="mtl"><i class="fas fa-square-root-alt"></i>MTL</a>
-      <a href="/proof-explorer/" class="tp-nav-link" data-nav="proof"><i class="fas fa-project-diagram"></i>Proof</a>
-    </div>
-    <span class="tp-div"></span>
-    <div class="tp-subdomain-dropdown" id="subdomainDropdown">
-      <button class="tp-subdomain-toggle" aria-haspopup="true" aria-expanded="false">
-        Series <i class="fas fa-chevron-down"></i>
-      </button>
-      <div class="tp-subdomain-panel" role="menu">
-        <div class="tp-subdomain-grid">
-          <a href="/genesis-to-quantum/" class="tp-subdomain-card"><i class="fas fa-atom"></i><div><h4>Genesis to Quantum</h4><p>Physics &amp; faith</p></div></a>
-          <a href="/moral-decline/" class="tp-subdomain-card"><i class="fas fa-chart-line"></i><div><h4>Moral Decline of America</h4><p>Evidence &amp; history</p></div></a>
-          <a href="/convergence-series/" class="tp-subdomain-card"><i class="fas fa-compress-arrows-alt"></i><div><h4>Convergence</h4><p>Framework comparison</p></div></a>
-          <a href="/cross-domain/" class="tp-subdomain-card"><i class="fas fa-project-diagram"></i><div><h4>Cross-Domain</h4><p>Theophysics intro</p></div></a>
-          <a href="/one-page-stories/" class="tp-subdomain-card"><i class="fas fa-file-alt"></i><div><h4>One-Page Stories</h4><p>Short proofs</p></div></a>
-          <a href="/blue/" class="tp-subdomain-card"><i class="fas fa-book"></i><div><h4>Logos Papers</h4><p>Formal essays</p></div></a>
-          <a href="/consciousness/" class="tp-subdomain-card"><i class="fas fa-brain"></i><div><h4>Consciousness</h4><p>Mind &amp; matter</p></div></a>
-          <a href="/proof-architecture/" class="tp-subdomain-card"><i class="fas fa-shield-alt"></i><div><h4>Proof Architecture</h4><p>Claims &amp; grades</p></div></a>
-        </div>
-      </div>
-    </div>
-    <span class="tp-spacer"></span>
-    <div class="tp-levels" role="tablist">
-      <button class="tp-level active" data-level="highschool">High School</button>
-      <button class="tp-level" data-level="college">College</button>
-      <button class="tp-level" data-level="phd">PhD</button>
-    </div>
-    <span class="tp-div"></span>
-    <button class="tp-search"><span>⌕</span><kbd>⌘K</kbd></button>
-  </div>
-</header>
-
-
-<!-- ═══════ MTL READER BAR ═══════ -->
-<div class="mtl-reader-bar" id="mtlReaderBar" aria-label="Math reading level">
-  <a href="/equation/" class="mtl-reader-label" title="Open the Master Equation explorer">Math Layer</a>
-  <div class="mtl-reader-tabs" role="tablist" aria-label="Reading levels">
-    <button class="mtl-reader-tab active" type="button" data-reader-mode="easy" aria-selected="true">Easy Reader</button>
-    <button class="mtl-reader-tab" type="button" data-reader-mode="standard" aria-selected="false">Standard Reader</button>
-    <button class="mtl-reader-tab" type="button" data-reader-mode="academic" aria-selected="false">Academic Reader</button>
-    <button class="mtl-reader-tab" type="button" data-reader-mode="proof" aria-selected="false">Proof</button>
-  </div>
-</div>
-
-<!-- ═══════ CLASSIFICATION BAR ═══════ -->
-<div class="tp-class">
-  <div class="tp-class-inner">
-    <a href="#" class="tp-class-nav">← Prev</a>
-    <div class="tp-class-center">
-      <div class="tp-class-label">Article Classification</div>
-      <div class="tp-class-bar" id="classBar"></div>
-      <div class="tp-class-tags" id="classTags"></div>
-    </div>
-    <a href="#" class="tp-class-nav">Next →</a>
-  </div>
-</div>
-
-<!-- ═══════ ARTICLE (demo content) ═══════ -->
-<article class="tp-article">
-  <h1>The Lock</h1>
-  <p class="subtitle">Twenty Axioms from Information Theory</p>
-  <div class="byline">Faith thru Physics</div>
-  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=revolution-of-truth%2Fdrv-02-the-lock" data-audio-slug="revolution-of-truth/drv-02-the-lock" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=revolution-of-truth" data-series-slug="revolution-of-truth">
-<div class="tp-read-aloud" data-mode="tts">
-<div class="tp-dot"></div>
-<span class="tp-label">Read Aloud</span>
-<audio id="tpMainAudio" preload="none"></audio>
-<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
-<div class="tp-fill" id="tpMainFill"></div>
-</div>
-<span class="tp-time" id="tpMainTime">0:00</span>
-<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
-<option value="0.75">0.75x</option>
-<option selected="" value="1">1x</option>
-<option value="1.25">1.25x</option>
-<option value="1.5">1.5x</option>
-<option value="1.75">1.75x</option>
-<option value="2">2x</option>
-</select>
-<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
-<i class="fas fa-volume-up"></i>
-</button>
-</div>
-<div class="tp-pair">
-<div class="tp-half tp-deep" data-mode="deep">
-<div class="tp-dot"></div>
-<span class="tp-label">Deep Dive</span>
-<audio id="tpDeepAudio" preload="none"></audio>
-<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
-<div class="tp-fill" id="tpDeepFill"></div>
-</div>
-<span class="tp-time" id="tpDeepTime">0:00</span>
-</div>
-<div class="tp-half tp-debate" data-mode="podcast">
-<div class="tp-dot"></div>
-<span class="tp-label">Podcast</span>
-<audio id="tpDebateAudio" preload="none"></audio>
-<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
-<div class="tp-fill" id="tpDebateFill"></div>
-</div>
-<span class="tp-time" id="tpDebateTime">0:00</span>
-</div>
-<div class="tp-half tp-critique" data-mode="critique">
-<div class="tp-dot"></div>
-<span class="tp-label">Critique</span>
-<audio id="tpCritiqueAudio" preload="none"></audio>
-<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
-<i class="fas fa-play"></i>
-</button>
-<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
-<div class="tp-fill" id="tpCritiqueFill"></div>
-</div>
-<span class="tp-time" id="tpCritiqueTime">0:00</span>
-</div>
-</div>
-<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
-    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
-</div>
-</div>
-  
- I. Introduction 
-<section>
-<h2>I. Introduction</h2>
-<p>Eugene Wigner's celebrated paper "The Unreasonable Effectiveness of Mathematics in the Natural Sciences" (1960) posed a question that remains unanswered in contemporary philosophy of mathematics: Why do abstract mathematical structures, developed without reference to physical reality, consistently and precisely describe that reality? This paper provides a definitive answer. The effectiveness is not unreasonable but inevitable, once you understand what mathematical truth is and where it comes from.</p>
-<p>We proceed in five stages: establishing the information-theoretic foundations; deriving the properties of mathematical truth through twenty axioms; demonstrating that these properties necessitate an external ground with specific characteristics; addressing all major objections; and presenting testable predictions.</p>
-<div class="insight-box">
-<h3>Central Claim</h3>
-<p>Mathematical truth is grounded in a necessary, eternal, universal, immaterial, coherent, and morally good source. This source is functionally identical to the Logos of classical theology. This conclusion is not asserted but <em>derived</em> from first principles using information theory.</p>
-</div>
-</section>
- II. Information-Theoretic Foundations 
-<section>
-<h2>II. Information-Theoretic Foundations</h2>
-<h3>2.1 Shannon Entropy</h3>
-<p>The first tool you need is Shannon entropy. For a discrete random variable \(X\) with possible values \(\{x_1, x_2, \ldots, x_n\}\) and probability mass function \(P(X)\), Shannon entropy \(H(X)\) is defined as:</p>
-<div class="equation-block">
-<div class="equation-label">Definition 1 — Shannon Entropy</div>
-<div class="math">$$H(X) = -\sum_i P(x_i) \log_2 P(x_i)$$</div>
-</div>
-<p>Shannon entropy measures the average information content or uncertainty in a random variable. Maximum entropy occurs when all outcomes are equally likely—maximum uncertainty. Minimum entropy occurs when one outcome has probability 1—no uncertainty at all. This distinction matters enormously when we get to physical law.</p>
-<h3>2.2 Kolmogorov Complexity</h3>
-<p>The second tool is Kolmogorov complexity. For a string \(x\) and a universal Turing machine \(U\), the Kolmogorov complexity \(K(x)\) is the length of the shortest program \(p\) such that \(U(p) = x\):</p>
-<div class="equation-block">
-<div class="equation-label">Definition 2 — Kolmogorov Complexity</div>
-<div class="math">$$K(x) = \min\{|p| : U(p) = x\}$$</div>
-</div>
-<p>Kolmogorov complexity measures the intrinsic information content of a string, independent of any probability distribution. A string is random—incompressible—if \(K(x) \approx |x|\). It is structured—compressible—if \(K(x) \ll |x|\).</p>
-<h3>2.3 The Compression-Entropy Bridge</h3>
-<div class="equation-block">
-<div class="equation-label">Theorem 1 — Compression-Entropy Bridge</div>
-<div class="math">$$K(x) \approx H(X) \text{ for random strings}$$
-                $$K(x) \ll H(X) \text{ for structured strings}$$</div>
-</div>
-<p>Random strings have no exploitable patterns; their shortest description is the string itself. Structured strings have patterns that allow compression below their raw length.</p>
-<div class="insight-box">
-<h3>The Critical Observation</h3>
-<p>The physical universe exhibits \(K \ll H\). Physical laws are compressions—short equations that describe vast amounts of phenomena. The existence of any physical law means the universe is not random but is compressed information. This observation is foundational to everything that follows.</p>
-</div>
-<h3>2.4 Chaitin's Incompleteness Theorem</h3>
-<p>The third tool is the most decisive. For any formal system \(F\), there exists a constant \(c\) such that \(F\) cannot prove \(K(x) &gt; |F| + c\) for any string \(x\):</p>
-<div class="equation-block">
-<div class="equation-label">Theorem 2 — Chaitin's Incompleteness</div>
-<div class="math">$$\forall F, \exists c : F \nvdash K(x) &gt; |F| + c$$</div>
-</div>
-<div class="equation-block">
-<div class="equation-label">Corollary 1 — Mathematical Truth Cannot Self-Ground</div>
-<div class="math">$$\text{Ground}(\text{Math}) \notin \text{Math}$$</div>
-</div>
-<p>This is the formal statement that mathematical truth requires an external ground. No formal system can fully capture or justify the truths it uses. The ground of mathematics must be meta-mathematical. Everything that follows flows from this single, non-negotiable fact.</p>
-</section>
- III. The Axiom Chain 
-<section>
-<h2>III. The Axiom Chain</h2>
-<p>Twenty axioms, organized into six levels. Each axiom is individually undeniable—its negation leads to absurdity, self-refutation, or the collapse of rational discourse. Together, they derive the existence and properties of the ground of mathematical truth.</p>
-<h3>Level 1: Existence (A1–A3)</h3>
-<div class="axiom-block">
-<div class="axiom-label">A1 — Existence</div>
-<p>Mathematical truths exist that are non-contingently true.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$\exists\, T_m : \text{True}(T_m) \wedge \neg\text{Contingent}(T_m)$$</div>
-</div>
-<p class="axiom-undeniability">If no mathematical truths existed, then "no mathematical truths exist" would itself be a mathematical truth, yielding a contradiction. The denial of A1 is self-refuting.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A2 — Temporal Independence</div>
-<p>Mathematical truths held at all times prior to human existence and will hold after.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$\forall t : \text{True}(T_m, t) \text{ with } I(T_m; t) = 0$$</div>
-</div>
-<p class="axiom-undeniability">If mathematical truths only became true when humans evolved, then physical laws could not have operated for 13.8 billion years before us. Stars could not have formed. The universe could not exist in its present state. Denial leads to empirical absurdity.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A3 — Necessity</div>
-<p>Mathematical truths are necessarily true; their negations are impossible.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$\square(2+2=4) \wedge \neg\Diamond(2+2=5)$$</div>
-</div>
-<p class="axiom-undeniability">If \(2+2=5\) were possible in some world, logical inference would be arbitrary and could not be trusted. But we cannot even state that possibility without presupposing the validity of logic. The denial is self-undermining.</p>
-</div>
-<h3>Level 2: Properties (A4–A7)</h3>
-<div class="axiom-block">
-<div class="axiom-label">A4 — Universality</div>
-<p>Mathematical truth is location-invariant.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$I(T_m; \text{position}) = 0$$</div>
-</div>
-<p class="axiom-undeniability">If mathematical truth varied by location, physics would be different in different places. GPS would not work. Rockets could not navigate. No coherent universe could exist with location-dependent mathematics.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A5 — Eternality</div>
-<p>Mathematical truth does not change over time.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$\frac{d}{dt} K(T_m) = 0$$</div>
-</div>
-<p class="axiom-undeniability">If \(2+2=4\) today but might equal 5 tomorrow, scientific knowledge would be impossible. Every experiment would be meaningless. Science presupposes A5.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A6 — Immateriality</div>
-<p>Mathematical truth has no spatial location, mass, or physical properties.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$\neg\exists x : \text{Location}(T_m) = x \wedge \text{Mass}(T_m) = 0$$</div>
-</div>
-<p class="axiom-undeniability">If mathematical truth were physical, destroying its location would destroy the truth. But no physical destruction can make \(2+2 \neq 4\). Mathematical truth is immune to physical intervention.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A7 — Coherence</div>
-<p>No true mathematical statement contradicts another true mathematical statement.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$\forall T_1, T_2 \in T_m : \neg(T_1 \wedge \neg T_1)$$</div>
-</div>
-<p class="axiom-undeniability">By the principle of explosion (ex falso quodlibet), a contradiction implies everything. If mathematics were internally contradictory, every statement would be provable, and mathematics would be trivial and useless.</p>
-</div>
-<div class="checkpoint-box">
-<div class="checkpoint-label">Checkpoint Alpha — The Emergent Profile</div>
-<p>From axioms A1–A7, you have established that mathematical truth is: existent, necessary, eternal, universal, immaterial, and coherent. This profile matches no physical object in the universe.</p>
-<p>But it is precisely isomorphic to the classical divine attributes: Being (exists), Aseity (necessary), Eternality, Omnipresence (universal), Spirituality (immaterial), and Integrity (coherent).</p>
-<p>These properties were derived from the analysis of mathematical truth alone—not from theological premises. The theological identification comes after the logical derivation.</p>
-</div>
-<h3>Level 3: Origin (A8–A11)</h3>
-<div class="axiom-block">
-<div class="axiom-label">A8 — Sufficient Reason</div>
-<p>Mathematical truth requires grounding; brute facts are explanatorily unacceptable.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)$$</div>
-</div>
-<p class="axiom-undeniability">The Principle of Sufficient Reason is presupposed by all rational inquiry. To ask "why?" is to presuppose that explanations exist. If mathematical truths were brute facts requiring no explanation, then nothing would require explanation, and science would be impossible.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A9 — Not From Nothing</div>
-<p>Nothing cannot produce something.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$K(\emptyset) = 0 \Rightarrow \text{Output}(\emptyset) = \emptyset$$</div>
-</div>
-<p class="axiom-undeniability">"Nothing" has zero information content by definition. An output requires information. Zero information cannot produce non-zero information. This is not a metaphysical claim but an information-theoretic necessity.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A10 — Not From Chaos</div>
-<p>Random processes cannot produce structured output.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$K(T_m) \ll |T_m| \Rightarrow \neg\text{Random}(\text{Ground})$$</div>
-</div>
-<p class="axiom-undeniability">Random processes produce maximum entropy. But mathematical truth is highly structured—compressible. The Kolmogorov complexity of mathematical truths is vastly less than their raw description length. This structure cannot emerge from randomness; it requires a structured source.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A11 — Not From Deception</div>
-<p>Truth cannot originate from a deceptive source.</p>
-<div class="equation-block" style="margin:0.75rem 0;">
-<div class="math">$$\neg\text{Deceptive}(T_m) \Rightarrow \neg\text{Deceptive}(\text{Ground})$$</div>
-</div>
-<p class="axiom-undeniability">Deception is defined as divergence between appearance and reality: \(\text{Deception}(X) \iff \text{Appears}(X,Y) \wedge \neg\text{Is}(X,Y)\). Mathematical truth involves no such divergence—\(2+2\) appears to equal 4 and actually does equal 4. If the source of mathematical truth were deceptive, its outputs could not reliably be non-deceptive. But mathematical truths are non-deceptive. Therefore the source must be non-deceptive.</p>
-</div>
-<div class="danger-box">
-<div class="danger-label">Critical Transition — From Logic to Morality</div>
-<p>A11 is the keystone of this entire argument. Being non-deceptive is a moral property. Truthfulness is a virtue; deception is a vice. This is not a contested philosophical claim—it is a cultural and ethical universal. Deception is wrong in every moral framework that has ever existed.</p>
-<p>By A11, the ground of mathematical truth must be non-deceptive. By the universality of the moral status of truthfulness, the ground must possess a moral virtue. You have derived a moral property from information-theoretic analysis of mathematical truth.</p>
-<p><strong style="color:var(--text);">Corollary 2:</strong> The ground of mathematical truth is morally good—at least with respect to truthfulness.</p>
-</div>
-<h3>Level 4: Source Properties (A12–A15)</h3>
-<p>The ground of mathematical truth must share the properties of what it grounds, or it could not confer those properties. A source cannot confer properties it does not possess. A local source cannot produce universal output. A temporal source cannot produce eternal output. A material source cannot produce immaterial output. An incoherent source cannot produce coherent output.</p>
-<div class="axiom-block">
-<div class="axiom-label">A12 — Source Universality</div>
-<p>The source of universal truth must itself be universal.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A13 — Source Eternality</div>
-<p>The source of eternal truth must itself be eternal.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A14 — Source Immateriality</div>
-<p>The source of immaterial truth must itself be immaterial.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A15 — Source Coherence</div>
-<p>The source of coherent truth must itself be coherent.</p>
-</div>
-<h3>Level 5: The Moral Dimension (A16–A18)</h3>
-<div class="axiom-block">
-<div class="axiom-label">A16 — Truth as Value</div>
-<p>Truth is inherently valuable; falsehood is inherently disvaluable.</p>
-<p class="axiom-undeniability">Even the relativist who claims "there is no objective truth" intends that statement to be objectively true. The value of truth is presupposed by every assertion, every argument, every inquiry.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A17 — Deception as Wrong</div>
-<p>Deception is morally wrong.</p>
-<p class="axiom-undeniability">This is a cultural universal. Every known moral system condemns deception. Even the liar must pretend truthfulness, implicitly acknowledging the normative force of truth.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A18 — Mathematical-Moral Unity</div>
-<p>The source of mathematical truth and the source of moral truth are identical.</p>
-<p class="axiom-undeniability">By A11, the ground of mathematical truth must be non-deceptive—a moral property. By parsimony (Occam's razor), we should not multiply entities beyond necessity. If the ground of mathematical truth has moral properties, it is more parsimonious to identify it with the ground of morality than to posit two separate grounds.</p>
-</div>
-<h3>Level 6: Identification (A19–A20)</h3>
-<div class="axiom-block">
-<div class="axiom-label">A19 — The Logos</div>
-<p>The ground of mathematical and moral truth is the Logos—a unified, rational, moral source.</p>
-<p class="axiom-undeniability">The term "Logos" (\(\lambda\acute{o}\gamma o\varsigma\)) precisely captures what has been derived: rational structure (mathematical truth) unified with moral order. The term predates Christianity, appearing in Heraclitus, the Stoics, and Philo before its Christian appropriation.</p>
-</div>
-<div class="axiom-block">
-<div class="axiom-label">A20 — The Identification</div>
-<p>The Logos is functionally identical to the God of classical theism.</p>
-<p class="axiom-undeniability">The Logos, as derived, possesses: necessary existence, eternality, universality (omnipresence), immateriality (spirituality), coherence (integrity), rationality, and moral goodness. This is the complete profile of the God of classical theism. Since the properties are identical, either they refer to the same entity, or there exist two entities with identical profiles—which violates the identity of indiscernibles.</p>
-</div>
-</section>
- IV. The Is-Ought Bridge 
-<section>
-<h2>IV. The Is-Ought Bridge</h2>
-<p>Hume's guillotine claims that "ought" cannot be derived from "is"—that no amount of factual description can logically entail a normative prescription. This paper dissolves that problem by demonstrating that information theory is inherently normative.</p>
-<h3>4.1 Shannon's Channel Coding Theorem</h3>
-<div class="equation-block">
-<div class="equation-label">Channel Coding Theorem</div>
-<div class="math">$$R &lt; C \Rightarrow \exists \text{ code with } P_e \to 0$$</div>
-</div>
-<p>This theorem tells you what you <em>should</em> do: keep your transmission rate below channel capacity if you want reliable communication. It is a mathematical theorem that entails a prescription. The "ought" is built into the mathematics.</p>
-<h3>4.2 Kolmogorov Optimality</h3>
-<div class="equation-block">
-<div class="equation-label">Kolmogorov Optimality</div>
-<div class="math">$$K(x) = \min\{|p| : U(p) = x\}$$</div>
-</div>
-<p>The definition of Kolmogorov complexity defines the <em>best</em> (shortest) description. "Best" is a normative term. The definition itself embeds an ought.</p>
-<div class="insight-box">
-<h3>The Dissolution</h3>
-<p>Information theory contains built-in "oughts": you ought to compress efficiently, transmit below capacity, minimize description length, and not deceive (produce divergence between signal and reality). These are not human conventions. They are mathematical necessities. The is-ought gap is bridged by the inherent normativity of information itself.</p>
-<p><strong>Information is normative, and normativity is informational.</strong></p>
-</div>
-</section>
-<div class="scroll-break">
-<div class="scroll-timeline">
-<div class="scroll-timeline-item">
-<strong>Sections I-III</strong>
-<span>The paper builds the axiom chain from information-theoretic constraints rather than theological assumptions.</span>
-</div>
-<div class="scroll-timeline-item">
-<strong>Section IV</strong>
-<span>The bridge appears when information theory turns out to contain built-in prescriptions about fidelity, compression, and truthfulness.</span>
-</div>
-<div class="scroll-timeline-item">
-<strong>What comes next</strong>
-<span>The remaining sections pressure-test the chain, propose empirical hooks, and connect the formal derivation to human moral experience.</span>
-</div>
-</div>
-</div>
- V. Objections 
-<section>
-<h2>V. Objections and Responses</h2>
-<h3>O1: The Platonic Objection</h3>
-<p><em>Mathematical truths exist in a Platonic realm of abstract objects. They require no ground beyond their own abstract existence.</em></p>
-<p>The Platonic realm must answer to A8 (Sufficient Reason). Why does this realm exist rather than not? Positing abstract objects does not explain them. Moreover, Platonism faces the epistemological objection (Benacerraf 1973): how do concrete minds access abstract objects? This account provides that epistemic connection—human minds access mathematical truth because both are grounded in the same rational source.</p>
-<h3>O2: The Fictionalist Challenge</h3>
-<p><em>Mathematical statements are useful fictions, not literally true.</em></p>
-<p>Fictionalism cannot account for the applicability of mathematics. Sherlock Holmes cannot predict the trajectory of rockets or the behavior of electrons. If mathematical statements were fictions, their systematic applicability would be an inexplicable miracle. Moreover, the fictionalist must explain the constraints on mathematical fiction—why can't we consistently "make up" that \(2+2=5\)?</p>
-<h3>O3: The Evolutionary Debunking Argument</h3>
-<p><em>Our mathematical intuitions evolved for survival, not truth-tracking.</em></p>
-<p>Self-undermining. If our cognitive faculties are unreliable, then so is the reasoning that produced this objection. It saws off the branch it sits on.</p>
-<h3>O4: The Naturalistic Objection</h3>
-<p><em>Mathematics can be grounded in physical structures—in brains, computation, physical regularities.</em></p>
-<p>By A6, mathematical truth is immaterial. No physical structure can ground something that has no physical properties. By A2, mathematical truth predates all physical structures. No temporal physical entity can ground an eternal truth.</p>
-<h3>O5: The Multiverse Objection</h3>
-<p><em>Perhaps mathematical truths vary across universes.</em></p>
-<p>This equivocates between mathematical truth and physical law. Physical constants might vary; mathematical truths cannot. \(2+2=4\) is necessary (A3)—there is no possible world in which it is false.</p>
-<h3>O6: The Conceivability Objection</h3>
-<p><em>I can conceive of mathematical truths existing without a divine ground.</em></p>
-<p>Conceivability does not imply metaphysical possibility. We can conceive of water not being H₂O, but this is metaphysically impossible given the nature of water.</p>
-<h3>O7: The "Which God?" Objection</h3>
-<p><em>This only establishes the existence of a Logos, not the God of any specific religion.</em></p>
-<p>Correct as stated. This argument establishes properties. Which religion correctly identifies this ground is a further question. However, the Johannine identification of Jesus Christ with the Logos (John 1:1–14) is a direct claim that the specific entity derived here is the Christian God. See Book IV — The Key for the full analysis.</p>
-<h3>O8: The Euthyphro Dilemma</h3>
-<p>False dilemma resolved by divine simplicity. Mathematical truths flow from God's nature—neither arbitrarily willed nor externally constraining. They are expressions of the divine Logos.</p>
-<h3>O9: The Parsimony Objection</h3>
-<p>Occam's razor says not to multiply entities beyond necessity. This paper argues the ground is <em>necessary</em>. One unified ground is more parsimonious than separate, unrelated explanations.</p>
-<h3>O10: The Coherence Objection</h3>
-<p>The coherence of the derived Ground is guaranteed by A7 and A15. Apparent paradoxes arise from informal formulations, not from the rigorously derived Logos.</p>
-</section>
- VI. Testable Predictions 
-<section>
-<h2>VI. Testable Predictions and Experimental Protocols</h2>
-<ul class="predictions-list">
-<li>
-<div class="prediction-id">P1 — Landauer Confirmation <span class="prediction-status status-confirmed">Confirmed</span></div>
-<p style="margin-bottom:0;">Information erasure requires minimum energy \(E = k_B T \ln 2\). Status: CONFIRMED (Bérut et al., 2012).</p>
-</li>
-<li>
-<div class="prediction-id">P2 — Measurement-Information Coupling <span class="prediction-status status-testable">Testable</span></div>
-<p style="margin-bottom:0;">Quantum measurement energy scales with information gain: \(\Delta E = k_B T \cdot \Delta H\).</p>
-</li>
-<li>
-<div class="prediction-id">P3 — Consciousness-Collapse Correlation <span class="prediction-status status-testable">Testable</span></div>
-<p style="margin-bottom:0;">Conscious observation correlates with wavefunction collapse probability: \(P(\text{collapse}) = f(\Phi)\).</p>
-</li>
-<li>
-<div class="prediction-id">P4 — Moral-Mathematical Neural Correlation <span class="prediction-status status-testable">Testable</span></div>
-<p style="margin-bottom:0;">Brain regions active during mathematical cognition overlap with regions active during moral cognition.</p>
-</li>
-<li>
-<div class="prediction-id">P5 — Coherence Amplification <span class="prediction-status status-supported">Supported</span></div>
-<p style="margin-bottom:0;">Collective intentionality amplifies local coherence: \(\chi_{\text{collective}} = N^\alpha \cdot \chi_{\text{individual}}\), where \(\alpha &gt; 1\). GCP data, 6σ deviations.</p>
-</li>
-<li>
-<div class="prediction-id">P6 — Compression-Applicability Correlation <span class="prediction-status status-testable">Testable</span></div>
-<p style="margin-bottom:0;">The applicability of a mathematical theory to physics correlates with its Kolmogorov complexity: lower \(K(\text{theory})\) implies higher applicability.</p>
-</li>
-</ul>
-</section>
- VII. Law Written on Hearts 
-<section>
-<h2>VII. The Law Written on Hearts</h2>
-<p>Romans 2:15 states that Gentiles "show the work of the law written in their hearts." This paper provides a formal mechanism for this theological claim.</p>
-<p>Let \(f : \text{Human} \to T_m\) denote the access function by which humans recognize mathematical truths. Let \(T_m \subset \text{Logos}\) denote the grounding relation established by this paper.</p>
-<div class="equation-block">
-<div class="equation-label">The Access Relation</div>
-<div class="math">$$f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}$$</div>
-</div>
-<p>By transitivity, humans have direct cognitive access to the Logos through the mathematical faculty. This faculty is universal, pre-linguistic, non-arbitrary, and normative—exactly the properties of divinely inscribed moral law as described in the theological tradition.</p>
-</section>
- VIII. Conclusion 
-<section>
-<h2>VIII. Conclusion</h2>
-<div class="conclusion-block">
-<div class="conclusion-label">The Complete Argument — Formal Summary</div>
-<div class="equation-block">
-<div class="math">$$\exists\, T_m : \square T_m \wedge \text{Universal}(T_m) \wedge \text{Eternal}(T_m) \wedge \text{Coherent}(T_m)$$</div>
-</div>
-<div class="equation-block">
-<div class="math">$$K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)$$</div>
-</div>
-<div class="equation-block">
-<div class="math">$$\text{Ground} \neq \emptyset \wedge \neg\text{Random}(\text{Ground}) \wedge \neg\text{Deceptive}(\text{Ground})$$</div>
-</div>
-<div class="equation-block">
-<div class="math">$$\neg\text{Deceptive} = \text{Truthful} = \text{Moral Property}$$</div>
-</div>
-<div class="equation-block">
-<div class="math">$$\therefore \text{Ground}(T_m) = \text{Moral}$$</div>
-</div>
-<div class="equation-block">
-<div class="math">$$f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}$$</div>
-</div>
-<div class="equation-block">
-<div class="math">$$\text{Physics} = \text{Applied } T_m \Rightarrow \text{Physics is Moral}$$</div>
-</div>
-<div class="equation-block">
-<div class="math">$$\therefore \text{Universe is Moral Order} \quad \blacksquare$$</div>
-</div>
-</div>
-<blockquote>
-                "This most beautiful system of equations, constants, and laws, could only proceed from the counsel and dominion of a truthful and moral Being."
-                <cite>— Adapted from Newton's Principia</cite>
-</blockquote>
-</section>
- Appendix: Axiom Index 
-<section>
-<h2>Appendix A: Complete Axiom Index</h2>
-<table class="axiom-table">
-<thead>
-<tr>
-<th>ID</th>
-<th>Level</th>
-<th>Statement</th>
-</tr>
-</thead>
-<tbody>
-<tr><td class="axiom-id">A1</td><td class="level-cell">1: Existence</td><td>Mathematical truths exist non-contingently</td></tr>
-<tr><td class="axiom-id">A2</td><td class="level-cell">1: Existence</td><td>Mathematical truths are temporally independent</td></tr>
-<tr><td class="axiom-id">A3</td><td class="level-cell">1: Existence</td><td>Mathematical truths are necessarily true</td></tr>
-<tr><td class="axiom-id">A4</td><td class="level-cell">2: Properties</td><td>Mathematical truth is universal (location-invariant)</td></tr>
-<tr><td class="axiom-id">A5</td><td class="level-cell">2: Properties</td><td>Mathematical truth is eternal (time-invariant)</td></tr>
-<tr><td class="axiom-id">A6</td><td class="level-cell">2: Properties</td><td>Mathematical truth is immaterial</td></tr>
-<tr><td class="axiom-id">A7</td><td class="level-cell">2: Properties</td><td>Mathematical truth is coherent</td></tr>
-<tr><td class="axiom-id">A8</td><td class="level-cell">3: Origin</td><td>Mathematical truth requires grounding</td></tr>
-<tr><td class="axiom-id">A9</td><td class="level-cell">3: Origin</td><td>The ground cannot be nothing</td></tr>
-<tr><td class="axiom-id">A10</td><td class="level-cell">3: Origin</td><td>The ground cannot be chaos</td></tr>
-<tr><td class="axiom-id">A11</td><td class="level-cell">3: Origin</td><td>The ground cannot be deceptive</td></tr>
-<tr><td class="axiom-id">A12</td><td class="level-cell">4: Source</td><td>The source of universal truth is universal</td></tr>
-<tr><td class="axiom-id">A13</td><td class="level-cell">4: Source</td><td>The source of eternal truth is eternal</td></tr>
-<tr><td class="axiom-id">A14</td><td class="level-cell">4: Source</td><td>The source of immaterial truth is immaterial</td></tr>
-<tr><td class="axiom-id">A15</td><td class="level-cell">4: Source</td><td>The source of coherent truth is coherent</td></tr>
-<tr><td class="axiom-id">A16</td><td class="level-cell">5: Moral</td><td>Truth is inherently valuable</td></tr>
-<tr><td class="axiom-id">A17</td><td class="level-cell">5: Moral</td><td>Deception is morally wrong</td></tr>
-<tr><td class="axiom-id">A18</td><td class="level-cell">5: Moral</td><td>Mathematical and moral truth share a common ground</td></tr>
-<tr><td class="axiom-id">A19</td><td class="level-cell">6: Identity</td><td>The ground is the Logos</td></tr>
-<tr><td class="axiom-id">A20</td><td class="level-cell">6: Identity</td><td>The Logos is functionally identical to God</td></tr>
-</tbody>
-</table>
-</section>
- References 
-<section>
-<h2>References</h2>
-<ul class="references-list">
-<li>Benacerraf, P. (1973). "Mathematical Truth." <em>The Journal of Philosophy</em>, 70(19), 661–679.</li>
-<li>Bérut, A., et al. (2012). "Experimental verification of Landauer's principle." <em>Nature</em>, 483(7388), 187–189.</li>
-<li>Chaitin, G. J. (1982). "Gödel's theorem and information." <em>International Journal of Theoretical Physics</em>, 21(12), 941–954.</li>
-<li>Field, H. (1980). <em>Science Without Numbers</em>. Princeton University Press.</li>
-<li>Gödel, K. (1931). "Über formal unentscheidbare Sätze." <em>Monatshefte für Mathematik und Physik</em>, 38(1), 173–198.</li>
-<li>Kolmogorov, A. N. (1965). "Three approaches to the quantitative definition of information." <em>Problems of Information Transmission</em>, 1(1), 1–7.</li>
-<li>Shannon, C. E. (1948). "A mathematical theory of communication." <em>Bell System Technical Journal</em>, 27(3), 379–423.</li>
-<li>Tononi, G. (2008). "Consciousness as integrated information." <em>The Biological Bulletin</em>, 215(3), 216–242.</li>
-<li>Wigner, E. P. (1960). "The unreasonable effectiveness of mathematics." <em>Communications on Pure and Applied Mathematics</em>, 13(1), 1–14.</li>
-</ul>
-</section>
-
-</article>
-
-<!-- ═══════ BIG PREV / NEXT ═══════ -->
-<nav class="tp-bignav">
-  <div class="tp-bignav-row">
-    <a href="#" class="tp-bignav-prev">
-      <span class="tp-bignav-arrow">←</span>
-      <div class="tp-bignav-text">
-        <span class="tp-bignav-label">Previous</span>
-        <span class="tp-bignav-title">Previous</span>
-      </div>
-    </a>
-    <div class="tp-bignav-center">
-      <a href="/revolution-of-truth/" class="tp-bignav-series">Revolution of Truth Home</a>
-      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
-    </div>
-    <a href="#" class="tp-bignav-next">
-      <div class="tp-bignav-text">
-        <span class="tp-bignav-label">Next</span>
-        <span class="tp-bignav-title">Next</span>
-      </div>
-      <span class="tp-bignav-arrow">→</span>
-    </a>
-  </div>
-</nav>
-
-<!-- ═══════ FINAL AUDIT ═══════ -->
-<section class="tp-audit">
-  <div class="tp-audit-box">
-    <div class="tp-audit-head">Final Audit</div>
-    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
-    <div class="tp-audit-covenant">
-      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
-    </div>
-    <div class="tp-audit-grid">
-      <div class="tp-audit-col tp-col-right">
-        <h4>What We Got Right</h4>
-        <ul>
-          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
-        </ul>
-      </div>
-      <div class="tp-audit-col tp-col-over">
-        <h4>What We Overstated</h4>
-        <ul>
-          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
-        </ul>
-      </div>
-      <div class="tp-audit-col tp-col-wrong">
-        <h4>What We Got Wrong</h4>
-        <ul>
-          <li>Claims that need correction, tightening, or weaker formulation.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════ GOLD DIVIDER ═══════ -->
-<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
-
-<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
-<section class="tp-subdomains">
-  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
-  <div class="tp-sub-title">The Math Behind the Claims</div>
-  <div class="tp-sub-grid">
-    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
-    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
-    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
-    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
-    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
-  </div>
-</section>
-
-<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
-<section class="tp-subdomains">
-  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
-  <div class="tp-sub-title">Everything Else</div>
-  <div class="tp-sub-grid">
-    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
-    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
-    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
-    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
-    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
-  </div>
-</section>
-
-<!-- ═══════ SERIES NAV ═══════ -->
-<nav class="tp-series-nav">
-  <div class="tp-series-strip">
-    <a href="/" class="active">Home</a>
-    <a href="/moral-decline/">MDA</a>
-    <a href="/genesis-to-quantum/">GTQ</a>
-    <a href="/Convergence_Series/">Convergence</a>
-    <a href="/Logos_Papers/">Logos Papers</a>
-    <a href="/one-page-stories/">One-Page Stories</a>
-    <a href="/consciousness/" class="soon">Consciousness</a>
-    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
-  </div>
-</nav>
-
-<!-- ═══════ BOTTOM BAR ═══════ -->
-<div class="tp-bottom">
-  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
-  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
-  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
-  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
-  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
-</div>
-
-<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
-<div class="tp-door">
-  <div class="tp-door-num">15 + 15 = 100</div>
-  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
-  <span class="tp-door-mark"></span>
-</div>
-
-<script>
-/* ═══════ AUTO-ACTIVE NAV ═══════
-   Detects current page URL and lights up the matching nav link.
-   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
-   No manual active classes needed per page. */
-const NAV_MAP={
-  home:['/','/index.html','/home'],
-  mtl:['/equation/','/equation','/math-translation-layer/'],
-  proof:['/proof-explorer/','/proof-explorer','/proof/']
-};
-const path=window.location.pathname;
-document.querySelectorAll('.tp-nav-link').forEach(link=>{
-  const key=link.dataset.nav;
-  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
-    link.classList.add('active');
-  } else {
-    link.classList.remove('active');
-  }
-});
-
-/* Article domain profile — swap this array per article */
-const ARTICLE_PROFILE=[
-  {name:"Theology",pct:28,color:"#d4af37"},
-  {name:"Physics",pct:22,color:"#7cc7ff"},
-  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
-  {name:"Evidence",pct:15,color:"#7fc77f"},
-  {name:"Consciousness",pct:10,color:"#a78bfa"},
-  {name:"Mathematics",pct:7,color:"#ff7d90"},
-  {name:"Speculative",pct:3,color:"#aeb8d6"}
-];
-
-/* Render classification bar */
-const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
-if(bar&&tags){
-  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
-  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
-}
-
-/* Reading level tabs */
-document.querySelectorAll('.tp-level').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-/* Big nav hover spotlight effect */
-document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
-  card.addEventListener('mousemove',e=>{
-    const rect=card.getBoundingClientRect();
-    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
-    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
-  });
-});
-
-/* Series nav auto-active (same pattern) */
-const SERIES_MAP={
-  '/':'Home','/index.html':'Home','/home':'Home',
-  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
-  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
-  '/one-page-stories/':'One-Page Stories'
-};
-const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
-if(seriesName){
-  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
-    if(a.textContent.trim()===seriesName){a.classList.add('active');}
-    else{a.classList.remove('active');}
-  });
-}
-</script>
-
-<!-- MTL worker client -->
-<script src="/shared/js/mtl-worker-client.js" defer></script>
-
-</body>
-</html>
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>De Revolutionibus Veritatis | Book II: The Lock</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="../components/audio-dock.css" rel="stylesheet"/>
+<link href="../components/tp-header-lip.css" rel="stylesheet"/>
+<link href="../components/verification-bar.css" rel="stylesheet"/>
+<link href="../components/top-bar-bottom-bar.css" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:56px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(212,175,55,.55);border-bottom:0;height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
+
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+/* ═══════ CLASSIFICATION BAR (inside header lip) ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+.tp-canon-meta{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
+.tp-canon-chip{font-family:var(--mono);font-size:.52rem;line-height:1;padding:.22rem .48rem;border-radius:999px;border:1px solid rgba(212,175,55,.18);color:var(--text-muted);background:rgba(212,175,55,.055);max-width:18rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-canon-chip strong{color:var(--gold);font-weight:600}
+.tp-canon-chip.summary{flex:1 1 18rem;color:var(--text-dim);border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags,.tp-canon-meta{display:none}}
+
+/* ═══════ VERIFIED BAR PINNED UNDER TOP BAR — full-bleed, sticky ═══════ */
+.verification-bar.tp-verify-top{
+  position:sticky;top:var(--header-h);z-index:90;
+  left:auto;right:auto;width:100%;
+  margin:var(--header-h) 0 0;
+  background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(212,175,55,.55);border-top:0;
+}
+.verification-bar.tp-verify-top .verification-toggle,
+.verification-bar.tp-verify-top .verification-body{
+  max-width:none;margin-left:0;margin-right:0;
+}
+.verification-bar.tp-verify-top .verification-toggle{padding:7px 1.2rem;background:transparent}
+.verification-bar.tp-verify-top .verification-toggle:hover{background:rgba(212,175,55,.04)}
+.verification-bar.tp-verify-top .verification-toggle.open{border-bottom-color:rgba(212,175,55,.25)}
+.v-domain-chips{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;margin-left:auto;margin-right:.9rem}
+.v-chip{
+  padding:.18rem .55rem;border-radius:999px;
+  font-family:var(--mono,monospace);font-size:.58rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+  border:1px solid var(--border,#222);background:transparent;color:var(--text-muted,#5a5a5a);
+}
+.v-chip.on{border-color:var(--chip-color,#222);color:var(--chip-color,#5a5a5a);background:transparent;opacity:.5}
+@media(max-width:700px){.v-domain-chips{display:none}}
+
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+/* empty-body placeholder (template only — delete when filling in) */
+.tp-template-placeholder{min-height:40vh;display:flex;align-items:center;justify-content:center;border:1px dashed var(--border-2);border-radius:10px;color:var(--text-muted);font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-top:1rem}
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:.4rem 1.5rem 2.5rem}
+.tp-bignav-row{display:flex;align-items:center;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:.55rem .5rem;background:transparent;border:1px solid transparent;border-radius:8px;transition:all .3s;min-height:0;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.08),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{transform:translateY(-3px)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.3rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.15)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.1rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:.92rem;color:var(--text);line-height:1.25;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:.7rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:.7rem}
+
+/* Center: Series Home (no box) + Site Home (the prominent box) */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;flex-shrink:0;padding:0 .6rem;min-width:170px}
+.tp-bignav-series{font-family:var(--display);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.2rem .4rem;border:0;background:transparent;transition:all .25s;text-align:center}
+.tp-bignav-series:hover{color:var(--gold)}
+.tp-bignav-home{font-family:var(--display);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);padding:.7rem 1.4rem;border:1px solid var(--border);border-radius:7px;background:var(--surface2);transition:all .25s;margin-top:.3rem;text-align:center}
+.tp-bignav-home:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 14px rgba(212,175,55,.14);background:var(--surface)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
+
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:1.3rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1rem;color:#fff;margin-bottom:.7rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.55rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:.55rem;padding:.75rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:7px;transition:all .35s;text-align:left;min-height:0;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.05rem;color:var(--gold);opacity:.4;transition:all .35s;flex-shrink:0}
+.tp-sub-card h4{font-size:.75rem;font-weight:500;color:var(--text);margin:0;line-height:1.2;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.5rem;color:var(--text-muted);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+</style>
+<base target="_blank"/>
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
+  }
+};
+</script>
+<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="/shared/css/mtl-worker-client.css" rel="stylesheet"/>
+</head>
+<body>
+<!-- ═══════ TOP BAR ═══════ -->
+
+
+<!-- ═══════ VERIFIED BAR — pinned directly under the top bar ═══════ -->
+
+<!-- ═══════ ARTICLE ENTRY (title + audio dock) ═══════ -->
+<article class="tp-article">
+<h1>The Lock</h1>
+<p class="subtitle">Twenty Axioms from Information Theory</p>
+<div class="byline">Faith thru Physics</div>
+<!-- TODO per page: set data-audio-slug / data-series-slug to match this page -->
+<div class="audio-dock-wrap">
+<div class="audio-dock" data-audio-dock="" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=revolution-of-truth%2Fdrv-02-the-lock" data-audio-slug="revolution-of-truth/drv-02-the-lock" data-dock-mini-style="simple" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=revolution-of-truth" data-series-slug="revolution-of-truth">
+<div class="dock-pills"></div>
+</div>
+</div>
+<!-- ▼▼▼ ARTICLE BODY — three reading levels (built by top_bar_bottom_bar.py) ▼▼▼ -->
+<div class="tp-level-panels" id="tpLevelPanels">
+<div class="tp-level-panel" data-reading-level="highschool" hidden="">
+<h1>Book II — The Lock: The Formal Derivation</h1>
+<section>
+<h2>I. Introduction</h2>
+<p>In 1960, a scientist named Eugene Wigner wrote a famous paper called "The Unreasonable Effectiveness of Mathematics in the Natural Sciences." He asked a question that nobody has been able to answer: Why do abstract math ideas, made up without looking at the real world, always describe that world perfectly? This paper gives a final answer. The effectiveness isn't unreasonable at all. It's actually unavoidable, once you understand what mathematical truth really is and where it comes from.</p>
+<p>We'll go through five steps: First, we set up the information theory foundation. Second, we figure out the properties of mathematical truth using twenty axioms (self-evident truths). Third, we show these properties require an outside source with specific features. Fourth, we answer all the major objections. Fifth, we give testable predictions.</p>
+<h3>Central Claim</h3>
+<p>Mathematical truth is grounded in a source that is necessary, eternal, universal, immaterial, coherent, and morally good. This source is the same thing as the Logos (the divine Word or Reason) from classical theology. This conclusion isn't just stated — it's <em>derived</em> from first principles using information theory.</p>
+</section>
+<section>
+<h2>II. Information-Theoretic Foundations</h2>
+<h3>2.1 Shannon Entropy</h3>
+<p>The first tool you need is Shannon entropy. For a random variable \(X\) with possible values \(\{x_1, x_2, \ldots, x_n\}\) and probability function \(P(X)\), Shannon entropy \(H(X)\) is:</p>
+<p>Definition 1 — Shannon Entropy</p>
+<p>$$H(X) = -\sum_i P(x_i) \log_2 P(x_i)$$</p>
+<p>Shannon entropy measures how much uncertainty or information is in a random variable. When all outcomes are equally likely, you have maximum entropy — maximum uncertainty. When one outcome is guaranteed, you have minimum entropy — no uncertainty at all. This difference matters a lot when we get to physical laws.</p>
+<h3>2.2 Kolmogorov Complexity</h3>
+<p>The second tool is Kolmogorov complexity. For a string of data \(x\) and a universal Turing machine (a general-purpose computer) \(U\), the Kolmogorov complexity \(K(x)\) is the length of the shortest computer program \(p\) that can produce \(x\):</p>
+<p>Definition 2 — Kolmogorov Complexity</p>
+<p>$$K(x) = \min\{|p| : U(p) = x\}$$</p>
+<p>Kolmogorov complexity measures the true information content of a string, no matter what probability distribution you assume. A string is random — incompressible — if \(K(x) \approx |x|\). That means the shortest description is the string itself. A string is structured — compressible — if \(K(x) \ll |x|\). That means you can describe it with a much shorter program.</p>
+<h3>2.3 The Compression-Entropy Bridge</h3>
+<p>Theorem 1 — Compression-Entropy Bridge</p>
+<p>$$K(x) \approx H(X) \text{ for random strings}$$ $$K(x) \ll H(X) \text{ for structured strings}$$</p>
+<p>Random strings have no patterns you can exploit. Their shortest description is just the string itself. Structured strings have patterns that let you compress them below their raw length.</p>
+<h3>The Critical Observation</h3>
+<p>The physical universe shows \(K \ll H\). Physical laws are compressions — short equations that describe huge amounts of stuff that happens. The fact that any physical law exists means the universe isn't random. It's compressed information. This observation is the foundation for everything that follows.</p>
+<h3>2.4 Chaitin's Incompleteness Theorem</h3>
+<p>The third tool is the most important. For any formal system \(F\) (like a set of math rules), there's a constant \(c\) such that \(F\) cannot prove \(K(x) &gt; |F| + c\) for any string \(x\):</p>
+<p>Theorem 2 — Chaitin's Incompleteness</p>
+<p>$$\forall F, \exists c : F \nvdash K(x) &gt; |F| + c$$</p>
+<p>Corollary 1 — Mathematical Truth Cannot Self-Ground</p>
+<p>$$\text{Ground}(\text{Math}) \notin \text{Math}$$</p>
+<p>This is the formal way of saying that mathematical truth needs an outside foundation. No formal system can fully capture or justify the truths it uses. The ground of mathematics must be beyond mathematics itself. Everything that follows comes from this single, non-negotiable fact.</p>
+</section>
+<section>
+<h2>III. The Axiom Chain</h2>
+<p>Twenty axioms, organized into six levels. Each axiom is individually undeniable — if you deny it, you end up with nonsense, self-contradiction, or the collapse of all rational discussion. Together, they prove the existence and properties of the ground of mathematical truth.</p>
+<h3>Level 1: Existence (A1–A3)</h3>
+<p><strong>A1 — Existence</strong></p>
+<p>Mathematical truths exist that are non-contingently true (they aren't just true by accident).</p>
+<p>$$\exists\, T_m : \text{True}(T_m) \wedge \neg\text{Contingent}(T_m)$$</p>
+<p>If no mathematical truths existed, then the statement "no mathematical truths exist" would itself be a mathematical truth. That's a contradiction. Denying A1 refutes itself.</p>
+<p><strong>A2 — Temporal Independence</strong></p>
+<p>Mathematical truths held true before humans existed and will hold true after we're gone.</p>
+<p>$$\forall t : \text{True}(T_m, t) \text{ with } I(T_m; t) = 0$$</p>
+<p>If mathematical truths only became true when humans evolved, then physical laws couldn't have worked for the 13.8 billion years before us. Stars couldn't have formed. The universe couldn't exist as it does. Denying this leads to obvious nonsense.</p>
+<p><strong>A3 — Necessity</strong></p>
+<p>Mathematical truths are necessarily true. Their opposites are impossible.</p>
+<p>$$\square(2+2=4) \wedge \neg\Diamond(2+2=5)$$</p>
+<p>If \(2+2=5\) were possible in some world, then logical thinking would be random and unreliable. But you can't even say that possibility without assuming logic works. Denying this undermines itself.</p>
+<h3>Level 2: Properties (A4–A7)</h3>
+<p><strong>A4 — Universality</strong></p>
+<p>Mathematical truth doesn't depend on location.</p>
+<p>$$I(T_m; \text{position}) = 0$$</p>
+<p>If math changed depending on where you were, physics would be different in different places. GPS wouldn't work. Rockets couldn't navigate. No universe could exist with location-dependent math.</p>
+<p><strong>A5 — Eternality</strong></p>
+<p>Mathematical truth doesn't change over time.</p>
+<p>$$\frac{d}{dt} K(T_m) = 0$$</p>
+<p>If \(2+2=4\) today but might equal 5 tomorrow, scientific knowledge would be impossible. Every experiment would be meaningless. Science assumes A5 is true.</p>
+<p><strong>A6 — Immateriality</strong></p>
+<p>Mathematical truth has no location, mass, or physical properties.</p>
+<p>$$\neg\exists x : \text{Location}(T_m) = x \wedge \text{Mass}(T_m) = 0$$</p>
+<p>If math were physical, destroying its location would destroy the truth. But no physical destruction can make \(2+2 \neq 4\). Math is immune to physical damage.</p>
+<p><strong>A7 — Coherence</strong></p>
+<p>No true mathematical statement contradicts another true mathematical statement.</p>
+<p>$$\forall T_1, T_2 \in T_m : \neg(T_1 \wedge \neg T_1)$$</p>
+<p>Because of the principle of explosion (from a contradiction, anything follows), a contradiction would make every statement provable. Math would be useless and trivial.</p>
+<p><strong>Checkpoint Alpha — The Emergent Profile</strong></p>
+<p>From axioms A1–A7, you've established that mathematical truth is: existent, necessary, eternal, universal, immaterial, and coherent. This profile doesn't match any physical object in the universe.</p>
+<p>But it matches exactly the classical divine attributes: Being (exists), Aseity (necessary), Eternality, Omnipresence (universal), Spirituality (immaterial), and Integrity (coherent).</p>
+<p>These properties came from analyzing mathematical truth alone — not from theology. The theological identification comes after the logical derivation.</p>
+<h3>Level 3: Origin (A8–A11)</h3>
+<p><strong>A8 — Sufficient Reason</strong></p>
+<p>Mathematical truth needs grounding. You can't just say "it's a brute fact" and stop there.</p>
+<p>$$K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)$$</p>
+<p>The Principle of Sufficient Reason is assumed by all rational inquiry. To ask "why?" is to assume explanations exist. If math truths were brute facts with no explanation, then nothing would need explanation, and science would be impossible.</p>
+<p><strong>A9 — Not From Nothing</strong></p>
+<p>Nothing cannot produce something.</p>
+<p>$$K(\emptyset) = 0 \Rightarrow \text{Output}(\emptyset) = \emptyset$$</p>
+<p>"Nothing" has zero information by definition. An output requires information. Zero information cannot produce non-zero information. This isn't a metaphysical claim — it's an information-theoretic necessity.</p>
+<p><strong>A10 — Not From Chaos</strong></p>
+<p>Random processes cannot produce structured output.</p>
+<p>$$K(T_m) \ll |T_m| \Rightarrow \neg\text{Random}(\text{Ground})$$</p>
+<p>Random processes produce maximum entropy (maximum disorder). But mathematical truth is highly structured — compressible. The Kolmogorov complexity of math truths is much less than their raw description length. This structure can't come from randomness. It needs a structured source.</p>
+<p><strong>A11 — Not From Deception</strong></p>
+<p>Truth cannot come from a deceptive source.</p>
+<p>$$\neg\text{Deceptive}(T_m) \Rightarrow \neg\text{Deceptive}(\text{Ground})$$</p>
+<p>Deception means a gap between appearance and reality: \(\text{Deception}(X) \iff \text{Appears}(X,Y) \wedge \neg\text{Is}(X,Y)\). Mathematical truth has no such gap — \(2+2\) appears to equal 4 and actually does equal 4. If the source of math were deceptive, its outputs couldn't reliably be non-deceptive. But math truths are non-deceptive. So the source must be non-deceptive.</p>
+<p><strong>Critical Transition — From Logic to Morality</strong></p>
+<p>A11 is the keystone of this whole argument. Being non-deceptive is a moral property. Truthfulness is a virtue. Deception is a vice. This isn't a debated philosophical claim — it's a cultural and ethical universal. Deception is wrong in every moral framework that has ever existed.</p>
+<p>By A11, the ground of mathematical truth must be non-deceptive. By the universal moral status of truthfulness, the ground must possess a moral virtue. You have derived a moral property from information-theoretic analysis of mathematical truth.</p>
+<p><strong>Corollary 2:</strong> The ground of mathematical truth is morally good — at least when it comes to truthfulness.</p>
+<h3>Level 4: Source Properties (A12–A15)</h3>
+<p>The ground of mathematical truth must share the properties of what it grounds, or it couldn't give those properties. A source can't give properties it doesn't have. A local source can't produce universal output. A temporary source can't produce eternal output. A physical source can't produce non-physical output. A confused source can't produce coherent output.</p>
+<p><strong>A12 — Source Universality</strong></p>
+<p>The source of universal truth must itself be universal.</p>
+<p><strong>A13 — Source Eternality</strong></p>
+<p>The source of eternal truth must itself be eternal.</p>
+<p><strong>A14 — Source Immateriality</strong></p>
+<p>The source of immaterial truth must itself be immaterial.</p>
+<p><strong>A15 — Source Coherence</strong></p>
+<p>The source of coherent truth must itself be coherent.</p>
+<h3>Level 5: The Moral Dimension (A16–A18)</h3>
+<p><strong>A16 — Truth as Value</strong></p>
+<p>Truth is inherently valuable. Falsehood is inherently bad.</p>
+<p>Even the relativist who says "there is no objective truth" intends that statement to be objectively true. The value of truth is assumed by every statement, every argument, every question.</p>
+<p><strong>A17 — Deception as Wrong</strong></p>
+<p>Deception is morally wrong.</p>
+<p>This is a cultural universal. Every known moral system condemns deception. Even the liar must pretend to be truthful, which shows they know truth has moral force.</p>
+<p><strong>A18 — Mathematical-Moral Unity</strong></p>
+<p>The source of mathematical truth and the source of moral truth are the same thing.</p>
+<p>By A11, the ground of mathematical truth must be non-deceptive — a moral property. By Occam's razor (don't multiply entities unnecessarily), if the ground of math has moral properties, it's simpler to say it's the same as the ground of morality than to invent two separate grounds.</p>
+<h3>Level 6: Identification (A19–A20)</h3>
+<p><strong>A19 — The Logos</strong></p>
+<p>The ground of mathematical and moral truth is the Logos — a unified, rational, moral source.</p>
+<p>The term "Logos" (\(\lambda\acute{o}\gamma o\varsigma\)) exactly captures what we've derived: rational structure (mathematical truth) united with moral order. The term existed before Christianity, appearing in Heraclitus, the Stoics, and Philo before Christians used it.</p>
+<p><strong>A20 — The Identification</strong></p>
+<p>The Logos is functionally identical to the God of classical theism.</p>
+<p>The Logos, as derived, has: necessary existence, eternality, universality (omnipresence), immateriality (spirituality), coherence (integrity), rationality, and moral goodness. This is the complete profile of the God of classical theism. Since the properties are identical, either they refer to the same entity, or there are two entities with identical profiles — which violates the principle that identical things are the same thing.</p>
+</section>
+<section>
+<h2>IV. The Is-Ought Bridge</h2>
+<p>Hume's guillotine says you can't derive "ought" (what you should do) from "is" (what is true). This paper dissolves that problem by showing that information theory is inherently about what you should do.</p>
+<h3>4.1 Shannon's Channel Coding Theorem</h3>
+<p>Channel Coding Theorem</p>
+<p>$$R &lt; C \Rightarrow \exists \text{ code with } P_e \to 0$$</p>
+<p>This theorem tells you what you <em>should</em> do: keep your transmission rate below channel capacity if you want reliable communication. It's a mathematical theorem that gives a command. The "ought" is built into the math.</p>
+<h3>4.2 Kolmogorov Optimality</h3>
+<p>Kolmogorov Optimality</p>
+<p>$$K(x) = \min\{|p| : U(p) = x\}$$</p>
+<p>The definition of Kolmogorov complexity defines the <em>best</em> (shortest) description. "Best" is a word about what you should do. The definition itself contains an ought.</p>
+<h3>The Dissolution</h3>
+<p>Information theory has built-in "oughts": you ought to compress efficiently, transmit below capacity, minimize description length, and not deceive (create a gap between signal and reality). These aren't human conventions. They're mathematical necessities. The is-ought gap is bridged by the inherent normativity (built-in shoulds) of information itself.</p>
+<p><strong>Information is normative, and normativity is informational.</strong></p>
+</section>
+<section>
+<h2>V. Objections and Responses</h2>
+<h3>O1: The Platonic Objection</h3>
+<p><em>Mathematical truths exist in a Platonic realm of abstract objects. They don't need any ground beyond their own abstract existence.</em></p>
+<p>The Platonic realm still has to answer A8 (Sufficient Reason). Why does this realm exist instead of not existing? Saying "abstract objects exist" doesn't explain them. Also, Platonism has the epistemological problem (Benacerraf 1973): how do physical human minds access abstract objects? This account provides that connection — human minds access mathematical truth because both are grounded in the same rational source.</p>
+<h3>O2: The Fictionalist Challenge</h3>
+<p><em>Mathematical statements are useful fictions, not literally true.</em></p>
+<p>Fictionalism can't explain why math actually works. Sherlock Holmes can't predict rocket trajectories or electron behavior. If math were fiction, its systematic usefulness would be an unexplainable miracle. Also, the fictionalist has to explain why we can't just "make up" that \(2+2=5\) and have it work.</p>
+<h3>O3: The Evolutionary Debunking Argument</h3>
+<p><em>Our math intuitions evolved for survival, not for finding truth.</em></p>
+<p>This argument undermines itself. If our thinking tools are unreliable, then the reasoning that produced this objection is also unreliable. It saws off the branch it's sitting on.</p>
+<h3>O4: The Naturalistic Objection</h3>
+<p><em>Mathematics can be grounded in physical structures — in brains, computers, or physical patterns.</em></p>
+<p>By A6, mathematical truth is immaterial. No physical structure can ground something with no physical properties. By A2, mathematical truth existed before all physical structures. No temporary physical thing can ground an eternal truth.</p>
+<h3>O5: The Multiverse Objection</h3>
+<p><em>Maybe mathematical truths vary across different universes.</em></p>
+<p>This confuses mathematical truth with physical laws. Physical constants might vary. Mathematical truths cannot. \(2+2=4\) is necessary (A3) — there is no possible world where it's false.</p>
+<h3>O6: The Conceivability Objection</h3>
+<p><em>I can imagine mathematical truths existing without a divine ground.</em></p>
+<p>Being able to imagine something doesn't mean it's possible. We can imagine water not being H₂O, but that's impossible given what water actually is.</p>
+<h3>O7: The "Which God?" Objection</h3>
+<p><em>This only proves a Logos exists, not the God of any specific religion.</em></p>
+<p>Correct as stated. This argument establishes properties. Which religion correctly identifies this ground is a separate question. However, the Gospel of John's identification of Jesus Christ with the Logos (John 1:1–14) is a direct claim that the specific entity derived here is the Christian God. See Book IV — The Key for the full analysis.</p>
+<h3>O8: The Euthyphro Dilemma</h3>
+<p>This is a false dilemma, resolved by divine simplicity. Mathematical truths flow from God's nature — they're neither arbitrarily chosen nor externally forced on God. They're expressions of the divine Logos.</p>
+<h3>O9: The Parsimony Objection</h3>
+<p>Occam's razor says don't multiply entities unnecessarily. This paper argues the ground is <em>necessary</em>. One unified ground is simpler than separate, unrelated explanations.</p>
+<h3>O10: The Coherence Objection</h3>
+<p>The coherence of the derived Ground is guaranteed by A7 and A15. Apparent paradoxes come from sloppy formulations, not from the rigorously derived Logos.</p>
+</section>
+<section>
+<h2>VI. Testable Predictions and Experimental Protocols</h2>
+<ul>
+<li>
+<p><strong>P1 — Landauer Confirmation</strong> Confirmed<br/>
+  Information erasure requires minimum energy \(E = k_B T \ln 2\). Status: CONFIRMED (Bérut et al., 2012).</p>
+</li>
+<li>
+<p><strong>P2 — Measurement-Information Coupling</strong> Testable<br/>
+  Quantum measurement energy scales with information gain: \(\Delta E = k_B T \cdot \Delta H\).</p>
+</li>
+<li>
+<p><strong>P3 — Consciousness-Collapse Correlation</strong> Testable<br/>
+  Conscious observation correlates with wavefunction collapse probability: \(P(\text{collapse}) = f(\Phi)\).</p>
+</li>
+<li>
+<p><strong>P4 — Moral-Mathematical Neural Correlation</strong> Testable<br/>
+  Brain regions active during mathematical thinking overlap with regions active during moral thinking.</p>
+</li>
+<li>
+<p><strong>P5 — Coherence Amplification</strong> Supported<br/>
+  Collective intention amplifies local coherence: \(\chi_{\text{collective}} = N^\alpha \cdot \chi_{\text{individual}}\), where \(\alpha &gt; 1\). GCP data shows 6 standard deviation results.</p>
+</li>
+<li>
+<p><strong>P6 — Compression-Applicability Correlation</strong> Testable<br/>
+  How well a math theory applies to physics correlates with its Kolmogorov complexity: lower \(K(\text{theory})\) means higher applicability.</p>
+</li>
+</ul>
+</section>
+<section>
+<h2>VII. The Law Written on Hearts</h2>
+<p>Romans 2:15 says that Gentiles "show the work of the law written in their hearts." This paper provides a formal mechanism for this theological claim.</p>
+<p>Let \(f : \text{Human} \to T_m\) be the access function by which humans recognize mathematical truths. Let \(T_m \subset \text{Logos}\) be the grounding relation established by this paper.</p>
+<p>The Access Relation</p>
+<p>$$f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}$$</p>
+<p>By transitivity (if A leads to B and B leads to C, then A leads to C), humans have direct mental access to the Logos through the math faculty. This faculty is universal, exists before language, is non-arbitrary, and tells you what you should do — exactly the properties of divinely written moral law as described in the theological tradition.</p>
+</section>
+<section>
+<h2>VIII. Conclusion</h2>
+<p>The Complete Argument — Formal Summary</p>
+<p>$$\exists\, T_m : \square T_m \wedge \text{Universal}(T_m) \wedge \text{Eternal}(T_m) \wedge \text{Coherent}(T_m)$$</p>
+<p>$$K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)$$</p>
+<p>$$\text{Ground} \neq \emptyset \wedge \neg\text{Random}(\text{Ground}) \wedge \neg\text{Deceptive}(\text{Ground})$$</p>
+<p>$$\neg\text{Deceptive} = \text{Truthful} = \text{Moral Property}$$</p>
+<p>$$\therefore \text{Ground}(T_m) = \text{Moral}$$</p>
+<p>$$f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}$$</p>
+<p>$$\text{Physics} = \text{Applied } T_m \Rightarrow \text{Physics is Moral}$$</p>
+<p>$$\therefore \text{Universe is Moral Order} \quad \blacksquare$$</p>
+<blockquote>
+<p>"This most beautiful system of equations, constants, and laws, could only proceed from the counsel and dominion of a truthful and moral Being." — Adapted from Newton's Principia</p>
+</blockquote>
+</section>
+<section>
+<h2>Appendix A: Complete Axiom Index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Level</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>1: Existence</td>
+<td>Mathematical truths exist non-contingently</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>1: Existence</td>
+<td>Mathematical truths are temporally independent</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>1: Existence</td>
+<td>Mathematical truths are necessarily true</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>2: Properties</td>
+<td>Mathematical truth is universal (location-invariant)</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>2: Properties</td>
+<td>Mathematical truth is eternal (time-invariant)</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>2: Properties</td>
+<td>Mathematical truth is immaterial</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>2: Properties</td>
+<td>Mathematical truth is coherent</td>
+</tr>
+<tr>
+<td>A8</td>
+<td>3: Origin</td>
+<td>Mathematical truth requires grounding</td>
+</tr>
+<tr>
+<td>A9</td>
+<td>3: Origin</td>
+<td>The ground cannot be nothing</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>3: Origin</td>
+<td>The ground cannot be chaos</td>
+</tr>
+<tr>
+<td>A11</td>
+<td>3: Origin</td>
+<td>The ground cannot be deceptive</td>
+</tr>
+<tr>
+<td>A12</td>
+<td>4: Source</td>
+<td>The source of universal truth is universal</td>
+</tr>
+<tr>
+<td>A13</td>
+<td>4: Source</td>
+<td>The source of eternal truth is eternal</td>
+</tr>
+<tr>
+<td>A14</td>
+<td>4: Source</td>
+<td>The source of immaterial truth is immaterial</td>
+</tr>
+<tr>
+<td>A15</td>
+<td>4: Source</td>
+<td>The source of coherent truth is coherent</td>
+</tr>
+<tr>
+<td>A16</td>
+<td>5: Moral</td>
+<td>Truth is inherently valuable</td>
+</tr>
+<tr>
+<td>A17</td>
+<td>5: Moral</td>
+<td>Deception is morally wrong</td>
+</tr>
+<tr>
+<td>A18</td>
+<td>5: Moral</td>
+<td>Mathematical and moral truth share a common ground</td>
+</tr>
+<tr>
+<td>A19</td>
+<td>6: Identity</td>
+<td>The ground is the Logos</td>
+</tr>
+<tr>
+<td>A20</td>
+<td>6: Identity</td>
+<td>The Logos is functionally identical to God</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="tp-refs">
+<h2>References</h2>
+<ul>
+<li>Benacerraf, P. (1973). "Mathematical Truth." <em>The Journal of Philosophy</em>, 70(19), 661–679.</li>
+<li>Bérut, A., et al. (2012). "Experimental verification of Landauer's principle." <em>Nature</em>, 483(7388), 187–189.</li>
+<li>Chaitin, G. J. (1982). "Gödel's theorem and information." <em>International Journal of Theoretical Physics</em>, 21(12), 941–954.</li>
+<li>Field, H. (1980). <em>Science Without Numbers</em>. Princeton University Press.</li>
+<li>Gödel, K. (1931). "Über formal unentscheidbare Sätze." <em>Monatshefte für Mathematik und Physik</em>, 38(1), 173–198.</li>
+<li>Kolmogorov, A. N. (1965). "Three approaches to the quantitative definition of information." <em>Problems of Information Transmission</em>, 1(1), 1–7.</li>
+<li>Shannon, C. E. (1948). "A mathematical theory of communication." <em>Bell System Technical Journal</em>, 27(3), 379–423.</li>
+<li>Tononi, G. (2008). "Consciousness as integrated information." <em>The Biological Bulletin</em>, 215(3), 216–242.</li>
+<li>Wigner, E. P. (1960). "The unreasonable effectiveness of mathematics." <em>Communications on Pure and Applied Mathematics</em>, 13(1), 1–14.</li>
+</ul>
+</section>
+</div>
+<div class="tp-level-panel active" data-reading-level="college">
+<h3>Series Navigation</h3>
+<ul>
+<li><a href="drv-01-the-architecture.html">Book I — The Architecture: The scientific framework explained accessibly</a></li>
+<li>Book II — The Lock: The formal derivation — 20 axioms, boundary conditions, symbolic proof (You are here)</li>
+<li><a href="drv-03-the-cost-of-denial.html">Book III — The Cost of Denial: What you must become to deny this</a></li>
+<li><a href="drv-04-the-key.html">Book IV — The Key: Christianity tested against all 20 axioms</a></li>
+</ul>
+<p>Abstract</p>
+<p>This paper presents a formal derivation of the necessary existence of a morally good, eternal, universal, immaterial, and coherent ground of mathematical truth. Using information-theoretic formalization—including Shannon entropy, Kolmogorov complexity, and Chaitin's incompleteness theorem—we demonstrate that mathematical truth cannot be self-grounding and must originate from an external source. Through a chain of twenty axioms, each individually undeniable, we establish that this source must possess properties isomorphic to the classical divine attributes. The critical axiom (A11) demonstrates that the non-deceptive nature of mathematical truth—a moral property—must be inherited from its source, thereby deriving morality from information theory and bridging the is-ought gap.</p>
+<section>
+<h2>I. Introduction</h2>
+<p>Eugene Wigner's celebrated paper "The Unreasonable Effectiveness of Mathematics in the Natural Sciences" (1960) posed a question that remains unanswered in contemporary philosophy of mathematics: Why do abstract mathematical structures, developed without reference to physical reality, consistently and precisely describe that reality? This paper provides a definitive answer. The effectiveness is not unreasonable but inevitable, once you understand what mathematical truth is and where it comes from.</p>
+<p>We proceed in five stages: establishing the information-theoretic foundations; deriving the properties of mathematical truth through twenty axioms; demonstrating that these properties necessitate an external ground with specific characteristics; addressing all major objections; and presenting testable predictions.</p>
+<h3>Central Claim</h3>
+<p>Mathematical truth is grounded in a necessary, eternal, universal, immaterial, coherent, and morally good source. This source is functionally identical to the Logos of classical theology. This conclusion is not asserted but <em>derived</em> from first principles using information theory.</p>
+</section>
+<section>
+<h2>II. Information-Theoretic Foundations</h2>
+<h3>2.1 Shannon Entropy</h3>
+<p>The first tool you need is Shannon entropy. For a discrete random variable \(X\) with possible values \(\{x_1, x_2, \ldots, x_n\}\) and probability mass function \(P(X)\), Shannon entropy \(H(X)\) is defined as:</p>
+<div class="tp-eqcard"><div class="tp-eqcard-label">Definition 1 — Shannon Entropy</div>$$H(X) = -\sum_i P(x_i) \log_2 P(x_i)$$</div>
+<p>Shannon entropy measures the average information content or uncertainty in a random variable. Maximum entropy occurs when all outcomes are equally likely—maximum uncertainty. Minimum entropy occurs when one outcome has probability 1—no uncertainty at all. This distinction matters enormously when we get to physical law.</p>
+<h3>2.2 Kolmogorov Complexity</h3>
+<p>The second tool is Kolmogorov complexity. For a string \(x\) and a universal Turing machine \(U\), the Kolmogorov complexity \(K(x)\) is the length of the shortest program \(p\) such that \(U(p) = x\):</p>
+<div class="tp-eqcard"><div class="tp-eqcard-label">Definition 2 — Kolmogorov Complexity</div>$$K(x) = \min\{|p| : U(p) = x\}$$</div>
+<p>Kolmogorov complexity measures the intrinsic information content of a string, independent of any probability distribution. A string is random—incompressible—if \(K(x) \approx |x|\). It is structured—compressible—if \(K(x) \ll |x|\).</p>
+<h3>2.3 The Compression-Entropy Bridge</h3>
+<div class="tp-eqcard"><div class="tp-eqcard-label">Theorem 1 — Compression-Entropy Bridge</div>$$K(x) \approx H(X) \text{ for random strings}$$ $$K(x) \ll H(X) \text{ for structured strings}$$</div>
+<aside class="tp-feature tp-feature-1"><p>Random strings have no exploitable patterns; their shortest description is the string itself. Structured strings have patterns that allow compression below their raw length.</p></aside>
+<h3>The Critical Observation</h3>
+<p>The physical universe exhibits \(K \ll H\). Physical laws are compressions—short equations that describe vast amounts of phenomena. The existence of any physical law means the universe is not random but is compressed information. This observation is foundational to everything that follows.</p>
+<h3>2.4 Chaitin's Incompleteness Theorem</h3>
+<p>The third tool is the most decisive. For any formal system \(F\), there exists a constant \(c\) such that \(F\) cannot prove \(K(x) &gt; |F| + c\) for any string \(x\):</p>
+<div class="tp-eqcard"><div class="tp-eqcard-label">Theorem 2 — Chaitin's Incompleteness</div>$$\forall F, \exists c : F \nvdash K(x) &gt; |F| + c$$</div>
+<div class="tp-eqcard"><div class="tp-eqcard-label">Corollary 1 — Mathematical Truth Cannot Self-Ground</div>$$\text{Ground}(\text{Math}) \notin \text{Math}$$</div>
+<p>This is the formal statement that mathematical truth requires an external ground. No formal system can fully capture or justify the truths it uses. The ground of mathematics must be meta-mathematical. Everything that follows flows from this single, non-negotiable fact.</p>
+</section>
+<section>
+<h2>III. The Axiom Chain</h2>
+<p>Twenty axioms, organized into six levels. Each axiom is individually undeniable—its negation leads to absurdity, self-refutation, or the collapse of rational discourse. Together, they derive the existence and properties of the ground of mathematical truth.</p>
+<h3>Level 1: Existence (A1–A3)</h3>
+<p>A1 — Existence</p>
+<p>Mathematical truths exist that are non-contingently true.</p>
+<div class="tp-eqcard">$$\exists\, T_m : \text{True}(T_m) \wedge \neg\text{Contingent}(T_m)$$</div>
+<p>If no mathematical truths existed, then "no mathematical truths exist" would itself be a mathematical truth, yielding a contradiction. The denial of A1 is self-refuting.</p>
+<p>A2 — Temporal Independence</p>
+<p>Mathematical truths held at all times prior to human existence and will hold after.</p>
+<div class="tp-eqcard">$$\forall t : \text{True}(T_m, t) \text{ with } I(T_m; t) = 0$$</div>
+<p>If mathematical truths only became true when humans evolved, then physical laws could not have operated for 13.8 billion years before us. Stars could not have formed. The universe could not exist in its present state. Denial leads to empirical absurdity.</p>
+<p>A3 — Necessity</p>
+<p>Mathematical truths are necessarily true; their negations are impossible.</p>
+<div class="tp-eqcard">$$\square(2+2=4) \wedge \neg\Diamond(2+2=5)$$</div>
+<p>If \(2+2=5\) were possible in some world, logical inference would be arbitrary and could not be trusted. But we cannot even state that possibility without presupposing the validity of logic. The denial is self-undermining.</p>
+<h3>Level 2: Properties (A4–A7)</h3>
+<p>A4 — Universality</p>
+<p>Mathematical truth is location-invariant.</p>
+<div class="tp-eqcard">$$I(T_m; \text{position}) = 0$$</div>
+<p>If mathematical truth varied by location, physics would be different in different places. GPS would not work. Rockets could not navigate. No coherent universe could exist with location-dependent mathematics.</p>
+<p>A5 — Eternality</p>
+<p>Mathematical truth does not change over time.</p>
+<div class="tp-eqcard">$$\frac{d}{dt} K(T_m) = 0$$</div>
+<p>If \(2+2=4\) today but might equal 5 tomorrow, scientific knowledge would be impossible. Every experiment would be meaningless. Science presupposes A5.</p>
+<p>A6 — Immateriality</p>
+<p>Mathematical truth has no spatial location, mass, or physical properties.</p>
+<div class="tp-eqcard">$$\neg\exists x : \text{Location}(T_m) = x \wedge \text{Mass}(T_m) = 0$$</div>
+<p>If mathematical truth were physical, destroying its location would destroy the truth. But no physical destruction can make \(2+2 \neq 4\). Mathematical truth is immune to physical intervention.</p>
+<p>A7 — Coherence</p>
+<p>No true mathematical statement contradicts another true mathematical statement.</p>
+<div class="tp-eqcard">$$\forall T_1, T_2 \in T_m : \neg(T_1 \wedge \neg T_1)$$</div>
+<p>By the principle of explosion (ex falso quodlibet), a contradiction implies everything. If mathematics were internally contradictory, every statement would be provable, and mathematics would be trivial and useless.</p>
+<p>Checkpoint Alpha — The Emergent Profile</p>
+<p>From axioms A1–A7, you have established that mathematical truth is: existent, necessary, eternal, universal, immaterial, and coherent. This profile matches no physical object in the universe.</p>
+<p>But it is precisely isomorphic to the classical divine attributes: Being (exists), Aseity (necessary), Eternality, Omnipresence (universal), Spirituality (immaterial), and Integrity (coherent).</p>
+<p>These properties were derived from the analysis of mathematical truth alone—not from theological premises. The theological identification comes after the logical derivation.</p>
+<h3>Level 3: Origin (A8–A11)</h3>
+<p>A8 — Sufficient Reason</p>
+<p>Mathematical truth requires grounding; brute facts are explanatorily unacceptable.</p>
+<div class="tp-eqcard">$$K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)$$</div>
+<p>The Principle of Sufficient Reason is presupposed by all rational inquiry. To ask "why?" is to presuppose that explanations exist. If mathematical truths were brute facts requiring no explanation, then nothing would require explanation, and science would be impossible.</p>
+<p>A9 — Not From Nothing</p>
+<p>Nothing cannot produce something.</p>
+<div class="tp-eqcard">$$K(\emptyset) = 0 \Rightarrow \text{Output}(\emptyset) = \emptyset$$</div>
+<p>"Nothing" has zero information content by definition. An output requires information. Zero information cannot produce non-zero information. This is not a metaphysical claim but an information-theoretic necessity.</p>
+<p>A10 — Not From Chaos</p>
+<p>Random processes cannot produce structured output.</p>
+<div class="tp-eqcard">$$K(T_m) \ll |T_m| \Rightarrow \neg\text{Random}(\text{Ground})$$</div>
+<p>Random processes produce maximum entropy. But mathematical truth is highly structured—compressible. The Kolmogorov complexity of mathematical truths is vastly less than their raw description length. This structure cannot emerge from randomness; it requires a structured source.</p>
+<p>A11 — Not From Deception</p>
+<p>Truth cannot originate from a deceptive source.</p>
+<div class="tp-eqcard">$$\neg\text{Deceptive}(T_m) \Rightarrow \neg\text{Deceptive}(\text{Ground})$$</div>
+<p>Deception is defined as divergence between appearance and reality: \(\text{Deception}(X) \iff \text{Appears}(X,Y) \wedge \neg\text{Is}(X,Y)\). Mathematical truth involves no such divergence—\(2+2\) appears to equal 4 and actually does equal 4. If the source of mathematical truth were deceptive, its outputs could not reliably be non-deceptive. But mathematical truths are non-deceptive. Therefore the source must be non-deceptive.</p>
+<p>Critical Transition — From Logic to Morality</p>
+<p>A11 is the keystone of this entire argument. Being non-deceptive is a moral property. Truthfulness is a virtue; deception is a vice. This is not a contested philosophical claim—it is a cultural and ethical universal. Deception is wrong in every moral framework that has ever existed.</p>
+<p>By A11, the ground of mathematical truth must be non-deceptive. By the universality of the moral status of truthfulness, the ground must possess a moral virtue. You have derived a moral property from information-theoretic analysis of mathematical truth.</p>
+<p><strong>Corollary 2:</strong> The ground of mathematical truth is morally good—at least with respect to truthfulness.</p>
+<h3>Level 4: Source Properties (A12–A15)</h3>
+<p>The ground of mathematical truth must share the properties of what it grounds, or it could not confer those properties. A source cannot confer properties it does not possess. A local source cannot produce universal output. A temporal source cannot produce eternal output. A material source cannot produce immaterial output. An incoherent source cannot produce coherent output.</p>
+<p>A12 — Source Universality</p>
+<p>The source of universal truth must itself be universal.</p>
+<p>A13 — Source Eternality</p>
+<p>The source of eternal truth must itself be eternal.</p>
+<p>A14 — Source Immateriality</p>
+<p>The source of immaterial truth must itself be immaterial.</p>
+<p>A15 — Source Coherence</p>
+<p>The source of coherent truth must itself be coherent.</p>
+<h3>Level 5: The Moral Dimension (A16–A18)</h3>
+<p>A16 — Truth as Value</p>
+<p>Truth is inherently valuable; falsehood is inherently disvaluable.</p>
+<p>Even the relativist who claims "there is no objective truth" intends that statement to be objectively true. The value of truth is presupposed by every assertion, every argument, every inquiry.</p>
+<p>A17 — Deception as Wrong</p>
+<p>Deception is morally wrong.</p>
+<p>This is a cultural universal. Every known moral system condemns deception. Even the liar must pretend truthfulness, implicitly acknowledging the normative force of truth.</p>
+<p>A18 — Mathematical-Moral Unity</p>
+<p>The source of mathematical truth and the source of moral truth are identical.</p>
+<p>By A11, the ground of mathematical truth must be non-deceptive—a moral property. By parsimony (Occam's razor), we should not multiply entities beyond necessity. If the ground of mathematical truth has moral properties, it is more parsimonious to identify it with the ground of morality than to posit two separate grounds.</p>
+<h3>Level 6: Identification (A19–A20)</h3>
+<p>A19 — The Logos</p>
+<p>The ground of mathematical and moral truth is the Logos—a unified, rational, moral source.</p>
+<p>The term "Logos" (\(\lambda\acute{o}\gamma o\varsigma\)) precisely captures what has been derived: rational structure (mathematical truth) unified with moral order. The term predates Christianity, appearing in Heraclitus, the Stoics, and Philo before its Christian appropriation.</p>
+<p>A20 — The Identification</p>
+<p>The Logos is functionally identical to the God of classical theism.</p>
+<p>The Logos, as derived, possesses: necessary existence, eternality, universality (omnipresence), immateriality (spirituality), coherence (integrity), rationality, and moral goodness. This is the complete profile of the God of classical theism. Since the properties are identical, either they refer to the same entity, or there exist two entities with identical profiles—which violates the identity of indiscernibles.</p>
+</section>
+<section>
+<h2>IV. The Is-Ought Bridge</h2>
+<p>Hume's guillotine claims that "ought" cannot be derived from "is"—that no amount of factual description can logically entail a normative prescription. This paper dissolves that problem by demonstrating that information theory is inherently normative.</p>
+<h3>4.1 Shannon's Channel Coding Theorem</h3>
+<div class="tp-eqcard"><div class="tp-eqcard-label">Channel Coding Theorem</div>$$R &lt; C \Rightarrow \exists \text{ code with } P_e \to 0$$</div>
+<aside class="tp-feature tp-feature-2"><p>This theorem tells you what you <em>should</em> do: keep your transmission rate below channel capacity if you want reliable communication. It is a mathematical theorem that entails a prescription. The "ought" is built into the mathematics.</p></aside>
+<h3>4.2 Kolmogorov Optimality</h3>
+<div class="tp-eqcard"><div class="tp-eqcard-label">Kolmogorov Optimality</div>$$K(x) = \min\{|p| : U(p) = x\}$$</div>
+<p>The definition of Kolmogorov complexity defines the <em>best</em> (shortest) description. "Best" is a normative term. The definition itself embeds an ought.</p>
+<h3>The Dissolution</h3>
+<p>Information theory contains built-in "oughts": you ought to compress efficiently, transmit below capacity, minimize description length, and not deceive (produce divergence between signal and reality). These are not human conventions. They are mathematical necessities. The is-ought gap is bridged by the inherent normativity of information itself.</p>
+<p><strong>Information is normative, and normativity is informational.</strong></p>
+<p><strong>Sections I-III</strong> The paper builds the axiom chain from information-theoretic constraints rather than theological assumptions.</p>
+<p><strong>Section IV</strong> The bridge appears when information theory turns out to contain built-in prescriptions about fidelity, compression, and truthfulness.</p>
+<p><strong>What comes next</strong> The remaining sections pressure-test the chain, propose empirical hooks, and connect the formal derivation to human moral experience.</p>
+</section>
+<section>
+<h2>V. Objections and Responses</h2>
+<h3>O1: The Platonic Objection</h3>
+<p><em>Mathematical truths exist in a Platonic realm of abstract objects. They require no ground beyond their own abstract existence.</em></p>
+<p>The Platonic realm must answer to A8 (Sufficient Reason). Why does this realm exist rather than not? Positing abstract objects does not explain them. Moreover, Platonism faces the epistemological objection (Benacerraf 1973): how do concrete minds access abstract objects? This account provides that epistemic connection—human minds access mathematical truth because both are grounded in the same rational source.</p>
+<h3>O2: The Fictionalist Challenge</h3>
+<p><em>Mathematical statements are useful fictions, not literally true.</em></p>
+<p>Fictionalism cannot account for the applicability of mathematics. Sherlock Holmes cannot predict the trajectory of rockets or the behavior of electrons. If mathematical statements were fictions, their systematic applicability would be an inexplicable miracle. Moreover, the fictionalist must explain the constraints on mathematical fiction—why can't we consistently "make up" that \(2+2=5\)?</p>
+<h3>O3: The Evolutionary Debunking Argument</h3>
+<p><em>Our mathematical intuitions evolved for survival, not truth-tracking.</em></p>
+<p>Self-undermining. If our cognitive faculties are unreliable, then so is the reasoning that produced this objection. It saws off the branch it sits on.</p>
+<h3>O4: The Naturalistic Objection</h3>
+<p><em>Mathematics can be grounded in physical structures—in brains, computation, physical regularities.</em></p>
+<p>By A6, mathematical truth is immaterial. No physical structure can ground something that has no physical properties. By A2, mathematical truth predates all physical structures. No temporal physical entity can ground an eternal truth.</p>
+<h3>O5: The Multiverse Objection</h3>
+<p><em>Perhaps mathematical truths vary across universes.</em></p>
+<p>This equivocates between mathematical truth and physical law. Physical constants might vary; mathematical truths cannot. \(2+2=4\) is necessary (A3)—there is no possible world in which it is false.</p>
+<h3>O6: The Conceivability Objection</h3>
+<p><em>I can conceive of mathematical truths existing without a divine ground.</em></p>
+<p>Conceivability does not imply metaphysical possibility. We can conceive of water not being H₂O, but this is metaphysically impossible given the nature of water.</p>
+<h3>O7: The "Which God?" Objection</h3>
+<p><em>This only establishes the existence of a Logos, not the God of any specific religion.</em></p>
+<p>Correct as stated. This argument establishes properties. Which religion correctly identifies this ground is a further question. However, the Johannine identification of Jesus Christ with the Logos (John 1:1–14) is a direct claim that the specific entity derived here is the Christian God. See Book IV — The Key for the full analysis.</p>
+<h3>O8: The Euthyphro Dilemma</h3>
+<p>False dilemma resolved by divine simplicity. Mathematical truths flow from God's nature—neither arbitrarily willed nor externally constraining. They are expressions of the divine Logos.</p>
+<h3>O9: The Parsimony Objection</h3>
+<p>Occam's razor says not to multiply entities beyond necessity. This paper argues the ground is <em>necessary</em>. One unified ground is more parsimonious than separate, unrelated explanations.</p>
+<h3>O10: The Coherence Objection</h3>
+<p>The coherence of the derived Ground is guaranteed by A7 and A15. Apparent paradoxes arise from informal formulations, not from the rigorously derived Logos.</p>
+</section>
+<section>
+<h2>VI. Testable Predictions and Experimental Protocols</h2>
+<ul>
+<li>P1 — Landauer Confirmation Confirmed</li>
+</ul>
+<p>Information erasure requires minimum energy \(E = k_B T \ln 2\). Status: CONFIRMED (Bérut et al., 2012).</p>
+<ul>
+<li>P2 — Measurement-Information Coupling Testable</li>
+</ul>
+<p>Quantum measurement energy scales with information gain: \(\Delta E = k_B T \cdot \Delta H\).</p>
+<ul>
+<li>P3 — Consciousness-Collapse Correlation Testable</li>
+</ul>
+<p>Conscious observation correlates with wavefunction collapse probability: \(P(\text{collapse}) = f(\Phi)\).</p>
+<ul>
+<li>P4 — Moral-Mathematical Neural Correlation Testable</li>
+</ul>
+<aside class="tp-feature tp-feature-3"><p>Brain regions active during mathematical cognition overlap with regions active during moral cognition.</p></aside>
+<ul>
+<li>P5 — Coherence Amplification Supported</li>
+</ul>
+<p>Collective intentionality amplifies local coherence: \(\chi_{\text{collective}} = N^\alpha \cdot \chi_{\text{individual}}\), where \(\alpha &gt; 1\). GCP data, 6σ deviations.</p>
+<ul>
+<li>P6 — Compression-Applicability Correlation Testable</li>
+</ul>
+<p>The applicability of a mathematical theory to physics correlates with its Kolmogorov complexity: lower \(K(\text{theory})\) implies higher applicability.</p>
+</section>
+<section>
+<h2>VII. The Law Written on Hearts</h2>
+<p>Romans 2:15 states that Gentiles "show the work of the law written in their hearts." This paper provides a formal mechanism for this theological claim.</p>
+<p>Let \(f : \text{Human} \to T_m\) denote the access function by which humans recognize mathematical truths. Let \(T_m \subset \text{Logos}\) denote the grounding relation established by this paper.</p>
+<div class="tp-eqcard"><div class="tp-eqcard-label">The Access Relation</div>$$f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}$$</div>
+<p>By transitivity, humans have direct cognitive access to the Logos through the mathematical faculty. This faculty is universal, pre-linguistic, non-arbitrary, and normative—exactly the properties of divinely inscribed moral law as described in the theological tradition.</p>
+</section>
+<section>
+<h2>VIII. Conclusion</h2>
+<div class="tp-eqcard"><div class="tp-eqcard-label">The Complete Argument — Formal Summary</div>$$\exists\, T_m : \square T_m \wedge \text{Universal}(T_m) \wedge \text{Eternal}(T_m) \wedge \text{Coherent}(T_m)$$</div>
+<div class="tp-eqcard">$$K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)$$</div>
+<div class="tp-eqcard">$$\text{Ground} \neq \emptyset \wedge \neg\text{Random}(\text{Ground}) \wedge \neg\text{Deceptive}(\text{Ground})$$</div>
+<div class="tp-eqcard">$$\neg\text{Deceptive} = \text{Truthful} = \text{Moral Property}$$</div>
+<div class="tp-eqcard">$$\therefore \text{Ground}(T_m) = \text{Moral}$$</div>
+<div class="tp-eqcard">$$f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}$$</div>
+<div class="tp-eqcard">$$\text{Physics} = \text{Applied } T_m \Rightarrow \text{Physics is Moral}$$</div>
+<div class="tp-eqcard">$$\therefore \text{Universe is Moral Order} \quad \blacksquare$$</div>
+<blockquote>
+<p>"This most beautiful system of equations, constants, and laws, could only proceed from the counsel and dominion of a truthful and moral Being." — Adapted from Newton's Principia</p>
+</blockquote>
+</section>
+<section>
+<h2>Appendix A: Complete Axiom Index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Level</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>1: Existence</td>
+<td>Mathematical truths exist non-contingently</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>1: Existence</td>
+<td>Mathematical truths are temporally independent</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>1: Existence</td>
+<td>Mathematical truths are necessarily true</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>2: Properties</td>
+<td>Mathematical truth is universal (location-invariant)</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>2: Properties</td>
+<td>Mathematical truth is eternal (time-invariant)</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>2: Properties</td>
+<td>Mathematical truth is immaterial</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>2: Properties</td>
+<td>Mathematical truth is coherent</td>
+</tr>
+<tr>
+<td>A8</td>
+<td>3: Origin</td>
+<td>Mathematical truth requires grounding</td>
+</tr>
+<tr>
+<td>A9</td>
+<td>3: Origin</td>
+<td>The ground cannot be nothing</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>3: Origin</td>
+<td>The ground cannot be chaos</td>
+</tr>
+<tr>
+<td>A11</td>
+<td>3: Origin</td>
+<td>The ground cannot be deceptive</td>
+</tr>
+<tr>
+<td>A12</td>
+<td>4: Source</td>
+<td>The source of universal truth is universal</td>
+</tr>
+<tr>
+<td>A13</td>
+<td>4: Source</td>
+<td>The source of eternal truth is eternal</td>
+</tr>
+<tr>
+<td>A14</td>
+<td>4: Source</td>
+<td>The source of immaterial truth is immaterial</td>
+</tr>
+<tr>
+<td>A15</td>
+<td>4: Source</td>
+<td>The source of coherent truth is coherent</td>
+</tr>
+<tr>
+<td>A16</td>
+<td>5: Moral</td>
+<td>Truth is inherently valuable</td>
+</tr>
+<tr>
+<td>A17</td>
+<td>5: Moral</td>
+<td>Deception is morally wrong</td>
+</tr>
+<tr>
+<td>A18</td>
+<td>5: Moral</td>
+<td>Mathematical and moral truth share a common ground</td>
+</tr>
+<tr>
+<td>A19</td>
+<td>6: Identity</td>
+<td>The ground is the Logos</td>
+</tr>
+<tr>
+<td>A20</td>
+<td>6: Identity</td>
+<td>The Logos is functionally identical to God</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="tp-refs">
+<h2>References</h2>
+<ul>
+<li>Benacerraf, P. (1973). "Mathematical Truth." <em>The Journal of Philosophy</em> , 70(19), 661–679.</li>
+<li>Bérut, A., et al. (2012). "Experimental verification of Landauer's principle." <em>Nature</em> , 483(7388), 187–189.</li>
+<li>Chaitin, G. J. (1982). "Gödel's theorem and information." <em>International Journal of Theoretical Physics</em> , 21(12), 941–954.</li>
+<li>Field, H. (1980). <em>Science Without Numbers</em>. Princeton University Press.</li>
+<li>Gödel, K. (1931). "Über formal unentscheidbare Sätze." <em>Monatshefte für Mathematik und Physik</em> , 38(1), 173–198.</li>
+<li>Kolmogorov, A. N. (1965). "Three approaches to the quantitative definition of information." <em>Problems of Information Transmission</em> , 1(1), 1–7.</li>
+<li>Shannon, C. E. (1948). "A mathematical theory of communication." <em>Bell System Technical Journal</em> , 27(3), 379–423.</li>
+<li>Tononi, G. (2008). "Consciousness as integrated information." <em>The Biological Bulletin</em> , 215(3), 216–242.</li>
+<li>Wigner, E. P. (1960). "The unreasonable effectiveness of mathematics." <em>Communications on Pure and Applied Mathematics</em> , 13(1), 1–14.</li>
+</ul>
+</section>
+</div>
+<div class="tp-level-panel" data-reading-level="phd" hidden="">
+<h1>Theophysics, Book II: The Lock — A Formal Derivation of the Ground of Mathematical Truth</h1>
+<section>
+<h2>Abstract</h2>
+<p>This paper presents a formal derivation of the necessary existence of a morally good, eternal, universal, immaterial, and coherent ground of mathematical truth. Employing information-theoretic formalization—including Shannon entropy, Kolmogorov complexity, and Chaitin's incompleteness theorem—it is demonstrated that mathematical truth cannot be self-grounding and must originate from an external source. Through a chain of twenty axioms, each individually undeniable on pain of self-refutation or empirical absurdity, it is established that this source must possess properties isomorphic to the classical divine attributes. The critical axiom (A11) demonstrates that the non-deceptive nature of mathematical truth—a moral property—must be inherited from its source, thereby deriving morality from information theory and bridging the is-ought gap. The argument proceeds through six levels: existence, properties, origin, source properties, moral dimension, and identification. Objections are addressed, testable predictions are proposed, and the theological implications are delineated.</p>
+<hr/>
+</section>
+<section>
+<h2>I. Introduction</h2>
+<p>Eugene Wigner's (1960) seminal paper, "The Unreasonable Effectiveness of Mathematics in the Natural Sciences," posed a question that remains unresolved within contemporary philosophy of mathematics: Why do abstract mathematical structures, developed without reference to physical reality, consistently and precisely describe that reality? The present investigation provides a definitive answer: the effectiveness is not unreasonable but inevitable, given an adequate understanding of what mathematical truth is and whence it originates.</p>
+<p>The argument proceeds in five stages: (1) establishing the information-theoretic foundations; (2) deriving the properties of mathematical truth through twenty axioms; (3) demonstrating that these properties necessitate an external ground with specific characteristics; (4) addressing major objections; and (5) presenting testable predictions.</p>
+<h3>1.1 Central Thesis</h3>
+<p>Mathematical truth is grounded in a necessary, eternal, universal, immaterial, coherent, and morally good source. This source is functionally identical to the Logos of classical theology. This conclusion is not asserted <em>a priori</em> but is <em>derived</em> from first principles using information theory.</p>
+<hr/>
+</section>
+<section>
+<h2>II. Information-Theoretic Foundations</h2>
+<h3>2.1 Shannon Entropy</h3>
+<p>For a discrete random variable (X) with possible values ({x_1, x_2, \ldots, x_n}) and probability mass function (P(X)), Shannon entropy (H(X)) is defined as:</p>
+<p><strong>Definition 1 — Shannon Entropy</strong></p>
+<p>[<br/>
+H(X) = -\sum_{i=1}^{n} P(x_i) \log_2 P(x_i)<br/>
+]</p>
+<p>where (H(X)) is measured in bits. Shannon entropy quantifies the average information content or uncertainty inherent in the possible outcomes of a random variable. Maximum entropy occurs when all outcomes are equally likely (maximum uncertainty); minimum entropy occurs when one outcome has probability 1 (no uncertainty). This distinction is foundational for the analysis of physical law.</p>
+<h3>2.2 Kolmogorov Complexity</h3>
+<p>For a string (x) and a universal Turing machine (U), the Kolmogorov complexity (K(x)) is the length of the shortest program (p) such that (U(p) = x):</p>
+<p><strong>Definition 2 — Kolmogorov Complexity</strong></p>
+<p>[<br/>
+K(x) = \min{|p| : U(p) = x}<br/>
+]</p>
+<p>where (|p|) denotes the length of program (p) in bits. Kolmogorov complexity measures the intrinsic information content of a string, independent of any probability distribution. A string is random (incompressible) if (K(x) \approx |x|); it is structured (compressible) if (K(x) \ll |x|).</p>
+<h3>2.3 The Compression-Entropy Bridge</h3>
+<p><strong>Theorem 1 — Compression-Entropy Bridge</strong></p>
+<p>[<br/>
+K(x) \approx H(X) \quad \text{for random strings}<br/>
+]<br/>
+[<br/>
+K(x) \ll H(X) \quad \text{for structured strings}<br/>
+]</p>
+<p>Random strings exhibit no exploitable patterns; their shortest description is the string itself. Structured strings exhibit patterns that permit compression below their raw length.</p>
+<h3>2.4 The Critical Observation</h3>
+<p>The physical universe exhibits (K \ll H). Physical laws are compressions—compact equations that describe vast ranges of phenomena. The existence of any physical law entails that the universe is not random but constitutes compressed information. This observation is foundational to all that follows.</p>
+<h3>2.5 Chaitin's Incompleteness Theorem</h3>
+<p>For any formal system (F), there exists a constant (c) such that (F) cannot prove (K(x) &gt; |F| + c) for any string (x):</p>
+<p><strong>Theorem 2 — Chaitin's Incompleteness</strong></p>
+<p>[<br/>
+\forall F, \exists c : F \nvdash K(x) &gt; |F| + c<br/>
+]</p>
+<p><strong>Corollary 1 — Mathematical Truth Cannot Self-Ground</strong></p>
+<p>[<br/>
+\text{Ground}(\text{Math}) \notin \text{Math}<br/>
+]</p>
+<p>This constitutes the formal statement that mathematical truth requires an external ground. No formal system can fully capture or justify the truths it employs. The ground of mathematics must be meta-mathematical. All subsequent reasoning flows from this non-negotiable fact.</p>
+<hr/>
+</section>
+<section>
+<h2>III. The Axiom Chain</h2>
+<p>Twenty axioms, organized into six levels, are presented. Each axiom is individually undeniable—its negation leads to absurdity, self-refutation, or the collapse of rational discourse. Collectively, they derive the existence and properties of the ground of mathematical truth.</p>
+<h3>3.1 Level 1: Existence (A1–A3)</h3>
+<p><strong>A1 — Existence</strong></p>
+<p>Mathematical truths exist that are non-contingently true.</p>
+<p>[<br/>
+\exists\, T_m : \text{True}(T_m) \wedge \neg\text{Contingent}(T_m)<br/>
+]</p>
+<p><em>Justification:</em> If no mathematical truths existed, then "no mathematical truths exist" would itself be a mathematical truth, yielding a contradiction. The denial of A1 is self-refuting.</p>
+<p><strong>A2 — Temporal Independence</strong></p>
+<p>Mathematical truths held at all times prior to human existence and will hold after.</p>
+<p>[<br/>
+\forall t : \text{True}(T_m, t) \text{ with } I(T_m; t) = 0<br/>
+]</p>
+<p>where (I(T_m; t)) denotes the mutual information between mathematical truth and time. <em>Justification:</em> If mathematical truths only became true when humans evolved, then physical laws could not have operated for 13.8 billion years prior to human emergence. Stars could not have formed. The universe could not exist in its present state. Denial leads to empirical absurdity.</p>
+<p><strong>A3 — Necessity</strong></p>
+<p>Mathematical truths are necessarily true; their negations are impossible.</p>
+<p>[<br/>
+\square(2+2=4) \wedge \neg\Diamond(2+2=5)<br/>
+]</p>
+<p><em>Justification:</em> If (2+2=5) were possible in some possible world, logical inference would be arbitrary and could not be trusted. However, one cannot even state that possibility without presupposing the validity of logic. The denial is self-undermining.</p>
+<h3>3.2 Level 2: Properties (A4–A7)</h3>
+<p><strong>A4 — Universality</strong></p>
+<p>Mathematical truth is location-invariant.</p>
+<p>[<br/>
+I(T_m; \text{position}) = 0<br/>
+]</p>
+<p><em>Justification:</em> If mathematical truth varied by location, physics would differ across spatial regions. GPS systems would fail; rocket navigation would be impossible. No coherent universe could exist with location-dependent mathematics.</p>
+<p><strong>A5 — Eternality</strong></p>
+<p>Mathematical truth does not change over time.</p>
+<p>[<br/>
+\frac{d}{dt} K(T_m) = 0<br/>
+]</p>
+<p><em>Justification:</em> If (2+2=4) today but might equal 5 tomorrow, scientific knowledge would be impossible. Every experiment would be meaningless. Science presupposes A5.</p>
+<p><strong>A6 — Immateriality</strong></p>
+<p>Mathematical truth has no spatial location, mass, or physical properties.</p>
+<p>[<br/>
+\neg\exists x : \text{Location}(T_m) = x \wedge \text{Mass}(T_m) = 0<br/>
+]</p>
+<p><em>Justification:</em> If mathematical truth were physical, destroying its physical substrate would destroy the truth. However, no physical destruction can render (2+2 \neq 4). Mathematical truth is immune to physical intervention.</p>
+<p><strong>A7 — Coherence</strong></p>
+<p>No true mathematical statement contradicts another true mathematical statement.</p>
+<p>[<br/>
+\forall T_1, T_2 \in T_m : \neg(T_1 \wedge \neg T_1)<br/>
+]</p>
+<p><em>Justification:</em> By the principle of explosion (<em>ex falso quodlibet</em>), a contradiction entails every statement. If mathematics were internally contradictory, every statement would be provable, rendering mathematics trivial and useless.</p>
+<h3>3.3 Checkpoint Alpha — The Emergent Profile</h3>
+<p>From axioms A1–A7, it has been established that mathematical truth is: existent, necessary, eternal, universal, immaterial, and coherent. This profile matches no physical object in the universe. However, it is precisely isomorphic to the classical divine attributes: Being (exists), Aseity (necessary), Eternality, Omnipresence (universal), Spirituality (immaterial), and Integrity (coherent). These properties were derived from the analysis of mathematical truth alone—not from theological premises. The theological identification follows the logical derivation.</p>
+<h3>3.4 Level 3: Origin (A8–A11)</h3>
+<p><strong>A8 — Sufficient Reason</strong></p>
+<p>Mathematical truth requires grounding; brute facts are explanatorily unacceptable.</p>
+<p>[<br/>
+K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)<br/>
+]</p>
+<p><em>Justification:</em> The Principle of Sufficient Reason is presupposed by all rational inquiry. To ask "why?" is to presuppose that explanations exist. If mathematical truths were brute facts requiring no explanation, then nothing would require explanation, and science would be impossible.</p>
+<p><strong>A9 — Not From Nothing</strong></p>
+<p>Nothing cannot produce something.</p>
+<p>[<br/>
+K(\emptyset) = 0 \Rightarrow \text{Output}(\emptyset) = \emptyset<br/>
+]</p>
+<p><em>Justification:</em> "Nothing" has zero information content by definition. An output requires information. Zero information cannot produce non-zero information. This is not a metaphysical claim but an information-theoretic necessity.</p>
+<p><strong>A10 — Not From Chaos</strong></p>
+<p>Random processes cannot produce structured output.</p>
+<p>[<br/>
+K(T_m) \ll |T_m| \Rightarrow \neg\text{Random}(\text{Ground})<br/>
+]</p>
+<p><em>Justification:</em> Random processes produce maximum entropy. However, mathematical truth is highly structured—compressible. The Kolmogorov complexity of mathematical truths is vastly less than their raw description length. This structure cannot emerge from randomness; it requires a structured source.</p>
+<p><strong>A11 — Not From Deception</strong></p>
+<p>Truth cannot originate from a deceptive source.</p>
+<p>[<br/>
+\neg\text{Deceptive}(T_m) \Rightarrow \neg\text{Deceptive}(\text{Ground})<br/>
+]</p>
+<p><em>Justification:</em> Deception is defined as divergence between appearance and reality: (\text{Deception}(X) \iff \text{Appears}(X,Y) \wedge \neg\text{Is}(X,Y)). Mathematical truth involves no such divergence—(2+2) appears to equal 4 and actually does equal 4. If the source of mathematical truth were deceptive, its outputs could not reliably be non-deceptive. However, mathematical truths are non-deceptive. Therefore the source must be non-deceptive.</p>
+<h3>3.5 Critical Transition — From Logic to Morality</h3>
+<p>Axiom A11 constitutes the keystone of the entire argument. Being non-deceptive is a moral property. Truthfulness is a virtue; deception is a vice. This is not a contested philosophical claim—it is a cultural and ethical universal. Deception is proscribed in every moral framework that has ever existed.</p>
+<p>By A11, the ground of mathematical truth must be non-deceptive. By the universality of the moral status of truthfulness, the ground must possess a moral virtue. A moral property has been derived from information-theoretic analysis of mathematical truth.</p>
+<p><strong>Corollary 2:</strong> The ground of mathematical truth is morally good—at least with respect to truthfulness.</p>
+<h3>3.6 Level 4: Source Properties (A12–A15)</h3>
+<p>The ground of mathematical truth must share the properties of what it grounds, or it could not confer those properties. A source cannot confer properties it does not possess. A local source cannot produce universal output. A temporal source cannot produce eternal output. A material source cannot produce immaterial output. An incoherent source cannot produce coherent output.</p>
+<p><strong>A12 — Source Universality</strong></p>
+<p>The source of universal truth must itself be universal.</p>
+<p><strong>A13 — Source Eternality</strong></p>
+<p>The source of eternal truth must itself be eternal.</p>
+<p><strong>A14 — Source Immateriality</strong></p>
+<p>The source of immaterial truth must itself be immaterial.</p>
+<p><strong>A15 — Source Coherence</strong></p>
+<p>The source of coherent truth must itself be coherent.</p>
+<h3>3.7 Level 5: The Moral Dimension (A16–A18)</h3>
+<p><strong>A16 — Truth as Value</strong></p>
+<p>Truth is inherently valuable; falsehood is inherently disvaluable.</p>
+<p><em>Justification:</em> Even the relativist who claims "there is no objective truth" intends that statement to be objectively true. The value of truth is presupposed by every assertion, every argument, every inquiry.</p>
+<p><strong>A17 — Deception as Wrong</strong></p>
+<p>Deception is morally wrong.</p>
+<p><em>Justification:</em> This is a cultural universal. Every known moral system condemns deception. Even the liar must pretend truthfulness, implicitly acknowledging the normative force of truth.</p>
+<p><strong>A18 — Mathematical-Moral Unity</strong></p>
+<p>The source of mathematical truth and the source of moral truth are identical.</p>
+<p><em>Justification:</em> By A11, the ground of mathematical truth must be non-deceptive—a moral property. By parsimony (Occam's razor), entities should not be multiplied beyond necessity. If the ground of mathematical truth has moral properties, it is more parsimonious to identify it with the ground of morality than to posit two separate grounds.</p>
+<h3>3.8 Level 6: Identification (A19–A20)</h3>
+<p><strong>A19 — The Logos</strong></p>
+<p>The ground of mathematical and moral truth is the Logos—a unified, rational, moral source.</p>
+<p><em>Justification:</em> The term "Logos" ((\lambda\acute{o}\gamma o\varsigma)) precisely captures what has been derived: rational structure (mathematical truth) unified with moral order. The term predates Christianity, appearing in Heraclitus, the Stoics, and Philo before its Christian appropriation.</p>
+<p><strong>A20 — The Identification</strong></p>
+<p>The Logos is functionally identical to the God of classical theism.</p>
+<p><em>Justification:</em> The Logos, as derived, possesses: necessary existence, eternality, universality (omnipresence), immateriality (spirituality), coherence (integrity), rationality, and moral goodness. This constitutes the complete profile of the God of classical theism. Since the properties are identical, either they refer to the same entity, or there exist two entities with identical profiles—which violates the identity of indiscernibles.</p>
+<hr/>
+</section>
+<section>
+<h2>IV. The Is-Ought Bridge</h2>
+<p>Hume's guillotine claims that "ought" cannot be derived from "is"—that no amount of factual description can logically entail a normative prescription. The present investigation dissolves this problem by demonstrating that information theory is inherently normative.</p>
+<h3>4.1 Shannon's Channel Coding Theorem</h3>
+<p><strong>Channel Coding Theorem</strong></p>
+<p>[<br/>
+R &lt; C \Rightarrow \exists \text{ code with } P_e \to 0<br/>
+]</p>
+<p>where (R) is the transmission rate, (C) is the channel capacity, and (P_e) is the probability of error. This theorem prescribes what one <em>should</em> do: maintain transmission rate below channel capacity to achieve reliable communication. It is a mathematical theorem that entails a prescription. The "ought" is built into the mathematics.</p>
+<h3>4.2 Kolmogorov Optimality</h3>
+<p><strong>Kolmogorov Optimality</strong></p>
+<p>[<br/>
+K(x) = \min{|p| : U(p) = x}<br/>
+]</p>
+<p>The definition of Kolmogorov complexity defines the <em>best</em> (shortest) description. "Best" is a normative term. The definition itself embeds an ought.</p>
+<h3>4.3 The Dissolution</h3>
+<p>Information theory contains built-in "oughts": one ought to compress efficiently, transmit below capacity, minimize description length, and not deceive (produce divergence between signal and reality). These are not human conventions. They are mathematical necessities. The is-ought gap is bridged by the inherent normativity of information itself.</p>
+<p><strong>Information is normative, and normativity is informational.</strong></p>
+<p>Sections I–III build the axiom chain from information-theoretic constraints rather than theological assumptions. Section IV demonstrates that the bridge appears when information theory turns out to contain built-in prescriptions about fidelity, compression, and truthfulness. The remaining sections pressure-test the chain, propose empirical hooks, and connect the formal derivation to human moral experience.</p>
+<hr/>
+</section>
+<section>
+<h2>V. Objections and Responses</h2>
+<h3>O1: The Platonic Objection</h3>
+<p><em>Mathematical truths exist in a Platonic realm of abstract objects. They require no ground beyond their own abstract existence.</em></p>
+<p><strong>Response:</strong> The Platonic realm must answer to A8 (Sufficient Reason). Why does this realm exist rather than not? Positing abstract objects does not explain them. Moreover, Platonism faces the epistemological objection (Benacerraf 1973): how do concrete minds access abstract objects? The present account provides this epistemic connection—human minds access mathematical truth because both are grounded in the same rational source.</p>
+<h3>O2: The Fictionalist Challenge</h3>
+<p><em>Mathematical statements are useful fictions, not literally true.</em></p>
+<p><strong>Response:</strong> Fictionalism cannot account for the applicability of mathematics. Sherlock Holmes cannot predict the trajectory of rockets or the behavior of electrons. If mathematical statements were fictions, their systematic applicability would constitute an inexplicable miracle. Moreover, the fictionalist must explain the constraints on mathematical fiction—why one cannot consistently "make up" that (2+2=5).</p>
+<h3>O3: The Evolutionary Debunking Argument</h3>
+<p><em>Our mathematical intuitions evolved for survival, not truth-tracking.</em></p>
+<p><strong>Response:</strong> This argument is self-undermining. If our cognitive faculties are unreliable, then so is the reasoning that produced this objection. It saws off the branch on which it sits.</p>
+<h3>O4: The Naturalistic Objection</h3>
+<p><em>Mathematics can be grounded in physical structures—in brains, computation, physical regularities.</em></p>
+<p><strong>Response:</strong> By A6, mathematical truth is immaterial. No physical structure can ground something that has no physical properties. By A2, mathematical truth predates all physical structures. No temporal physical entity can ground an eternal truth.</p>
+<h3>O5: The Multiverse Objection</h3>
+<p><em>Perhaps mathematical truths vary across universes.</em></p>
+<p><strong>Response:</strong> This equivocates between mathematical truth and physical law. Physical constants might vary; mathematical truths cannot. (2+2=4) is necessary (A3)—there is no possible world in which it is false.</p>
+<h3>O6: The Conceivability Objection</h3>
+<p><em>I can conceive of mathematical truths existing without a divine ground.</em></p>
+<p><strong>Response:</strong> Conceivability does not imply metaphysical possibility. One can conceive of water not being H₂O, but this is metaphysically impossible given the nature of water.</p>
+<h3>O7: The "Which God?" Objection</h3>
+<p><em>This only establishes the existence of a Logos, not the God of any specific religion.</em></p>
+<p><strong>Response:</strong> Correct as stated. This argument establishes properties. Which religion correctly identifies this ground is a further question. However, the Johannine identification of Jesus Christ with the Logos (John 1:1–14) constitutes a direct claim that the specific entity derived here is the Christian God. See Book IV — The Key for the full analysis.</p>
+<h3>O8: The Euthyphro Dilemma</h3>
+<p><strong>Response:</strong> False dilemma resolved by divine simplicity. Mathematical truths flow from God's nature—neither arbitrarily willed nor externally constraining. They are expressions of the divine Logos.</p>
+<h3>O9: The Parsimony Objection</h3>
+<p><em>Occam's razor says not to multiply entities beyond necessity.</em></p>
+<p><strong>Response:</strong> The present argument demonstrates that the ground is <em>necessary</em>. One unified ground is more parsimonious than separate, unrelated explanations.</p>
+<h3>O10: The Coherence Objection</h3>
+<p><strong>Response:</strong> The coherence of the derived Ground is guaranteed by A7 and A15. Apparent paradoxes arise from informal formulations, not from the rigorously derived Logos.</p>
+<hr/>
+</section>
+<section>
+<h2>VI. Testable Predictions and Experimental Protocols</h2>
+<p><strong>P1 — Landauer Confirmation (Confirmed)</strong></p>
+<p>Information erasure requires minimum energy (E = k_B T \ln 2). <em>Status:</em> CONFIRMED (Bérut et al., 2012).</p>
+<p><strong>P2 — Measurement-Information Coupling (Testable)</strong></p>
+<p>Quantum measurement energy scales with information gain: (\Delta E = k_B T \cdot \Delta H).</p>
+<p><strong>P3 — Consciousness-Collapse Correlation (Testable)</strong></p>
+<p>Conscious observation correlates with wavefunction collapse probability: (P(\text{collapse}) = f(\Phi)), where (\Phi) denotes integrated information (cf. Tononi 2008).</p>
+<p><strong>P4 — Moral-Mathematical Neural Correlation (Testable)</strong></p>
+<p>Brain regions active during mathematical cognition overlap with regions active during moral cognition.</p>
+<p><strong>P5 — Coherence Amplification (Supported)</strong></p>
+<p>Collective intentionality amplifies local coherence: (\chi_{\text{collective}} = N^\alpha \cdot \chi_{\text{individual}}), where (\alpha &gt; 1). Global Consciousness Project data exhibit 6(\sigma) deviations.</p>
+<p><strong>P6 — Compression-Applicability Correlation (Testable)</strong></p>
+<p>The applicability of a mathematical theory to physics correlates with its Kolmogorov complexity: lower (K(\text{theory})) implies higher applicability.</p>
+<hr/>
+</section>
+<section>
+<h2>VII. The Law Written on Hearts</h2>
+<p>Romans 2:15 states that Gentiles "show the work of the law written in their hearts." The present investigation provides a formal mechanism for this theological claim.</p>
+<p>Let (f : \text{Human} \to T_m) denote the access function by which humans recognize mathematical truths. Let (T_m \subset \text{Logos}) denote the grounding relation established herein.</p>
+<p><strong>The Access Relation</strong></p>
+<p>[<br/>
+f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}<br/>
+]</p>
+<p>By transitivity, humans have direct cognitive access to the Logos through the mathematical faculty. This faculty is universal, pre-linguistic, non-arbitrary, and normative—exactly the properties of divinely inscribed moral law as described in the theological tradition.</p>
+<hr/>
+</section>
+<section>
+<h2>VIII. Conclusion</h2>
+<h3>The Complete Argument — Formal Summary</h3>
+<p>[<br/>
+\exists\, T_m : \square T_m \wedge \text{Universal}(T_m) \wedge \text{Eternal}(T_m) \wedge \text{Coherent}(T_m)<br/>
+]</p>
+<p>[<br/>
+K(T_m \mid \text{Ground}) &lt; K(T_m) \Rightarrow \exists\, \text{Ground}(T_m)<br/>
+]</p>
+<p>[<br/>
+\text{Ground} \neq \emptyset \wedge \neg\text{Random}(\text{Ground}) \wedge \neg\text{Deceptive}(\text{Ground})<br/>
+]</p>
+<p>[<br/>
+\neg\text{Deceptive} = \text{Truthful} = \text{Moral Property}<br/>
+]</p>
+<p>[<br/>
+\therefore \text{Ground}(T_m) = \text{Moral}<br/>
+]</p>
+<p>[<br/>
+f : \text{Human} \to T_m \wedge T_m \subset \text{Logos} \Rightarrow f : \text{Human} \to \text{Logos}<br/>
+]</p>
+<p>[<br/>
+\text{Physics} = \text{Applied } T_m \Rightarrow \text{Physics is Moral}<br/>
+]</p>
+<p>[<br/>
+\therefore \text{Universe is Moral Order} \quad \blacksquare<br/>
+]</p>
+<blockquote>
+<p>"This most beautiful system of equations, constants, and laws, could only proceed from the counsel and dominion of a truthful and moral Being." — Adapted from Newton's <em>Principia</em></p>
+</blockquote>
+<hr/>
+</section>
+<section>
+<h2>Appendix A: Complete Axiom Index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Level</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>1: Existence</td>
+<td>Mathematical truths exist non-contingently</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>1: Existence</td>
+<td>Mathematical truths are temporally independent</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>1: Existence</td>
+<td>Mathematical truths are necessarily true</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>2: Properties</td>
+<td>Mathematical truth is universal (location-invariant)</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>2: Properties</td>
+<td>Mathematical truth is eternal (time-invariant)</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>2: Properties</td>
+<td>Mathematical truth is immaterial</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>2: Properties</td>
+<td>Mathematical truth is coherent</td>
+</tr>
+<tr>
+<td>A8</td>
+<td>3: Origin</td>
+<td>Mathematical truth requires grounding</td>
+</tr>
+<tr>
+<td>A9</td>
+<td>3: Origin</td>
+<td>The ground cannot be nothing</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>3: Origin</td>
+<td>The ground cannot be chaos</td>
+</tr>
+<tr>
+<td>A11</td>
+<td>3: Origin</td>
+<td>The ground cannot be deceptive</td>
+</tr>
+<tr>
+<td>A12</td>
+<td>4: Source</td>
+<td>The source of universal truth is universal</td>
+</tr>
+<tr>
+<td>A13</td>
+<td>4: Source</td>
+<td>The source of eternal truth is eternal</td>
+</tr>
+<tr>
+<td>A14</td>
+<td>4: Source</td>
+<td>The source of immaterial truth is immaterial</td>
+</tr>
+<tr>
+<td>A15</td>
+<td>4: Source</td>
+<td>The source of coherent truth is coherent</td>
+</tr>
+<tr>
+<td>A16</td>
+<td>5: Moral</td>
+<td>Truth is inherently valuable</td>
+</tr>
+<tr>
+<td>A17</td>
+<td>5: Moral</td>
+<td>Deception is morally wrong</td>
+</tr>
+<tr>
+<td>A18</td>
+<td>5: Moral</td>
+<td>Mathematical and moral truth share a common ground</td>
+</tr>
+<tr>
+<td>A19</td>
+<td>6: Identity</td>
+<td>The ground is the Logos</td>
+</tr>
+<tr>
+<td>A20</td>
+<td>6: Identity</td>
+<td>The Logos is functionally identical to God</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+</section>
+<section class="tp-refs">
+<h2>References</h2>
+<p>Benacerraf, P. (1973). Mathematical truth. <em>The Journal of Philosophy</em>, 70(19), 661–679.</p>
+<p>Bérut, A., Arakelyan, A., Petrosyan, A., Ciliberto, S., Dillenschneider, R., &amp; Lutz, E. (2012). Experimental verification of Landauer's principle. <em>Nature</em>, 483(7388), 187–189.</p>
+<p>Chaitin, G. J. (1982). Gödel's theorem and information. <em>International Journal of Theoretical Physics</em>, 21(12), 941–954.</p>
+<p>Field, H. (1980). <em>Science Without Numbers</em>. Princeton University Press.</p>
+<p>Gödel, K. (1931). Über formal unentscheidbare Sätze der Principia Mathematica und verwandter Systeme I. <em>Monatshefte für Mathematik und Physik</em>, 38(1), 173–198.</p>
+<p>Kolmogorov, A. N. (1965). Three approaches to the quantitative definition of information. <em>Problems of Information Transmission</em>, 1(1), 1–7.</p>
+<p>Shannon, C. E. (1948). A mathematical theory of communication. <em>Bell System Technical Journal</em>, 27(3), 379–423.</p>
+<p>Tononi, G. (2008). Consciousness as integrated information: A provisional manifesto. <em>The Biological Bulletin</em>, 215(3), 216–242.</p>
+<p>Wigner, E. P. (1960). The unreasonable effectiveness of mathematics in the natural sciences. <em>Communications on Pure and Applied Mathematics</em>, 13(1), 1–14.</p>
+</section>
+</div>
+</div>
+<!-- ▲▲▲ ARTICLE BODY ▲▲▲ -->
+</article>
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+<div class="tp-audit-box">
+<div class="tp-audit-head">Final Audit</div>
+<p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+<div class="tp-audit-covenant">
+<b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+<div class="tp-audit-grid">
+<div class="tp-audit-col tp-col-right">
+<h4>What We Got Right</h4>
+<ul>
+<li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+</ul>
+</div>
+<div class="tp-audit-col tp-col-over">
+<h4>What We Overstated</h4>
+<ul>
+<li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+</ul>
+</div>
+<div class="tp-audit-col tp-col-wrong">
+<h4>What We Got Wrong</h4>
+<ul>
+<li>Claims that need correction, tightening, or weaker formulation.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+<div class="tp-sub-title">The Math Behind the Claims</div>
+<div class="tp-sub-grid">
+<a class="tp-sub-card" href="/equation/"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+<a class="tp-sub-card" href="/isomorphism/"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+<a class="tp-sub-card" href="/proof-explorer/"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+<a class="tp-sub-card" href="/rigor/"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+<a class="tp-sub-card" href="/lean4/"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+</div>
+</section>
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+<div class="tp-sub-title">Everything Else</div>
+<div class="tp-sub-grid">
+<a class="tp-sub-card" href="/glossary/"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+<a class="tp-sub-card" href="/media/"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+<a class="tp-sub-card" href="/podcast/"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+<a class="tp-sub-card" href="/audio/"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+<a class="tp-sub-card" href="/subdomains/"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+</div>
+</section>
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+<div class="tp-series-strip">
+<a class="active" href="/">Home</a>
+<a href="/moral-decline/">MDA</a>
+<a href="/genesis-to-quantum/">GTQ</a>
+<a href="/Convergence_Series/">Convergence</a>
+<a href="/Logos_Papers/">Logos Papers</a>
+<a href="/one-page-stories/">One-Page Stories</a>
+<a class="soon" href="/revolution-of-truth/">Consciousness</a>
+<a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+</div>
+</nav>
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+<div class="tp-door-num">15 + 15 = 100</div>
+<div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+<span class="tp-door-mark"></span>
+</div>
+<script>
+/* ═══════ AUTO-ACTIVE NAV ═══════ */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article (comes from elsewhere later) */
+const ARTICLE_PROFILE=[
+  {
+    "name": "Information Theory",
+    "pct": 30,
+    "color": "#a78bfa"
+  },
+  {
+    "name": "Theology",
+    "pct": 25,
+    "color": "#d4af37"
+  },
+  {
+    "name": "Mathematics",
+    "pct": 20,
+    "color": "#ff7d90"
+  },
+  {
+    "name": "Philosophy",
+    "pct": 10,
+    "color": "#aeb8d6"
+  },
+  {
+    "name": "Physics",
+    "pct": 10,
+    "color": "#7cc7ff"
+  },
+  {
+    "name": "Moral Philosophy",
+    "pct": 5,
+    "color": "#aeb8d6"
+  }
+];
+const ARTICLE_CLAIMS=[
+  "Mathematical truth cannot be self-grounding and must originate from an external source, proven by Chaitin's incompleteness theorem.",
+  "The source of mathematical truth must be non-deceptive (a moral property), which bridges the is-ought gap by deriving morality from information theory.",
+  "The ground of mathematical truth possesses properties identical to the classical divine attributes: necessary existence, eternality, universality, immateriality, coherence, and moral goodness.",
+  "The Logos derived from 20 axioms is functionally identical to the God of classical theism.",
+  "Information theory contains built-in 'oughts' (normativity) about fidelity, compression, and truthfulness, dissolving Hume's is-ought problem.",
+  "Humans have direct cognitive access to the Logos through the mathematical faculty, providing a mechanism for the 'law written on hearts' (Romans 2:15).",
+  "The physical universe exhibits K << H (compressed information), meaning physics is applied mathematics, and therefore the universe is a moral order."
+];
+const ARTICLE_METADATA={
+  "article_id": "drv-02-the-lock",
+  "series": "revolution-of-truth",
+  "type": "article",
+  "reading_level": "college",
+  "one_sentence": "Twenty Axioms from Information Theory"
+};
+
+/* Render classification bar (inside header lip) */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
+
+/* Render canon-ingest metadata in the top-bar lip */
+const canonMeta=document.getElementById('canonMeta');
+if(canonMeta&&ARTICLE_METADATA){
+  const chip=(label,value,cls='')=>value?`<span class="tp-canon-chip ${cls}"><strong>${label}</strong> ${String(value)}</span>`:'';
+  const fields=[
+    chip('Series',ARTICLE_METADATA.series),
+    chip('Type',ARTICLE_METADATA.type),
+    chip('Level',ARTICLE_METADATA.reading_level),
+    chip('χ',ARTICLE_METADATA.chi_variables),
+    chip('Laws',ARTICLE_METADATA.framework_laws),
+    chip('ISO',ARTICLE_METADATA.related_isos),
+    chip('Tags',ARTICLE_METADATA.primary_tags||ARTICLE_METADATA.keywords),
+    chip('Summary',ARTICLE_METADATA.one_sentence||ARTICLE_METADATA.short_summary,'summary')
+  ].filter(Boolean);
+  canonMeta.innerHTML=fields.join('');
+}
+
+/* Render domain pills into the Verified bar (right side) */
+const domainChips=document.getElementById('vDomainChips');
+if(domainChips){
+  domainChips.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="v-chip on" style="--chip-color:${d.color};--chip-bg:${d.color}1f">${d.name}</span>`).join('');
+}
+
+/* Render 100% domain meter — full-width hairline; widths are flex:pct so they always sum to one whole */
+const domainMeter=document.getElementById('vDomainMeter');
+if(domainMeter){
+  domainMeter.innerHTML=ARTICLE_PROFILE.map((d,i)=>`<span class="v-domain-meter-seg" data-i="${i}" style="flex:${d.pct};background:${d.color}" title="${d.name}"></span>`).join('');
+}
+
+/* Pill ↔ segment hover linking — brighten the matching share, dim the rest */
+if(domainChips&&domainMeter){
+  const chipEls=[...domainChips.querySelectorAll('.v-chip')];
+  const segEls=[...domainMeter.querySelectorAll('.v-domain-meter-seg')];
+  chipEls.forEach((chip,i)=>{
+    chip.addEventListener('mouseenter',()=>{domainMeter.classList.add('dim');if(segEls[i])segEls[i].classList.add('hot');});
+    chip.addEventListener('mouseleave',()=>{domainMeter.classList.remove('dim');if(segEls[i])segEls[i].classList.remove('hot');});
+  });
+}
+
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
+</script>
+<!-- MTL worker client + shared components -->
+
+<script src="../components/tp-header-lip.js"></script>
+<script src="../components/audio-dock.js"></script>
+<script src="../components/verification-bar.js"></script>
+<script src="../components/reading-levels.js"></script>
+<script src="../components/tp-scroll-chrome.js"></script>
+<script defer="" src="/shared/js/mtl-worker-client.js"></script>
+<script defer="" src="/site-shell/frame.js"></script></body>
+</html>

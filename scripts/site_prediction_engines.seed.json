@@ -1,0 +1,78 @@
+{
+  "version": "2026-07-01",
+  "purpose": "Seed ensemble registry for coherence scoring, pressure testing, and prediction chaining across the website pipeline.",
+  "engines": [
+    {
+      "engine_id": "chi_product_v1",
+      "label": "Chi Product Baseline",
+      "family": "master_equation",
+      "enabled": true,
+      "stage": "score",
+      "sequence": 10,
+      "consumes": ["article_text", "claims", "variables"],
+      "produces": ["chi_score", "verdict_band", "variable_profile"],
+      "confidence_weight": 1.0,
+      "notes": "Baseline multiplicative coherence score."
+    },
+    {
+      "engine_id": "chi_pressure_gradient_v1",
+      "label": "Pressure Gradient",
+      "family": "pressure_test",
+      "enabled": true,
+      "stage": "pressure",
+      "sequence": 20,
+      "consumes": ["chi_score", "claims", "falsifiers"],
+      "produces": ["pressure_result", "weak_joints", "brittleness_index"],
+      "confidence_weight": 1.0,
+      "notes": "Adversarial pressure against the current coherence profile."
+    },
+    {
+      "engine_id": "markov_prediction_v1",
+      "label": "Markov Prediction Chain",
+      "family": "markov",
+      "enabled": true,
+      "stage": "predict",
+      "sequence": 30,
+      "consumes": ["chi_score", "pressure_result", "history"],
+      "produces": ["prediction", "confidence", "expected_shift"],
+      "confidence_weight": 0.9,
+      "notes": "Sequence model for next-state expectation."
+    },
+    {
+      "engine_id": "bayes_forecast_v1",
+      "label": "Bayesian Forecast",
+      "family": "bayesian",
+      "enabled": true,
+      "stage": "predict",
+      "sequence": 40,
+      "consumes": ["claims", "evidence", "prior_accuracy"],
+      "produces": ["prediction", "confidence", "bayes_factor"],
+      "confidence_weight": 1.1,
+      "notes": "Evidence-weighted prediction branch."
+    },
+    {
+      "engine_id": "rabbit_preference_v1",
+      "label": "Rabbit Preference Engine",
+      "family": "preference",
+      "enabled": false,
+      "stage": "predict",
+      "sequence": 50,
+      "consumes": ["history", "prior_accuracy", "operator_feedback", "page_context"],
+      "produces": ["preference_prediction", "preference_confidence", "routing_bias"],
+      "confidence_weight": 1.0,
+      "notes": "Reserved slot for the rabbit-style preference engine candidate once the exact package or model is confirmed."
+    },
+    {
+      "engine_id": "consensus_blend_v1",
+      "label": "Consensus Blend",
+      "family": "ensemble",
+      "enabled": true,
+      "stage": "predict",
+      "sequence": 90,
+      "consumes": ["prediction", "confidence", "bayes_factor", "expected_shift"],
+      "produces": ["ensemble_prediction", "ensemble_confidence", "disagreement_score"],
+      "confidence_weight": 1.2,
+      "notes": "Combines earlier prediction engines instead of replacing them."
+    }
+  ]
+}

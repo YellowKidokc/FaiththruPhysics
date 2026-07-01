@@ -62,3 +62,10 @@ These have real content but need to match ISO-001's polished dark-theme template
 - [ ] Grace function formalization — dG/dt = β₀ + β₁·S(t), Romans 5:20 as thermodynamic claim
 - [ ] Quantum-Bible patterns — PostgreSQL table setup (quantum_patterns, bible_quantum_observations)
 - [ ] Eve-Adam asymmetry — new physics principle? Observer authorization concept
+
+---
+
+## 2026-06-30 — Kimmy reboot resume point
+
+See `KIMI_RESUME_NOTE.md` for the current website lane status.
+TL;DR: About to start on Consciousness landing page + article metadata, then one-page-stories, genesis-to-quantum, revolution-of-truth, images, and subdomain shell consistency.

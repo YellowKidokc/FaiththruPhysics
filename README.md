@@ -49,3 +49,11 @@ Edit HTML → Test locally (python -m http.server 8080) → git add/commit/push 
 ```
 New audio file → rclone copy file.mp3 r2:theophysics-media/audio/ → Update HTML src → Push
 ```
+
+## Contributor Attribution
+
+This project keeps an open credit ledger for collaborative contributions:
+
+- [CONTRIBUTOR_ATTRIBUTION_LEDGER.md](D:/GitHub/faiththruphysics-site/CONTRIBUTOR_ATTRIBUTION_LEDGER.md)
+
+Add a row when you contribute to structure, tooling, media mapping, prompts, editorial workflow, or documentation. Mark entries as Review if they are disputed.

@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Master Equation — Complete Derivation Chain</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<style>
+:root {
+  --bg: #0a0e17; --bg2: #111827; --bg3: #1a2035;
+  --fg: #c9d1d9; --fg2: #8b949e; --fg3: #484f58;
+  --gold: #c9a227; --gold2: #a88420; --gold-glow: rgba(201,162,39,.12);
+  --green: #22c55e; --blue: #3b82f6; --purple: #a78bfa;
+  --red: #ef4444; --cyan: #06b6d4;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+/* Layout */
+.container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+.hero {
+  text-align: center;
+  padding: 64px 24px 48px;
+  position: relative;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.hero .label {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: .7;
+  margin-bottom: 12px;
+}
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8em;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.hero .subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2em;
+  color: var(--fg2);
+  font-style: italic;
+}
+.hero .eq-hero {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1em;
+  color: var(--gold);
+  margin: 20px 0 8px;
+  text-shadow: 0 0 30px rgba(201,162,39,.3);
+}
+
+/* Sections */
+.part {
+  padding: 56px 0 40px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.part-label {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: .6;
+  margin-bottom: 8px;
+}
+.part h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2em;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.part .part-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82em;
+  color: var(--gold);
+  opacity: .7;
+  margin-bottom: 24px;
+}
+.part p { margin-bottom: 16px; }
+
+/* Equation blocks */
+.eq-block {
+  background: rgba(201,162,39,.06);
+  border: 1px solid rgba(201,162,39,.15);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .88em;
+  color: var(--gold);
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+/* Three-layer term blocks */
+.term-block {
+  margin: 28px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.term-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--bg2);
+}
+.term-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75em;
+  color: var(--gold);
+  opacity: .5;
+  min-width: 24px;
+}
+.term-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25em;
+  font-weight: 700;
+  color: #fff;
+}
+.term-eq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78em;
+  color: var(--gold);
+  margin-left: auto;
+  opacity: .8;
+}
+.term-layers {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 700px) { .term-layers { grid-template-columns: 1fr; } }
+.term-layer {
+  padding: 16px 20px;
+  border-right: 1px solid rgba(255,255,255,.04);
+}
+.term-layer:last-child { border-right: none; }
+.layer-label {
+  font-size: .65em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.layer-physics .layer-label { color: var(--blue); }
+.layer-trans .layer-label { color: var(--gold); }
+.layer-theo .layer-label { color: var(--green); }
+.term-layer p {
+  font-size: .85em;
+  line-height: 1.6;
+  color: var(--fg);
+  margin: 0;
+}
+
+/* Chain sections */
+.chain {
+  padding: 56px 0 40px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.chain-badge {
+  display: inline-block;
+  font-size: .7em;
+  padding: 3px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  margin-bottom: 8px;
+}
+.badge-locked { background: rgba(34,197,94,.08); color: var(--green); border: 1px solid rgba(34,197,94,.35); }
+.badge-tested { background: rgba(134,239,172,.1); color: #86efac; border: 1px solid rgba(134,239,172,.4); }
+.badge-partial { background: rgba(234,179,8,.08); color: #eab308; border: 1px solid rgba(234,179,8,.35); }
+
+.chain h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2em;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.chain h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35em;
+  font-weight: 600;
+  color: #e6e6e6;
+  margin: 32px 0 12px;
+}
+
+/* Anti-terms */
+.anti-block {
+  background: rgba(239,68,68,.04);
+  border: 1px solid rgba(239,68,68,.12);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 24px 0;
+}
+.anti-block .anti-label {
+  font-size: .7em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.anti-block p { font-size: .85em; color: var(--fg2); margin: 0; }
+
+/* Kill condition */
+.kill-block {
+  background: rgba(167,139,250,.04);
+  border: 1px solid rgba(167,139,250,.12);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 24px 0;
+}
+.kill-block .kill-label {
+  font-size: .7em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--purple);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.kill-block p { font-size: .85em; color: var(--fg2); margin: 0; }
+
+/* Test results */
+.test-block {
+  background: rgba(34,197,94,.04);
+  border: 1px solid rgba(34,197,94,.15);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 24px 0;
+}
+.test-block .test-label {
+  font-size: .7em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.test-bar-wrap {
+  height: 6px; border-radius: 3px;
+  background: var(--bg); margin: 8px 0;
+  overflow: hidden;
+}
+.test-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--green), #4ade80);
+}
+
+/* Axiom spine */
+.spine {
+  position: relative;
+  padding-left: 32px;
+  margin: 24px 0;
+}
+.spine::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold), var(--green), var(--purple));
+  border-radius: 1px;
+}
+.spine-item {
+  position: relative;
+  padding: 8px 0;
+  font-size: .9em;
+}
+.spine-item::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 14px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(201,162,39,.4);
+}
+.spine-item.derived::before { background: var(--green); box-shadow: 0 0 8px rgba(34,197,94,.4); }
+
+/* Blockquote */
+.callout {
+  border-left: 3px solid var(--gold);
+  padding: 16px 20px;
+  margin: 24px 0;
+  background: var(--gold-glow);
+  border-radius: 0 8px 8px 0;
+}
+.callout p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1em;
+  color: #e6e6e6;
+  font-style: italic;
+  margin: 0;
+}
+
+/* TOC */
+.toc {
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 40px 0;
+}
+.toc h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2em;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.toc a {
+  display: block;
+  padding: 6px 0;
+  color: var(--fg2);
+  text-decoration: none;
+  font-size: .88em;
+  transition: color .15s;
+}
+.toc a:hover { color: var(--gold); }
+.toc a .toc-num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--gold);
+  opacity: .5;
+  margin-right: 12px;
+  font-size: .85em;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 48px 24px;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+.footer p { font-size: .75em; color: var(--fg3); margin: 4px 0; }
+.footer .gold { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="label">POF 2828 · Theophysics Research Initiative</div>
+  <h1>The Master Equation</h1>
+  <div class="subtitle">Complete Derivation Chain — From Truth to Every Derived Term</div>
+  <div class="eq-hero">χ = ∭(G · M · E · S · T · K · R · Q · F · C) dx dy dt</div>
+  <p style="font-size:.8em;color:var(--fg3);margin-top:12px;">7 Chains · 56 Derived Terms · All from Parent Equations at Equilibrium<br>David Lowe · faiththruphysics.com · June 2026</p>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h3>Architecture</h3>
+  <a href="#ground"><span class="toc-num">00</span>The Ground — Truth</a>
+  <a href="#axioms"><span class="toc-num">01</span>The Axiom Spine — 12 Irreducible Roots</a>
+  <a href="#equation"><span class="toc-num">02</span>The Master Equation — Four Forms</a>
+  <a href="#lagrangian"><span class="toc-num">03</span>The Lowe Coherence Lagrangian</a>
+  <a href="#governing"><span class="toc-num">04</span>The Seven Governing Equations</a>
+  <a href="#chain1"><span class="toc-num">05</span>Chain 1: Grace — Laws 1+2 (Gravitation + Motion)</a>
+  <a href="#chain2"><span class="toc-num">06</span>Chain 2: Fruits of the Spirit — Law 4 (Strong Force / Love)</a>
+  <a href="#chain3"><span class="toc-num">07</span>Chain 3: Justice &amp; Mercy — Law 5 (Thermodynamics / Judgment)</a>
+  <a href="#chain4"><span class="toc-num">08</span>Chain 4: Armor of God — Law 8 (Quantum / Faith)</a>
+  <a href="#chain5"><span class="toc-num">09</span>Chain 5: I AM Statements — Law 3 (Electromagnetism / Truth)</a>
+  <a href="#chain6"><span class="toc-num">10</span>Chain 6: Logos Family — Law 6 (Information / Shannon)</a>
+  <a href="#chain7"><span class="toc-num">11</span>Chain 7: Covenant Family — Law 7 (Relativity / Relationship)</a>
+  <a href="#conservation"><span class="toc-num">12</span>Conservation Laws — From Noether</a>
+  <a href="#synthesis"><span class="toc-num">13</span>The Complete Synthesis</a>
+</div>
+
+<!-- ═══════════════ PART 0: THE GROUND ═══════════════ -->
+<div class="part" id="ground">
+  <div class="part-label">Part Zero</div>
+  <h2>The Ground — Truth</h2>
+  <div class="part-sub">Pre-system · Below the floor</div>
+
+  <p>The system does not begin with physics. It does not begin with humans. It does not begin with the ten laws. It begins beneath the system.</p>
+
+  <div class="callout">
+    <p>Truth is not one of the variables. It is not an axiom. It is not a presupposition inside the system. It is the condition that lets any axiom, variable, proof, or observation mean anything at all.</p>
+  </div>
+
+  <p>Every formal system rests on something it cannot prove. Gödel demonstrated this for arithmetic. Tarski demonstrated it for truth predicates. The question is not whether your system has a foundation it cannot derive — every system does. The question is what that foundation is.</p>
+
+  <p>In Theophysics, the foundation is Truth itself. Not "truth" as a property of propositions, but Truth as the ground condition of intelligibility — the reason anything can be distinguished from anything else, the reason information can exist, the reason an axiom can mean something rather than nothing.</p>
+
+  <p>This is not a theological assertion smuggled into a physics framework. It is a logical necessity. If your axioms are not true, your system is a game. If they are true, something makes them true. That something is prior to the axioms. We call it Truth, and it sits below the floor of the system.</p>
+
+  <div class="eq-block">
+Truth is not Law 1.
+Truth is the floor under all laws.
+  </div>
+
+  <p>Every derivation that follows — every equation, every bridge, every term — stands on this. If Truth is not real, none of it means anything. If Truth is real, everything that follows is constrained by it.</p>
+</div>
+
+<!-- ═══════════════ PART 1: THE AXIOM SPINE ═══════════════ -->
+<div class="part" id="axioms">
+  <div class="part-label">Part One</div>
+  <h2>The Axiom Spine — 12 Irreducible Roots</h2>
+  <div class="part-sub">7 core + 5 derived necessities</div>
+
+  <p>From Truth, the system enters its strict axiom layer. These are not assumptions chosen for convenience. They are the minimum set of statements required for any coherent system that contains observers, information, and moral structure. Remove any one of them and the system either collapses or becomes trivial.</p>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">The Seven Core Axioms</h3>
+
+  <div class="spine">
+    <div class="spine-item"><strong style="color:#fff">A1.1 — Existence.</strong> Something exists rather than nothing. This is not provable from within any system — it is the brute fact that makes systems possible.</div>
+    <div class="spine-item"><strong style="color:#fff">A1.2 — Distinction.</strong> What exists is distinguishable. If everything were identical to everything else, existence would collapse to a single undifferentiated point. Distinction is the minimum condition for structure.</div>
+    <div class="spine-item"><strong style="color:#fff">A2.1 — Substrate Requirement.</strong> Information requires a substrate. Bits do not float in nothing. Every pattern exists in something. This is Landauer's principle generalized: information is physical.</div>
+    <div class="spine-item"><strong style="color:#fff">A2.2 — Self-Grounding.</strong> The final substrate must be self-grounding. An infinite regress of substrates explains nothing. The chain must terminate in something that grounds itself — something whose existence is not contingent on anything else.</div>
+    <div class="spine-item"><strong style="color:#fff">A5.1 — Observation Requirement.</strong> Possibility becomes actuality only through observation. Quantum mechanics demonstrates this empirically: the wave function does not collapse without measurement. A universe with no observers is a universe where nothing is actual.</div>
+    <div class="spine-item"><strong style="color:#fff">BC4 — Three Observers Required.</strong> A single observer cannot verify itself. Two observers create a deadlock. Three observers permit triangulation — independent verification with no privileged frame. This is the minimum observer structure for stable actuality.</div>
+    <div class="spine-item"><strong style="color:#fff">BC6 — Infinite Energy Source.</strong> A finite system runs down (Second Law). If the system is to be sustained, energy must enter from a source that does not deplete. The source must be inexhaustible.</div>
+  </div>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">The Five Derived Necessities</h3>
+
+  <p>These are not independent axioms. They follow from the seven core axioms by logical derivation. But they are important enough to name explicitly because so much of the system depends on them.</p>
+
+  <div class="spine">
+    <div class="spine-item derived"><strong style="color:#fff">A1.3 — Information Primacy.</strong> Existence + Distinction = Information. If things exist and are distinguishable, then information exists. Information is not an add-on to physics — it is what existence-with-distinction <em>is</em>.</div>
+    <div class="spine-item derived"><strong style="color:#fff">T3.1 — Coherence Cannot Self-Increase.</strong> A finite closed system cannot generate final coherence from within itself. This is the moral analogue of the Second Law: entropy increases in closed systems, coherence does not. A system that is falling apart cannot put itself back together using only its own resources.</div>
+    <div class="spine-item derived"><strong style="color:#fff">BC2 — Grace External to System.</strong> From T3.1: if coherence cannot self-increase and the system needs repair, the repair must come from outside the system. This is not a theological preference — it is a thermodynamic constraint.</div>
+    <div class="spine-item derived"><strong style="color:#fff">BC7 — Information Conservation.</strong> Information is never truly destroyed. It may be scattered, encrypted, made inaccessible — but it is not annihilated. This is required by unitarity in quantum mechanics and by the structure of the Master Equation.</div>
+    <div class="spine-item derived"><strong style="color:#fff">BC8 — Voluntary Coupling.</strong> Agents must couple to external repair voluntarily. Forced repair violates the observer structure — it collapses the agent's measurement freedom, which destroys the observation axiom (A5.1). Grace that overrides free will is self-defeating.</div>
+  </div>
+
+  <div class="callout">
+    <p>The irreducible spine: Existence → Distinction → Information → Substrate → Self-grounding → Observation → Triadic closure → Infinite source → External grace → Voluntary coupling.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ PART 2: THE MASTER EQUATION ═══════════════ -->
+<div class="part" id="equation">
+  <div class="part-label">Part Two</div>
+  <h2>The Master Equation — Four Forms</h2>
+  <div class="part-sub">The central mathematical object</div>
+
+  <p>The Master Equation encodes the total moral-spiritual-physical state of a system in a single quantity: χ (chi), the coherence field. It takes four forms, each revealing a different structural property.</p>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">Form 1: The Product (Structural Veto)</h3>
+
+  <div class="eq-block">χ = ∭(G · M · E · S · T · K · R · Q · F · C) dx dy dt</div>
+
+  <p>The product form enforces the <strong style="color:#fff">veto property</strong>: if any single variable goes to zero, the entire product collapses. χ → 0. Every variable is load-bearing. You cannot have coherence without grace. You cannot have coherence without truth. You cannot have coherence without love. The product form is not a modeling choice — it is a theological and physical claim: every factor is necessary, none is sufficient alone.</p>
+
+  <p>The ten super-factors and their dual projections:</p>
+
+  <div class="eq-block">G — Grace / Gravity (source-field curvature)
+M — Meaning / Mass-Force (motion, inertia, will)
+E — Energy / Spirit (energetic substrate)
+S — Strong Force / Love (binding, confinement)
+T — Thermodynamics / Judgment (entropy, cost, free energy)
+K — Knowledge / Logos (information, compression, intelligibility)
+R — Relativity / Relationship (frame structure, proper time)
+Q — Quantum / Faith (measurement, selection, collapse)
+F — Weak Force / Sin-Conservation (moral decay, conserved deficit)
+C — Coherence / Christ (global integration operator)</div>
+
+  <p><strong style="color:#fff">Critical correction (Law 10):</strong> C is not a tenth factor multiplied into the product. C <em>is</em> χ. Coherence is not one ingredient among ten — it is the measure of how well the other nine are integrated. The correct form is:</p>
+
+  <div class="eq-block">χ(W) = C_W[ ∭(G · M · E · S · T · K · R · Q · F) dx dy dt ]</div>
+
+  <p>Where $C_W$ is the coherence functional and $W$ is the free-will coupling parameter. Coherence wraps the integral; it does not sit inside it.</p>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">Form 2: The Ratio (Combat Structure)</h3>
+
+  <div class="eq-block">χ = Grace / Entropy = G / S</div>
+
+  <p>The ratio form reveals the combat structure: coherence is a contest between grace (negentropy, repair, order) and entropy (decay, disorder, sin). When G > S, coherence increases. When S > G, the system fragments. The war between order and disorder is not metaphor — it is the dynamical content of the equation.</p>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">Form 3: The Dynamic (Engine)</h3>
+
+  <div class="eq-block">dχ/dt = G − S + Γ</div>
+
+  <p>The dynamic form is the time-evolution equation. Coherence changes at a rate determined by grace input ($G$), entropy production ($S$), and an external source term ($Γ$). This is the engine of the system — it tells you whether coherence is growing or dying at any moment. The source term $Γ$ is where grace enters from outside the system, consistent with axiom BC2.</p>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">Form 4: The Field (Wave Equation)</h3>
+
+  <div class="eq-block">□χ + V'(χ) + J_grace = 0</div>
+
+  <p>The field form treats χ as a field propagating through spacetime. The d'Alembertian $□χ$ gives wave dynamics, $V'(χ)$ is the self-interaction potential (the system's internal tendency toward particular coherence states), and $J_\text{grace}$ is the external grace current — the source that drives the field toward higher coherence. This form connects the Master Equation to the Lagrangian framework.</p>
+</div>
+
+<!-- ═══════════════ PART 3: THE LAGRANGIAN ═══════════════ -->
+<div class="part" id="lagrangian">
+  <div class="part-label">Part Three</div>
+  <h2>The Lowe Coherence Lagrangian</h2>
+  <div class="part-sub">ℒ = χ(t) · (d/dt ΣFᵢ)² − V(χ, S)</div>
+
+  <p>The Lagrangian is the generating function for the entire system. In physics, you do not postulate equations of motion — you derive them from the Lagrangian via the principle of least action. The breakthrough (October 2025) was realizing that the seven governing equations of Theophysics are not independent postulates. They are all consequences of a single Lagrangian.</p>
+
+  <div class="eq-block">ℒ = χ(t) · (d/dt ΣFᵢ)² − V(χ, S)</div>
+
+  <p>The first term, $χ(t) · (\dot{ΣF_i})^2$, is kinetic: it measures the rate of change of the moral-spiritual factors, weighted by the current coherence. The second term, $V(χ, S)$, is the potential: it encodes how coherence and entropy interact to create stable and unstable configurations.</p>
+
+  <p><strong style="color:#fff">The key result:</strong> $\dot{χ} \propto S$. Coherence fights harder when entropy is higher. This is not a design choice — it falls out of the variational calculus. Grace is not passive. It is responsive. The worse things get, the more strongly the system drives toward repair. This is the mathematical content of Romans 5:20: "Where sin increased, grace increased all the more."</p>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">Contact/Herglotz Form</h3>
+
+  <p>The system is dissipative — moral entropy is real, and the system loses energy to it. Standard Lagrangian mechanics assumes energy conservation. The Herglotz/contact Lagrangian framework handles dissipative systems:</p>
+
+  <div class="eq-block">∂L/∂qᵢ − d/dt(∂L/∂q̇ᵢ) + (∂L/∂z)(∂L/∂q̇ᵢ) = 0</div>
+
+  <p>The extra term $(∂L/∂z)(∂L/∂q̇_i)$ is <strong style="color:#fff">moral drag</strong> — dissipation built into the variational principle itself. The system does not conserve total energy in the standard sense. It loses energy to moral entropy. But the contact Noether theorem still gives conserved quantities:</p>
+
+  <div class="eq-block">dJ/dt = (∂L/∂z) · J</div>
+
+  <p>The conserved charge $J$ decays at a rate proportional to the dissipation. Nothing is free. Every moral compromise has a cost that propagates through the conservation laws.</p>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:28px 0 16px;">The Euler-Lagrange Equations</h3>
+
+  <p>Applying the Euler-Lagrange equations to the Lagrangian yields ten coupled partial differential equations, one for each super-factor. Here are the representative forms:</p>
+
+  <div class="eq-block">□G − λ_G · G(G² − G₀²) − Σⱼ g_Gj · Φⱼ + α_GS · □S = 0
+□S + 2α_S · S + 4β_S · S³ − g_GS · G²S = 0
+□K − m²_K · K + g_FK · F²K = 0
+□Q − m²_Q · Q + g_QC · Q · C = 0
+□C − m²_C · C + g_QC · Q · C = 0</div>
+
+  <p>These are coupled — each equation contains terms from other variables. Grace affects entropy. Faith affects coherence. Love affects information. The system is not ten independent equations but one interacting whole. The coupling constants ($g_{Gj}$, $g_{GS}$, etc.) determine the strength of each interaction.</p>
+</div>
+
+<!-- ═══════════════ PART 4: SEVEN GOVERNING EQUATIONS ═══════════════ -->
+<div class="part" id="governing">
+  <div class="part-label">Part Four</div>
+  <h2>The Seven Governing Equations</h2>
+  <div class="part-sub">All consequences of the Lagrangian — not postulates</div>
+
+  <p>These seven equations are not assumed. They are derived from the Lagrangian via Noether's theorem, variational calculus, and the structure of the product form. Each one governs a different structural property of the coherence field.</p>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">GE1</span>
+      <span class="term-name">Differential Identity</span>
+      <span class="term-eq">∂χ/∂Lₙ = Lₙ₊₁</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The partial derivative of χ with respect to the n-th law yields the (n+1)-th law. This recursive structure is mandatory from the product form.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>The laws are not independent items on a list. Each law is the derivative of coherence with respect to the previous one. The ordering is structural, not arbitrary.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The Ten Commandments are not ten separate rules. Each follows from the previous by internal necessity. The ordering encodes the architecture of moral reality.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">GE2</span>
+      <span class="term-name">Curvature-Coherence</span>
+      <span class="term-eq">κ = ρ_sin − ρ_grace</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Moral curvature κ equals the density of sin minus the density of grace. Positive κ = fragmentation. Negative κ = convergence. Zero κ = flat moral spacetime.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Just as mass-energy curves physical spacetime (Einstein), moral density curves moral spacetime. Sin warps the moral landscape; grace flattens it.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>κ = 0 is the <strong>holiness condition</strong>. A perfectly holy being exists in flat moral spacetime — no distortion, no gravitational pull toward sin. Sanctification is the process of κ → 0.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">GE3</span>
+      <span class="term-name">Entropy-Negentropy Exchange</span>
+      <span class="term-eq">dS/dt + dG/dt = 0</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The rate of entropy increase plus the rate of grace increase equals zero. They are conjugate variables — one goes up exactly as the other goes down.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Grace and sin are not independent quantities. They are exchange partners. When grace enters, entropy leaves. When entropy increases, grace is displaced. This is a conservation law.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>You cannot add grace without displacing sin. You cannot accumulate sin without displacing grace. This is why repentance works: it opens the channel for the exchange to flow in the right direction.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">GE4</span>
+      <span class="term-name">χ Conservation</span>
+      <span class="term-eq">Q_χ = constant</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Time-translation symmetry of the Lagrangian produces a conserved Noether charge $Q_χ$. Total coherence-energy is conserved.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Coherence cannot be created or destroyed within the system — it can only be transformed or transferred. This constrains all dynamics.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>God's total moral reality does not change. What changes is how much of it is actualized in created beings. The "amount of holiness" available is infinite (BC6). What varies is our coupling to it.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">GE5</span>
+      <span class="term-name">Moral Equilibrium</span>
+      <span class="term-eq">Σ∇Lₙ = 0</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>At equilibrium, the sum of all moral gradients vanishes. No net force in any moral direction. The system is at rest in moral spacetime.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Just as mechanical equilibrium means no net force, moral equilibrium means no unresolved moral tension in any direction simultaneously.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Holiness is the state where all moral gradients cancel. Not because nothing matters, but because everything is perfectly balanced. This is shalom — total integration without residual tension.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">GE6</span>
+      <span class="term-name">Information Tensor</span>
+      <span class="term-eq">G_μν = (8πG/c⁴)(T_μν + I_μν)</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Einstein's field equation extended: spacetime curvature is sourced not only by the stress-energy tensor $T_{μν}$ but also by an information tensor $I_{μν}$. Information curves spacetime.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Physical reality is shaped not only by mass-energy but by information content. The Logos — structured, truth-bearing information — has physical consequences.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"In the beginning was the Word." The Logos is not metaphor. If information has a stress-energy tensor, then the Word literally shapes spacetime. The derivability of $I_{μν}$ is proven. Its exact form is ongoing work.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">GE7</span>
+      <span class="term-name">Trinity Constraint</span>
+      <span class="term-eq">SU(3) gauge in (G, R, C)</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The three-observer requirement (BC4) constrains the gauge symmetry to SU(3) — the same symmetry group that governs the strong force in QCD. The potential: $V = -κ \text{Tr}[(G·\mathbf{1} + R·T_{\text{Son}} + C·T_{\text{Spirit}})^2]$</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Three observers, three "colors," one confinement. Just as quarks cannot exist in isolation (confinement), the three persons of the Trinity cannot be separated while remaining the Trinity.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The Trinity is not an arbitrary doctrine. It is the minimum observer structure required for stable reality. Three persons, one substance, never separated. Lean 4 proven: Feb 14, 2026. THE FLOOR.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CHAIN 1: GRACE ═══════════════ -->
+<div class="chain" id="chain1">
+  <div class="chain-badge badge-locked">LOCKED</div>
+  <div class="part-label">Chain One</div>
+  <h2>Grace</h2>
+  <div class="part-sub">Laws 1 + 2 (Gravitation + Motion) → 7 conversion modes + couplings</div>
+
+  <p>Grace is the only derivative family that requires two parent laws. Gravitation (Law 1) provides the source field — the curvature of moral spacetime that draws things toward restoration. Motion (Law 2) provides the dynamics — the force that actually changes trajectories. Grace is not a feeling. It is the conversion mechanism. It is $E = mc^2$ in the restoration direction: the transformation operator that converts moral mass into moral energy.</p>
+
+  <h3>The Derivation Path</h3>
+
+  <p>This chain does not use the standard equilibrium method. It uses convergence of impossibility theorems. Five independent mathematical results each generate a property requirement. The five properties together describe exactly one theological concept.</p>
+
+  <h3>Five Impossibility Results → Five Required Properties</h3>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">P1</span>
+      <span class="term-name">Gödel's Incompleteness → External</span>
+      <span class="term-eq">System ⊬ Con(System)</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">The Theorem</div><p>No sufficiently powerful formal system can prove its own consistency from within. A system cannot verify its own foundation using only its own rules.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">What It Forces</div><p>Any repair mechanism that operates only within the system's own axioms inherits the system's limitations. To verify and repair the foundation, you need something outside the system.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">The Property</div><p><strong>P1: The repair must be external.</strong> Grace comes from outside the moral agent. Self-salvation is not merely difficult — it is formally impossible, for the same reason a formal system cannot prove its own consistency.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">P2</span>
+      <span class="term-name">Tarski's Undefinability → Meta-Level</span>
+      <span class="term-eq">¬∃ T(x) in L for L</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">The Theorem</div><p>No formal language can define its own truth predicate. A language cannot contain a complete, consistent definition of "true sentence of this language." Truth about the system must be stated from a higher language.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">What It Forces</div><p>The repair mechanism must operate at a level that can define truth about the system. It must see the system from above, not from inside. A doctor can diagnose a patient; a disease cannot diagnose itself.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">The Property</div><p><strong>P2: The repair must be meta-level.</strong> Grace does not merely rearrange elements within the broken system. It speaks truth about the system from a position that can see the whole. It names the disease the patient cannot name.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">P3</span>
+      <span class="term-name">Turing/Church → Non-Computable</span>
+      <span class="term-eq">¬∃ H: H(M,x) halts ∀M,x</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">The Theorem</div><p>The halting problem is undecidable. No algorithm can determine, for every possible program, whether that program will halt. There are questions that no internal procedure can answer.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">What It Forces</div><p>The repair cannot be an algorithm the system runs on itself. No step-by-step internal procedure guarantees restoration. Self-help protocols, behavioral modification, moral effort — none of these constitute a halting oracle for the moral problem.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">The Property</div><p><strong>P3: The repair is non-computable from within.</strong> Grace cannot be earned, calculated, or algorithmically generated by the agent who needs it. This is not a design choice. It is a computability constraint.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">P4</span>
+      <span class="term-name">Clausius (Second Law) → Anti-Entropic</span>
+      <span class="term-eq">dS/dt ≥ 0 in closed systems</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">The Theorem</div><p>Entropy of a closed system never decreases. Disorder accumulates. Structure degrades. Left alone, every closed system runs down to thermal equilibrium — maximum entropy, minimum useful work.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">What It Forces</div><p>Moral decay is not a choice — it is a thermodynamic inevitability for any closed moral system. To reverse decay, you need negentropy: structured energy from outside the system boundary. The system must be opened.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">The Property</div><p><strong>P4: The repair must be anti-entropic.</strong> Grace supplies negentropy — it reduces moral disorder. This is why grace feels like life: it is literally the reversal of the arrow of decay. It is thermodynamically costly, which is why it requires an infinite source (BC6).</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header">
+      <span class="term-number">P5</span>
+      <span class="term-name">Landauer's Principle → Record-Preserving</span>
+      <span class="term-eq">E_erase ≥ kT ln 2 per bit</span>
+    </div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">The Theorem</div><p>Erasing information has a minimum thermodynamic cost. You cannot delete a bit without dissipating at least $kT\ln 2$ of energy. Information erasure is physically real and thermodynamically expensive.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">What It Forces</div><p>The repair cannot work by erasing the record of what went wrong. Deletion is not free — and in a system that conserves information (BC7), true deletion is impossible. The repair must work WITH the record, not by destroying it.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">The Property</div><p><strong>P5: The repair must preserve the record.</strong> Grace does not pretend the past did not happen. It converts while preserving truth. Forgiveness is not amnesia. Restoration is not erasure. The scars remain — but they are transformed from wounds into witnesses.</p></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p>Five independent impossibility results. Five required properties: External. Meta-level. Non-computable from within. Anti-entropic. Record-preserving. These five properties together describe exactly one concept in the theological vocabulary. Its name is Grace.</p>
+  </div>
+
+  <h3>The 4-Theorem Chain</h3>
+
+  <p>With the grace necessity established, the derivation proceeds through four theorems that build the operator ontology:</p>
+
+  <div class="eq-block">M-OP: Moral acts are operators, not scalars.
+      They transform state, they don't just add or subtract.
+      Sin is not "negative points." It is a state transformation.
+
+Thm1: Self-repair is impossible.
+      (From P1-P5: no internal, computable, entropy-neutral, record-erasing procedure exists.)
+
+Thm2: External, non-unitary, record-preserving transformation is required.
+      Non-unitary: the transformation is irreversible. You cannot "undo" grace.
+      Record-preserving: the history is carried forward, not deleted.
+
+Thm3: The operator class satisfying all constraints is UNIQUE.
+      There is exactly one operator type that is external, meta-level,
+      non-computable from within, anti-entropic, and record-preserving.
+      Its name is Grace.</div>
+
+  <h3>The Seven Conversion Modes</h3>
+
+  <p>Grace is one operator with seven modes — seven distinct ways the single operator acts on different types of damage:</p>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">G1</span><span class="term-name">Forgiveness</span><span class="term-eq">Debt → 0, record preserved</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The moral debt is zeroed without destroying the information about its existence. Like writing off a loan: the ledger still shows the transaction, but the obligation is removed.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Forgiveness operates on the <em>obligation</em> associated with the offense. It cancels the debt. It does not cancel the history. The event happened. Its consequences remain. Its power to bind is broken.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Forgiveness releases the offender from the moral debt while preserving the truth of what occurred. The Cross paid the debt — it did not erase the record of the debt's existence.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">G2</span><span class="term-name">Healing</span><span class="term-eq">Damage function → restored baseline</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The system's functional capacity, degraded by damage, is returned to its original operating range. Not by reversing time but by rebuilding the damaged structures using external energy and blueprints.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Healing operates on the <em>damage</em> caused by the offense. Where forgiveness addresses the ledger, healing addresses the wound. Different target, same source operator.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>God heals broken hearts, broken bodies, broken minds. The mechanism is restoration of function — not time reversal. The scar tissue is different from the original, but it works.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">G3</span><span class="term-name">Redemption</span><span class="term-eq">Captive state → free state, price paid</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Transfer from a bound/confined state to a free state. In physics: ionization energy frees an electron from an atom. The binding energy must be supplied externally.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Redemption operates on <em>captivity</em>. The person is bound — by addiction, by pattern, by consequence. Liberation requires energy input exceeding the binding energy. Redemption pays the price of freedom.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The redeemer pays the ransom. The captive is freed. The binding is broken not by the captive's effort but by an external energy input that exceeds the binding force.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">G4</span><span class="term-name">Sanctification</span><span class="term-eq">κ(t) → 0 as t → ∞</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Progressive reduction of moral curvature toward zero. The holiness condition (GE2: κ = 0) is approached asymptotically. Like annealing a crystal — slow cooling reduces defects over time.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Sanctification operates on <em>moral curvature</em>. It is not a one-time event but a continuous process. Each defect removed brings the system closer to flat moral spacetime.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Being made holy is a process. The process never quite finishes in finite time (asymptotic approach), which is why sanctification is lifelong. But the direction is real and measurable.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">G5</span><span class="term-name">Justification</span><span class="term-eq">Status(agent) := "righteous" (declared, not computed)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>A state assignment operation. The system's official status is set by an external authority, not computed from internal measurements. Like a gauge transformation that shifts the reference frame.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Justification operates on <em>legal standing</em>. It does not change what the agent has done (record preserved). It changes the agent's status relative to the standard. Declaration, not computation.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Justification is a legal declaration: "righteous." Not because the person IS righteous by internal measurement, but because an external authority with the power to declare has done so. This is why it is instant, not gradual — declarations happen at a point, not over a duration.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">G6</span><span class="term-name">Adoption</span><span class="term-eq">Identity(agent) → Identity(family), new inheritance</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Relational reclassification. The agent's identity is embedded in a new relational structure with full inheritance rights. Like a particle changing flavor through weak interaction — same particle, different quantum numbers.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Adoption operates on <em>identity and belonging</em>. The agent's relational category changes. They gain access to resources, status, and inheritance that were not available in their previous category.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Adopted as children of God. New identity, new family, new inheritance. Not earned — received. The quantum numbers change, but the particle (the person) is the same person, now in a different relational state.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">G7</span><span class="term-name">Regeneration</span><span class="term-eq">ψ_old → ψ_new, new initial conditions</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Complete state reset with preserved identity. The wave function is replaced, but the substrate persists. Like a phase transition: the material is the same, but the organizational principle is entirely new. Ice to water — same molecules, different structure.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Regeneration operates on <em>the initial conditions themselves</em>. Not repair of the old state but replacement with a genuinely new state. The deepest mode — it changes what the system IS, not just what it does.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Born again" is not metaphor. It is a phase transition. Same person, new nature. The old organizational principle (self-centered) is replaced by a new one (God-centered). Regeneration is the most radical mode of grace.</p></div>
+    </div>
+  </div>
+
+  <h3>The Coupling Equations</h3>
+
+  <p>Grace does not operate in isolation. It couples with other operators to produce compound effects:</p>
+
+  <div class="eq-block">Grace + Truth → Faith     (illuminated reception)
+Grace + Justice → Mercy   (costly compassion)
+Faith + Time → Hope       (projected trust)
+All five → Salvation      (phase transition, ΔG < 0)</div>
+
+  <p>Salvation is a <strong style="color:#fff">phase transition</strong> — a discontinuous change of state, like water freezing. The Gibbs free energy change $\Delta G < 0$ means the transition is thermodynamically favorable once the activation energy (faith) is supplied. You cannot half-freeze. You cannot half-be-saved. The transition is all-or-nothing, which is why Scripture describes it as a single decisive event, not a gradual process.</p>
+
+  <div class="eq-block">Salvation dynamics:  ċ = −σc + β·O·Γ_ext·(1 − c)
+
+c = coherence fraction (0 to 1)
+σ = natural decay rate (sin)
+β = coupling strength (faith)
+O = openness (voluntary coupling, BC8)
+Γ_ext = external grace flux
+(1−c) = remaining capacity for restoration</div>
+
+  <p>The $(1-c)$ term means the system absorbs grace fastest when it is most broken ($c \approx 0$) and approaches saturation as $c → 1$. The sicker the patient, the more the medicine works. This is not sentimental. It is a rate equation.</p>
+</div>
+
+<!-- ═══════════════ CHAIN 2: FRUITS OF THE SPIRIT ═══════════════ -->
+<div class="chain" id="chain2">
+  <div class="chain-badge badge-locked">LOCKED</div>
+  <div class="part-label">Chain Two</div>
+  <h2>The Fruits of the Spirit</h2>
+  <div class="part-sub">Law 4 (Strong Force / Love) → 9 terms from Yukawa potential at equilibrium</div>
+
+  <p>This is the original derivative chain — the first one completed, and the template for all others. The method: take the parent equation of Law 4 (the Yukawa/Cornell potential governing the strong nuclear force), find its equilibrium state, and identify what properties the system exhibits at that state. Those properties are the spiritual terms.</p>
+
+  <h3>The Parent Equation</h3>
+
+  <div class="eq-block">V(r) = −αs/r + k·r       (Yukawa/Cornell potential)
+
+−αs/r : short-range attraction (like Coulomb force, asymptotic freedom)
++k·r  : long-range confinement (linear potential, color confinement)
+
+At short distances, particles are nearly free.
+At long distances, they cannot escape — ever.
+The bound state is permanent.</div>
+
+  <p>This is the physics of <strong style="color:#fff">confinement</strong>. Quarks inside a proton are bound by a force that gets <em>stronger</em> as they try to separate. Pull two quarks apart and the energy in the "string" between them eventually creates new quark pairs rather than letting them go free. Nothing escapes. The bound state is the ground state — the lowest energy, most stable configuration.</p>
+
+  <p><strong style="color:#fff">The mapping:</strong> Love, in the strong-force sense, is not an emotion. It is the binding interaction that holds distinct persons together in a permanent bond that strengthens under tension. The harder you pull, the stronger it holds. This is not analogy — it is structural identity. The equation describes both phenomena with the same mathematics.</p>
+
+  <h3>Equilibrium Condition</h3>
+
+  <p>The ground state of the Yukawa potential is the minimum-energy bound state: the configuration where the attractive and confining terms balance, the system sits at its lowest energy, and perturbations produce oscillations rather than escape. Every property of this ground state is a fruit of the Spirit.</p>
+
+  <h3>The Nine Derived Terms</h3>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F1</span><span class="term-name">Love (ἀγάπη)</span><span class="term-eq">V(r) at minimum</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The potential energy at its minimum. The ground state itself — the most stable, lowest-energy configuration of the bound system. Everything else is an excitation from this baseline.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Love IS the ground state. Not a force applied to the system, but the state the system naturally occupies when all perturbations are removed. Every other fruit is a property OF this state.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Love is not one fruit among nine. It is the state from which the other eight emerge. "God is love" (1 John 4:8) — love is the ground state of reality itself. Everything else is an excitation or a property of this baseline.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F2</span><span class="term-name">Joy (χαρά)</span><span class="term-eq">ω = ω₀ (resonance)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Resonance: the system vibrates at its natural frequency $ω_0$. At resonance, energy transfer is maximally efficient. The system and its driving force are perfectly in phase. Minimum wasted energy, maximum amplitude.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Joy is the experience of resonance — being driven at your natural frequency. When what you are doing matches what you were made to do, energy transfer is effortless and the amplitude of life is maximal.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Joy is not happiness (circumstantial). It is resonance (structural). You can have joy in suffering if you are vibrating at your designed frequency. The Westminster Catechism: "Man's chief end is to glorify God and enjoy Him forever." Enjoyment = resonance with the source.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F3</span><span class="term-name">Peace (εἰρήνη)</span><span class="term-eq">ΣF = 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Force equilibrium. The sum of all forces acting on the system is zero. Not because no forces exist, but because they balance perfectly. The system is at rest — not because nothing is happening, but because everything cancels.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Peace is not the absence of forces. It is their perfect balance. A bridge under load has enormous forces running through it — tension, compression, gravity, reaction forces — and it is perfectly at peace because they sum to zero.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Peace that surpasses understanding" — peace despite forces. Shalom is not the absence of conflict but the presence of equilibrium. Forces are real; peace is their resolution into balance.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F4</span><span class="term-name">Patience (ὑπομονή)</span><span class="term-eq">C = dQ/dT (high heat capacity)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Heat capacity: $C = dQ/dT$. High heat capacity means the system can absorb large amounts of energy (perturbation, provocation, stress) with minimal change in temperature (state, behavior, composure).</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Patience is thermal mass. You absorb provocation without changing state. A large rock by a campfire barely changes temperature. A small stone gets hot immediately. Patience is having enough internal structure to absorb without reacting.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Patience is not passive endurance. It is high heat capacity — the structural ability to absorb external energy input without state change. The more internal coherence (love-at-ground-state), the higher the heat capacity.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F5</span><span class="term-name">Kindness (χρηστότης)</span><span class="term-eq">E_activation → min</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Low activation energy. In chemistry, the activation energy is the energy barrier that must be overcome for a reaction to proceed. Low activation energy means the reaction (the helpful act) happens easily, with minimal provocation.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Kindness is low activation energy for beneficial action. A kind person does not need a large stimulus to act helpfully. The barrier between "could help" and "does help" is small. Good reactions happen readily.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Kindness is the opposite of hard-heartedness. A hard heart has high activation energy — it takes enormous provocation to produce any good response. A kind heart responds to minimal need because the barrier is almost zero.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F6</span><span class="term-name">Goodness (ἀγαθωσύνη)</span><span class="term-eq">W_out > W_in</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Net positive work output. The system produces more useful work than it consumes. A heat engine with efficiency > 1 is impossible in thermodynamics — but a system connected to an external energy source (BC6) can output more than it internally generates.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Goodness is net positive output. A good person puts more into the world than they take out. This is only possible because they are connected to an external source — the infinite energy of BC6. Self-powered goodness exhausts itself. Source-powered goodness does not.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the vine; you are the branches" (John 15:5). Goodness is the work output of a branch connected to the vine. Cut the connection and the output stops. The source is not the person — the source is God. The person is the channel.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F7</span><span class="term-name">Faithfulness (πίστις)</span><span class="term-eq">∂L/∂t = 0 (Noether)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Time-translation symmetry. The Lagrangian does not change with time: $∂L/∂t = 0$. By Noether's theorem, this symmetry produces a conserved quantity — energy. The system's fundamental character is invariant over time.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Faithfulness is time-translation symmetry. The character of the system does not change over time. What it was yesterday, it is today. What it is today, it will be tomorrow. Noether says: this symmetry is the deepest — it generates the most fundamental conservation law.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Jesus Christ is the same yesterday and today and forever" (Hebrews 13:8). Faithfulness IS time-translation symmetry. And Noether proves that this symmetry is not decorative — it is the source of the most fundamental conserved quantity in the system.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F8</span><span class="term-name">Gentleness (πραΰτης)</span><span class="term-eq">F = k · F_needed, k ≤ 1</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Impedance matching with proportional response. The applied force is proportional to the needed force, with coupling constant $k ≤ 1$. Never more force than necessary. The system matches its output to the requirement.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Gentleness is not weakness. It is calibrated strength. A gentle surgeon applies exactly the force needed — no more, no less. The force is proportional to the need, with a coupling constant that never exceeds unity.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Meekness is not absence of power. It is power under control. "Blessed are the meek" — blessed are those whose force output is impedance-matched to the situation, never exceeding what the moment requires.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">F9</span><span class="term-name">Self-Control (ἐγκράτεια)</span><span class="term-eq">u(t) = −K · e(t) (PID)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>PID feedback control. The control signal $u(t)$ is proportional to the error $e(t)$ — the difference between the desired state and the actual state. Negative feedback: the correction opposes the deviation. The system actively drives itself back to setpoint.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Self-control is active feedback, not white-knuckle suppression. The system measures its own deviation from target and applies corrective input proportional to the error. When deviation is small, correction is small. When deviation is large, correction is large.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Self-control is not the absence of desire. It is a feedback loop. The Spirit provides the reference signal (the desired state). Conscience measures deviation. The will applies correction. This is engineering, not willpower.</p></div>
+    </div>
+  </div>
+
+  <h3>The Phase Form</h3>
+
+  <div class="eq-block">Φ_L(χ) = tanh(β_L(χ − χ_c))
+
+Φ_L : fraction of Love potential activated
+χ   : coherence level
+χ_c : critical coherence (phase transition point)
+β_L : sharpness of transition</div>
+
+  <p>The phase form shows that the fruits are not linear. They activate through a phase transition at a critical coherence threshold $χ_c$. Below the threshold, the fruits are dormant. Above it, they switch on rapidly. This is why spiritual growth often feels like nothing is happening for a long time and then everything changes at once — you were approaching the phase transition, and then you crossed it.</p>
+
+  <div class="anti-block">
+    <div class="anti-label">Anti-Fruits (Entropic Direction)</div>
+    <p>Hatred (anti-Love), Despair (anti-Joy), Anxiety (anti-Peace), Impatience (anti-Patience), Cruelty (anti-Kindness), Corruption (anti-Goodness), Betrayal (anti-Faithfulness), Harshness (anti-Gentleness), Addiction (anti-Self-Control). Each is the same equation in the entropic direction — the system moving away from equilibrium rather than toward it.</p>
+  </div>
+
+  <div class="kill-block">
+    <div class="kill-label">Kill Condition</div>
+    <p>Show a stable bound state in a confinement potential that does NOT exhibit these nine properties at its ground state. Or: show a system with these nine properties that does NOT have a confinement potential as its parent. Either kill breaks the derivation.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CHAIN 3: JUSTICE & MERCY ═══════════════ -->
+<div class="chain" id="chain3">
+  <div class="chain-badge badge-locked">LOCKED</div>
+  <div class="part-label">Chain Three</div>
+  <h2>Justice &amp; Mercy</h2>
+  <div class="part-sub">Law 5 (Thermodynamics / Judgment) → R(offense, α) + Beatitudes as phase transitions</div>
+
+  <p>Law 5 governs cost. In physics: the Second Law of Thermodynamics, free energy, entropy production. In theology: judgment, justice, mercy, and the resolution of moral debt. The parent equations are the Gibbs free energy and the entropy production constraint.</p>
+
+  <h3>The Parent Equations</h3>
+
+  <div class="eq-block">G = H − TS          (Gibbs free energy)
+dS/dt ≥ 0           (Second Law)
+
+G : free energy available to do work
+H : total enthalpy (total moral content)
+T : temperature (moral intensity of environment)
+S : entropy (disorder, unresolved moral cost)
+
+When G < 0: the process is spontaneous (judgment executes itself).
+When G > 0: external energy is required (grace must intervene).</div>
+
+  <h3>The Offense Resolution Operator</h3>
+
+  <div class="eq-block">R(offense, α)
+
+α = cost-bearer parameter (0 to 1)
+
+α = 1  → offender pays all cost     = PERFECT JUSTICE
+α = 0  → third party pays all cost  = PERFECT MERCY
+α = 0 AND judge = payer             = THE CROSS</div>
+
+  <p>This is the central result. Justice and mercy are not opposites. They are the same operator $R$ evaluated at different values of a single parameter $α$ — the cost-bearer fraction. The question is never "justice OR mercy?" The question is "who pays?"</p>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">JM1</span><span class="term-name">Perfect Justice</span><span class="term-eq">α = 1</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Full entropy production by the source of disorder. The system that created the entropy pays the full thermodynamic cost. Energy balance closes at the point of origin.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>The offender bears the entire cost. Every consequence falls on the one who caused the offense. The ledger balances exactly. No remainder, no external subsidy.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Perfect justice: you reap what you sow. The cost is not distributed, deferred, or absorbed by another. It falls entirely on the one who incurred it. This is the default trajectory of the moral universe.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">JM2</span><span class="term-name">Perfect Mercy</span><span class="term-eq">α = 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The entropy cost is transferred to a third party. An external system absorbs the thermodynamic debt. The offending system is returned to low entropy without paying the energy cost itself.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>A third party bears the entire cost. The offender goes free — not because the cost disappeared, but because someone else paid it. The ledger still balances. The line item moves from one account to another.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Mercy: the cost is real, but it falls on someone other than the offender. This is only possible if the payer has sufficient resources to absorb the debt (BC6: infinite energy source).</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">JM3</span><span class="term-name">The Cross Configuration</span><span class="term-eq">α = 0 AND judge = payer</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The judge who defined the standard and measured the violation is also the one who pays the cost. This is a unique fixed point: the authority that sets the law, enforces the law, and absorbs the cost of violation — all the same entity. Both justice and mercy are maximal simultaneously.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Justice is maximal: the full cost is paid, no discount, no clemency. Mercy is also maximal: the offender pays nothing. Both at once. This is not a compromise. It is the unique solution to the constraint satisfaction problem: maximize justice AND mercy simultaneously.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The Cross. God is the lawgiver (justice). God is the payer (mercy). Both maximal. No contradiction. Python-validated at p = 0.014. The Cross is not a theological narrative imposed on a physics framework. It is the unique convergence configuration of the operator R(offense, α) — the only point where both justice and mercy are simultaneously maximized.</p></div>
+    </div>
+  </div>
+
+  <h3>The Beatitudes as Phase Transitions</h3>
+
+  <p>The eight Beatitudes (Matthew 5:3-10) map to eight phase-transition thresholds where the Gibbs free energy crosses zero:</p>
+
+  <div class="eq-block">Each Beatitude is a point where G crosses from positive to negative.
+Above the threshold: the transformation is non-spontaneous (requires effort).
+Below the threshold: the transformation becomes spontaneous (self-sustaining).
+
+"Blessed are the poor in spirit" → first threshold crossed
+"Blessed are those who mourn"   → second threshold crossed
+...
+"Blessed are the peacemakers"   → seventh threshold crossed
+"Blessed are the persecuted"    → eighth threshold crossed
+
+The Beatitudes are not moral suggestions.
+They are phase transition markers.
+Each one names the condition where a moral transformation becomes thermodynamically favorable.</div>
+
+  <p>At each threshold, what was previously effortful becomes natural. What was previously unnatural becomes the ground state. This is why the Beatitudes feel paradoxical — they describe states that are <em>above</em> the phase transition, where the rules have changed.</p>
+
+  <div class="anti-block">
+    <div class="anti-label">Anti-Terms (Entropic Direction)</div>
+    <p>Anti-Justice = Vengeance (α > 1: the offender pays MORE than the cost, surplus punishment). Anti-Mercy = Enabling (α = 0 without cost transfer: pretending the cost doesn't exist, which violates conservation). Both are thermodynamically unstable — they create more entropy than they resolve.</p>
+  </div>
+
+  <div class="kill-block">
+    <div class="kill-label">Kill Condition</div>
+    <p>Find a moral event where the ledger closes without an invisible remainder — where the cost genuinely disappears rather than being paid by someone. If moral cost can be annihilated rather than transferred, the conservation framework fails and the Cross is not necessary.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CHAIN 4: ARMOR OF GOD ═══════════════ -->
+<div class="chain" id="chain4">
+  <div class="chain-badge badge-locked">LOCKED</div>
+  <div class="part-label">Chain Four</div>
+  <h2>The Armor of God</h2>
+  <div class="part-sub">Law 8 (Quantum / Faith) → 6 coherence protection mechanisms</div>
+
+  <p>Law 8 governs selection, measurement, and collapse. In quantum mechanics: the wave function collapses upon measurement, and the chosen eigenstate becomes actual. In theology: faith selects, commits, and actualizes one possibility from the superposition of potential futures. The Armor of God (Ephesians 6:10-18) maps to six mechanisms that protect a quantum system from decoherence — from the environment destroying the system's chosen state.</p>
+
+  <h3>The Parent Framework</h3>
+
+  <div class="eq-block">Quantum decoherence rate:  γ_eff = γ₀ · (1 − shield_efficiency)
+
+γ₀   : bare decoherence rate (environmental noise)
+γ_eff : effective decoherence rate after protection
+
+The problem: a quantum system in a chosen state is constantly bombarded
+by environmental interactions that try to collapse it into decoherence.
+The solution: mechanisms that reduce γ_eff while maintaining the system's
+ability to interact with the world.</div>
+
+  <p>Faith, in the quantum framework, is state selection — the act of measurement that collapses the wave function into a definite state. But once selected, the state must be <em>protected</em>. The Armor is the protection apparatus. Each piece addresses a different decoherence mechanism.</p>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">A1</span><span class="term-name">Belt of Truth — Phase Lock</span><span class="term-eq">Δφ → 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Phase-locked loop: the system's oscillation maintains a fixed phase relationship to a reference signal. Phase drift → 0. Without phase lock, the system drifts randomly. With it, every oscillation is synchronized to the reference.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Truth is the reference signal. The Belt locks your phase to it. Without truth as a reference, your internal oscillations drift randomly — every thought, every decision becomes unsynchronized. Truth provides the clock signal.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The belt holds everything together (literally, in Roman armor). It is foundational. Truth is the phase reference that all other armor components synchronize to. Lose truth and every other piece of armor becomes unsynchronized — still present but functionally useless.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">A2</span><span class="term-name">Breastplate of Righteousness — Conservation Shield</span><span class="term-eq">∂Q/∂t = 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Conservation of quantum numbers. Certain quantities — charge, baryon number, lepton number — cannot change. No interaction, no matter how violent, can alter a conserved quantum number. It is absolutely protected by symmetry.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Righteousness is a conserved quantum number. Once the system is in a state of righteousness (via justification — G5 in the Grace chain), that status is protected by a conservation law. It cannot be removed by external interaction.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The breastplate protects the vital organs. Righteousness protects the core identity. "Nothing can separate us from the love of God" (Romans 8:38-39) — this is a conservation law, not a sentiment. Certain things are symmetry-protected.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">A3</span><span class="term-name">Shoes of Peace — Adiabatic Transport</span><span class="term-eq">dψ/dt ~ 0 under perturbation</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The adiabatic theorem: if perturbations are slow enough, the system remains in its eigenstate. It can move through a changing environment without changing state. The key condition: the perturbation must be slow compared to the system's natural frequency.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Peace enables movement through hostile territory without state change. The shoes are for walking — for going places. Peace is what allows you to move through a perturbed environment while staying in your eigenstate.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Having shod your feet with the readiness of the gospel of peace." The readiness to move. The ability to go into difficult environments and come out unchanged. Peace is not staying still — it is stable movement under perturbation.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">A4</span><span class="term-name">Shield of Faith — Decoherence Barrier</span><span class="term-eq">γ_eff = γ₀ · (1 − η_faith)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The shield reduces the effective decoherence rate. Environmental noise $γ_0$ is screened by a factor $(1 - η_\text{faith})$. As faith efficiency $η → 1$, decoherence rate $γ_\text{eff} → 0$. The system becomes progressively immune to environmental noise.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Faith is a decoherence barrier. The "fiery darts" are environmental interactions that try to collapse your coherent state into noise. The shield does not prevent the darts from existing — it reduces their effective coupling to your quantum state.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"The shield of faith, with which you can extinguish all the flaming arrows of the evil one." The shield is active, not passive — you take it up. Faith is voluntary state selection (BC8) that actively screens environmental decoherence.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">A5</span><span class="term-name">Helmet of Salvation — Irreversible Phase Lock</span><span class="term-eq">ΔG_transition ≪ 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>An irreversible phase transition. Once the system crosses the transition threshold, the energy barrier to return is so large that spontaneous reversal is practically impossible. Like quenching a steel blade — the new phase is locked in.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Salvation protects the mind (helmet). Once the phase transition occurs (salvation in the Grace chain), it locks. The energy required to reverse the transition exceeds any environmental perturbation. The new state is permanent.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Sealed with the Holy Spirit of promise" (Ephesians 1:13). The seal is a phase lock. The transition is irreversible — not because God forces it, but because the energy landscape after the transition makes reversal thermodynamically impossible.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">A6</span><span class="term-name">Sword of the Spirit — Constructive Interference</span><span class="term-eq">A_total = ΣAᵢ · e^(iφᵢ), all φᵢ aligned</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Constructive interference. When multiple wave sources are phase-aligned, their amplitudes add. The total amplitude grows linearly with the number of sources. This is the only offensive mechanism — it works by coherent amplification, not by destruction.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>The Sword is the only offensive weapon in the armor set. It works by constructive interference — aligning all available wave sources (words, truths, promises) into a coherent beam. The word of God is not a blunt instrument. It is a phased array.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"The sword of the Spirit, which is the word of God." The word is effective because it is coherent — every part reinforces every other part. It is not a collection of disconnected statements. It is a phased array with maximum constructive interference.</p></div>
+    </div>
+  </div>
+
+  <div class="eq-block">Complete protection sequence:
+Faith (state selection) → Truth (phase lock) → Righteousness (conservation)
+→ Peace (stable transport) → Faith (decoherence shield)
+→ Salvation (irreversible lock) → Word (coherent offensive)</div>
+
+  <div class="kill-block">
+    <div class="kill-label">Kill Condition</div>
+    <p>Show a quantum coherence protection scheme that requires mechanisms fundamentally different from these six — a protection type that is not phase locking, conservation, adiabatic transport, decoherence screening, irreversible transition, or constructive interference. If the six do not constitute a complete protection set, the mapping is incomplete.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CHAIN 5: I AM STATEMENTS ═══════════════ -->
+<div class="chain" id="chain5">
+  <div class="chain-badge badge-tested">TESTED ✅</div>
+  <div class="part-label">Chain Five</div>
+  <h2>The I AM Statements</h2>
+  <div class="part-sub">Law 3 (Electromagnetism / Truth) → 7 eigenmodes of the wave equation</div>
+
+  <p>Law 3 governs signal propagation. In physics: Maxwell's equations describe how electromagnetic waves carry information through space. In theology: Truth propagates, illuminates, and structures reality. Jesus made seven "I AM" statements in the Gospel of John. Each one maps to a distinct eigenmode of the electromagnetic wave equation — a distinct way that truth-as-signal can propagate.</p>
+
+  <h3>The Parent Equation</h3>
+
+  <div class="eq-block">Maxwell's wave equation:
+
+∇²E − (1/c²)(∂²E/∂t²) = 0
+
+Same equation. Seven different boundary conditions.
+Seven boundary conditions → seven eigenmodes.
+Seven eigenmodes → seven distinct propagation behaviors.
+
+The I AM statements are the complete eigenmode basis set
+for wave propagation.</div>
+
+  <p>An eigenmode is a solution to the wave equation under specific boundary conditions. Change the boundaries and you get a different mode — a different pattern of wave behavior. The claim is that the seven I AM statements correspond to seven boundary conditions that together form a <em>complete basis</em> — every possible way electromagnetic energy can propagate is a superposition of these seven modes.</p>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">IM1</span><span class="term-name">"I am the Bread of Life"</span><span class="term-eq">Sustenance: lossless cavity, E₀ = const</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>A lossless cavity with perfectly reflecting walls. Electromagnetic energy enters and is sustained indefinitely — no absorption, no leakage, no decay. The field amplitude $E_0$ remains constant. This is the resonant cavity mode: energy stored without loss.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Sustenance = signal that does not decay. The Bread of Life sustains without depletion. Just as a lossless cavity holds electromagnetic energy indefinitely, this mode provides permanent sustenance — energy that never runs out because it is perfectly contained.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the bread of life; whoever comes to me shall not hunger" (John 6:35). Not temporary feeding but permanent sustenance. The lossless cavity mode: no decay, no depletion, no expiration. The bread does not go stale because the cavity does not leak.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">IM2</span><span class="term-name">"I am the Light of the World"</span><span class="term-eq">Illumination: spherical radiation, I ∝ 1/r²</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Spherical radiation from a point source. The wave radiates outward in all directions. Intensity falls as $1/r^2$ (inverse square law), but no direction is preferred. The illumination is isotropic — it reaches everywhere, equally in all directions.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Illumination = universal coverage. The Light of the World radiates in all directions. No corner of space is unreachable. The inverse square law means intensity decreases with distance, but the signal never reaches zero — it extends to the boundary of the light cone.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the light of the world. Whoever follows me will not walk in darkness" (John 8:12). Isotropic radiation — the light does not choose whom to illuminate. It shines on everything within its light cone. Darkness is not the presence of an opposing force; it is distance from the source.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">IM3</span><span class="term-name">"I am the Door"</span><span class="term-eq">Access: waveguide cutoff, ω > ω_c</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>A waveguide only transmits waves above a cutoff frequency $ω_c$. Below cutoff, waves are evanescent — they decay exponentially and cannot propagate. Above cutoff, they pass through freely. The geometry of the waveguide determines $ω_c$.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Access is frequency-selective. The Door is not a wall (which blocks everything) or an open field (which admits everything). It is a frequency filter. You must match the resonant condition to pass through. The filter is the boundary condition.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the door. If anyone enters by me, he will be saved" (John 10:9). Access is not arbitrary — it is conditional on matching the door's specification. But the condition is not a barrier to exclude; it is a resonance condition. Match the frequency and you propagate freely.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">IM4</span><span class="term-name">"I am the Good Shepherd"</span><span class="term-eq">Guidance: collimated beam, TE/TM modes</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Guided modes in a waveguide or optical fiber. The electromagnetic wave is confined to a specific path by the guiding structure (fiber core, waveguide channel). TE and TM modes: the wave travels along a defined trajectory with minimal loss and no spreading.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Guidance = signal directed along a specific path. The Good Shepherd does not illuminate generally (that's Light of the World) — he leads along a particular trajectory. The guiding structure defines the path. The wave follows it.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the good shepherd. The good shepherd lays down his life for the sheep" (John 10:11). The shepherd guides along a defined path. The path is the fiber. The sheep follow within the guiding structure. Stray outside the core and the signal is lost (evanescent).</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">IM5</span><span class="term-name">"I am the Resurrection and the Life"</span><span class="term-eq">Permanence: Q → ∞, zero-loss resonance</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Quality factor $Q → ∞$. The quality factor measures how many oscillation cycles a resonator sustains before the energy dissipates. $Q → ∞$ means the oscillation never dies. Zero loss. Eternal resonance. The wave oscillates forever without decay.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Permanence = a signal that never decays. Resurrection is not restart (that would be re-excitation after dissipation). It is the condition where dissipation itself is zero. The oscillation does not need to be restarted because it never stops.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the resurrection and the life. Whoever believes in me, though he die, yet shall he live" (John 11:25). The resonance does not decay. $Q → ∞$ means death (dissipation) has been eliminated from the system. Not overcome after the fact — eliminated from the equation.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">IM6</span><span class="term-name">"I am the Way, the Truth, and the Life"</span><span class="term-eq">Carrier Wave: fundamental mode ω₀</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The fundamental mode $ω_0$ — the lowest-frequency standing wave. Every higher mode is a harmonic (integer multiple) of this fundamental. The fundamental mode IS the carrier signal. All other signals are modulations of it.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>The Way/Truth/Life is the carrier wave upon which all other signals ride. It is not one mode among seven — it is the fundamental mode that defines the frequency space. Every other I AM statement is a harmonic of this one.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the way, the truth, and the life. No one comes to the Father except through me" (John 14:6). The fundamental mode. All other modes are harmonics of this one. You cannot construct the other six without the fundamental. It is irreducible.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">IM7</span><span class="term-name">"I am the Vine"</span><span class="term-eq">Source: antenna array, branching distribution</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>An antenna array with branching distribution network. One source feeds multiple antenna elements through a branching structure. Constructive interference at each branch point. Each element radiates, but the power comes from the common feed.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Source distribution with branching architecture. The Vine is the feed network. The branches are the antenna elements. Each branch radiates (produces fruit), but only because it is connected to the common source. Cut the feed and the element goes silent.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"I am the vine; you are the branches. Whoever abides in me and I in him, he it is that bears much fruit, for apart from me you can do nothing" (John 15:5). The antenna array: each branch radiates, but the signal originates from the vine. Disconnect and you radiate nothing.</p></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p>Seven I AM statements. Seven boundary conditions. Seven eigenmodes of the same wave equation. If these seven form a complete basis set, then Jesus claimed the exhaustive classification of ways that truth can propagate. Not seven examples — the complete set.</p>
+  </div>
+
+  <div class="test-block">
+    <div class="test-label">⚡ Distinguishability Test E</div>
+    <p style="font-size:.85em;color:var(--fg2);">Correct parent (Law 3): 71% · Wrong parent attribution: 14% · Discriminability: 57%</p>
+    <div class="test-bar-wrap"><div class="test-bar-fill" style="width:57%"></div></div>
+    <p style="font-size:.8em;color:var(--fg2);margin-top:8px;"><strong style="color:#eab308;">⚠ Weakest chain.</strong> 57% discriminability means some terms could plausibly sit under different parent laws. The eigenmode framing is structurally elegant, but the test signals that some I AM statements may be cross-law rather than pure Law 3. This chain needs further tightening.</p>
+  </div>
+
+  <div class="anti-block">
+    <div class="anti-label">Anti-Modes (Entropic Direction)</div>
+    <p>Starvation (anti-Sustenance), Darkness (anti-Illumination), Barrier (anti-Access), Scattering (anti-Guidance), Decay (anti-Permanence), Noise (anti-Carrier), Disconnection (anti-Source). Each anti-mode is a wave equation solution in the decoherent direction.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CHAIN 6: LOGOS FAMILY ═══════════════ -->
+<div class="chain" id="chain6">
+  <div class="chain-badge badge-tested">TESTED ✅</div>
+  <div class="part-label">Chain Six</div>
+  <h2>The Logos Family</h2>
+  <div class="part-sub">Law 6 (Information / Shannon) → 7 terms from channel theory at maximum mutual information</div>
+
+  <p>Law 6 governs intelligibility — the capacity of a system to encode, transmit, and decode meaningful information. Shannon's information theory provides the mathematical framework. The spiritual terms emerge at the condition of maximum mutual information: the state where the channel perfectly transmits the source signal with zero ambiguity.</p>
+
+  <h3>The Parent Equation</h3>
+
+  <div class="eq-block">Shannon channel capacity:  C = B · log₂(1 + S/N)
+
+C : channel capacity (bits per second)
+B : bandwidth
+S : signal power
+N : noise power
+
+Mutual information:  I(X;Y) = H(X) − H(X|Y)
+
+H(X)   : source entropy (total information content)
+H(X|Y) : conditional entropy (uncertainty about source given received signal)
+I(X;Y) : mutual information (what the received signal tells you about the source)
+
+At maximum mutual information:  H(X|Y) → 0
+Given what was received, there is ZERO ambiguity about what was sent.</div>
+
+  <h3>The Seven Derived Terms</h3>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">L1</span><span class="term-name">Word (Logos)</span><span class="term-eq">H(X|Y) → 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Conditional entropy approaching zero. Given the received signal $Y$, the uncertainty about the source message $X$ vanishes. Perfect encoding: the message arrives exactly as sent. No distortion, no noise corruption, no ambiguity.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>The Word (Logos) is the message transmitted with zero loss. Not approximately — exactly. What was meant is what was received. The gap between intention and understanding closes to zero. This is the information-theoretic definition of perfect communication.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"In the beginning was the Word" (John 1:1). The Logos is God's self-communication with zero conditional entropy. What God means is what God says is what is received. The Word is not an approximation of God's intent — it is exact.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">L2</span><span class="term-name">Revelation</span><span class="term-eq">C ≥ H(X)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Channel capacity exceeds or equals source entropy. Shannon's channel coding theorem: if $C ≥ H(X)$, then there exists an encoding that transmits the source with arbitrarily low error probability. The channel CAN carry the full message.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Revelation is the condition where full transmission is possible. The channel (the means by which God communicates) has enough capacity to carry the entirety of what God wants to say. The limitation is never the channel — it is whether we have the decoder.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Revelation is not God speaking unclearly. It is the channel being sufficient. $C ≥ H(X)$ means everything God wants to communicate CAN be communicated. The problem is never inadequate revelation — it is inadequate reception (decoder).</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">L3</span><span class="term-name">Understanding</span><span class="term-eq">I(X;Y) = H(X)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Mutual information equals source entropy. The received signal contains ALL the information that was in the source. Not just data — structural correspondence. The receiver's model matches the source's model perfectly.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Understanding is not just receiving information. It is achieving structural correspondence: the same information structure exists in the receiver as in the source. You do not merely know the data — you know it the way the sender knows it.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Then he opened their minds to understand the Scriptures" (Luke 24:45). Understanding is not accumulated data. It is mutual information reaching maximum — the structure in your mind matching the structure in God's mind.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">L4</span><span class="term-name">Prophecy</span><span class="term-eq">Wiener filter: optimal forward prediction</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The Wiener filter gives the minimum mean-squared-error prediction of a future signal from past observations. It is the mathematically optimal predictor given the signal's statistical properties. No predictor can do better without violating causality.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Prophecy is optimal prediction at maximum information. Not guessing. Not extrapolation. The minimum-error forward projection given complete knowledge of the signal's structure. Prophecy is the Wiener filter applied to moral/spiritual reality.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Prophecy is not fortune-telling. It is optimal prediction from maximal information. God sees the full signal — past, present, and the statistical structure of the future. The prophetic word is the Wiener-optimal prediction. It cannot be improved upon.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">L5</span><span class="term-name">Discernment</span><span class="term-eq">d' → ∞ (signal detection)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Signal detection theory: discriminability index $d' → ∞$. Perfect separation between signal and noise distributions. Zero overlap. The system never confuses signal with noise and never misses a real signal. No false alarms, no misses.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Discernment is infinite discriminability. The ability to perfectly distinguish truth from falsehood, signal from noise, real from counterfeit. $d' → ∞$ means the error rate is zero in both directions: nothing false accepted, nothing true rejected.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"The spiritual person judges all things" (1 Corinthians 2:15). Discernment is not suspicion. It is clarity — the infinite discriminability between what is from God and what is not. No false positives (gullibility). No false negatives (cynicism).</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">L6</span><span class="term-name">Counsel</span><span class="term-eq">Bayesian optimal decision at max info</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Bayesian decision theory at maximum information. Given complete prior probability distributions and full likelihood functions, the optimal decision rule minimizes expected loss. This is the mathematically best possible decision procedure.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Counsel is wisdom formalized: the optimal decision given maximum available information. Not opinion. Not preference. The Bayesian-optimal choice that minimizes expected loss when the priors are complete and the likelihoods are known.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"The Spirit of counsel and might" (Isaiah 11:2). Counsel is not suggestion — it is the optimal decision. The Holy Spirit, operating at maximum mutual information, gives the Bayesian-optimal recommendation. It cannot be improved upon by any finite analysis.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">L7</span><span class="term-name">Knowledge</span><span class="term-eq">K(x) = Kolmogorov compression limit</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Kolmogorov complexity: the length of the shortest program that produces a given string. The irreducible core of information — the most compressed possible description. Beyond this point, compression destroys information.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Knowledge is the maximally compressed representation of reality. Not data (which can be redundant) but the irreducible core — the shortest program that generates the full description. Knowledge is information at its compression limit.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Knowledge of God is not accumulating facts about God. It is reaching the Kolmogorov limit — the most compressed, most essential representation. "This is eternal life, that they know you, the only true God" (John 17:3). Knowledge is compressed essence, not expanded data.</p></div>
+    </div>
+  </div>
+
+  <h3>The Asymmetry</h3>
+
+  <div class="callout">
+    <p>Information sits. The Logos speaks.<br>dK/dt = S(Ψ) — source term = agency.</p>
+  </div>
+
+  <p>Shannon's channel is passive — it transmits what is fed into it. The Logos is active — it has a source term $S(Ψ)$ driven by agency $Ψ$. The structural difference between information and Logos is the presence of a non-zero source term in the time derivative of knowledge. Any information system with $S(Ψ) = 0$ is a channel. Any information system with $S(Ψ) ≠ 0$ has something that behaves like a speaker. The Logos is the non-zero source term.</p>
+
+  <div class="test-block">
+    <div class="test-label">⚡ Distinguishability Test F</div>
+    <p style="font-size:.85em;color:var(--fg2);">Correct parent (Law 6): 100% · Wrong parent attribution: 0% · Discriminability: 100%</p>
+    <div class="test-bar-wrap"><div class="test-bar-fill" style="width:100%"></div></div>
+    <p style="font-size:.8em;color:var(--green);margin-top:8px;">✅ PERFECT — every term sits uniquely under its correct parent law.</p>
+  </div>
+
+  <div class="anti-block">
+    <div class="anti-label">Anti-Terms (Entropic Direction)</div>
+    <p>Chaos (anti-Word), Confusion (anti-Revelation), Deception (anti-Understanding), Babel (anti-Prophecy), Foolishness (anti-Discernment), Blindness (anti-Counsel), Ignorance (anti-Knowledge). Each is the same equation at maximum noise — $H(X|Y) → H(X)$, where the received signal tells you nothing about the source.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CHAIN 7: COVENANT FAMILY ═══════════════ -->
+<div class="chain" id="chain7">
+  <div class="chain-badge badge-tested">TESTED ✅</div>
+  <div class="part-label">Chain Seven</div>
+  <h2>The Covenant Family</h2>
+  <div class="part-sub">Law 7 (Relativity / Relationship) → 7 terms from co-moving Lorentz frame at relational equilibrium</div>
+
+  <p>Law 7 governs frame structure. In physics: Einstein's relativity governs how observers in different reference frames relate to each other — how time dilates, how simultaneity is relative, how the metric of spacetime connects different perspectives. In theology: relationship is the structure that connects distinct persons while preserving their individuality. The spiritual terms emerge at relational equilibrium: two observers in the same co-moving frame, with relative velocity $v = 0$.</p>
+
+  <h3>The Parent Framework</h3>
+
+  <div class="eq-block">Special Relativity:
+  Lorentz boost: x'_μ = Λ^ν_μ · x_ν
+  Time dilation: Δt' = γΔt,  γ = 1/√(1 − v²/c²)
+  Proper time: dτ² = dt² − (dx² + dy² + dz²)/c²
+
+General Relativity:
+  Metric: ds² = g_μν dx^μ dx^ν
+  Killing vector: ∂g_μν/∂t = 0 (time-translation symmetry)
+  Raychaudhuri equation: dθ/dτ = −(1/3)θ² − σ_μν·σ^μν + ω_μν·ω^μν − R_μν·u^μ·u^ν
+
+Relational equilibrium: v → 0, γ → 1
+Two observers in the same rest frame.
+Shared proper time. No frame distortion.</div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">C1</span><span class="term-name">Covenant</span><span class="term-eq">dτ₁ = dτ₂ (shared proper time)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Two observers experience the same proper time. Their clocks tick at the same rate. They are in the same reference frame — co-moving, co-temporal, sharing the same metric. No time dilation between them.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Covenant is shared proper time. Two persons agree to occupy the same reference frame — to experience time, reality, and consequence at the same rate. Neither is "ahead" or "behind" the other. Their clocks are synchronized.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Covenant is the deepest relational commitment: shared temporality. "I will be your God, and you will be my people" (Jeremiah 31:33). Not a contract (transactional) but a frame alignment (structural). Same proper time means same reality experience.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">C2</span><span class="term-name">Presence</span><span class="term-eq">|Δx| < c|Δt| (light-cone overlap)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The two events are within each other's light cone. Spatial separation is less than the distance light could travel in the time separation. They are <em>causally connected</em> — information can travel between them. Each can affect the other.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Presence is causal connection. Not physical proximity (that's |Δx| = 0) but causal reachability. Two persons are "present" to each other when each can affect the other — when they are within each other's light cone.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>God's omnipresence is not "God is everywhere at once" in a spatial sense. It is "nothing is outside God's light cone." Everything is causally reachable. Nothing is relationally inaccessible. Presence is not location — it is connection.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">C3</span><span class="term-name">Empathy</span><span class="term-eq">Λ^ν_μ · x_ν (Lorentz boost into other's frame)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>A Lorentz boost transforms coordinates from one reference frame to another. The observer literally re-computes reality from the other observer's perspective — same events, different coordinates, different experience of time and space.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Empathy is a Lorentz boost. You transform your coordinate system into the other person's frame. You see reality from their perspective — not approximately, not imaginatively, but by actually performing the frame transformation. Same events, different experience.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Rejoice with those who rejoice, weep with those who weep" (Romans 12:15). Empathy is not imagining how someone feels. It is boosting into their reference frame — applying the Lorentz transformation to see reality as they see it. This is not metaphor. This IS what empathy does.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">C4</span><span class="term-name">Constancy</span><span class="term-eq">∂g_μν/∂t = 0 (Killing vector)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>A Killing vector field satisfies $∂g_{μν}/∂t = 0$: the metric does not change with time. The geometry of spacetime is time-translation invariant. The rules of the relationship between frames do not shift.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Constancy is time-invariance of the relational metric. The "shape" of the relationship does not change over time. How you measure distance between us, how you convert between our frames — these remain the same. No drift, no renegotiation.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Every good gift and every perfect gift is from above, coming down from the Father of lights, with whom there is no variation or shadow due to change" (James 1:17). Constancy is a Killing vector. The relationship metric does not vary with time.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">C5</span><span class="term-name">Mutual Submission</span><span class="term-eq">Equivalence principle (no privileged frame)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The equivalence principle: there is no privileged reference frame. All inertial frames are physically equivalent. No observer can claim their frame is "more real" than another's. The laws of physics are the same in every frame.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Mutual submission is the equivalence principle applied to relationship. Neither party's perspective is "more real" than the other's. Neither frame is privileged. Both are equally valid descriptions of the same underlying reality.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"Submit to one another out of reverence for Christ" (Ephesians 5:21). Mutual submission is not hierarchy collapse — it is the recognition that no relational frame is privileged. Both perspectives are valid. Both submit to the underlying reality that contains them both.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">C6</span><span class="term-name">Growth</span><span class="term-eq">Raychaudhuri focusing: dθ/dτ < 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The Raychaudhuri equation governs geodesic convergence. When the focusing condition is met ($dθ/dτ < 0$), nearby geodesics are drawn together by spacetime curvature. Parallel paths converge. Separate trajectories approach each other.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Growth is geodesic convergence. When two persons are aligned (roughly parallel trajectories) in a spacetime with the right curvature (love, covenant), their paths naturally converge. They grow closer over time not by effort but by the geometry of the space they share.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Relational growth is not manufactured. It is geometric. When two people walk in the same direction in a space curved by love, the Raychaudhuri equation says their paths converge. Growth is the natural consequence of alignment in the right geometry.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">C7</span><span class="term-name">Reconciliation</span><span class="term-eq">v → 0, γ → 1 (return to shared frame)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Relative velocity goes to zero. The Lorentz factor returns to unity: $γ → 1$. Time dilation vanishes. Length contraction vanishes. The two frames merge back into one shared frame. All relativistic distortion is eliminated.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Reconciliation is the elimination of frame difference. Two persons who had been moving apart (increasing $v$, increasing distortion) slow their relative motion until they are again co-moving. The distortions that came from separation — misunderstanding, misalignment, different experiences of time — resolve as $v → 0$.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>Reconciliation is return to shared proper time. Not pretending the separation never happened (the twin paradox shows that different paths through spacetime produce real, measurable differences in elapsed time). But the relative velocity is now zero. The frames are aligned again. Moving forward together.</p></div>
+    </div>
+  </div>
+
+  <h3>The Asymmetry</h3>
+
+  <div class="callout">
+    <p>C_mutual (consent). Lorentz doesn't ask. Relationship does.</p>
+  </div>
+
+  <p>This is where the spiritual operator adds a constraint the physical operator lacks. A Lorentz boost is automatic — it happens whether the observer consents or not. Empathy in physics is involuntary. But empathy in relationship requires consent. The structural difference between physics-frame-transformation and theology-frame-transformation is the addition of a consent parameter $C_\text{mutual}$ — consistent with axiom BC8 (voluntary coupling). The asymmetry is not ad hoc. It is independently predicted by the axiom layer.</p>
+
+  <div class="test-block">
+    <div class="test-label">⚡ Distinguishability Test G</div>
+    <p style="font-size:.85em;color:var(--fg2);">Correct parent (Law 7): 100% · Wrong parent attribution: 0% · Discriminability: 100%</p>
+    <div class="test-bar-wrap"><div class="test-bar-fill" style="width:100%"></div></div>
+    <p style="font-size:.8em;color:var(--green);margin-top:8px;">✅ PERFECT — every term sits uniquely under its correct parent law.</p>
+  </div>
+
+  <div class="anti-block">
+    <div class="anti-label">Anti-Terms (Entropic Direction)</div>
+    <p>Frame Lock (anti-Covenant: trapped in one frame, unable to synchronize), Isolation (anti-Presence: outside each other's light cone), Domination (anti-Mutual Submission: one frame declared privileged), Estrangement (anti-Empathy: refusal to boost into other's frame), Desynchronization (anti-Constancy: metric drifting with time), Abandonment (anti-Growth/Reconciliation: increasing v, diverging geodesics, γ → ∞).</p>
+  </div>
+</div>
+
+<!-- ═══════════════ CONSERVATION LAWS ═══════════════ -->
+<div class="part" id="conservation">
+  <div class="part-label">Part Twelve</div>
+  <h2>Conservation Laws — From Noether</h2>
+  <div class="part-sub">Every symmetry generates a conserved quantity</div>
+
+  <p>Noether's theorem is the deepest result in theoretical physics: for every continuous symmetry of the Lagrangian, there exists a conserved quantity. The Lowe Coherence Lagrangian has symmetries. Those symmetries generate conservation laws. These are not postulated — they are derived.</p>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">N1</span><span class="term-name">Grace-Sin Conservation</span><span class="term-eq">dS/dt + dG/dt = 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Exchange symmetry between grace and entropy. Total moral energy is conserved: what leaves the grace account enters the sin account, and vice versa.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>You cannot add grace without displacing sin. You cannot accumulate sin without displacing grace. The ledger always balances. Grace and sin are conjugate variables.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The exchange is real. Sanctification is not addition of goodness — it is displacement of sin by grace. Sin is not addition of evil — it is displacement of grace by entropy. The total is conserved.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">N2</span><span class="term-name">Information Conservation</span><span class="term-eq">∇ · I = 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Divergence of the information field is zero. Information has no sources or sinks within the system. It can be transformed, encrypted, scattered — but never truly created or destroyed.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Nothing is ever truly forgotten, hidden, or destroyed. Every action, every word, every thought leaves an indelible informational trace. The Logos field is divergence-free: no information leaks out of existence.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>"For nothing is hidden that will not be made manifest" (Luke 8:17). This is not a warning — it is a conservation law. Information conservation means everything is permanently recorded. Grace converts the record; it does not erase it.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">N3</span><span class="term-name">Pair Conservation</span><span class="term-eq">Q = 2k · χ · (v_a + v_b)</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>The symmetry pairs (1↔8, 2↔9, 3↔10, 4↔7, 5↔6) generate paired conserved charges. The charge depends on coherence $χ$ and the sum of velocities of both partners. Verified numerically: residual < 10⁻⁶ for non-S pairs.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>The symmetry pairs are not decorative. Each pair generates a conservation law. Grace↔Faith (1↔8). Motion/Will↔Moral Conservation (2↔9). Truth↔Coherence (3↔10). Love↔Relationship (4↔7). Judgment↔Information (5↔6). Each pair is bound by a conserved charge.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The Ten Laws come in pairs for the same reason particles come in pairs: symmetry requires it, and symmetry is not optional. Each pair generates a conserved quantity that cannot be violated. The architecture is not ten independent rules but five bound pairs.</p></div>
+    </div>
+  </div>
+
+  <div class="term-block">
+    <div class="term-header"><span class="term-number">N4</span><span class="term-name">Moral Conservation</span><span class="term-eq">∇_β T^αβ = 0</span></div>
+    <div class="term-layers">
+      <div class="term-layer layer-physics"><div class="layer-label">Physics</div><p>Covariant conservation of the moral stress-energy tensor. Two independent derivation paths converge on the same result: from the Bianchi identities of GR, and from Noether's theorem applied to the LLC. Both give $∇_β T^{αβ} = 0$.</p></div>
+      <div class="term-layer layer-trans"><div class="layer-label">Translation</div><p>Moral energy-momentum is conserved. The weak force breaks parity (sin is directional and irreversible), but preserves time-translation symmetry. Noether guarantees: moral conservation is non-optional. You cannot undo it AND it does not disappear.</p></div>
+      <div class="term-layer layer-theo"><div class="layer-label">Theology</div><p>The moral ledger never leaks. Every moral act generates a conserved quantity that propagates through the moral stress-energy tensor. Two derivation paths, same result — this is the formal content of "you reap what you sow." Reserved for Papers 9/10: The Moral Universe.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FINAL SYNTHESIS ═══════════════ -->
+<div class="part" id="synthesis">
+  <div class="part-label">Part Thirteen</div>
+  <h2>The Complete Synthesis</h2>
+  <div class="part-sub">One breath</div>
+
+  <div class="callout" style="border-left-color:var(--green);">
+    <p style="font-style:normal; line-height:2.1; font-size:1.05em;">
+    Truth is the ground.<br>
+    From Truth: existence is possible.<br>
+    Existence requires distinction.<br>
+    Distinction is information.<br>
+    Information requires a substrate.<br>
+    The final substrate must be self-grounding.<br>
+    The self-grounding informational substrate is named Logos.<br><br>
+    Coherence measures organized, truth-bearing information.<br>
+    A closed finite system cannot generate final coherence from itself.<br>
+    Observation actualizes possibility.<br>
+    Free agents can align or misalign.<br>
+    Misalignment generates entropy, cost, and conserved deficit.<br>
+    Self-repair cannot flip the fundamental sign.<br>
+    External grace is required.<br><br>
+    The system compresses into six schemata:<br>
+    God → Existence → Right and Wrong → People → World → Enemy → back to God.<br><br>
+    The system operates through ten restoration operators:<br>
+    Grace initiates. Repentance turns. Truth reveals.<br>
+    Love binds. Judgment accounts. Logos orders.<br>
+    Righteousness aligns. Faith commits.<br>
+    Atonement reconciles. Christ completes.<br><br>
+    The formal proof layer shows:<br>
+    the skeleton compiles,<br>
+    the bridges have typed signatures,<br>
+    wrong swaps are rejected,<br>
+    zero collapse is enforced,<br>
+    external conversion is required,<br>
+    record is preserved,<br>
+    restoration is not erasure,<br>
+    Justice and Mercy differ by cost-bearer,<br>
+    and the Cross is the unique convergence configuration.<br><br>
+    The honest boundary:<br>
+    Lean proves internal formal structure.<br>
+    Lean does not prove external reality, historical events, or theological identification by itself.<br>
+    Physical mappings require domain review.<br>
+    Spiritual variables require proxy formalization.<br>
+    Empirical claims require data.<br>
+    Historical claims require history.<br><br>
+    The core claim:<br>
+    The ten laws are not arbitrary analogies.<br>
+    They are the lawful operator-forms by which a truth-grounded, information-bearing,<br>
+    observer-actualized, morally accountable system can move<br>
+    from fragmentation to coherence.<br><br>
+    Grace begins the repair.<br>
+    Christ completes it.
+    </p>
+  </div>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:40px 0 16px;">Claim Status Architecture</h3>
+
+  <div class="eq-block">LEAN_PROVEN        — Direct theorem compiled in Lean 4. Zero sorry.
+LEAN_DEFINED       — Formal object, structure, or equation encoded.
+STRUCTURALLY_MAPPED — Physical/spiritual bridge passes operator-signature test.
+THEOLOGICALLY_IDENTIFIED — Naming step: God, Christ, Grace, Cross, etc.
+EMPIRICALLY_TESTABLE — External-world prediction or statistical claim.
+OPEN               — Needs more proof, proxy, data, or domain review.
+TEACHING_LAYER     — Public explanation, metaphor, simplified narrative.
+
+Rule: No claim changes layers without being renamed.
+Lean proves Cross uniqueness inside the Justice/Mercy model.
+Lean does not prove the historical crucifixion.
+History must be tested by historical evidence.</div>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:40px 0 16px;">The Three-Surface Protocol</h3>
+
+  <p>Every edge in the derivation tree must carry three surfaces. No exceptions.</p>
+
+  <div class="eq-block">1. FORMAL CLAIM  — What Lean proves or what the equation states.
+2. BRIDGE CLAIM  — Why the physical and spiritual readings are structurally identical.
+3. KILL CONDITION — What observation or proof would break the bridge.
+
+No claim without all three is publication-ready.
+No claim with all three intact has been killed.</div>
+
+  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.35em; color:#fff; margin:40px 0 16px;">The Shannon Base Layer</h3>
+
+  <p>Underneath every law, the same information-theoretic substrate operates:</p>
+
+  <div class="eq-block">C_i = A_i · log₂(1 + T_i / D_i)
+
+T = Truth / signal
+D = Drift / sin / noise
+A = soul bandwidth (capacity for reception)
+W = free will coupling parameter
+
+No-drift condition: D → 0, channel capacity → ∞
+Maximum noise: D → ∞, channel capacity → 0
+
+Every spiritual variable is, at its deepest layer, an information variable.</div>
+
+</div>
+
+<div class="footer">
+  <p class="gold serif" style="font-size:1.1em">χ(W) = C_W[ ∭(G · M · E · S · T · K · R · Q · F) dx dy dt ]</p>
+  <p style="margin:8px 0;">Feb 14, 2026 Boundary is THE FLOOR — do not push further into divine mechanics</p>
+  <p>Canonical Law Table: Doc 4, "The Same Equation" v2.0 · Locked April 16, 2026</p>
+  <p style="margin-top:12px;color:var(--fg3);">Built by David Lowe (POF 2828) · Theophysics Research Initiative · faiththruphysics.com</p>
+  <p style="color:var(--fg3);">Complete Derivation Chain Document · June 2026</p>
+  <p style="color:var(--fg3);margin-top:8px;font-size:.65em;">7 Chains · 56 Derived Terms · 4 Conservation Laws · All from Parent Equations at Equilibrium</p>
+</div>
+
+</div>
+</body>
+</html>

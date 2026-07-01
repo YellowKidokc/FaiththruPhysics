@@ -12,18 +12,39 @@
 (function () {
   const API_BASE = "https://faith-mtl-worker.davidokc28.workers.dev";
   const BATCH_LIMIT = 40;
+  const WORKER_CALLOUT_SELECTOR = '.mtl-worker-callout[data-mtl-worker="true"]';
+
+  function normalizeMode(mode) {
+    if (!mode) return "easy";
+    if (mode === "math") return "standard";
+    if (mode === "readable") return "standard";
+    if (mode === "scholarly") return "academic";
+    if (mode === "simple") return "easy";
+    return mode;
+  }
 
   function getReaderMode() {
-    // 1. Check body class (e.g. body.mtl-easy)
+    const htmlMode = normalizeMode(document.documentElement?.dataset?.readerMode || "");
+    if (htmlMode && ["easy", "standard", "academic", "proof"].includes(htmlMode)) return htmlMode;
+
+    // 1. Check body class
     const body = document.body;
     for (const cls of body.classList) {
-      const m = cls.match(/^mtl-(easy|standard|academic|proof)$/);
+      const m = cls.match(/^(?:mtl|level)-(easy|standard|academic|proof)$/);
       if (m) return m[1];
     }
+
     // 2. Check active reader tab
     const active = document.querySelector('.mtl-reader-tab.active, .tp-level.active, [data-reader-mode].active');
-    if (active) return active.dataset.readerMode || active.dataset.level;
-    // 3. Default
+    if (active) return normalizeMode(active.dataset.readerMode || active.dataset.level || "");
+
+    // 3. Check persisted shell mode
+    try {
+      const stored = normalizeMode(localStorage.getItem("ftp-reader-mode") || "");
+      if (stored && ["easy", "standard", "academic", "proof"].includes(stored)) return stored;
+    } catch (_) {}
+
+    // 4. Default
     return "easy";
   }
 
@@ -73,8 +94,16 @@
   function createCallout(translation, mode) {
     const div = document.createElement("div");
     div.className = `mtl-worker-callout mtl-mode-${mode}`;
+    div.dataset.mtlWorker = "true";
     div.textContent = translation;
     return div;
+  }
+
+  function clearWorkerCallouts() {
+    document.querySelectorAll(WORKER_CALLOUT_SELECTOR).forEach((node) => node.remove());
+    document.querySelectorAll("mjx-container, .eq-block, [data-latex]").forEach((el) => {
+      delete el.dataset.mtlAnnotated;
+    });
   }
 
   function applyTranslations(map, results, mode) {
@@ -101,6 +130,7 @@
   async function run() {
     annotateMathJaxSources();
     const mode = getReaderMode();
+    clearWorkerCallouts();
     const map = collectEquations();
     if (map.size === 0) return;
 
@@ -142,6 +172,10 @@
     const tab = e.target.closest("[data-reader-mode], [data-level]");
     if (!tab) return;
     // Small delay so the active class updates first.
+    setTimeout(run, 50);
+  });
+
+  document.addEventListener("ftp-layer-change", () => {
     setTimeout(run, 50);
   });
 })();

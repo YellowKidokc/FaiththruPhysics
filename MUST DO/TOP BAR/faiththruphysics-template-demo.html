@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Faith thru Physics — Template Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+/* ═══════ DESIGN TOKENS (shared across all pages) ═══════ */
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.1);
+  --red:#c94040; --red-dim:rgba(201,64,64,.1);
+  --blue:#5b9bd5; --blue-dim:rgba(91,155,213,.1);
+  --teal:#3bb39a; --teal-dim:rgba(59,179,154,.1);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,.1);
+  --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1100px;
+  --header-h:42px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════════════════════════════════════════════════════════
+   TOP BAR — Persistent header across all pages
+   ═══════════════════════════════════════════════════════════ */
+.tp-top {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(5,5,5,.88);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  height:var(--header-h);
+}
+.tp-top-inner {
+  max-width:var(--max); margin:0 auto;
+  display:flex; align-items:center; height:100%;
+  padding:0 1rem; gap:.6rem;
+}
+/* Brand */
+.tp-brand { display:flex; align-items:center; gap:.4rem; flex-shrink:0; }
+.tp-brand-chi { font-family:var(--serif); font-size:1.25rem; color:var(--gold); line-height:1; }
+.tp-brand-name { font-family:var(--display); font-size:.58rem; letter-spacing:.22em; color:var(--text-dim); text-transform:uppercase; }
+.tp-brand:hover .tp-brand-name { color:var(--text); }
+
+/* Divider */
+.tp-div { width:1px; height:18px; background:var(--border-2); flex-shrink:0; margin:0 .3rem; }
+
+/* Home link */
+.tp-home-link {
+  font-family:var(--mono); font-size:.6rem; color:var(--text-muted);
+  padding:.3rem .5rem; border-radius:3px; transition:all .15s;
+}
+.tp-home-link:hover { color:var(--gold); background:var(--gold-dim); }
+
+/* Spacer */
+.tp-spacer { flex:1; }
+
+/* Reading level tabs */
+.tp-levels { display:flex; gap:2px; background:var(--surface2); padding:2px; border-radius:5px; border:1px solid var(--border); }
+.tp-level {
+  font-family:var(--display); font-size:.55rem; letter-spacing:.14em; text-transform:uppercase;
+  padding:.3rem .6rem; border-radius:3px; border:0; background:transparent;
+  color:var(--text-muted); cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+.tp-level:hover { color:var(--text); }
+.tp-level.active { background:var(--surface3); color:var(--gold); }
+
+/* Search */
+.tp-search {
+  display:flex; align-items:center; gap:.35rem;
+  padding:.3rem .5rem; background:transparent; border:1px solid var(--border-2);
+  border-radius:4px; color:var(--text-muted); font-size:.65rem; cursor:pointer; transition:all .15s;
+}
+.tp-search:hover { border-color:var(--border-hi); color:var(--text); }
+.tp-search kbd { font-family:var(--mono); font-size:.55rem; background:var(--surface2); border:1px solid var(--border); padding:0 .25rem; border-radius:2px; }
+
+@media(max-width:700px) {
+  .tp-brand-name { display:none; }
+  .tp-search kbd { display:none; }
+  .tp-level { font-size:.5rem; padding:.25rem .4rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CLASSIFICATION BAR — Below top bar, between prev/next
+   ═══════════════════════════════════════════════════════════ */
+.tp-class {
+  position:fixed; top:var(--header-h); left:0; right:0; z-index:99;
+  background:rgba(8,8,8,.92); border-bottom:1px solid var(--border);
+  padding:.35rem 0;
+}
+.tp-class-inner {
+  max-width:var(--max); margin:0 auto; padding:0 1rem;
+  display:flex; align-items:center; gap:.7rem;
+}
+/* Prev */
+.tp-nav-prev, .tp-nav-next {
+  font-family:var(--mono); font-size:.6rem; color:var(--text-muted);
+  padding:.25rem .5rem; border-radius:3px; transition:all .15s; flex-shrink:0; white-space:nowrap;
+}
+.tp-nav-prev:hover, .tp-nav-next:hover { color:var(--gold); background:var(--gold-dim); }
+
+/* Classification segments */
+.tp-class-center { flex:1; display:flex; flex-direction:column; gap:.25rem; }
+.tp-class-label { font-family:var(--mono); font-size:.5rem; color:var(--text-muted); letter-spacing:.15em; text-transform:uppercase; }
+.tp-class-bar { display:flex; height:4px; border-radius:2px; overflow:hidden; gap:1px; }
+.tp-class-seg { transition:flex .3s ease; }
+.tp-class-tags { display:flex; gap:.6rem; flex-wrap:wrap; }
+.tp-class-tag { font-family:var(--mono); font-size:.5rem; display:flex; align-items:center; gap:.3rem; color:var(--text-muted); }
+.tp-class-dot { width:5px; height:5px; border-radius:50%; }
+
+/* Right side placeholder - series home */
+.tp-series-home {
+  font-family:var(--mono); font-size:.6rem; color:var(--text-muted);
+  padding:.25rem .5rem; border:1px solid var(--border); border-radius:3px;
+  transition:all .15s; flex-shrink:0; white-space:nowrap;
+}
+.tp-series-home:hover { color:var(--gold); border-color:var(--gold); }
+
+@media(max-width:600px) {
+  .tp-class-tags { display:none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ARTICLE BODY — Demo content
+   ═══════════════════════════════════════════════════════════ */
+.tp-article {
+  max-width:780px; margin:0 auto;
+  padding:calc(var(--header-h) + 60px) 1.5rem 3rem;
+}
+.tp-article h1 {
+  font-family:var(--serif); font-size:2.2rem; font-weight:400; color:#fff;
+  margin-bottom:.8rem; line-height:1.15;
+}
+.tp-article .byline {
+  font-family:var(--mono); font-size:.7rem; color:var(--text-muted); margin-bottom:2rem;
+}
+.tp-article h2 {
+  font-family:var(--serif); font-size:1.4rem; color:#fff; font-weight:400;
+  margin:2.5rem 0 .8rem; padding-top:1rem; border-top:1px solid var(--border);
+}
+.tp-article p {
+  font-family:var(--serif); font-size:1.05rem; color:var(--text-dim);
+  margin-bottom:1.2rem; line-height:1.7;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ARTICLE NAV — Prev / Next at bottom of article
+   ═══════════════════════════════════════════════════════════ */
+.tp-art-nav {
+  max-width:780px; margin:0 auto; padding:0 1.5rem;
+  display:flex; justify-content:space-between; align-items:center;
+  font-family:var(--mono); font-size:.7rem; color:var(--text-muted);
+  padding-bottom:2rem;
+}
+.tp-art-nav a { transition:color .15s; }
+.tp-art-nav a:hover { color:var(--gold); }
+
+/* ═══════════════════════════════════════════════════════════
+   FINAL AUDIT — What We Got Right / Overstated / Wrong
+   ═══════════════════════════════════════════════════════════ */
+.tp-audit {
+  max-width:var(--max); margin:0 auto; padding:0 1.5rem 2rem;
+}
+.tp-audit-box {
+  background:var(--surface2); border:1px solid var(--border); border-radius:8px;
+  padding:1.8rem; position:relative;
+}
+.tp-audit-head {
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.2em;
+  color:var(--gold); text-transform:uppercase; margin-bottom:.6rem;
+}
+.tp-audit-intro {
+  font-size:.82rem; color:var(--text-dim); margin-bottom:.5rem; max-width:600px; line-height:1.55;
+}
+.tp-audit-covenant {
+  font-size:.75rem; color:var(--text-muted); margin-bottom:1.5rem; max-width:600px;
+  padding:.6rem .8rem; border-left:2px solid var(--gold-dim); background:rgba(212,175,55,.03);
+  line-height:1.5;
+}
+.tp-audit-covenant b { color:var(--gold); font-weight:500; }
+.tp-audit-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem;
+}
+@media(max-width:700px) { .tp-audit-grid { grid-template-columns:1fr; } }
+
+.tp-audit-col {
+  padding:1rem; border-radius:6px; border:1px solid var(--border);
+}
+.tp-audit-col h4 {
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.15em;
+  text-transform:uppercase; margin-bottom:.7rem;
+}
+.tp-audit-col ul {
+  list-style:none; font-size:.78rem; color:var(--text-dim); line-height:1.5;
+}
+.tp-audit-col li { padding:.35rem 0; border-bottom:1px solid rgba(255,255,255,.04); }
+.tp-audit-col li:last-child { border-bottom:0; }
+
+.tp-col-right { border-color:rgba(59,179,154,.2); }
+.tp-col-right h4 { color:var(--teal); }
+.tp-col-over { border-color:rgba(212,175,55,.2); }
+.tp-col-over h4 { color:var(--gold); }
+.tp-col-wrong { border-color:rgba(201,64,64,.2); }
+.tp-col-wrong h4 { color:var(--red); }
+
+/* ═══════════════════════════════════════════════════════════
+   SITE FOOTER — Shared across all pages
+   ═══════════════════════════════════════════════════════════ */
+.tp-footer {
+  max-width:var(--max); margin:2rem auto 0; padding:0 1.5rem;
+}
+.tp-f-line { height:1px; background:linear-gradient(90deg,transparent,rgba(212,175,55,.25),transparent); margin-bottom:2rem; }
+
+/* 15+15=100 */
+.tp-f-grace {
+  text-align:center; margin-bottom:2rem; padding:1.2rem;
+}
+.tp-f-grace-num {
+  font-family:var(--mono); font-size:1.1rem; color:var(--gold); letter-spacing:.08em;
+  margin-bottom:.3rem;
+}
+.tp-f-grace-sub {
+  font-family:var(--serif); font-style:italic; font-size:.85rem; color:var(--text-muted);
+}
+
+/* Subdomain grid */
+.tp-f-head { display:flex; align-items:center; gap:.5rem; margin-bottom:.3rem; }
+.tp-f-dot { width:5px; height:5px; border-radius:50%; background:var(--gold); }
+.tp-f-kicker { font-family:var(--mono); font-size:.55rem; color:var(--text-muted); letter-spacing:.18em; text-transform:uppercase; }
+.tp-f-title { font-family:var(--serif); font-size:1rem; color:#fff; margin-bottom:.2rem; }
+.tp-f-desc { font-size:.75rem; color:var(--text-muted); margin-bottom:1rem; }
+
+.tp-f-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+  gap:.45rem; margin-bottom:2rem;
+}
+.tp-f-card {
+  display:flex; align-items:center; gap:.6rem;
+  padding:.6rem .75rem; background:var(--surface2); border:1px solid var(--border);
+  border-radius:4px; transition:all .15s;
+}
+.tp-f-card:hover { border-color:var(--gold); transform:translateY(-1px); }
+.tp-f-card i { font-size:.8rem; color:var(--gold); opacity:.55; width:16px; text-align:center; }
+.tp-f-card:hover i { opacity:1; }
+.tp-f-card h4 { font-size:.68rem; font-weight:500; color:var(--text); margin:0; line-height:1.15; }
+.tp-f-card p { font-family:var(--mono); font-size:.48rem; color:var(--text-muted); margin:.1rem 0 0; }
+
+/* Series nav */
+.tp-f-series {
+  display:flex; flex-wrap:wrap; gap:.3rem; justify-content:center;
+  margin-bottom:1.5rem; padding:.8rem 0;
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+}
+.tp-f-series a {
+  font-family:var(--display); font-size:.55rem; letter-spacing:.12em; text-transform:uppercase;
+  padding:.35rem .55rem; border-radius:3px; color:var(--text-muted); transition:all .15s;
+}
+.tp-f-series a:hover { color:var(--gold); background:var(--gold-dim); }
+.tp-f-series a.soon { opacity:.35; cursor:default; }
+
+/* Bottom bar */
+.tp-f-bottom { text-align:center; padding:1.2rem 0 2rem; }
+.tp-f-eq { font-family:var(--mono); font-size:.65rem; color:var(--gold); opacity:.4; margin-bottom:.5rem; }
+.tp-f-copy { color:var(--text-muted); font-size:.65rem; margin:.2rem 0; }
+.tp-f-copy a { color:var(--text-dim); }
+.tp-f-copy a:hover { color:var(--gold); }
+.tp-f-vow { font-family:var(--serif); font-style:italic; color:var(--text-muted); font-size:.78rem; margin-top:.7rem; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TOP BAR — Goes on EVERY page
+     ═══════════════════════════════════════════════════════════ -->
+<!-- BEGIN:COMPONENT:header:site-top-bar -->
+<header class="tp-top">
+  <div class="tp-top-inner">
+    <a href="https://faiththruphysics.com" class="tp-brand" title="Faith thru Physics">
+      <span class="tp-brand-chi">χ</span>
+      <span class="tp-brand-name">Faith thru Physics</span>
+    </a>
+    <span class="tp-div"></span>
+    <a href="/" class="tp-home-link" title="Site Home"><i class="fas fa-home" style="font-size:.55rem"></i> Home</a>
+    <span class="tp-spacer"></span>
+    <div class="tp-levels" role="tablist" aria-label="Reading level">
+      <button class="tp-level active" data-level="highschool" role="tab">High School</button>
+      <button class="tp-level" data-level="college" role="tab">College</button>
+      <button class="tp-level" data-level="phd" role="tab">PhD</button>
+    </div>
+    <span class="tp-div"></span>
+    <button class="tp-search" title="Search (Ctrl+K)">
+      <span>⌕</span>
+      <kbd>⌘K</kbd>
+    </button>
+  </div>
+</header>
+<!-- END:COMPONENT:header:site-top-bar -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     CLASSIFICATION BAR — Below header, between prev/next
+     ═══════════════════════════════════════════════════════════ -->
+<!-- BEGIN:COMPONENT:classbar:article-classification -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-nav-prev">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
+    </div>
+    <a href="#" class="tp-series-home">Series Home</a>
+    <a href="#" class="tp-nav-next">Next →</a>
+  </div>
+</div>
+<!-- END:COMPONENT:classbar:article-classification -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     ARTICLE BODY — Demo content (replace per page)
+     ═══════════════════════════════════════════════════════════ -->
+<article class="tp-article">
+  <h1>The Measurement That Collapsed Reality</h1>
+  <div class="byline">David Lowe · Faith thru Physics · GTQ-01 · June 2026</div>
+
+  <h2>Section One</h2>
+  <p>This is a demo article showing the unified header and footer components. Every page on faiththruphysics.com gets these same components — the top bar with reading levels, the classification bar with domain percentages, and the full footer with the Final Audit, the grace equation, the subdomain grid, and the series navigation.</p>
+
+  <p>The reading level tabs switch between High School (narrative, no math), College (explanations with light formalism), and PhD (full technical, formal language, proof-level). One page, three layers. The reader picks their depth.</p>
+
+  <h2>Section Two</h2>
+  <p>The classification bar shows what percentage of this article falls into each domain. The colored segments give an immediate visual sense of coverage — theology, physics, cross-domain bridges, evidence, consciousness, mathematics. The percentages always sum to 100%.</p>
+
+  <p>Below the article, the Final Audit is the transparency mechanism. Every page declares what it got right, what it overstated, and what it got wrong. No other research program does this. That's the point.</p>
+</article>
+
+<!-- Article bottom nav -->
+<nav class="tp-art-nav">
+  <a href="#">← Index</a>
+  <a href="#">Next →</a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FINAL AUDIT — Goes on every article page
+     ═══════════════════════════════════════════════════════════ -->
+<!-- BEGIN:COMPONENT:audit:final-audit -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong. Keep it bright, readable, and honest, even when the page style changes.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+          <li>TEMPLATE: Replace with article-specific audit items from add_rigor_audits.py</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence, the mechanism, or the proof available on the page.</li>
+          <li>TEMPLATE: Replace with article-specific audit items</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or a weaker formulation before publication.</li>
+          <li>TEMPLATE: Replace with article-specific audit items</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- END:COMPONENT:audit:final-audit -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SITE FOOTER — Goes on EVERY page
+     ═══════════════════════════════════════════════════════════ -->
+<!-- BEGIN:COMPONENT:footer:site-wide-footer -->
+<footer class="tp-footer">
+  <div class="tp-f-line"></div>
+
+  <!-- 15 + 15 = 100 -->
+  <div class="tp-f-grace">
+    <div class="tp-f-grace-num">15 + 15 = 100</div>
+    <div class="tp-f-grace-sub">Our inputs don't match our outputs. That's the point.</div>
+  </div>
+
+  <!-- Subdomain Grid -->
+  <div class="tp-f-head">
+    <span class="tp-f-dot"></span>
+    <span class="tp-f-kicker">Reference &amp; Tools</span>
+  </div>
+  <div class="tp-f-title">Faith thru Physics — Site Network</div>
+  <p class="tp-f-desc">Cross-series infrastructure. Every series links here.</p>
+
+  <div class="tp-f-grid">
+    <a href="/glossary/" class="tp-f-card">
+      <i class="fas fa-book"></i>
+      <div><h4>Glossary</h4><p>300+ terms</p></div>
+    </a>
+    <a href="/equation/" class="tp-f-card">
+      <i class="fas fa-square-root-alt"></i>
+      <div><h4>Master Equation</h4><p>10 variables</p></div>
+    </a>
+    <a href="/isomorphism/" class="tp-f-card">
+      <i class="fas fa-exchange-alt"></i>
+      <div><h4>Isomorphisms</h4><p>38 mappings</p></div>
+    </a>
+    <a href="/proof-explorer/" class="tp-f-card">
+      <i class="fas fa-project-diagram"></i>
+      <div><h4>Proof Explorer</h4><p>Claims + grades</p></div>
+    </a>
+    <a href="/media/" class="tp-f-card">
+      <i class="fas fa-images"></i>
+      <div><h4>Media Gallery</h4><p>Visuals + slides</p></div>
+    </a>
+    <a href="/podcast/" class="tp-f-card">
+      <i class="fas fa-podcast"></i>
+      <div><h4>Podcast</h4><p>Episodes + feed</p></div>
+    </a>
+    <a href="/rigor/" class="tp-f-card">
+      <i class="fas fa-shield-alt"></i>
+      <div><h4>Rigor Cards</h4><p>Bible + MDA</p></div>
+    </a>
+    <a href="/lean4/" class="tp-f-card">
+      <i class="fas fa-code"></i>
+      <div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div>
+    </a>
+    <a href="/audio/" class="tp-f-card">
+      <i class="fas fa-headphones"></i>
+      <div><h4>Audio Library</h4><p>TTS + narration</p></div>
+    </a>
+    <a href="/subdomains/" class="tp-f-card">
+      <i class="fas fa-sitemap"></i>
+      <div><h4>Paper Grader</h4><p>NLP scoring</p></div>
+    </a>
+  </div>
+
+  <!-- Series Nav -->
+  <nav class="tp-f-series" aria-label="All series">
+    <a href="/">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon" title="Coming Soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank" rel="noopener">Zenodo</a>
+  </nav>
+
+  <!-- Bottom Bar -->
+  <div class="tp-f-bottom">
+    <div class="tp-f-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+    <p class="tp-f-copy">Faith Through Physics · David Lowe · 2026</p>
+    <p class="tp-f-copy">Plant the Flag · POF 2828</p>
+    <p class="tp-f-copy" style="font-size:.58rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+    <p class="tp-f-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+  </div>
+</footer>
+<!-- END:COMPONENT:footer:site-wide-footer -->
+
+<script>
+/* ═══════ Classification Bar ═══════ */
+const ARTICLE_PROFILE = [
+  { name:"Theology",     pct:28, color:"#d4af37" },
+  { name:"Physics",      pct:22, color:"#7cc7ff" },
+  { name:"Cross-Domain", pct:15, color:"#3bb39a" },
+  { name:"Evidence",     pct:15, color:"#7fc77f" },
+  { name:"Consciousness",pct:10, color:"#a78bfa" },
+  { name:"Mathematics",  pct:7,  color:"#ff7d90" },
+  { name:"Speculative",  pct:3,  color:"#aeb8d6" },
+];
+const bar = document.getElementById('classBar');
+const tags = document.getElementById('classTags');
+if(bar && tags) {
+  bar.innerHTML = ARTICLE_PROFILE.map(d =>
+    `<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`
+  ).join('');
+  tags.innerHTML = ARTICLE_PROFILE.map(d =>
+    `<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`
+  ).join('');
+}
+
+/* ═══════ Reading Level Tabs ═══════ */
+document.querySelectorAll('.tp-level').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tp-level').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // In production: toggle data-reader-mode visibility
+    const level = btn.dataset.level;
+    document.querySelectorAll('[data-reader-mode]').forEach(el => {
+      el.hidden = el.dataset.readerMode !== level;
+    });
+  });
+});
+</script>
+</body>
+</html>

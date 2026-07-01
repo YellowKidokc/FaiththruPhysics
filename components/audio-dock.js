@@ -20,6 +20,82 @@
   'use strict';
 
   const ACCENT = '#d4af37';
+  const API_AUDIO = 'https://faith-audio-pipeline.davidokc28.workers.dev/api/audio';
+  const API_TRACK_DEFS = [
+    { modes: ['tts', 'read_aloud', 'read'], label: 'Read Aloud', dockMode: 'read' },
+    { modes: ['deep', 'deep_dive', 'deep-dive'], label: 'Deep Dive', dockMode: 'deep' },
+    { modes: ['podcast', 'debate'], label: 'Podcast', dockMode: 'debate' },
+    { modes: ['critique'], label: 'Critique', dockMode: 'critique', optional: true }
+  ];
+
+  function trackMapFromApi(data) {
+    const map = {};
+    (data?.tracks || []).forEach(t => {
+      if (t.mode) map[t.mode] = t.url || t.src || '';
+      if (t.is_default) map.__default__ = t.url || t.src || '';
+    });
+    return map;
+  }
+
+  function resolveTrackUrl(def, artMap, serMap) {
+    for (const mode of def.modes) {
+      if (artMap[mode]) return artMap[mode];
+    }
+    for (const mode of def.modes) {
+      if (serMap[mode]) return serMap[mode];
+    }
+    if (def.dockMode === 'read') {
+      return artMap.__default__ || serMap.__default__ || '';
+    }
+    return '';
+  }
+
+  async function populateDockFromApi(container) {
+    const lookup = container.dataset.audioLookup
+      || (container.dataset.audioSlug ? `${API_AUDIO}?slug=${encodeURIComponent(container.dataset.audioSlug)}` : '');
+    const seriesLookup = container.dataset.seriesLookup
+      || (container.dataset.seriesSlug ? `${API_AUDIO}?slug=${encodeURIComponent(container.dataset.seriesSlug)}` : '');
+    if (!lookup) return [];
+
+    const [articleData, seriesData] = await Promise.all([
+      fetch(lookup).then(r => r.ok ? r.json() : { tracks: [] }).catch(() => ({ tracks: [] })),
+      seriesLookup && seriesLookup !== lookup
+        ? fetch(seriesLookup).then(r => r.ok ? r.json() : { tracks: [] }).catch(() => ({ tracks: [] }))
+        : Promise.resolve({ tracks: [] })
+    ]);
+
+    const artMap = trackMapFromApi(articleData);
+    const serMap = trackMapFromApi(seriesData);
+    let pillsWrap = container.querySelector('.dock-pills');
+    if (!pillsWrap) {
+      pillsWrap = document.createElement('div');
+      pillsWrap.className = 'dock-pills';
+      container.prepend(pillsWrap);
+    }
+    pillsWrap.innerHTML = '';
+
+    const tracks = [];
+    let idx = 0;
+    API_TRACK_DEFS.forEach(def => {
+      const url = resolveTrackUrl(def, artMap, serMap);
+      if (!url && def.optional) return;
+      const pill = document.createElement('button');
+      pill.type = 'button';
+      pill.className = 'dock-pill' + (url ? '' : ' unavailable');
+      pill.dataset.dockIndex = String(idx);
+      pill.dataset.dockSrc = url || '';
+      pill.dataset.dockLabel = def.label;
+      pill.dataset.dockMode = def.dockMode;
+      pill.innerHTML = `<span class="pill-dot"></span>${def.label}`;
+      if (!url) pill.disabled = true;
+      pillsWrap.appendChild(pill);
+      if (url) {
+        tracks.push({ index: idx, src: url, label: def.label, mode: def.dockMode, el: pill });
+      }
+      idx += 1;
+    });
+    return tracks;
+  }
 
   function fmtTime(s) {
     if (!s || !isFinite(s)) return '0:00';
@@ -123,14 +199,26 @@
       this.speedEl = body.querySelector('.dock-speed');
 
       // Mini widget
+      const simpleMini = this.mini && (
+        this.mini.classList.contains('dock-mini-simple')
+        || this.mini.dataset.dockMiniStyle === 'simple'
+        || this.container.dataset.dockMiniStyle === 'simple'
+      );
       if (this.mini && !this.mini.querySelector('.mini-play')) {
-        this.mini.innerHTML = `
-          <button class="mini-play" type="button" aria-label="Play or pause"><i class="fas fa-play"></i></button>
-          <div class="mini-label">
-            <span class="mini-mode">Audio</span>
-            <span class="mini-title">Choose a track</span>
-          </div>
-        `;
+        if (simpleMini) {
+          this.mini.classList.add('dock-mini-simple');
+          this.mini.innerHTML = `
+            <button class="mini-play" type="button" aria-label="Play or pause"><i class="fas fa-play"></i></button>
+          `;
+        } else {
+          this.mini.innerHTML = `
+            <button class="mini-play" type="button" aria-label="Play or pause"><i class="fas fa-play"></i></button>
+            <div class="mini-label">
+              <span class="mini-mode">Audio</span>
+              <span class="mini-title">Choose a track</span>
+            </div>
+          `;
+        }
       }
       if (this.mini) {
         this.miniPlay = this.mini.querySelector('.mini-play');
@@ -240,7 +328,7 @@
         if (this.durEl) this.durEl.textContent = fmtTime(this.audio.duration);
       });
 
-      // Mini visibility
+      // Mini visibility — show corner box when main dock scrolls out of view
       if (this.mini) {
         const observer = new IntersectionObserver(entries => {
           const visible = entries[0].isIntersecting;
@@ -254,13 +342,18 @@
   }
 
   // Auto-init every .audio-dock on the page
-  function autoInit() {
-    document.querySelectorAll('[data-audio-dock]').forEach(container => {
+  async function autoInit() {
+    const containers = [...document.querySelectorAll('[data-audio-dock]')];
+    for (const container of containers) {
       const mini = container.dataset.audioDockMini
         ? document.querySelector(container.dataset.audioDockMini)
         : document.querySelector('[data-audio-dock-mini]');
-      new AudioDock({ container, mini });
-    });
+      let tracks = null;
+      if (container.dataset.audioLookup || container.dataset.audioSlug) {
+        tracks = await populateDockFromApi(container);
+      }
+      new AudioDock({ container, mini, tracks: tracks || undefined });
+    }
   }
 
   if (document.readyState === 'loading') {

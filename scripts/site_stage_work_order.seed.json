@@ -1,0 +1,86 @@
+{
+  "version": "2026-07-01",
+  "purpose": "Stage work order, priorities, worker types, and lead thresholds for the overlapped site pipeline.",
+  "stages": [
+    {
+      "stage": "labels",
+      "priority": 10,
+      "worker_type": "api_structural",
+      "depends_on": [],
+      "min_upstream_done": 0,
+      "notes": "Foundation lane. Everything else waits on labels."
+    },
+    {
+      "stage": "headers",
+      "priority": 20,
+      "worker_type": "api_shell",
+      "depends_on": ["labels"],
+      "min_upstream_done": 5,
+      "notes": "Can begin once labels have built a lead."
+    },
+    {
+      "stage": "footers",
+      "priority": 30,
+      "worker_type": "api_shell",
+      "depends_on": ["labels"],
+      "min_upstream_done": 5,
+      "notes": "Runs in parallel with headers once label lead exists."
+    },
+    {
+      "stage": "audit",
+      "priority": 40,
+      "worker_type": "api_audit",
+      "depends_on": ["headers", "footers"],
+      "min_upstream_done": 5,
+      "notes": "Starts behind shell work once both lanes are ahead."
+    },
+    {
+      "stage": "score",
+      "priority": 50,
+      "worker_type": "coherence_engine",
+      "depends_on": ["audit"],
+      "min_upstream_done": 5,
+      "notes": "Chi-filter scoring lane."
+    },
+    {
+      "stage": "pressure",
+      "priority": 60,
+      "worker_type": "pressure_engine",
+      "depends_on": ["score"],
+      "min_upstream_done": 5,
+      "notes": "Adversarial pressure lane."
+    },
+    {
+      "stage": "predict",
+      "priority": 70,
+      "worker_type": "prediction_ensemble",
+      "depends_on": ["pressure"],
+      "min_upstream_done": 5,
+      "notes": "Run all eligible prediction engines and compare them."
+    },
+    {
+      "stage": "blocks",
+      "priority": 80,
+      "worker_type": "api_layout",
+      "depends_on": ["predict"],
+      "min_upstream_done": 10,
+      "notes": "Visual anchors and block injection can wait for a larger lead."
+    },
+    {
+      "stage": "dashboard",
+      "priority": 90,
+      "worker_type": "api_dashboard",
+      "depends_on": ["predict"],
+      "min_upstream_done": 10,
+      "notes": "Verification panel and metric surfaces."
+    },
+    {
+      "stage": "verify",
+      "priority": 100,
+      "worker_type": "verification",
+      "depends_on": ["blocks", "dashboard"],
+      "min_upstream_done": 5,
+      "notes": "Screenshot, white-page, shell-size, and page health receipts."
+    }
+  ]
+}
