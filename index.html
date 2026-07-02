@@ -558,6 +558,7 @@ footer .vow{font-family:var(--serif);font-style:italic;color:var(--text-dim);mar
         <span><b>Touch</b> to hear it on mobile</span>
         <span><b>Pin read-aloud</b> if you want it to keep playing</span>
       </div>
+      <audio id="hero-intro-player" preload="metadata" src="/assets/homepage-intro.mp3"></audio>
     </div>
     <div class="hero-meta">
       <span><b id="hero-series-count">60</b> series indexed</span>
@@ -1550,6 +1551,7 @@ if(heroSearchBtn) heroSearchBtn.addEventListener('click',openCP);
 // ── Init counts ─────────────────────────────────────────────────────────────
 const heroIntroCard = document.getElementById('hero-intro-card');
 const heroIntroAudioBtn = document.getElementById('hero-intro-audio');
+const heroIntroPlayer = document.getElementById('hero-intro-player');
 const heroPillBar = document.getElementById('tpPillBar');
 const heroPillAudio = heroPillBar ? heroPillBar.querySelector('audio') : null;
 const heroTtsPill = heroPillBar ? heroPillBar.querySelector('.tp-pill[data-mode="tts"]') : null;
@@ -1567,17 +1569,29 @@ function setHeroIntroPinned(next){
 }
 
 function startHeroIntroPreview(){
-  if(!heroIntroCard || !heroPillBar || !heroPillAudio || !heroTtsPill) return;
+  if(!heroIntroCard) return;
   heroIntroCard.classList.add('is-previewing');
+  if(heroIntroPlayer){
+    try { heroIntroPlayer.currentTime = 0; } catch(e) {}
+    heroIntroPlayer.play().catch(()=>{});
+    return;
+  }
+  if(!heroPillBar || !heroPillAudio || !heroTtsPill) return;
   if(!heroTtsPill.classList.contains('active')) heroTtsPill.click();
   try { heroPillAudio.currentTime = 0; } catch(e) {}
   heroPillAudio.play().catch(()=>{});
 }
 
 function stopHeroIntroPreview(force){
-  if(!heroIntroCard || !heroPillAudio) return;
+  if(!heroIntroCard) return;
   if(heroIntroPinned && !force) return;
   heroIntroCard.classList.remove('is-previewing');
+  if(heroIntroPlayer){
+    heroIntroPlayer.pause();
+    try { heroIntroPlayer.currentTime = 0; } catch(e) {}
+    return;
+  }
+  if(!heroPillAudio) return;
   heroPillAudio.pause();
   try { heroPillAudio.currentTime = 0; } catch(e) {}
 }
