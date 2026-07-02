@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Part XVII — The Data Lab | Theophysics</title>
+<meta name="description" content="PostgreSQL-driven biblical analysis. The silence study, pharisee anomalies, grace vectors, and sin vectors — all queryable, all visualized."/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root{
+  --bg:#050505;
+  --surface:#0a0a0a;
+  --surface2:#111;
+  --surface3:#1a1a1a;
+  --border:#222;
+  --border-hover:#333;
+  --text:#e0e0e0;
+  --text-dim:#999;
+  --text-muted:#555;
+  --accent:#a855f7;
+  --accent-dim:#a855f718;
+  --red:#c94040;
+  --blue:#3b82f6;
+  --gold:#d4af37;
+  --teal:#14b8a6;
+  --purple:#a855f7;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+
+/* Progress bar */
+.progress-track{position:fixed;top:0;left:0;right:0;height:3px;background:var(--border);z-index:1001;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#a855f7aa);transition:width 0.1s ease;}
+
+/* Sidebar */
+.sidebar{position:fixed;top:0;left:0;width:300px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:1000;overflow-y:auto;transform:translateX(-100%);transition:transform .3s ease;}
+.sidebar.open{transform:translateX(0);}
+.sidebar a{display:block;padding:.4rem 1.5rem;font-size:.75rem;color:var(--text-dim);text-decoration:none;transition:all .2s;}
+.sidebar a:hover{color:var(--text);background:var(--surface2);}
+.sidebar a.current{color:var(--accent);background:var(--accent-dim);font-weight:600;}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;opacity:0;pointer-events:none;transition:opacity .3s;}
+.sidebar-overlay.show{opacity:1;pointer-events:auto;}
+.sidebar-toggle{position:fixed;top:1rem;left:1rem;z-index:1002;background:var(--surface2);border:1px solid var(--border);color:var(--accent);width:40px;height:40px;border-radius:.375rem;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+
+/* Hero */
+.hero{min-height:45vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem 2rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,#a855f70a 0%,transparent 70%);pointer-events:none;}
+.hero-tag{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;}
+.hero h1{font-family:'Crimson Text',serif;font-size:clamp(2rem,5vw,3.2rem);color:white;font-weight:400;margin-bottom:.5rem;}
+.hero .subtitle{font-size:.9rem;color:var(--text-dim);max-width:550px;margin:0 auto 1.5rem;}
+.hero .part-num{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.5rem;}
+
+/* Back nav */
+.back-nav{max-width:1000px;margin:0 auto;padding:1.5rem 2rem 0;}
+.back-nav a{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text-muted);text-decoration:none;letter-spacing:.05em;transition:color .2s;}
+.back-nav a:hover{color:var(--accent);}
+.back-nav a i{margin-right:.4rem;}
+
+/* Section */
+.section{max-width:1000px;margin:0 auto;padding:3rem 2rem;}
+.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;}
+.section-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--accent);}
+.section-header h2{font-family:'Crimson Text',serif;font-size:1.5rem;color:white;}
+.section-count{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-muted);margin-left:auto;}
+.section-desc{font-size:.85rem;color:var(--text-dim);margin-bottom:2rem;max-width:650px;}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.card{background:var(--surface2);border:1px solid var(--border);border-radius:.6rem;padding:1.25rem;color:var(--text);transition:all .25s ease;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.card:hover{border-color:var(--accent);background:#a855f708;transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.card .card-num{font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem;color:var(--accent);}
+.card h3{font-family:'Crimson Text',serif;font-size:1.1rem;color:white;margin-bottom:.4rem;line-height:1.3;}
+.card .card-desc{font-size:.8rem;color:var(--text-dim);line-height:1.5;flex:1;}
+
+/* Divider */
+.divider{max-width:1000px;margin:0 auto;border:none;border-top:1px solid var(--border);}
+
+/* Footer */
+footer{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-size:.8rem;}
+footer .eq{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--gold);opacity:.5;margin-bottom:.5rem;}
+
+@media(max-width:640px){.card-grid{grid-template-columns:1fr;}.hero{min-height:35vh;padding:3rem 1.5rem 1.5rem;}}
+</style>
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+
+<!-- Sidebar Toggle -->
+<button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open navigation">&#9776;</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar" id="sidebar">
+  <div style="padding:1.5rem;border-bottom:1px solid var(--border);">
+    <div style="font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:.25rem;">Theophysics</div>
+    <div style="font-size:.75rem;color:var(--text-muted);">Part XVII — The Data Lab</div>
+  </div>
+  <nav style="padding:1rem 0;">
+    <a href="/"><i class="fas fa-home" style="width:1.2rem;"></i> Home</a>
+    <div style="padding:.5rem 1.5rem .25rem;font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);">Core Journey</div>
+    <a href="../moral-decline/index.html"><span style="color:var(--red);">I.</span> Moral Decline</a>
+    <a href="../three-gates/the-three-gates.html"><span style="color:var(--blue);">II.</span> Three Gates</a>
+    <a href="../logos-papers/index.html"><span style="color:var(--gold);">III.</span> Logos Papers</a>
+    <a href="../formal-papers/index.html"><span style="color:var(--purple);">IV.</span> Formal Papers</a>
+    <a href="../genesis-to-quantum/index.html"><span style="color:var(--red);">V.</span> Genesis to Quantum</a>
+    <a href="../Convergence_Series/index.html"><span style="color:var(--gold);">VI.</span> Convergence</a>
+    <a href="../master-equation/index.html"><span style="color:var(--purple);">VII.</span> Master Equation</a>
+    <a href="../proof-architecture/index.html"><span style="color:var(--teal);">VIII.</span> Proof Architecture</a>
+    <div style="padding:.5rem 1.5rem .25rem;font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);">Supporting Research</div>
+    <a href="../cross-domain/index.html"><span style="color:var(--blue);">IX.</span> Applied Framework</a>
+    <a href="../bible-through-equation/index.html"><span style="color:var(--gold);">X.</span> Bible Through Equation</a>
+    <a href="../spiritual-warfare/index.html"><span style="color:var(--red);">XI.</span> Adversary's Playbook</a>
+    <a href="../consciousness/index.html"><span style="color:var(--teal);">XII.</span> Consciousness Problem</a>
+    <a href="../prophetic-synthesis/index.html"><span style="color:var(--purple);">XIII.</span> Prophecy Engine</a>
+    <a href="../duality-project/index.html"><span style="color:var(--gold);">XIV.</span> Duality Project</a>
+    <a href="../apologetics-debate/index.html"><span style="color:var(--blue);">XV.</span> Apologetics Arsenal</a>
+    <a href="../one-page-stories/index.html"><span style="color:var(--gold);">XVI.</span> God Stories</a>
+    <a href="../bible-datalab/index.html"><span style="color:var(--purple);">XVII.</span> Data Lab</a>
+    <a href="../living-document/index.html"><span style="color:var(--teal);">XVIII.</span> Living Document</a>
+  </nav>
+</aside>
+
+<!-- Back Navigation -->
+<div class="back-nav">
+  <a href="/"><i class="fas fa-arrow-left"></i> Back to Home</a>
+</div>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="part-num">PART XVII</div>
+  <div class="hero-tag">Bible DataLab &amp; Analytics</div>
+  <h1>The Data Lab</h1>
+  <p class="subtitle">PostgreSQL-driven biblical analysis. The silence study, pharisee anomalies, grace vectors, and sin vectors — all queryable, all visualized.</p>
+</header>
+
+<hr class="divider"/>
+
+<!-- Articles Grid -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-dot"></div>
+    <h2>Articles</h2>
+    <span class="section-count">8 items</span>
+  </div>
+  <p class="section-desc">The complete Part XVII series. Click any article to read.</p>
+  <div class="card-grid">
+    <a href="the-sin-vector.html" class="card purple">
+      <div class="card-num">BDL-01</div>
+      <h3>The Sin Vector</h3>
+      <div class="card-desc">Quantified transgression. Direction, magnitude, and cumulative effect across text.</div>
+    </a>
+    <a href="the-grace-vector.html" class="card purple">
+      <div class="card-num">BDL-02</div>
+      <h3>The Grace Vector</h3>
+      <div class="card-desc">Quantified restoration. The negentropic counter to sin's decoherence.</div>
+    </a>
+    <a href="the-grace.html" class="card purple">
+      <div class="card-num">BDL-03</div>
+      <h3>The Grace Function</h3>
+      <div class="card-desc">Mathematical model of unmerited favor. How grace operates as source term.</div>
+    </a>
+    <a href="the-adversary.html" class="card purple">
+      <div class="card-num">BDL-04</div>
+      <h3>The Adversary Profile</h3>
+      <div class="card-desc">Statistical signature of the adversary across biblical narrative.</div>
+    </a>
+    <a href="the-adversary-v2.html" class="card purple">
+      <div class="card-num">BDL-05</div>
+      <h3>The Adversary Profile v2</h3>
+      <div class="card-desc">Updated analysis. Refined metrics, expanded corpus, tighter confidence intervals.</div>
+    </a>
+    <a href="god_story_v2.html" class="card purple">
+      <div class="card-num">BDL-06</div>
+      <h3>The God Story v2</h3>
+      <div class="card-desc">Narrative coherence analysis. The divine character as statistical constant across 66 books.</div>
+    </a>
+    <a href="GTQ-01_wavefunction_collapse_3d.html" class="card purple">
+      <div class="card-num">BDL-07</div>
+      <h3>Wavefunction Collapse 3D Viz</h3>
+      <div class="card-desc">Interactive visualization. Measurement events in Genesis as quantum state transitions.</div>
+    </a>
+    <a href="GTQ-07_grace_function_3d.html" class="card purple">
+      <div class="card-num">BDL-08</div>
+      <h3>Grace Function 3D Viz</h3>
+      <div class="card-desc">Interactive. The grace field in three dimensions. See the source term operate.</div>
+    </a>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- Footer -->
+<footer>
+  <div class="eq">&chi; = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p>David Lowe &middot; Part XVII — The Data Lab</p>
+  <p style="font-family:'Crimson Text',serif;font-style:italic;color:var(--text-muted);margin-top:.5rem;">&ldquo;But while he was still a long way off, his father saw him.&rdquo;</p>
+</footer>
+
+<!-- Scripts -->
+<script>
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebarOverlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+  document.body.style.overflow = sb.classList.contains('open') ? 'hidden' : '';
+}
+window.addEventListener('scroll', function() {
+  var st = window.scrollY || document.documentElement.scrollTop;
+  var dh = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var pct = dh > 0 ? (st / dh) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var sb = document.getElementById('sidebar');
+    if (sb && sb.classList.contains('open')) toggleSidebar();
+  }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const links = document.querySelectorAll('.sidebar a');
+  links.forEach(function(link) {
+    if(link.getAttribute('href') && link.getAttribute('href').includes('bible-datalab/')) {
+      link.classList.add('current');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
