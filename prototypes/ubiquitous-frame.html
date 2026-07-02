@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -10,6 +10,104 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 
+<style>
+/* ═══ GRAFTED PAGE CSS (restore_styles.py --donors, donor: audio-dock.html, class coverage 13/36) ═══ */
+:root {
+  --surface: #0f0f0f;
+  --surface-light: #1a1a1a;
+  --border: #2a2a2a;
+  --text-primary: #e0e0e0;
+  --text-secondary: #777;
+  --highlight: #d4af37;
+  --c-deep: #4a9eff;
+  --c-read: #d4af37;
+  --c-debate: #a855f7;
+  --c-critique: #2dd4bf;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--surface); color: var(--text-primary); font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+
+/* ═══════════════ AUDIO DOCK ═══════════════ */
+.audio-dock {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: .625rem;
+  overflow: hidden;
+  transition: border-color .3s ease;
+}
+.audio-dock:hover { border-color: rgba(212,175,55,.25); }
+
+/* ── PILL ROW ── */
+.dock-pills {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.dock-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: .6rem .5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: all .25s ease;
+  position: relative;
+}
+.dock-pill::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 15%; right: 15%;
+  height: 2px; border-radius: 1px;
+  background: transparent;
+  transition: all .25s ease;
+}
+.dock-pill:hover { color: var(--text-primary); background: rgba(255,255,255,.03); }
+.dock-pill[data-src="deep"]    { --pill-c: var(--c-deep); }
+.dock-pill[data-src="read"]    { --pill-c: var(--c-read); }
+.dock-pill[data-src="debate"]  { --pill-c: var(--c-debate); }
+.dock-pill[data-src="critique"]{ --pill-c: var(--c-critique); }
+.dock-pill.active { color: var(--pill-c); background: rgba(255,255,255,.02); }
+.dock-pill.active::after { background: var(--pill-c); box-shadow: 0 0 8px color-mix(in srgb, var(--pill-c) 40%, transparent); }
+.dock-pill .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .5; transition: opacity .25s; }
+.dock-pill.active .pill-dot { opacity: 1; }
+.dock-pill.unavailable { opacity: .3; cursor: default; pointer-events: none; }
+
+/* ── PLAYER BODY ── */
+.dock-body { display: flex; align-items: center; gap: .65rem; padding: .65rem .85rem; }
+.dock-play {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid var(--highlight); background: transparent;
+  color: var(--highlight); font-size: .7rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all .2s ease;
+}
+.dock-play:hover { background: rgba(212,175,55,.1); transform: scale(1.05); }
+.dock-play.playing { animation: pulse-ring 2s ease-in-out infinite; }
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,.2); }
+  50% { box-shadow: 0 0 0 4px rgba(212,175,55,.05); }
+}
+.dock-track-wrap { flex: 1; display: flex; flex-direction: column; gap: .25rem; min-width: 0; }
+.dock-track { width: 100%; height: 4px; background: #222; border-radius: 2px; cursor: pointer; overflow: hidden; position: relative; }
+.dock-fill { height: 100%; width: 0%; border-radius: 2px; background: var(--highlight); transition: width .15s linear, background .3s; }
+.dock-times { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: .5rem; color: var(--text-secondary); }
+.dock-vol { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: .75rem; flex-shrink: 0; padding: 2px; transition: color .2s; }
+.dock-vol:hover { color: var(--text-primary); }
+.dock-empty { display: none; align-items: center; justify-content: center; padding: .85rem; font-family: 'JetBrains Mono', monospace; font-size: .55rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); opacity: .5; font-style: italic; }
+.dock-body.hidden { display: none; }
+.dock-empty.visible { display: flex; }
+</style>
 <style>
 /* ═══ TP-WORKER-AUDIO-PLAYER ═══ */
 .tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
@@ -156,6 +254,7 @@
 <p>Click any reading-ladder tab to see the Knight Rider gold wave sweep across the whole bar.</p>
 <p style="height:120vh;"></p>
 <p>End of placeholder content.</p>
+<img src="/media/media/character-salvation-science-standards-blackout.webp" alt="Content" class="tp-article-img"/>
 </main>
 <!-- ═══════════════ BOTTOM AUDIO DOCK ═══════════════ -->
 <div class="audio-dock" id="audioDock">
