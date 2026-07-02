@@ -9,6 +9,323 @@
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 <style>
+/* ═══ RESTORED ORIGINAL PAGE CSS (restore_styles.py, from git 9b3aba7b) ═══ */
+:root {
+  --bg: #050505;
+  --surface: #0a0a0a;
+  --surface2: #111;
+  --surface3: #1a1a1a;
+  --border: #222;
+  --border-2: #2a2a2a;
+  --text: #e5e3df;
+  --text-dim: #9a9a9a;
+  --text-muted: #5a5a5a;
+  --gold: #d4af37;
+  --gold-dim: rgba(212,175,55,.08);
+  --gold-glow: rgba(212,175,55,.15);
+  --blue: #5b9bd5;
+  --red: #c94040;
+  --teal: #3bb39a;
+  --serif: 'Crimson Text', Georgia, serif;
+  --sans: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* ── The Equation Button ── */
+.eq-trigger {
+  appearance: none;
+  display: block;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 12px;
+  background: rgba(212,175,55,.03);
+  cursor: pointer;
+  transition: all .25s ease;
+  text-align: center;
+}
+.eq-trigger:hover {
+  border-color: rgba(212,175,55,.45);
+  background: rgba(212,175,55,.06);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(212,175,55,.08);
+}
+.eq-trigger:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.eq-trigger[aria-expanded="true"] {
+  border-color: rgba(212,175,55,.4);
+  background: rgba(212,175,55,.06);
+  border-radius: 12px 12px 0 0;
+}
+.eq-formula {
+  font-family: var(--serif);
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  color: var(--gold);
+  letter-spacing: .03em;
+  line-height: 1.4;
+}
+.eq-hint {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .15em;
+  color: var(--text-muted);
+  margin-top: .5rem;
+  transition: color .2s;
+}
+.eq-trigger:hover .eq-hint { color: var(--gold); }
+.eq-trigger[aria-expanded="true"] .eq-hint-open { display: none; }
+.eq-trigger[aria-expanded="false"] .eq-hint-close,
+.eq-trigger:not([aria-expanded="true"]) .eq-hint-close { display: none; }
+.eq-trigger[aria-expanded="true"] .eq-hint-close { display: block; }
+
+/* ── The Expanded Panel ── */
+.eq-panel {
+  max-width: 780px;
+  margin: 0 auto;
+  border: 1px solid rgba(212,175,55,.25);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(180deg, rgba(212,175,55,.04) 0%, var(--surface) 100%);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height .5s cubic-bezier(.4,0,.2,1), opacity .35s ease, padding .4s ease;
+  padding: 0 1.5rem;
+}
+.eq-panel.open {
+  max-height: 2200px;
+  opacity: 1;
+  padding: 1.5rem 1.5rem 2rem;
+}
+
+/* Panel header */
+.eq-panel-head {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.eq-panel-head h3 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: .4rem;
+}
+.eq-panel-head p {
+  font-size: .85rem;
+  color: var(--text-dim);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* ── Variable Rows ── */
+.eq-vars {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 1.5rem;
+}
+.eq-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 28px 1fr;
+  gap: 0;
+  align-items: stretch;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform .12s;
+}
+.eq-row:hover {
+  transform: translateX(3px);
+}
+/* Symbol column */
+.eq-sym {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(212,175,55,.08);
+  padding: .6rem .3rem;
+  border-right: 2px solid rgba(212,175,55,.2);
+}
+/* Physics side */
+.eq-phys {
+  padding: .6rem .8rem;
+  background: rgba(91,155,213,.05);
+  border-right: 1px solid var(--border);
+}
+.eq-phys-law {
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .12em;
+  color: var(--blue);
+  text-transform: uppercase;
+  margin-bottom: .15rem;
+}
+.eq-phys-name {
+  font-family: var(--sans);
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--text);
+}
+/* Bridge icon */
+.eq-bridge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: .7rem;
+  background: var(--surface2);
+}
+/* Spiritual side */
+.eq-spir {
+  padding: .6rem .8rem;
+  background: rgba(212,175,55,.04);
+}
+.eq-spir-tag {
+  font-family: var(--mono);
+  font-size: .55rem;
+  letter-spacing: .12em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: .15rem;
+}
+.eq-spir-name {
+  font-family: var(--sans);
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.eq-spir-anti {
+  font-size: .7rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: .1rem;
+}
+
+/* ── Special rows for Laws 9 & 10 ── */
+.eq-row-asym .eq-spir {
+  border-left: 2px solid rgba(212,175,55,.3);
+}
+.eq-row-asym .eq-spir-tag {
+  color: var(--teal);
+}
+
+/* ── Integration domain ── */
+.eq-domain {
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  background: var(--surface2);
+  margin-bottom: 1.5rem;
+}
+.eq-domain-formula {
+  font-family: var(--serif);
+  font-size: .95rem;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+.eq-domain-formula span { color: var(--gold); }
+.eq-domain-meaning {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Plain English Reading ── */
+.eq-reading {
+  border: 1px solid rgba(212,175,55,.18);
+  border-radius: 10px;
+  padding: 1.2rem 1.3rem;
+  background: rgba(212,175,55,.03);
+  margin-bottom: 1.2rem;
+}
+.eq-reading-tag {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .2em;
+  color: var(--gold);
+  margin-bottom: .6rem;
+}
+.eq-reading p {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.65;
+  font-style: italic;
+}
+.eq-reading p + p {
+  margin-top: .6rem;
+}
+
+/* ── What it means ── */
+.eq-meaning {
+  border: 1px solid rgba(59,179,154,.15);
+  border-radius: 10px;
+  padding: 1.2rem 1.3rem;
+  background: rgba(59,179,154,.03);
+}
+.eq-meaning-tag {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .2em;
+  color: var(--teal);
+  margin-bottom: .6rem;
+}
+.eq-meaning p {
+  font-size: .88rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.eq-meaning p + p { margin-top: .5rem; }
+.eq-meaning em { color: var(--gold); font-family: var(--serif); font-style: italic; }
+
+/* ── Footer link ── */
+.eq-footer {
+  text-align: center;
+  margin-top: 1.2rem;
+}
+.eq-footer a {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: .08em;
+  opacity: .7;
+  transition: opacity .15s;
+}
+.eq-footer a:hover { opacity: 1; text-decoration: underline; }
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .eq-row {
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .eq-sym { grid-row: 1 / 3; }
+  .eq-bridge { display: none; }
+  .eq-phys { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+<style>
 /* ═══ TP-WORKER-AUDIO-PLAYER ═══ */
 .tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
 .tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}

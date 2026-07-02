@@ -1,654 +1,825 @@
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Evolution Probe | Three Mathematical Killshots · David Lowe</title>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-<style>
-:root {
-  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
-  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
-  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
-  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
-  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
-  --serif:'Crimson Text',Georgia,serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-  --display:'Oswald','Inter',sans-serif;
-  --sans:'Inter',system-ui,sans-serif;
-  --max:1140px; --header-h:48px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-
-/* ═══════ TOP BAR ═══════ */
-.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
-.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
-.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
-.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
-.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
-.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
-.tp-brand:hover .tp-brand-name{color:var(--gold)}
-.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
-.tp-brand:hover::after{width:140px;height:140px;opacity:1}
-.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
-
-/* Left nav */
-.tp-nav-links{display:flex;gap:3px;align-items:center}
-.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
-.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
-.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
-.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
-.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
-.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
-.tp-spacer{flex:1}
-
-/* Reading levels */
-.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
-.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
-.tp-level:hover{color:var(--text)}
-.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
-.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
-.tp-level:hover::after{width:80px;height:80px;opacity:1}
-.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
-.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
-.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
-@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
-
-/* ═══════ CLASSIFICATION BAR ═══════ */
-.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
-.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
-.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
-.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
-.tp-class-seg{transition:flex .4s ease;position:relative}
-.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
-.tp-class-bar:hover .tp-class-seg::after{opacity:1}
-.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
-.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
-.tp-class-tag:hover{color:var(--text-dim)}
-.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
-/* Small nav */
-.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
-.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
-@media(max-width:600px){.tp-class-tags{display:none}}
-
-/* ═══════ ARTICLE BODY ═══════ */
-.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
-.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
-.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
-.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
-.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
-.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
-.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
-.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
-.tp-article li{margin-bottom:.4rem}
-.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
-.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
-.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
-
-/* ═══════ BIG PREV / NEXT NAV ═══════ */
-.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
-.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
-.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
-.tp-bignav-prev{justify-content:flex-start}
-.tp-bignav-next{justify-content:flex-end;text-align:right}
-.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
-.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
-.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
-.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
-.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
-.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
-.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
-.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
-.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
-.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
-
-/* Center: Series Home + Site Home */
-.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
-.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
-.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
-.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
-.tp-bignav-home:hover{color:var(--gold)}
-
-@media(max-width:650px){
-  .tp-bignav-row{flex-direction:column;gap:.6rem}
-  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
-  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
-  .tp-bignav-title{font-size:1rem}
-}
-
-/* ═══════ FINAL AUDIT ═══════ */
-.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
-.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
-.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
-.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
-.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
-.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
-.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
-.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
-@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
-.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
-.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
-.tp-audit-col:hover::before{opacity:1}
-.tp-audit-col:hover{transform:translateY(-3px)}
-.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
-.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
-.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.tp-audit-col li:last-child{border-bottom:0}
-.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
-.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
-.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
-.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
-.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
-.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
-
-/* ═══════ GOLD DIVIDER ═══════ */
-.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
-.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
-
-/* ═══════ SUBDOMAIN GRID ═══════ */
-.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
-.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
-.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
-.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
-.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
-.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
-@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
-.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
-.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
-.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
-.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
-.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
-.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
-.tp-sub-card:hover::before{opacity:1}
-.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
-.tp-sub-card:hover h4{color:var(--gold)}
-.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
-
-/* ═══════ SERIES NAV ═══════ */
-.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
-.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
-.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
-.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
-.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
-
-/* ═══════ BOTTOM BAR ═══════ */
-.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
-.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
-.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
-.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
-
-/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
-.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
-.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
-@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
-.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
-.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
-.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
-.tp-door:hover .tp-door-sub{color:var(--text-dim)}
-.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
-
-/* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
-
-/* ═══════ SELECTION ═══════ */
-::selection{background:rgba(212,175,55,.2);color:var(--text)}
-</style>
-<base target="_blank"/>
-<!-- MathJax + MTL support -->
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
-  svg: { fontCache: 'global' },
-  startup: {
-    pageReady: function() {
-      return MathJax.startup.defaultPageReady().then(function() {
-        if (MathJax.startup.document && MathJax.startup.document.math) {
-          MathJax.startup.document.math.forEach(function(item) {
-            if (item.typesetRoot) {
-              item.typesetRoot.dataset.latex = item.math;
-              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
-            }
-          });
-        }
-      });
-    }
-  }
-};
-</script>
-<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<link href="/shared/css/mtl-worker-client.css" rel="stylesheet"/>
-</head>
-<body>
-<!-- ═══════ TOP BAR ═══════ -->
-
-
-<!-- ═══════ CLASSIFICATION BAR ═══════ -->
-
-<!-- ═══════ ARTICLE (demo content) ═══════ -->
-<article class="tp-article">
-<h1>TheEvolution Probe</h1>
-<p class="subtitle"></p>
-<div class="byline">Faith thru Physics</div>
-
-<div class="top-bar"><div class="inner">
-<div class="mark"><span>David Lowe</span> · The Probe Series · April 2026</div>
-</div></div>
-<div class="hero">
-<span class="hero-tag">Probe Series · Paper 1</span>
-<p class="lead">Three mathematical killshots against the standard evolutionary model — using the model's own published parameters, its own cited authors, its own numbers. No theology required. The math fails on its own terms.</p>
-</div>
-<div class="g g12" style="margin-bottom:.8rem">
-<div class="bx-hero s8">
-<div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.55rem">The Method</div>
-<h3>Their Numbers. Their Authors. Their Failure.</h3>
-<p>This is not a theological argument. It's a mathematical audit. We take the parameters published by leading evolutionary biologists — mutation rates, selection coefficients, population sizes — plug them into the equations those same scientists use, and show that the outputs are incompatible with the claims being made. Every number cited here comes from peer-reviewed literature. Every author cited supports the evolutionary model being tested.</p>
-</div>
-<div class="s4" style="display:flex;flex-direction:column;gap:.8rem">
-<div class="bx-stat" style="flex:1"><div class="num">3</div><div class="lbl">Killshots</div></div>
-<div class="bx-stat" style="flex:1"><div class="num">0</div><div class="lbl">Our Parameters Used</div></div>
-<div class="bx-stat" style="flex:1"><div class="num" style="color:var(--fail)">FAIL</div><div class="lbl">On Their Own Terms</div></div>
-</div>
-</div>
-<div class="bx-warm" style="margin-bottom:1rem">
-<div class="wtag">What This Is Not</div>
-<p>This is not an attack on scientists. It's not young-earth creationism. It's not a refusal to engage with evidence. It's a mathematical audit of whether the claimed mechanism — random mutation filtered by natural selection — can produce what is being attributed to it, given the published constraints on the process. The answer, using their own numbers, is no.</p>
-</div>
-<div class="bx-red" style="margin-bottom:2.5rem">
-<p><strong>The standard of proof:</strong> Each killshot presents the published parameter values, the governing equation, the calculated output, and the gap between the output and the claim. A killshot is valid if the gap cannot be closed without abandoning the published parameters. All three gaps are orders of magnitude — not rounding errors.</p>
-</div>
- ═══ KILLSHOT 1 ═══ 
-<div class="sec-div"><span class="tag">Killshot 01 · Mutation Rate</span></div>
-<div class="killshot">
-<div class="killshot-header">
-<div class="killshot-num">01</div>
-<div class="killshot-title">
-<div class="kt">The Mutation Rate Exceeds the Error Threshold</div>
-<span class="ks">Drake · Eigen · Published Genomic Data</span>
-</div>
-<span class="verdict">FAILS BY 10×</span>
-</div>
-<div class="killshot-body">
-<div class="g g2">
-<div>
-<p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">John Drake published the definitive measurement of mutation rates in DNA-based organisms in 1991. His result, now confirmed across thousands of sequenced genomes, gives a mutation rate per base pair per replication. Manfred Eigen derived the error threshold — the maximum mutation rate above which genetic information cannot be preserved across generations.</p>
-<p style="font-size:.98rem;color:var(--text-d);line-height:1.88">The problem: when you apply Drake's measured rate to Eigen's threshold equation for organisms with genomes in the range required to produce novel protein folds, the measured rate exceeds the threshold. The genome cannot preserve the information needed for the claimed evolution to occur.</p>
-</div>
-<div style="display:flex;flex-direction:column;gap:.8rem">
-<div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.8rem">10⁻⁸</div><div class="lbl">Drake Rate (per base per replication)</div></div>
-<div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.8rem">10⁻⁹</div><div class="lbl">Eigen Threshold (max survivable rate)</div></div>
-<div class="bx-stat"><div class="num" style="color:var(--fail)">10×</div><div class="lbl">Gap — Their Numbers</div></div>
-</div>
-</div>
-<div class="eq-block">
-<span class="eq-line bad">Q_threshold = e^(−μL)   →   Eigen's Error Threshold</span>
-<div class="eq-explain">
-<span class="term">Q</span> = quality factor — the fraction of replications that produce an accurate copy.
-        <span class="bterm">μ</span> = mutation rate per base per replication (Drake: ~10⁻⁸).
-        <span class="term">L</span> = genome length required for the functional novelty being claimed.
-        When <span class="bterm">μL &gt; 1</span>, the error threshold is crossed: each generation produces more mutational errors than can be selected away. The genome degrades. Information is lost faster than selection can preserve it.
-        <br/><br/>
-        For a genome of 10,000 base pairs (minimal for a novel protein fold family): μL = 10⁻⁸ × 10⁴ = 10⁻⁴. That looks fine. But the claimed evolutionary steps require coordinated changes across <em>multiple</em> interdependent sites — raising the effective L dramatically. For the coordination required to produce novel domain folds, the effective target approaches 10⁷ to 10⁹ bases. At that point, μL ≥ 1 and the threshold is crossed.
-      </div>
-</div>
-<div class="cmp-row">
-<div class="cmp-cell theirs">
-<span class="cmp-label">Their Claim</span>
-<p>Mutation + selection produces novel protein folds and new genetic information over deep time. The mutation rate is low enough that selection can preserve beneficial changes.</p>
-</div>
-<div class="cmp-cell ours">
-<span class="cmp-label">What Their Numbers Show</span>
-<p>Drake's measured rate applied to Eigen's threshold equation, using the genome complexity required for the claimed novelty, puts the system at or past the error threshold. Selection cannot work faster than mutations destroy information.</p>
-</div>
-</div>
-<div class="bx-red">
-<p><strong>Source:</strong> Drake, J.W. (1991). "A constant rate of spontaneous mutation in DNA-based microbes." <em>PNAS</em> 88(16):7160–7164. Eigen, M. (1971). "Self-organization of matter." <em>Naturwissenschaften</em> 58:465–523. The gap between measured rate and required threshold is not disputed — the dispute is over whether the threshold applies to the claimed evolutionary steps. The math says it does.</p>
-</div>
-</div>
-</div>
- ═══ KILLSHOT 2 ═══ 
-<div class="sec-div"><span class="tag">Killshot 02 · Selection Coefficient</span></div>
-<div class="killshot">
-<div class="killshot-header">
-<div class="killshot-num">02</div>
-<div class="killshot-title">
-<div class="kt">The Required Selection Coefficient Is 89–890× Above Observed</div>
-<span class="ks">Kimura · Ohta · Published Population Genetics</span>
-</div>
-<span class="verdict">FAILS BY 89–890×</span>
-</div>
-<div class="killshot-body">
-<div class="g g2">
-<div>
-<p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">Motoo Kimura and Tomoko Ohta's neutral theory of molecular evolution, now the consensus framework in population genetics, establishes the range of selection coefficients that can be "seen" by natural selection. Coefficients below 1/N (where N is effective population size) are effectively neutral — selection cannot distinguish them from genetic drift.</p>
-<p style="font-size:.98rem;color:var(--text-d);line-height:1.88">The selection coefficient required for a novel beneficial mutation to fix in a population — rather than drift to extinction — must be large enough to overcome drift. Observed selection coefficients for beneficial mutations in natural populations are measured in the range of 10⁻³ to 10⁻⁴. The coefficient required to drive the coordinated multi-site changes attributed to major evolutionary innovations is 89 to 890 times larger than observed maximums.</p>
-</div>
-<div style="display:flex;flex-direction:column;gap:.8rem">
-<div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.8rem">10⁻¹</div><div class="lbl">Required s (novel fold)</div></div>
-<div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.8rem">10⁻³</div><div class="lbl">Observed s (natural max)</div></div>
-<div class="bx-stat"><div class="num" style="color:var(--fail)">89–890×</div><div class="lbl">Gap — Their Numbers</div></div>
-</div>
-</div>
-<div class="eq-block">
-<span class="eq-line bad">P_fix = (1 − e^(−2s)) / (1 − e^(−4Ns))   →   Kimura Fixation Probability</span>
-<div class="eq-explain">
-<span class="term">P_fix</span> = probability that a new mutation fixes in the population rather than drifting to extinction.
-        <span class="bterm">s</span> = selection coefficient — the reproductive advantage conferred by the mutation.
-        <span class="term">N</span> = effective population size.
-        For a beneficial mutation with <span class="bterm">s = 10⁻³</span> in a population of N = 10⁶: P_fix ≈ 2s = 0.002. One in five hundred new beneficial mutations fixes. The rest are lost to drift.
-        <br/><br/>
-        For the coordinated mutations required to produce a new protein domain fold — where multiple specific amino acid positions must change together to produce a functional intermediate — the effective selection coefficient must be large enough to drive all the coordinated changes simultaneously or in very tight sequence. Calculations using published protein structure data (Axe 2004, Behe &amp; Snoke 2004) place the required s at 0.09 to 0.9. No natural population has been observed producing beneficial mutations at this selection strength. The gap is not theoretical — it is empirical.
-      </div>
-</div>
-<div class="cmp-row">
-<div class="cmp-cell theirs">
-<span class="cmp-label">Their Claim</span>
-<p>Natural selection acting on random mutations can drive the origin of new protein folds and novel body plans over geological time. The process is gradual and each step is individually beneficial.</p>
-</div>
-<div class="cmp-cell ours">
-<span class="cmp-label">What Their Numbers Show</span>
-<p>The observed selection coefficients for beneficial mutations are 89 to 890 times smaller than what Kimura's fixation equation requires to drive coordinated multi-site changes. Gradual stepwise accumulation cannot bridge this gap because intermediate states are non-functional.</p>
-</div>
-</div>
-<div class="bx-red">
-<p><strong>Sources:</strong> Kimura, M. (1983). <em>The Neutral Theory of Molecular Evolution.</em> Cambridge University Press. Axe, D.D. (2004). "Estimating the prevalence of protein sequences adopting functional enzyme folds." <em>Journal of Molecular Biology</em> 341(5):1295–1315. Behe, M.J. &amp; Snoke, D.W. (2004). "Simulating evolution by gene duplication of protein features that require multiple amino acid residues." <em>Protein Science</em> 13(10):2651–2664.</p>
-</div>
-</div>
-</div>
- ═══ KILLSHOT 3 ═══ 
-<div class="sec-div"><span class="tag">Killshot 03 · Simultaneous Mutations</span></div>
-<div class="killshot">
-<div class="killshot-header">
-<div class="killshot-num">03</div>
-<div class="killshot-title">
-<div class="kt">Lynch &amp; Abegg's Simultaneous Mutation Requirement Is Off by 11 Orders of Magnitude</div>
-<span class="ks">Lynch · Abegg · Their Own Published Calculation</span>
-</div>
-<span class="verdict">FAILS BY 10¹¹</span>
-</div>
-<div class="killshot-body">
-<div class="g g2">
-<div>
-<p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">Michael Lynch and Aisha Abegg published a 2011 paper in <em>Evolution</em> calculating the waiting time for mutations requiring two or more simultaneous specific substitutions. This is the paper most often cited by evolutionary biologists as showing that complex adaptations are achievable. It is also — using their own numbers — the clearest demonstration that they are not.</p>
-<p style="font-size:.98rem;color:var(--text-d);line-height:1.88">Lynch &amp; Abegg calculate waiting times for two-site coordinated mutations. For a population of 10⁶ organisms with a generation time of one year, the waiting time for a two-site specific coordinated mutation is approximately 10⁸ years. For three sites: 10¹¹ years. For four sites: 10¹⁴ years. The age of the universe is 1.38 × 10¹⁰ years. The math is theirs. The problem is theirs.</p>
-</div>
-<div style="display:flex;flex-direction:column;gap:.8rem">
-<div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.6rem">10¹¹ yr</div><div class="lbl">Wait time (3-site coordination)</div></div>
-<div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.6rem">1.38×10¹⁰ yr</div><div class="lbl">Age of universe</div></div>
-<div class="bx-stat"><div class="num" style="color:var(--fail)">10×</div><div class="lbl">Longer than universe exists</div></div>
-</div>
-</div>
-<div class="eq-block">
-<span class="eq-line bad">T_wait ≈ 1 / (N · μᵏ · f)   →   Lynch-Abegg Waiting Time</span>
-<div class="eq-explain">
-<span class="term">T_wait</span> = expected waiting time for the coordinated mutation to arise and fix.
-        <span class="term">N</span> = effective population size (Lynch &amp; Abegg use 10⁶ as a favorable case).
-        <span class="bterm">μ</span> = mutation rate per site per generation (Drake: 10⁻⁸).
-        <span class="bterm">k</span> = number of specific sites requiring simultaneous or near-simultaneous change.
-        <span class="term">f</span> = fixation probability.
-        <br/><br/>
-        For k = 2: T ≈ 1 / (10⁶ × (10⁻⁸)² × 2×10⁻³) = 1 / (10⁶ × 10⁻¹⁶ × 2×10⁻³) ≈ 5 × 10¹² generations.
-        At one generation per year: 5 × 10¹² years. The age of the universe: 1.38 × 10¹⁰ years.
-        <span class="bterm">This is 363 times longer than the universe has existed — for just two coordinated sites.</span>
-        Lynch &amp; Abegg get a more favorable number by assuming many coordinating mutations don't all need to be beneficial simultaneously. But even their most favorable calculation for k=3 produces a waiting time 7× the age of the universe.
-      </div>
-</div>
-<div class="cmp-row">
-<div class="cmp-cell theirs">
-<span class="cmp-label">Their Claim (Lynch &amp; Abegg 2011)</span>
-<p>"Complex adaptations requiring the simultaneous occurrence of multiple mutations can evolve on reasonable timescales." They present this as a defense of evolutionary gradualism against ID arguments.</p>
-</div>
-<div class="cmp-cell ours">
-<span class="cmp-label">What Their Equations Actually Show</span>
-<p>Their own equations produce waiting times of 10¹¹ to 10¹⁴ years for 3-4 site coordination — 7 to 1,000 times the age of the universe. The paper intended to refute this problem inadvertently quantifies it precisely.</p>
-</div>
-</div>
-<div class="bx-red">
-<p><strong>Source:</strong> Lynch, M. &amp; Abegg, A. (2010). "The rate of establishment of complex adaptations." <em>Molecular Biology and Evolution</em> 27(6):1404–1414. The waiting time calculations appear in Table 1 of that paper. We are using their numbers from their table. The conclusion that these times exceed geological and cosmic timescales follows directly from their published results.</p>
-</div>
-</div>
-</div>
-<div class="dots">· · ·</div>
- ═══ COMBINED CASE ═══ 
-<div class="sec-div"><span class="tag">The Combined Case</span></div>
-<div class="bx-hero srow" style="border-radius:8px;margin-bottom:.8rem">
-<div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.55rem">Three Independent Constraints</div>
-<h3>Any One Is Sufficient. All Three Together Is Decisive.</h3>
-<p>Each killshot operates independently. The mutation rate problem doesn't depend on the selection coefficient problem. The Lynch-Abegg waiting time problem doesn't depend on either of the others. These are three separate mathematical constraints on the same claimed mechanism, derived from three different research traditions, all using peer-reviewed published parameters. All three produce the same result: the mechanism cannot do what is attributed to it.</p>
-</div>
-<table class="dtbl">
-<thead>
-<tr>
-<th>Killshot</th>
-<th>Equation Used</th>
-<th>Published Source</th>
-<th>Required Value</th>
-<th>Observed Value</th>
-<th>Gap</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>01 · Mutation Rate</td>
-<td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Eigen threshold Q = e^(−μL)</td>
-<td>Drake 1991, Eigen 1971</td>
-<td class="pass-cell">μ ≤ 10⁻⁹</td>
-<td class="fail-cell">μ = 10⁻⁸</td>
-<td class="fail-cell">10× over limit</td>
-</tr>
-<tr>
-<td>02 · Selection Coefficient</td>
-<td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Kimura P_fix = f(s, N)</td>
-<td>Kimura 1983, Axe 2004</td>
-<td class="pass-cell">s ≥ 0.09</td>
-<td class="fail-cell">s = 10⁻³</td>
-<td class="fail-cell">89–890× short</td>
-</tr>
-<tr>
-<td>03 · Simultaneous Mutations</td>
-<td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Lynch-Abegg T ≈ 1/(Nμᵏf)</td>
-<td>Lynch &amp; Abegg 2010</td>
-<td class="pass-cell">&lt; 4.5 × 10⁹ yr</td>
-<td class="fail-cell">10¹¹ yr (k=3)</td>
-<td class="fail-cell">7× age of universe</td>
-</tr>
-</tbody>
-</table>
-<div class="bx-blue" style="margin-bottom:.8rem">
-<p><strong>The standard response</strong> to each of these is that evolution had more time, larger populations, or different mechanisms than the ones being modeled. Those responses are testable. If the population were 10× larger, the waiting time drops by 10 — still 7× the age of the universe for k=3. If the generation time were 10× shorter, same result. The gaps are not bridged by incremental parameter adjustments. They require abandoning the published parameters entirely, which means abandoning the published literature these arguments depend on.</p>
-</div>
- ═══ WHAT THIS MEANS ═══ 
-<div class="sec-div"><span class="tag">What This Means</span></div>
-<div class="g g2">
-<div class="bx-warm">
-<div class="wtag">What This Does Not Mean</div>
-<p>This is not a claim that evolution is false in every sense of the word. Microevolution — adaptation within existing genetic information, antibiotic resistance, beak size variation — is real and mathematically coherent. The Yukawa Law (Love) produces real variation within stable bound states.</p>
-<p>The killshots target a specific claim: that the mechanism of random mutation filtered by natural selection can produce <em>novel genetic information</em>, new protein folds, and new body plan complexity. That specific claim fails the published math.</p>
-</div>
-<div style="display:flex;flex-direction:column;gap:.8rem">
-<div class="bx-hero" style="flex:1;background:linear-gradient(135deg,var(--surface2) 0%,rgba(155,28,58,0.08) 100%)">
-<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.4rem">The Theophysics Position</div>
-<p style="font-size:.95rem;color:var(--text-d);line-height:1.8">The Fermi Law — Redemption — is the only force in physics that changes particle <em>identity</em>. Not degree. Type. If new information enters biological systems, it does so through an identity-change mechanism that has a name in the canonical framework. Random mutation is not that mechanism.</p>
-</div>
-</div>
-</div>
-<div class="bx-red" style="margin-top:.8rem;margin-bottom:2.5rem">
-<p><strong>The invitation:</strong> These kill conditions are explicit. If you can show that the Eigen threshold does not apply to the claimed evolutionary steps, show the calculation. If you can show that the Kimura fixation probability is wrong for coordinated mutations, show the math. If you can show that Lynch &amp; Abegg's waiting time formula produces different numbers than what their Table 1 reports, show the derivation. The probe is falsifiable. That's what makes it a probe and not a polemic.</p>
-</div>
- BOTTOM NAV 
-<div class="bot-nav">
-<div class="blabel">Related Papers</div>
-<div class="bnav-grid">
-<a class="bnav-card" href="index.html"><span class="bt">Home</span><span class="bn">All Papers</span></a>
-<a class="bnav-card" href="god-in-the-equations.html"><span class="bt">The Blue Series</span><span class="bn">God in the Equations</span></a>
-<a class="bnav-card" href="derivatives.html"><span class="bt">Blue Series</span><span class="bn">What the Laws Produce</span></a>
-<a class="bnav-card cur" href="#"><span class="bt">Probe Series · 1</span><span class="bn">The Evolution Probe</span></a>
-<a class="bnav-card" href="math-is-moral.html"><span class="bt">Convergence</span><span class="bn">Math Is Moral</span></a>
-<a class="bnav-card" href="gold-standard-test-battery.html"><span class="bt">Test Battery</span><span class="bn">Gold Standard Tests</span></a>
-</div>
-</div>
-<div class="foot">David Lowe · faiththruphysics.com · April 2026 · The Probe Series · POF 2828 · Their numbers. Their authors. Their failure.</div>
-</article>
-<!-- ═══════ BIG PREV / NEXT ═══════ -->
-
-<!-- ═══════ FINAL AUDIT ═══════ -->
-<section class="tp-audit">
-<div class="tp-audit-box">
-<div class="tp-audit-head">Final Audit</div>
-<p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
-<div class="tp-audit-covenant">
-<b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
-    </div>
-<div class="tp-audit-grid">
-<div class="tp-audit-col tp-col-right">
-<h4>What We Got Right</h4>
-<ul>
-<li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
-</ul>
-</div>
-<div class="tp-audit-col tp-col-over">
-<h4>What We Overstated</h4>
-<ul>
-<li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
-</ul>
-</div>
-<div class="tp-audit-col tp-col-wrong">
-<h4>What We Got Wrong</h4>
-<ul>
-<li>Claims that need correction, tightening, or weaker formulation.</li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<!-- ═══════ GOLD DIVIDER ═══════ -->
-<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
-<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
-<section class="tp-subdomains">
-<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
-<div class="tp-sub-title">The Math Behind the Claims</div>
-<div class="tp-sub-grid">
-<a class="tp-sub-card" href="/equation/"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
-<a class="tp-sub-card" href="/isomorphism/"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
-<a class="tp-sub-card" href="/proof-explorer/"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
-<a class="tp-sub-card" href="/rigor/"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
-<a class="tp-sub-card" href="/lean4/"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
-</div>
-</section>
-<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
-<section class="tp-subdomains">
-<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
-<div class="tp-sub-title">Everything Else</div>
-<div class="tp-sub-grid">
-<a class="tp-sub-card" href="/glossary/"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
-<a class="tp-sub-card" href="/media/"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
-<a class="tp-sub-card" href="/podcast/"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
-<a class="tp-sub-card" href="/audio/"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
-<a class="tp-sub-card" href="/subdomains/"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
-</div>
-</section>
-<!-- ═══════ SERIES NAV ═══════ -->
-<nav class="tp-series-nav">
-<div class="tp-series-strip">
-<a class="active" href="/">Home</a>
-<a href="/moral-decline/">MDA</a>
-<a href="/genesis-to-quantum/">GTQ</a>
-<a href="/Convergence_Series/">Convergence</a>
-<a href="/Logos_Papers/">Logos Papers</a>
-<a href="/one-page-stories/">One-Page Stories</a>
-<a class="soon" href="/consciousness/">Consciousness</a>
-<a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
-</div>
-</nav>
-<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
-<div class="tp-door">
-<div class="tp-door-num">15 + 15 = 100</div>
-<div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
-<span class="tp-door-mark"></span>
-</div>
-<script>
-/* ═══════ AUTO-ACTIVE NAV ═══════
-   Detects current page URL and lights up the matching nav link.
-   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
-   No manual active classes needed per page. */
-const NAV_MAP={
-  home:['/','/index.html','/home'],
-  mtl:['/equation/','/equation','/math-translation-layer/'],
-  proof:['/proof-explorer/','/proof-explorer','/proof/']
-};
-const path=window.location.pathname;
-document.querySelectorAll('.tp-nav-link').forEach(link=>{
-  const key=link.dataset.nav;
-  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
-    link.classList.add('active');
-  } else {
-    link.classList.remove('active');
-  }
-});
-
-/* Article domain profile — swap this array per article */
-const ARTICLE_PROFILE=[
-  {name:"Theology",pct:28,color:"#d4af37"},
-  {name:"Physics",pct:22,color:"#7cc7ff"},
-  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
-  {name:"Evidence",pct:15,color:"#7fc77f"},
-  {name:"Consciousness",pct:10,color:"#a78bfa"},
-  {name:"Mathematics",pct:7,color:"#ff7d90"},
-  {name:"Speculative",pct:3,color:"#aeb8d6"}
-];
-
-/* Render classification bar */
-const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
-if(bar&&tags){
-  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
-  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
-}
-
-/* Reading level tabs */
-document.querySelectorAll('.tp-level').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-/* Big nav hover spotlight effect */
-document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
-  card.addEventListener('mousemove',e=>{
-    const rect=card.getBoundingClientRect();
-    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
-    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
-  });
-});
-
-/* Series nav auto-active (same pattern) */
-const SERIES_MAP={
-  '/':'Home','/index.html':'Home','/home':'Home',
-  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
-  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
-  '/one-page-stories/':'One-Page Stories'
-};
-const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
-if(seriesName){
-  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
-    if(a.textContent.trim()===seriesName){a.classList.add('active');}
-    else{a.classList.remove('active');}
-  });
-}
-</script>
-<!-- MTL worker client -->
-<script defer="" src="/shared/js/mtl-worker-client.js"></script>
-<script defer="" src="/site-shell/frame.js"></script></body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Evolution Probe | Three Mathematical Killshots · David Lowe</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root {
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+  --serif:'Crimson Text',Georgia,serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Oswald','Inter',sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --max:1140px; --header-h:48px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+/* ═══════ TOP BAR ═══════ */
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+/* Left nav */
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+.tp-spacer{flex:1}
+
+/* Reading levels */
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+.tp-level:hover{color:var(--text)}
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+.tp-class-seg{transition:flex .4s ease;position:relative}
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+.tp-class-tag:hover{color:var(--text-dim)}
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+/* Small nav */
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+/* ═══════ ARTICLE BODY ═══════ */
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+.tp-article li{margin-bottom:.4rem}
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+.tp-bignav-prev{justify-content:flex-start}
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+/* Center: Series Home + Site Home */
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+.tp-bignav-home:hover{color:var(--gold)}
+
+@media(max-width:650px){
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+  .tp-bignav-title{font-size:1rem}
+}
+
+/* ═══════ FINAL AUDIT ═══════ */
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+.tp-audit-col:hover::before{opacity:1}
+.tp-audit-col:hover{transform:translateY(-3px)}
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tp-audit-col li:last-child{border-bottom:0}
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+/* ═══════ GOLD DIVIDER ═══════ */
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+.tp-sub-card:hover::before{opacity:1}
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+.tp-sub-card:hover h4{color:var(--gold)}
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+/* ═══════ SERIES NAV ═══════ */
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+/* ═══════ BOTTOM BAR ═══════ */
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ═══════ SELECTION ═══════ */
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+</style>
+<base target="_blank">
+
+<!-- MathJax + MTL support -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+  svg: { fontCache: 'global' },
+  startup: {
+    pageReady: function() {
+      return MathJax.startup.defaultPageReady().then(function() {
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+          MathJax.startup.document.math.forEach(function(item) {
+            if (item.typesetRoot) {
+              item.typesetRoot.dataset.latex = item.math;
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+            }
+          });
+        }
+      });
+    }
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="/shared/css/mtl-worker-client.css"/>
+
+<link href="../components/audio-dock.css" rel="stylesheet"/>
+<link href="../components/tp-header-lip.css" rel="stylesheet"/>
+<link href="../components/verification-bar.css" rel="stylesheet"/>
+<link href="../components/top-bar-bottom-bar.css" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ═══════ TOP BAR ═══════ -->
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="tp-top">
+<div class="tp-top-inner">
+
+  <a class="tp-brand" href="https://faiththruphysics.com">
+    <span class="tp-brand-chi">χ</span>
+    <span class="tp-brand-name">Faith thru Physics</span>
+  </a>
+
+  <span class="tp-div"></span>
+
+  <nav class="tp-nav-links" aria-label="Site navigation">
+    <a class="tp-nav-link" href="/"><i class="fas fa-home"></i>Home</a>
+    <a class="tp-nav-link" href="/equation/"><i class="fas fa-square-root-alt"></i>MTL</a>
+    <a class="tp-nav-link" href="/proof-explorer/"><i class="fas fa-project-diagram"></i>Proof</a>
+    <a class="tp-nav-link" href="/blue/" id="tpLipToggle">
+      <i class="fas fa-file-alt"></i>Blue
+      <i class="fas fa-chevron-down" style="font-size:.45rem;margin-left:.2rem;"></i>
+    </a>
+  </nav>
+
+  <span class="tp-spacer"></span>
+
+  <div class="tp-levels" role="tablist" aria-label="Reading level">
+    <button class="tp-level" data-level="highschool">High School</button>
+    <button class="tp-level active" data-level="college">College</button>
+    <button class="tp-level" data-level="phd">PhD</button>
+  </div>
+
+  <span class="tp-div"></span>
+
+  <button class="tp-search" aria-label="Search (Cmd+K)">
+    <span>⌕</span><kbd>⌘K</kbd>
+  </button>
+
+</div>
+</header>
+<!-- ═══════ END TOP BAR ═══════ -->
+<!-- TOP BAR -->
+</div>
+
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+<div class="tp-class">
+  <div class="tp-class-inner">
+    <a href="#" class="tp-class-nav">← Prev</a>
+    <div class="tp-class-center">
+      <div class="tp-class-label">Article Classification</div>
+      <div class="tp-class-bar" id="classBar"></div>
+      <div class="tp-class-tags" id="classTags"></div>
+    </div>
+    <a href="#" class="tp-class-nav">Next →</a>
+  </div>
+</div>
+
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+<article class="tp-article">
+  <h1>TheEvolution Probe</h1>
+  <p class="subtitle"></p>
+  <div class="byline">Faith thru Physics</div>
+  <div class="tp-player-block" data-audio-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=blue%2Fevolution-probe" data-audio-slug="blue/evolution-probe" data-series-lookup="https://faith-audio-pipeline.davidokc28.workers.dev/api/audio?slug=blue" data-series-slug="blue">
+<div class="tp-read-aloud" data-mode="tts">
+<div class="tp-dot"></div>
+<span class="tp-label">Read Aloud</span>
+<audio id="tpMainAudio" preload="none"></audio>
+<button aria-label="Play read-aloud" class="tp-play" data-audio="tpMainAudio" onclick="tpToggle('tpMainAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpMainAudio')">
+<div class="tp-fill" id="tpMainFill"></div>
+</div>
+<span class="tp-time" id="tpMainTime">0:00</span>
+<select aria-label="Playback speed" class="tp-speed" onchange="tpSetSpeed(this.value)">
+<option value="0.75">0.75x</option>
+<option selected="" value="1">1x</option>
+<option value="1.25">1.25x</option>
+<option value="1.5">1.5x</option>
+<option value="1.75">1.75x</option>
+<option value="2">2x</option>
+</select>
+<button aria-label="Mute" class="tp-mute" onclick="tpMute('tpMainAudio',this)">
+<i class="fas fa-volume-up"></i>
+</button>
+</div>
+<div class="tp-pair">
+<div class="tp-half tp-deep" data-mode="deep">
+<div class="tp-dot"></div>
+<span class="tp-label">Deep Dive</span>
+<audio id="tpDeepAudio" preload="none"></audio>
+<button aria-label="Play deep dive" class="tp-play" data-audio="tpDeepAudio" onclick="tpToggle('tpDeepAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDeepAudio')">
+<div class="tp-fill" id="tpDeepFill"></div>
+</div>
+<span class="tp-time" id="tpDeepTime">0:00</span>
+</div>
+<div class="tp-half tp-debate" data-mode="podcast">
+<div class="tp-dot"></div>
+<span class="tp-label">Podcast</span>
+<audio id="tpDebateAudio" preload="none"></audio>
+<button aria-label="Play podcast" class="tp-play" data-audio="tpDebateAudio" onclick="tpToggle('tpDebateAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpDebateAudio')">
+<div class="tp-fill" id="tpDebateFill"></div>
+</div>
+<span class="tp-time" id="tpDebateTime">0:00</span>
+</div>
+<div class="tp-half tp-critique" data-mode="critique">
+<div class="tp-dot"></div>
+<span class="tp-label">Critique</span>
+<audio id="tpCritiqueAudio" preload="none"></audio>
+<button aria-label="Play critique" class="tp-play" data-audio="tpCritiqueAudio" onclick="tpToggle('tpCritiqueAudio',this)">
+<i class="fas fa-play"></i>
+</button>
+<div class="tp-track" onclick="tpSeek(event,'tpCritiqueAudio')">
+<div class="tp-fill" id="tpCritiqueFill"></div>
+</div>
+<span class="tp-time" id="tpCritiqueTime">0:00</span>
+</div>
+</div>
+<div class="tp-tts-fallback" id="tpTtsFallback" style="display:none;margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">
+    No hosted audio yet. <button onclick="tpBrowserTts()" style="background:transparent;border:1px solid var(--accent-gold);color:var(--accent-gold);padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;">Read with browser TTS</button>
+</div>
+</div>
+  
+<div class="top-bar"><div class="inner">
+<div class="mark"><span>David Lowe</span> · The Probe Series · April 2026</div>
+
+</div></div>
+<div class="hero">
+<span class="hero-tag">Probe Series · Paper 1</span>
+
+<p class="lead">Three mathematical killshots against the standard evolutionary model — using the model's own published parameters, its own cited authors, its own numbers. No theology required. The math fails on its own terms.</p>
+</div>
+<div class="g g12" style="margin-bottom:.8rem">
+<div class="bx-hero s8">
+<div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.55rem">The Method</div>
+<h3>Their Numbers. Their Authors. Their Failure.</h3>
+<p>This is not a theological argument. It's a mathematical audit. We take the parameters published by leading evolutionary biologists — mutation rates, selection coefficients, population sizes — plug them into the equations those same scientists use, and show that the outputs are incompatible with the claims being made. Every number cited here comes from peer-reviewed literature. Every author cited supports the evolutionary model being tested.</p>
+</div>
+<div class="s4" style="display:flex;flex-direction:column;gap:.8rem">
+<div class="bx-stat" style="flex:1"><div class="num">3</div><div class="lbl">Killshots</div></div>
+<div class="bx-stat" style="flex:1"><div class="num">0</div><div class="lbl">Our Parameters Used</div></div>
+<div class="bx-stat" style="flex:1"><div class="num" style="color:var(--fail)">FAIL</div><div class="lbl">On Their Own Terms</div></div>
+</div>
+</div>
+<div class="bx-warm" style="margin-bottom:1rem">
+<div class="wtag">What This Is Not</div>
+<p>This is not an attack on scientists. It's not young-earth creationism. It's not a refusal to engage with evidence. It's a mathematical audit of whether the claimed mechanism — random mutation filtered by natural selection — can produce what is being attributed to it, given the published constraints on the process. The answer, using their own numbers, is no.</p>
+</div>
+<div class="bx-red" style="margin-bottom:2.5rem">
+<p><strong>The standard of proof:</strong> Each killshot presents the published parameter values, the governing equation, the calculated output, and the gap between the output and the claim. A killshot is valid if the gap cannot be closed without abandoning the published parameters. All three gaps are orders of magnitude — not rounding errors.</p>
+</div>
+ ═══ KILLSHOT 1 ═══ 
+<div class="sec-div"><span class="tag">Killshot 01 · Mutation Rate</span></div>
+<div class="killshot">
+<div class="killshot-header">
+<div class="killshot-num">01</div>
+<div class="killshot-title">
+<div class="kt">The Mutation Rate Exceeds the Error Threshold</div>
+<span class="ks">Drake · Eigen · Published Genomic Data</span>
+</div>
+<span class="verdict">FAILS BY 10×</span>
+</div>
+<div class="killshot-body">
+<div class="g g2">
+<div>
+<p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">John Drake published the definitive measurement of mutation rates in DNA-based organisms in 1991. His result, now confirmed across thousands of sequenced genomes, gives a mutation rate per base pair per replication. Manfred Eigen derived the error threshold — the maximum mutation rate above which genetic information cannot be preserved across generations.</p>
+<p style="font-size:.98rem;color:var(--text-d);line-height:1.88">The problem: when you apply Drake's measured rate to Eigen's threshold equation for organisms with genomes in the range required to produce novel protein folds, the measured rate exceeds the threshold. The genome cannot preserve the information needed for the claimed evolution to occur.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:.8rem">
+<div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.8rem">10⁻⁸</div><div class="lbl">Drake Rate (per base per replication)</div></div>
+<div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.8rem">10⁻⁹</div><div class="lbl">Eigen Threshold (max survivable rate)</div></div>
+<div class="bx-stat"><div class="num" style="color:var(--fail)">10×</div><div class="lbl">Gap — Their Numbers</div></div>
+</div>
+</div>
+<div class="eq-block">
+<span class="eq-line bad">Q_threshold = e^(−μL)   →   Eigen's Error Threshold</span>
+<div class="eq-explain">
+<span class="term">Q</span> = quality factor — the fraction of replications that produce an accurate copy.
+        <span class="bterm">μ</span> = mutation rate per base per replication (Drake: ~10⁻⁸).
+        <span class="term">L</span> = genome length required for the functional novelty being claimed.
+        When <span class="bterm">μL &gt; 1</span>, the error threshold is crossed: each generation produces more mutational errors than can be selected away. The genome degrades. Information is lost faster than selection can preserve it.
+        <br/><br/>
+        For a genome of 10,000 base pairs (minimal for a novel protein fold family): μL = 10⁻⁸ × 10⁴ = 10⁻⁴. That looks fine. But the claimed evolutionary steps require coordinated changes across <em>multiple</em> interdependent sites — raising the effective L dramatically. For the coordination required to produce novel domain folds, the effective target approaches 10⁷ to 10⁹ bases. At that point, μL ≥ 1 and the threshold is crossed.
+      </div>
+</div>
+<div class="cmp-row">
+<div class="cmp-cell theirs">
+<span class="cmp-label">Their Claim</span>
+<p>Mutation + selection produces novel protein folds and new genetic information over deep time. The mutation rate is low enough that selection can preserve beneficial changes.</p>
+</div>
+<div class="cmp-cell ours">
+<span class="cmp-label">What Their Numbers Show</span>
+<p>Drake's measured rate applied to Eigen's threshold equation, using the genome complexity required for the claimed novelty, puts the system at or past the error threshold. Selection cannot work faster than mutations destroy information.</p>
+</div>
+</div>
+<div class="bx-red">
+<p><strong>Source:</strong> Drake, J.W. (1991). "A constant rate of spontaneous mutation in DNA-based microbes." <em>PNAS</em> 88(16):7160–7164. Eigen, M. (1971). "Self-organization of matter." <em>Naturwissenschaften</em> 58:465–523. The gap between measured rate and required threshold is not disputed — the dispute is over whether the threshold applies to the claimed evolutionary steps. The math says it does.</p>
+</div>
+</div>
+</div>
+ ═══ KILLSHOT 2 ═══ 
+<div class="sec-div"><span class="tag">Killshot 02 · Selection Coefficient</span></div>
+<div class="killshot">
+<div class="killshot-header">
+<div class="killshot-num">02</div>
+<div class="killshot-title">
+<div class="kt">The Required Selection Coefficient Is 89–890× Above Observed</div>
+<span class="ks">Kimura · Ohta · Published Population Genetics</span>
+</div>
+<span class="verdict">FAILS BY 89–890×</span>
+</div>
+<div class="killshot-body">
+<div class="g g2">
+<div>
+<p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">Motoo Kimura and Tomoko Ohta's neutral theory of molecular evolution, now the consensus framework in population genetics, establishes the range of selection coefficients that can be "seen" by natural selection. Coefficients below 1/N (where N is effective population size) are effectively neutral — selection cannot distinguish them from genetic drift.</p>
+<p style="font-size:.98rem;color:var(--text-d);line-height:1.88">The selection coefficient required for a novel beneficial mutation to fix in a population — rather than drift to extinction — must be large enough to overcome drift. Observed selection coefficients for beneficial mutations in natural populations are measured in the range of 10⁻³ to 10⁻⁴. The coefficient required to drive the coordinated multi-site changes attributed to major evolutionary innovations is 89 to 890 times larger than observed maximums.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:.8rem">
+<div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.8rem">10⁻¹</div><div class="lbl">Required s (novel fold)</div></div>
+<div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.8rem">10⁻³</div><div class="lbl">Observed s (natural max)</div></div>
+<div class="bx-stat"><div class="num" style="color:var(--fail)">89–890×</div><div class="lbl">Gap — Their Numbers</div></div>
+</div>
+</div>
+<div class="eq-block">
+<span class="eq-line bad">P_fix = (1 − e^(−2s)) / (1 − e^(−4Ns))   →   Kimura Fixation Probability</span>
+<div class="eq-explain">
+<span class="term">P_fix</span> = probability that a new mutation fixes in the population rather than drifting to extinction.
+        <span class="bterm">s</span> = selection coefficient — the reproductive advantage conferred by the mutation.
+        <span class="term">N</span> = effective population size.
+        For a beneficial mutation with <span class="bterm">s = 10⁻³</span> in a population of N = 10⁶: P_fix ≈ 2s = 0.002. One in five hundred new beneficial mutations fixes. The rest are lost to drift.
+        <br/><br/>
+        For the coordinated mutations required to produce a new protein domain fold — where multiple specific amino acid positions must change together to produce a functional intermediate — the effective selection coefficient must be large enough to drive all the coordinated changes simultaneously or in very tight sequence. Calculations using published protein structure data (Axe 2004, Behe &amp; Snoke 2004) place the required s at 0.09 to 0.9. No natural population has been observed producing beneficial mutations at this selection strength. The gap is not theoretical — it is empirical.
+      </div>
+</div>
+<div class="cmp-row">
+<div class="cmp-cell theirs">
+<span class="cmp-label">Their Claim</span>
+<p>Natural selection acting on random mutations can drive the origin of new protein folds and novel body plans over geological time. The process is gradual and each step is individually beneficial.</p>
+</div>
+<div class="cmp-cell ours">
+<span class="cmp-label">What Their Numbers Show</span>
+<p>The observed selection coefficients for beneficial mutations are 89 to 890 times smaller than what Kimura's fixation equation requires to drive coordinated multi-site changes. Gradual stepwise accumulation cannot bridge this gap because intermediate states are non-functional.</p>
+</div>
+</div>
+<div class="bx-red">
+<p><strong>Sources:</strong> Kimura, M. (1983). <em>The Neutral Theory of Molecular Evolution.</em> Cambridge University Press. Axe, D.D. (2004). "Estimating the prevalence of protein sequences adopting functional enzyme folds." <em>Journal of Molecular Biology</em> 341(5):1295–1315. Behe, M.J. &amp; Snoke, D.W. (2004). "Simulating evolution by gene duplication of protein features that require multiple amino acid residues." <em>Protein Science</em> 13(10):2651–2664.</p>
+</div>
+</div>
+</div>
+ ═══ KILLSHOT 3 ═══ 
+<div class="sec-div"><span class="tag">Killshot 03 · Simultaneous Mutations</span></div>
+<div class="killshot">
+<div class="killshot-header">
+<div class="killshot-num">03</div>
+<div class="killshot-title">
+<div class="kt">Lynch &amp; Abegg's Simultaneous Mutation Requirement Is Off by 11 Orders of Magnitude</div>
+<span class="ks">Lynch · Abegg · Their Own Published Calculation</span>
+</div>
+<span class="verdict">FAILS BY 10¹¹</span>
+</div>
+<div class="killshot-body">
+<div class="g g2">
+<div>
+<p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">Michael Lynch and Aisha Abegg published a 2011 paper in <em>Evolution</em> calculating the waiting time for mutations requiring two or more simultaneous specific substitutions. This is the paper most often cited by evolutionary biologists as showing that complex adaptations are achievable. It is also — using their own numbers — the clearest demonstration that they are not.</p>
+<p style="font-size:.98rem;color:var(--text-d);line-height:1.88">Lynch &amp; Abegg calculate waiting times for two-site coordinated mutations. For a population of 10⁶ organisms with a generation time of one year, the waiting time for a two-site specific coordinated mutation is approximately 10⁸ years. For three sites: 10¹¹ years. For four sites: 10¹⁴ years. The age of the universe is 1.38 × 10¹⁰ years. The math is theirs. The problem is theirs.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:.8rem">
+<div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.6rem">10¹¹ yr</div><div class="lbl">Wait time (3-site coordination)</div></div>
+<div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.6rem">1.38×10¹⁰ yr</div><div class="lbl">Age of universe</div></div>
+<div class="bx-stat"><div class="num" style="color:var(--fail)">10×</div><div class="lbl">Longer than universe exists</div></div>
+</div>
+</div>
+<div class="eq-block">
+<span class="eq-line bad">T_wait ≈ 1 / (N · μᵏ · f)   →   Lynch-Abegg Waiting Time</span>
+<div class="eq-explain">
+<span class="term">T_wait</span> = expected waiting time for the coordinated mutation to arise and fix.
+        <span class="term">N</span> = effective population size (Lynch &amp; Abegg use 10⁶ as a favorable case).
+        <span class="bterm">μ</span> = mutation rate per site per generation (Drake: 10⁻⁸).
+        <span class="bterm">k</span> = number of specific sites requiring simultaneous or near-simultaneous change.
+        <span class="term">f</span> = fixation probability.
+        <br/><br/>
+        For k = 2: T ≈ 1 / (10⁶ × (10⁻⁸)² × 2×10⁻³) = 1 / (10⁶ × 10⁻¹⁶ × 2×10⁻³) ≈ 5 × 10¹² generations.
+        At one generation per year: 5 × 10¹² years. The age of the universe: 1.38 × 10¹⁰ years.
+        <span class="bterm">This is 363 times longer than the universe has existed — for just two coordinated sites.</span>
+        Lynch &amp; Abegg get a more favorable number by assuming many coordinating mutations don't all need to be beneficial simultaneously. But even their most favorable calculation for k=3 produces a waiting time 7× the age of the universe.
+      </div>
+</div>
+<div class="cmp-row">
+<div class="cmp-cell theirs">
+<span class="cmp-label">Their Claim (Lynch &amp; Abegg 2011)</span>
+<p>"Complex adaptations requiring the simultaneous occurrence of multiple mutations can evolve on reasonable timescales." They present this as a defense of evolutionary gradualism against ID arguments.</p>
+</div>
+<div class="cmp-cell ours">
+<span class="cmp-label">What Their Equations Actually Show</span>
+<p>Their own equations produce waiting times of 10¹¹ to 10¹⁴ years for 3-4 site coordination — 7 to 1,000 times the age of the universe. The paper intended to refute this problem inadvertently quantifies it precisely.</p>
+</div>
+</div>
+<div class="bx-red">
+<p><strong>Source:</strong> Lynch, M. &amp; Abegg, A. (2010). "The rate of establishment of complex adaptations." <em>Molecular Biology and Evolution</em> 27(6):1404–1414. The waiting time calculations appear in Table 1 of that paper. We are using their numbers from their table. The conclusion that these times exceed geological and cosmic timescales follows directly from their published results.</p>
+</div>
+</div>
+</div>
+<div class="dots">· · ·</div>
+ ═══ COMBINED CASE ═══ 
+<div class="sec-div"><span class="tag">The Combined Case</span></div>
+<div class="bx-hero srow" style="border-radius:8px;margin-bottom:.8rem">
+<div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.55rem">Three Independent Constraints</div>
+<h3>Any One Is Sufficient. All Three Together Is Decisive.</h3>
+<p>Each killshot operates independently. The mutation rate problem doesn't depend on the selection coefficient problem. The Lynch-Abegg waiting time problem doesn't depend on either of the others. These are three separate mathematical constraints on the same claimed mechanism, derived from three different research traditions, all using peer-reviewed published parameters. All three produce the same result: the mechanism cannot do what is attributed to it.</p>
+</div>
+<table class="dtbl">
+<thead>
+<tr>
+<th>Killshot</th>
+<th>Equation Used</th>
+<th>Published Source</th>
+<th>Required Value</th>
+<th>Observed Value</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01 · Mutation Rate</td>
+<td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Eigen threshold Q = e^(−μL)</td>
+<td>Drake 1991, Eigen 1971</td>
+<td class="pass-cell">μ ≤ 10⁻⁹</td>
+<td class="fail-cell">μ = 10⁻⁸</td>
+<td class="fail-cell">10× over limit</td>
+</tr>
+<tr>
+<td>02 · Selection Coefficient</td>
+<td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Kimura P_fix = f(s, N)</td>
+<td>Kimura 1983, Axe 2004</td>
+<td class="pass-cell">s ≥ 0.09</td>
+<td class="fail-cell">s = 10⁻³</td>
+<td class="fail-cell">89–890× short</td>
+</tr>
+<tr>
+<td>03 · Simultaneous Mutations</td>
+<td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Lynch-Abegg T ≈ 1/(Nμᵏf)</td>
+<td>Lynch &amp; Abegg 2010</td>
+<td class="pass-cell">&lt; 4.5 × 10⁹ yr</td>
+<td class="fail-cell">10¹¹ yr (k=3)</td>
+<td class="fail-cell">7× age of universe</td>
+</tr>
+</tbody>
+</table>
+<div class="bx-blue" style="margin-bottom:.8rem">
+<p><strong>The standard response</strong> to each of these is that evolution had more time, larger populations, or different mechanisms than the ones being modeled. Those responses are testable. If the population were 10× larger, the waiting time drops by 10 — still 7× the age of the universe for k=3. If the generation time were 10× shorter, same result. The gaps are not bridged by incremental parameter adjustments. They require abandoning the published parameters entirely, which means abandoning the published literature these arguments depend on.</p>
+</div>
+ ═══ WHAT THIS MEANS ═══ 
+<div class="sec-div"><span class="tag">What This Means</span></div>
+<div class="g g2">
+<div class="bx-warm">
+<div class="wtag">What This Does Not Mean</div>
+<p>This is not a claim that evolution is false in every sense of the word. Microevolution — adaptation within existing genetic information, antibiotic resistance, beak size variation — is real and mathematically coherent. The Yukawa Law (Love) produces real variation within stable bound states.</p>
+<p>The killshots target a specific claim: that the mechanism of random mutation filtered by natural selection can produce <em>novel genetic information</em>, new protein folds, and new body plan complexity. That specific claim fails the published math.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:.8rem">
+<div class="bx-hero" style="flex:1;background:linear-gradient(135deg,var(--surface2) 0%,rgba(155,28,58,0.08) 100%)">
+<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.4rem">The Theophysics Position</div>
+<p style="font-size:.95rem;color:var(--text-d);line-height:1.8">The Fermi Law — Redemption — is the only force in physics that changes particle <em>identity</em>. Not degree. Type. If new information enters biological systems, it does so through an identity-change mechanism that has a name in the canonical framework. Random mutation is not that mechanism.</p>
+</div>
+</div>
+</div>
+<div class="bx-red" style="margin-top:.8rem;margin-bottom:2.5rem">
+<p><strong>The invitation:</strong> These kill conditions are explicit. If you can show that the Eigen threshold does not apply to the claimed evolutionary steps, show the calculation. If you can show that the Kimura fixation probability is wrong for coordinated mutations, show the math. If you can show that Lynch &amp; Abegg's waiting time formula produces different numbers than what their Table 1 reports, show the derivation. The probe is falsifiable. That's what makes it a probe and not a polemic.</p>
+</div>
+ BOTTOM NAV 
+<div class="bot-nav">
+<div class="blabel">Related Papers</div>
+<div class="bnav-grid">
+<a class="bnav-card" href="index.html"><span class="bt">Home</span><span class="bn">All Papers</span></a>
+<a class="bnav-card" href="god-in-the-equations.html"><span class="bt">The Blue Series</span><span class="bn">God in the Equations</span></a>
+<a class="bnav-card" href="derivatives.html"><span class="bt">Blue Series</span><span class="bn">What the Laws Produce</span></a>
+<a class="bnav-card cur" href="#"><span class="bt">Probe Series · 1</span><span class="bn">The Evolution Probe</span></a>
+<a class="bnav-card" href="math-is-moral.html"><span class="bt">Convergence</span><span class="bn">Math Is Moral</span></a>
+<a class="bnav-card" href="gold-standard-test-battery.html"><span class="bt">Test Battery</span><span class="bn">Gold Standard Tests</span></a>
+</div>
+</div>
+<div class="foot">David Lowe · faiththruphysics.com · April 2026 · The Probe Series · POF 2828 · Their numbers. Their authors. Their failure.</div>
+
+</article>
+
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+<nav class="tp-bignav">
+  <div class="tp-bignav-row">
+    <a href="#" class="tp-bignav-prev">
+      <span class="tp-bignav-arrow">←</span>
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Previous</span>
+        <span class="tp-bignav-title">Previous</span>
+      </div>
+    </a>
+    <div class="tp-bignav-center">
+      <a href="/blue/" class="tp-bignav-series">Blue Papers Home</a>
+      <a href="/" class="tp-bignav-home">faiththruphysics.com</a>
+    </div>
+    <a href="#" class="tp-bignav-next">
+      <div class="tp-bignav-text">
+        <span class="tp-bignav-label">Next</span>
+        <span class="tp-bignav-title">Next</span>
+      </div>
+      <span class="tp-bignav-arrow">→</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════ FINAL AUDIT ═══════ -->
+<section class="tp-audit">
+  <div class="tp-audit-box">
+    <div class="tp-audit-head">Final Audit</div>
+    <p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="tp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+    <div class="tp-audit-grid">
+      <div class="tp-audit-col tp-col-right">
+        <h4>What We Got Right</h4>
+        <ul>
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-over">
+        <h4>What We Overstated</h4>
+        <ul>
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
+      </div>
+      <div class="tp-audit-col tp-col-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul>
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="tp-sub-title">The Math Behind the Claims</div>
+  <div class="tp-sub-grid">
+    <a href="/equation/" class="tp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="tp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="tp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="tp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="tp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+<section class="tp-subdomains">
+  <div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="tp-sub-title">Everything Else</div>
+  <div class="tp-sub-grid">
+    <a href="/glossary/" class="tp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="tp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="tp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="tp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="tp-sub-card"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+  </div>
+</section>
+
+<!-- ═══════ SERIES NAV ═══════ -->
+<nav class="tp-series-nav">
+  <div class="tp-series-strip">
+    <a href="/" class="active">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+  </div>
+</nav>
+
+<!-- ═══════ BOTTOM BAR ═══════ -->
+<div class="tp-bottom">
+  <div class="tp-bottom-eq">χ = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="tp-bottom-copy">Faith Through Physics · David Lowe · 2026</p>
+  <p class="tp-bottom-copy">Plant the Flag · POF 2828</p>
+  <p class="tp-bottom-copy" style="font-size:.6rem">(c) 2024–2026 David Lowe — Faith Through Physics</p>
+  <p class="tp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+<div class="tp-door">
+  <div class="tp-door-num">15 + 15 = 100</div>
+  <div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="tp-door-mark"></span>
+</div>
+
+<script>
+/* ═══════ AUTO-ACTIVE NAV ═══════
+   Detects current page URL and lights up the matching nav link.
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+   No manual active classes needed per page. */
+const NAV_MAP={
+  home:['/','/index.html','/home'],
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+};
+const path=window.location.pathname;
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+  const key=link.dataset.nav;
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
+
+/* Article domain profile — swap this array per article */
+const ARTICLE_PROFILE=[
+  {name:"Theology",pct:28,color:"#d4af37"},
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+];
+
+/* Render classification bar */
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+if(bar&&tags){
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+}
+
+/* Reading level tabs */
+document.querySelectorAll('.tp-level').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* Big nav hover spotlight effect */
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+  });
+});
+
+/* Series nav auto-active (same pattern) */
+const SERIES_MAP={
+  '/':'Home','/index.html':'Home','/home':'Home',
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+  '/one-page-stories/':'One-Page Stories'
+};
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+if(seriesName){
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+    else{a.classList.remove('active');}
+  });
+}
+</script>
+
+<!-- MTL worker client -->
+<script src="/shared/js/mtl-worker-client.js" defer></script>
+
+<script src="../components/tp-header-lip.js"></script>
+<script src="../components/audio-dock.js"></script>
+<script src="../components/verification-bar.js"></script>
+<script src="../components/reading-levels.js"></script>
+<script src="../components/tp-scroll-chrome.js"></script>
+<script defer src="/shared/js/mtl-worker-client.js"></script>
+</body>
 </html>

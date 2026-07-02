@@ -1,241 +1,713 @@
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Lean 4 Evidence Layer — Bilateral Audit Amendment</title>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-<style>
-:root {
-  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
-  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
-  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
-  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
-  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
-  --serif:'Crimson Text',Georgia,serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-  --display:'Oswald','Inter',sans-serif;
-  --sans:'Inter',system-ui,sans-serif;
-  --max:1140px; --header-h:48px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-
-/* ═══════ TOP BAR ═══════ */
-.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
-.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
-.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
-.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
-.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
-.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
-.tp-brand:hover .tp-brand-name{color:var(--gold)}
-.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
-.tp-brand:hover::after{width:140px;height:140px;opacity:1}
-.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
-
-/* Left nav */
-.tp-nav-links{display:flex;gap:3px;align-items:center}
-.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
-.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
-.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
-.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
-.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
-.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
-.tp-spacer{flex:1}
-
-/* Reading levels */
-.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
-.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
-.tp-level:hover{color:var(--text)}
-.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
-.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
-.tp-level:hover::after{width:80px;height:80px;opacity:1}
-.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
-.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
-.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
-@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
-
-/* ═══════ CLASSIFICATION BAR ═══════ */
-.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
-.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
-.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
-.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
-.tp-class-seg{transition:flex .4s ease;position:relative}
-.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
-.tp-class-bar:hover .tp-class-seg::after{opacity:1}
-.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
-.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
-.tp-class-tag:hover{color:var(--text-dim)}
-.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
-/* Small nav */
-.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
-.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
-@media(max-width:600px){.tp-class-tags{display:none}}
-
-/* ═══════ ARTICLE BODY ═══════ */
-.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
-.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
-.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
-.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
-.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
-.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
-.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
-.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
-.tp-article li{margin-bottom:.4rem}
-.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
-.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
-.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
-
-/* ═══════ BIG PREV / NEXT NAV ═══════ */
-.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
-.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
-.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
-.tp-bignav-prev{justify-content:flex-start}
-.tp-bignav-next{justify-content:flex-end;text-align:right}
-.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
-.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
-.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
-.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
-.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
-.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
-.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
-.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
-.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
-.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
-
-/* Center: Series Home + Site Home */
-.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
-.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
-.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
-.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
-.tp-bignav-home:hover{color:var(--gold)}
-
-@media(max-width:650px){
-  .tp-bignav-row{flex-direction:column;gap:.6rem}
-  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
-  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
-  .tp-bignav-title{font-size:1rem}
-}
-
-/* ═══════ FINAL AUDIT ═══════ */
-.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
-.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
-.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
-.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
-.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
-.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
-.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
-.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
-@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
-.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
-.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
-.tp-audit-col:hover::before{opacity:1}
-.tp-audit-col:hover{transform:translateY(-3px)}
-.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
-.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
-.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.tp-audit-col li:last-child{border-bottom:0}
-.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
-.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
-.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
-.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
-.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
-.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
-
-/* ═══════ GOLD DIVIDER ═══════ */
-.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
-.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
-
-/* ═══════ SUBDOMAIN GRID ═══════ */
-.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
-.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
-.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
-.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
-.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
-.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
-@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
-.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
-.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
-.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
-.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
-.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
-.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
-.tp-sub-card:hover::before{opacity:1}
-.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
-.tp-sub-card:hover h4{color:var(--gold)}
-.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
-
-/* ═══════ SERIES NAV ═══════ */
-.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
-.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
-.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
-.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
-.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
-
-/* ═══════ BOTTOM BAR ═══════ */
-.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
-.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
-.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
-.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
-
-/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
-.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
-.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
-@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
-.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
-.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
-.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
-.tp-door:hover .tp-door-sub{color:var(--text-dim)}
-.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
-
-/* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
-
-/* ═══════ SELECTION ═══════ */
-::selection{background:rgba(212,175,55,.2);color:var(--text)}
-</style>
-<base target="_blank"/>
-<!-- MathJax + MTL support -->
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
-  svg: { fontCache: 'global' },
-  startup: {
-    pageReady: function() {
-      return MathJax.startup.defaultPageReady().then(function() {
-        if (MathJax.startup.document && MathJax.startup.document.math) {
-          MathJax.startup.document.math.forEach(function(item) {
-            if (item.typesetRoot) {
-              item.typesetRoot.dataset.latex = item.math;
-              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
-            }
-          });
-        }
-      });
-    }
-  }
-};
-</script>
-<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<link href="/shared/css/mtl-worker-client.css" rel="stylesheet"/>
-<link href="../components/audio-dock.css" rel="stylesheet"/>
-<link href="../components/tp-header-lip.css" rel="stylesheet"/>
-<link href="../components/verification-bar.css" rel="stylesheet"/>
-<link href="../components/top-bar-bottom-bar.css" rel="stylesheet"/>
-</head>
-<body>
+﻿<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+
+
+<head>
+
+
+<meta charset="utf-8"/>
+
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+
+<title>The Lean 4 Evidence Layer — Bilateral Audit Amendment</title>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+
+<style>
+
+
+:root {
+
+
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+
+
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+
+
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+
+
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+
+
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+
+
+  --serif:'Crimson Text',Georgia,serif;
+
+
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+
+
+  --display:'Oswald','Inter',sans-serif;
+
+
+  --sans:'Inter',system-ui,sans-serif;
+
+
+  --max:1140px; --header-h:48px;
+
+
+}
+
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+
+html{scroll-behavior:smooth}
+
+
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+
+a{color:inherit;text-decoration:none}
+
+
+
+
+
+/* ═══════ TOP BAR ═══════ */
+
+
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+
+
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+
+
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+
+
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+
+
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+
+
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+
+
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+
+
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+
+
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+
+
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+
+
+
+
+/* Left nav */
+
+
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+
+
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+
+
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+
+
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+
+
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+
+
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+
+
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+
+
+.tp-spacer{flex:1}
+
+
+
+
+
+/* Reading levels */
+
+
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+
+
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+
+
+.tp-level:hover{color:var(--text)}
+
+
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+
+
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+
+
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+
+
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+
+
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+
+
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+
+
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+
+
+
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+
+
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+
+
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+
+
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+
+
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+
+
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+
+
+.tp-class-seg{transition:flex .4s ease;position:relative}
+
+
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+
+
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+
+
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+
+
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+
+
+.tp-class-tag:hover{color:var(--text-dim)}
+
+
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+
+
+/* Small nav */
+
+
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+
+
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+
+
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+
+
+
+
+/* ═══════ ARTICLE BODY ═══════ */
+
+
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+
+
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+
+
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+
+
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+
+
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+
+
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+
+
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+
+
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+
+
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+
+
+.tp-article li{margin-bottom:.4rem}
+
+
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+
+
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+
+
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+
+
+
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+
+
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+
+
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+
+
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+
+
+.tp-bignav-prev{justify-content:flex-start}
+
+
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+
+
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+
+
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+
+
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+
+
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+
+
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+
+
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+
+
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+
+
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+
+
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+
+
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+
+
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+
+
+
+
+/* Center: Series Home + Site Home */
+
+
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+
+
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+
+
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+
+
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+
+
+.tp-bignav-home:hover{color:var(--gold)}
+
+
+
+
+
+@media(max-width:650px){
+
+
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+
+
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+
+
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+
+
+  .tp-bignav-title{font-size:1rem}
+
+
+}
+
+
+
+
+
+/* ═══════ FINAL AUDIT ═══════ */
+
+
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+
+
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+
+
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+
+
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+
+
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+
+
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+
+
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+
+
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+
+
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+
+
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+
+
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+
+
+.tp-audit-col:hover::before{opacity:1}
+
+
+.tp-audit-col:hover{transform:translateY(-3px)}
+
+
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+
+
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+
+
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+
+
+.tp-audit-col li:last-child{border-bottom:0}
+
+
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+
+
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+
+
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+
+
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+
+
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+
+
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+
+
+
+
+/* ═══════ GOLD DIVIDER ═══════ */
+
+
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+
+
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+
+
+
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+
+
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+
+
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+
+
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+
+
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+
+
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+
+
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+
+
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+
+
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+
+
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+
+
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+
+
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+
+
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+
+
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+
+
+.tp-sub-card:hover::before{opacity:1}
+
+
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+
+
+.tp-sub-card:hover h4{color:var(--gold)}
+
+
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+
+
+
+
+/* ═══════ SERIES NAV ═══════ */
+
+
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+
+
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+
+
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+
+
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+
+
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+
+
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+
+
+
+
+/* ═══════ BOTTOM BAR ═══════ */
+
+
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+
+
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+
+
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+
+
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+
+
+
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+
+
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+
+
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+
+
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+
+
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+
+
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+
+
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+
+
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+
+
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+
+
+
+
+/* ═══════ SCROLLBAR ═══════ */
+
+
+::-webkit-scrollbar{width:6px}
+
+
+::-webkit-scrollbar-track{background:var(--bg)}
+
+
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+
+
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+
+
+
+
+/* ═══════ SELECTION ═══════ */
+
+
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+
+
+</style>
+
+
+<base target="_blank"/>
+
+
+<!-- MathJax + MTL support -->
+
+
+<script>
+
+
+window.MathJax = {
+
+
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+
+
+  svg: { fontCache: 'global' },
+
+
+  startup: {
+
+
+    pageReady: function() {
+
+
+      return MathJax.startup.defaultPageReady().then(function() {
+
+
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+
+
+          MathJax.startup.document.math.forEach(function(item) {
+
+
+            if (item.typesetRoot) {
+
+
+              item.typesetRoot.dataset.latex = item.math;
+
+
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+
+
+            }
+
+
+          });
+
+
+        }
+
+
+      });
+
+
+    }
+
+
+  }
+
+
+};
+
+
+</script>
+
+
+<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+<link href="/shared/css/mtl-worker-client.css" rel="stylesheet"/>
+<style>
+.tp-article-img{margin:2.5rem 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);display:block;max-width:100%;height:auto}
+.tp-article-img:hover{border-color:var(--border-hi);box-shadow:0 8px 24px rgba(212,175,55,.08)}
+</style>
+
+
+<link href="../../components/audio-dock.css" rel="stylesheet"/>
+<link href="../../components/tp-header-lip.css" rel="stylesheet"/>
+<link href="../../components/verification-bar.css" rel="stylesheet"/>
+<link href="../../components/top-bar-bottom-bar.css" rel="stylesheet"/>
+</head>
+
+
+<body>
+
+
 <!-- ═══════ TOP BAR ═══════ -->
 <header class="tp-top">
 <div class="tp-top-inner">
@@ -259,585 +731,1736 @@ window.MathJax = {
 <span class="tp-div"></span>
 <button class="tp-search" aria-label="Search"><span>⌕</span><kbd>⌘K</kbd></button>
 </div>
-</header>
-
-
-<!-- ═══════ CLASSIFICATION BAR ═══════ -->
-
-<!-- ═══════ ARTICLE (demo content) ═══════ -->
-<article class="tp-article">
-<h1>The Lean 4Evidence Layer</h1>
-<p class="subtitle"></p>
-<div class="byline">Bilateral Audit Amendment</div>
-
-<div class="section">
-<div class="section-eyebrow">Context</div>
-<h2 class="section-title">What Lean 4 Actually Proves</h2>
-<p class="body-text">Lean 4 is an interactive theorem prover. When a theorem compiles with zero <code>sorry</code> or <code>admit</code> placeholders, it means the proof is formally complete — the machine verified every logical step. It does not mean the real world matches the model. What it proves is structural: if the definitions are correct, the conclusions follow necessarily.</p>
-<p class="body-text">The overclaim guard runs on every theorem in this corpus. Lean proves the architecture is internally consistent. Whether that architecture correctly describes physics or theology is a separate question answered by domain judgment and empirical evidence — both of which the bilateral audit addresses independently.</p>
-<p class="body-text">What the corpus does that nothing else in science-religion discourse has done: it makes the structural claims machine-checkable, adversarially testable, and publicly bounded by named kill conditions. The rigor monopoly that academia assumed theology could never enter — this corpus enters it.</p>
-</div>
- ══════════════════════════════════════════════════════════
-     FLAGSHIP RESULT
-     ══════════════════════════════════════════════════════════ 
-<div class="section">
-<div class="section-eyebrow">Flagship Result · Layer 8</div>
-<h2 class="section-title">Maxwell / Trinity Isomorphism</h2>
-<div class="flagship">
-<div class="flagship-inner">
-<div class="flagship-label">⭐ Strongest Standalone Result</div>
-<div class="flagship-title">Quaternion EM ≅ Relational Trinity</div>
-<p class="flagship-body">Maxwell's original quaternion electromagnetic field structure and the Nicene Trinitarian relational model satisfy the same five formal conditions simultaneously. Five specific false positives were tested and rejected. Every guard is load-bearing — removing any single guard admits the corresponding false positive.</p>
-<div class="pass-grid">
-<div class="pass-item">
-<div class="pass-label green">✅ Passed</div>
-<div class="pass-text">Quaternion EM — all 5 ValidTriadic conditions</div>
-</div>
-<div class="pass-item">
-<div class="pass-label green">✅ Passed</div>
-<div class="pass-text">Trinity relational model — all 5 ValidTriadic conditions</div>
-</div>
-<div class="pass-item">
-<div class="pass-label green">✅ Passed</div>
-<div class="pass-text">Full structural isomorphism: Quaternion EM ≅ Trinity (TriadicIso)</div>
-</div>
-<div class="pass-item">
-<div class="pass-label green">✅ Passed</div>
-<div class="pass-text">Coupling invariant — scalar-vector coupling that vector-only lacks</div>
-</div>
-<div class="pass-item">
-<div class="pass-label red">✅ Rejected</div>
-<div class="pass-text">Heaviside vector-only EM — no coupling invariant</div>
-</div>
-<div class="pass-item">
-<div class="pass-label red">✅ Rejected</div>
-<div class="pass-text">Modalism — no relational distinctness, persons collapse</div>
-</div>
-<div class="pass-item">
-<div class="pass-label red">✅ Rejected</div>
-<div class="pass-text">Static single-field EM — not full dynamic triadic structure</div>
-</div>
-<div class="pass-item">
-<div class="pass-label red">✅ Rejected</div>
-<div class="pass-text">Generic 3-part system — wrong role profiles</div>
-</div>
-</div>
-<p style="font-size:0.78rem; color:var(--text-ghost); margin-top:1.2rem; font-style:italic;">
-          Safe public wording: The Trinity bridge passes only under the relational triadic specification. Lean does not prove Nicene theology from physics; it proves the intended relational triadic structure satisfies the formal gate while nearby false positives do not. Whether the models faithfully represent historical Maxwell EM and Nicene doctrine is a domain judgment call.
-        </p>
-</div>
-</div>
-</div>
- ══════════════════════════════════════════════════════════
-     THE UNIQUE RESULT
-     ══════════════════════════════════════════════════════════ 
-<div class="section">
-<div class="section-eyebrow">Uniqueness Result · Layer 9</div>
-<h2 class="section-title">The Cross Is the Unique Solution</h2>
-<div class="unique-block">
-<div class="unique-label">⭐ Strongest Single Result in the Package</div>
-<div class="unique-statement">∀ c, CrossConvergence(c) → c = cross.<br/>Any configuration satisfying all five conditions IS the Cross.</div>
-<div class="unique-ref">Theorem 125 · JusticeMercyOperator.lean · exhaustive cases proof</div>
-</div>
-<p class="body-text">The Justice/Mercy operator formalizes five conditions for perfect moral repair: proportional justice, impartiality, truth-naming, victim restoration, and voluntary cost-bearing. The theorem proves not just that the Cross satisfies all five — it proves by exhaustive case elimination that the Cross is the <em>only</em> configuration that does. Every alternative fails at least one condition.</p>
-<div class="theorem-grid">
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 118</div>
-<div class="theorem-file">JusticeMercyOperator.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">cross_satisfies_convergence</div>
-<div class="theorem-what">The Cross configuration meets all five convergence conditions simultaneously — justice, mercy, voluntariness, authority, and universality.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 119</div>
-<div class="theorem-file">JusticeMercyOperator.lean</div>
-<span class="tag tag-rejected">Rejected</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">offender_payment_fails_mercy_condition</div>
-<div class="theorem-what">Offender paying their own debt satisfies justice but fails mercy. Self-payment is not mercy.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 120</div>
-<div class="theorem-file">JusticeMercyOperator.lean</div>
-<span class="tag tag-rejected">Rejected</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">human_third_party_fails_authority_and_capacity</div>
-<div class="theorem-what">A human third party who volunteers to pay fails on authority and universality. Scope insufficient.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 122</div>
-<div class="theorem-file">JusticeMercyOperator.lean</div>
-<span class="tag tag-rejected">Rejected</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">waived_debt_fails_justice_condition</div>
-<div class="theorem-what">Waiving the debt entirely fails justice — the cost is not paid. Cheap grace formally eliminated.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 125</div>
-<div class="theorem-file">JusticeMercyOperator.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">cross_is_unique_solution</div>
-<div class="theorem-what">Existence AND uniqueness: the Cross satisfies all five conditions, and any configuration satisfying all five conditions IS the Cross. The strongest single formal result in the corpus.</div>
-<div class="theorem-guard">Uniqueness is within the model. Lean proves the repair structure is unique. Whether Jesus of Nazareth is that structure requires historical evidence tested separately.</div>
-</div>
-</div>
-</div>
-</div>
- ══════════════════════════════════════════════════════════
-     THE FOUNDATION THEOREMS
-     ══════════════════════════════════════════════════════════ 
-<div class="section">
-<div class="section-eyebrow">The Borrowed Foundation · Core.lean + BridgeMatrix</div>
-<h2 class="section-title">What Science Borrowed — Formally</h2>
-<p class="body-text">The bilateral audit's central claim is that science operates on a substrate it did not build and cannot ground from within. These theorems formalize that substrate structurally. They do not prove the claim metaphysically — they show the architecture that the claim requires already compiles formally and survives adversarial testing.</p>
-<div class="theorem-grid">
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 4</div>
-<div class="theorem-file">Core.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">Q_zero_collapses_chi</div>
-<div class="theorem-what">If any single factor is zero, total coherence collapses regardless of every other factor. This is the multiplicative architecture: no compensation is possible. Remove will (Q) and coherence dies. Remove knowledge (K) and coherence dies. Every factor is load-bearing.</div>
-<div class="theorem-guard">This formalizes why the additive scoring frameworks used by every existing cross-domain evaluation system are structurally weaker — they permit weakness in one dimension to be offset by strength in another. Theophysics does not.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 37</div>
-<div class="theorem-file">MasterEquationInvariance.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">master_equation_invariant_under_canonical_substitution</div>
-<div class="theorem-what">χ(physical) = χ(spiritual) under the canonical variable map. The Master Equation produces the same coherence value whether its variables are assigned physical or theological values. The equation is genuinely domain-neutral — it does not belong to either register.</div>
-<div class="theorem-guard">This is the formal statement of the substrate claim. The equation runs the same in both worldviews. What differs is boundary conditions — and boundary conditions are where worldview enters.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 42</div>
-<div class="theorem-file">MasterEquationInvariance.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">master_invariance_requires_signature_discipline</div>
-<div class="theorem-what">Product alone is blind to semantic swaps — grace and faith can be exchanged and the product passes. But the signature layer catches the swap. Both product AND signature are required. Neither alone suffices. This is why the bridge is two-layer.</div>
-<div class="theorem-guard">This theorem named an adversarial boundary inside the system before critics could. Label honesty cannot be verified by Lean alone. The guard is domain review.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 133–136</div>
-<div class="theorem-file">SignConversionDiscipline.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">burden_sign_conversion_chain</div>
-<div class="theorem-what">In arithmetic, (-1)×(-1) = +1. In the moral burden domain, two negatives stay negative. Accumulation does not redeem. External Christic conversion is the only operation that flips a negative burden to positive. Self-generated operations cannot change the sign.</div>
-<div class="theorem-guard">This is the Lean-backed foundation of why the Cross is structurally necessary. It proves the arithmetic of the model. It does not prove moral self-repair is impossible in all philosophical frameworks.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">L2-Q6</div>
-<div class="theorem-file">PolarityDiscipline.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">good_is_ontologically_prior</div>
-<div class="theorem-what">Sign arithmetic enforces asymmetry: positive is generative, negative is parasitic. Evil has no independent vocabulary — it borrows every word from good and inverts it. Good is structurally prior, not contingently prior. You cannot corrupt what is not there.</div>
-<div class="theorem-guard">Model asymmetry. Real-world ontological priority is a separate claim — but this is the formal demonstration that the asymmetry is not arbitrary. It is a structural requirement of the coherence architecture.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 78–87</div>
-<div class="theorem-file">IsomorphismTest.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">richLaw4Iso — Strong Force ≅ Love</div>
-<div class="theorem-what">At the RichLawIso level (roles AND transitions preserved), StrongForce and Love are structurally isomorphic. The basic isomorphism alone is insufficient — a coin model also passes at that level. The RichLawIso gate eliminates the coin. Love passes. Coin fails.</div>
-<div class="theorem-guard">Second of three structural isomorphisms in the corpus. Proves the mapping at model level. Does not wire StrongForce into the χ product (GAP-02 — honestly named).</div>
-</div>
-</div>
-</div>
-</div>
- ══════════════════════════════════════════════════════════
-     RESURRECTION ARCHITECTURE
-     ══════════════════════════════════════════════════════════ 
-<div class="section">
-<div class="section-eyebrow">Layer 13 · MissionReturnOperator.lean</div>
-<h2 class="section-title">Resurrection as Mission Return</h2>
-<p class="body-text">The Resurrection is not resuscitation and not reset. These theorems prove the formal distinction: the substrate identity is preserved through incarnation, death, and resurrection, but the post-resurrection state carries the entropy and death contact records — making it richer than the pre-incarnate state, not identical to it.</p>
-<div class="pull">
-<p>Same substrate. Richer expression. The scar tissue is part of the proof.</p>
-</div>
-<div class="theorem-grid">
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 153–155</div>
-<div class="theorem-file">MissionReturnOperator.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">identity_preserved_through_full_arc</div>
-<div class="theorem-what">Substrate identity is unchanged across incarnation, death, and resurrection. The agent who entered is the agent who returned.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 158–160</div>
-<div class="theorem-file">MissionReturnOperator.lean</div>
-<span class="tag tag-proved">Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">entropy_and_death_contact_carried_through_resurrection</div>
-<div class="theorem-what">The resurrection state preserves both entropy contact AND death contact records from the cross. The proof of the mission is carried in the return.</div>
-</div>
-</div>
-<div class="theorem-card">
-<div class="theorem-id-col">
-<div class="theorem-num">Thm 161–162</div>
-<div class="theorem-file">MissionReturnOperator.lean</div>
-<span class="tag tag-rejected">Rejected / Proved</span>
-</div>
-<div class="theorem-body-col">
-<div class="theorem-name">resurrection_is_not_reset</div>
-<div class="theorem-what">Post-resurrection ≠ pre-incarnate. It is structurally richer — same substrate plus the finite record carried. This formally eliminates the interpretation of resurrection as erasure or return-to-original-state.</div>
-<div class="theorem-guard">Architecture is formally consistent. Lean does not prove the Resurrection happened. History must be tested separately against this structure.</div>
-</div>
-</div>
-</div>
-</div>
- ══════════════════════════════════════════════════════════
-     LAYER SCORECARD
-     ══════════════════════════════════════════════════════════ 
-<div class="section">
-<div class="section-eyebrow">Full Corpus</div>
-<h2 class="section-title">16 Layers — What Each Proves</h2>
-<div class="scorecard">
-<div class="score-item">
-<div class="score-layer">L0 · Core.lean</div>
-<div class="score-title">Dual-Substrate Foundation</div>
-<div class="score-body">Coupling states, irreversibility gate, χ product. The zero-collapse architecture — any single zero kills the product.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L3 · BridgeMatrix.lean</div>
-<div class="score-title">10-Factor Signature</div>
-<div class="score-body">All 10 canonical bridge rows valid. Wrong pairings rejected. Grace↔Faith swap caught by signature layer, not product layer.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L4 · MasterEquationInvariance.lean</div>
-<div class="score-title">Domain Invariance</div>
-<div class="score-body">χ(physical) = χ(spiritual) under canonical map. The equation belongs to neither register alone.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L5 · FieldBridgeControls.lean</div>
-<div class="score-title">Laws 3, 6, 7, 8 Collapse Proofs</div>
-<div class="score-body">EM/Truth, Information/Logos, Relativity/Frame, Quantum/Faith. Each bypass zeroes the relevant factor → zeroes χ globally.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L7 · IsomorphismTest.lean</div>
-<div class="score-title">Strong Force ≅ Love</div>
-<div class="score-body">Two-level isomorphism with adversarial false-positive testing. Coin model eliminated at RichLawIso level.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L8 · MaxwellTrinity.lean</div>
-<div class="score-title">Maxwell ≅ Trinity</div>
-<div class="score-body">5-condition structural spec. 5 false positives rejected. Every guard load-bearing. Strongest standalone result.</div>
-<div class="score-status"><span class="tag tag-proved">⭐ Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L9 · JusticeMercyOperator.lean</div>
-<div class="score-title">Cross Uniqueness</div>
-<div class="score-body">The Cross is THE unique convergence configuration. Every alternative formally eliminated. Existence AND uniqueness proved.</div>
-<div class="score-status"><span class="tag tag-proved">⭐ Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L10–L14 · Discipline Chain</div>
-<div class="score-title">Polarity, Sign, Christ, Resurrection, Memory</div>
-<div class="score-body">Two wrongs don't make a right. External conversion required. Identity preserved. Memory filtered at death. Heaven = coherent + eternal.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L15 · DependencyLattice.lean</div>
-<div class="score-title">Dependency Structure</div>
-<div class="score-body">44 edges across theology and physics lattices. Teaching order and dependency order formally diverge at justification/union.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-<div class="score-item">
-<div class="score-layer">L16 · HitRateDiscipline.lean</div>
-<div class="score-title">Statistical Integrity</div>
-<div class="score-body">Closed denominator. 8/10 bridges compiled. 90% claim blocked. All attempts and failures counted. No cherry-picking.</div>
-<div class="score-status"><span class="tag tag-proved">Proved</span></div>
-</div>
-</div>
-</div>
- ══════════════════════════════════════════════════════════
-     HONEST GAPS
-     ══════════════════════════════════════════════════════════ 
-<div class="section">
-<div class="section-eyebrow">Named Gaps — Nothing Hidden</div>
-<h2 class="section-title">What the Corpus Has Not Yet Proved</h2>
-<p class="body-text">A framework that names its own gaps is more trustworthy than one that does not. Every gap here is an honest admission. The system does not claim what it has not proved. Gaps are either closable with more Lean or outside Lean's scope entirely.</p>
-<table class="gap-table">
-<thead>
-<tr>
-<th>Gap</th>
-<th>Description</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="gap-id">GAP-01</td>
-<td>Laws 1, 2, 9, 10 — generic zero-collapse proved but domain-specific physical mechanisms not yet encoded. Gravity/Grace, Motion/Will, Weak Force/Moral Conservation, Coherence/Christ factor-level controls pending.</td>
-<td><span class="tag tag-gap">Closable</span></td>
-</tr>
-<tr>
-<td class="gap-id">GAP-02</td>
-<td>Law 4 factor-level bridge wiring. StrongForce ≅ Love proved at model level but no gate wiring into χ product.</td>
-<td><span class="tag tag-gap">Closable</span></td>
-</tr>
-<tr>
-<td class="gap-id">GAP-03</td>
-<td>Law 5 factor-level bridge wiring. Justice/Mercy operator proved independently, no formal wiring to Factor.S slot.</td>
-<td><span class="tag tag-gap">Closable</span></td>
-</tr>
-<tr>
-<td class="gap-id">GAP-04</td>
-<td>Category-theoretic upgrade of Mapping.lean. Currently a list-map equality. A proper functor would be stronger.</td>
-<td><span class="tag tag-gap">Closable</span></td>
-</tr>
-<tr>
-<td class="gap-id">GAP-05</td>
-<td>Cross-domain lattice coverage. Only 3 of ~20 theology edges have explicit physics witnesses.</td>
-<td><span class="tag tag-gap">Closable</span></td>
-</tr>
-<tr>
-<td class="gap-id">SPEC-01</td>
-<td>Faithful abstraction. Do the formal models faithfully represent historical Maxwell EM and Nicene Trinitarian doctrine? Domain judgment — outside Lean's scope.</td>
-<td><span class="tag tag-boundary">Spec Gap</span></td>
-</tr>
-<tr>
-<td class="gap-id">SPEC-03</td>
-<td>Empirical validation. The 5.7–6.35σ experimental correlations are not formalized in Lean. External data addresses this separately.</td>
-<td><span class="tag tag-boundary">Spec Gap</span></td>
-</tr>
-<tr>
-<td class="gap-id">SPEC-05</td>
-<td>Historical claims. Lean proves the repair structure is unique. Whether Jesus of Nazareth is that structure requires historical evidence — Lean cannot answer this question.</td>
-<td><span class="tag tag-boundary">Spec Gap</span></td>
-</tr>
-</tbody>
-</table>
-</div>
- ══════════════════════════════════════════════════════════
-     DEPENDENCY CHAIN
-     ══════════════════════════════════════════════════════════ 
-<div class="section">
-<div class="section-eyebrow">Architecture</div>
-<h2 class="section-title">Import Dependency Graph</h2>
-<p class="body-text">The 16 Lean files form a dependency tree. Each layer builds on the layers it imports. Standalone files prove their claims without depending on the trunk.</p>
-<div class="dep-chain">
-<span class="node">Core</span> <span class="arrow">→</span> <span class="node">BridgeMatrix</span> <span class="arrow">→</span> <span class="node">FieldBridgeControls</span> <span class="arrow">→</span> <span class="node">BridgeScoreDiscipline</span>
-<span class="arrow">→</span> <span class="node">PolarityDiscipline</span> <span class="arrow">→</span> <span class="node">MemoryPersistence</span> <span class="arrow">→</span> <span class="node">SignConversion</span> <span class="arrow">→</span> <span class="node">ChristOperator</span>
-<span class="branch">├──</span> <span class="node">HitRateDiscipline</span> <span class="arrow">(statistical integrity on top of operator)</span>
-<span class="branch">└──</span> <span class="node">MissionReturnOperator</span> <span class="arrow">(resurrection architecture)</span>
-<span class="node">BridgeMatrix</span> <span class="arrow">→</span> <span class="node">MasterEquationInvariance</span> <span class="arrow">(product + signature invariance)</span>
-<span style="color:var(--text-ghost)">Standalone (no imports):</span>
-<span class="node">StageMachine</span> · <span class="node">Mapping</span> · <span class="node">IsomorphismTest</span> · <span class="node">DependencyLattice</span>
-<span class="node">MaxwellTrinity</span> · <span class="node">JusticeMercyOperator</span>
-<span style="color:var(--text-ghost)">↑ MaxwellTrinity + JusticeMercyOperator are the strongest standalone results</span>
-</div>
-</div>
- ══════════════════════════════════════════════════════════
-     CLOSING
-     ══════════════════════════════════════════════════════════ 
-<div class="section" style="border-bottom:none;">
-<div class="pull">
-<p>The formal layer is strongest when it is rejection-first. A positive mapping does not matter until the obvious false positives have been encoded and rejected under the same gate. Where Lean verifies that adversarial controls fail and the intended structure passes, the result is not merely "this can be made to fit." It is "under these definitions, the alternatives do not fit while this structure does."</p>
-</div>
-<p class="body-text">287 theorems. Zero sorry. Zero admit. The compiler does not check credentials. It checks structure. And the structure holds.</p>
-</div>
-</article>
-<!-- ═══════ BIG PREV / NEXT ═══════ -->
-
-<!-- ═══════ FINAL AUDIT ═══════ -->
-<section class="tp-audit">
-<div class="tp-audit-box">
-<div class="tp-audit-head">Final Audit</div>
-<p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
-<div class="tp-audit-covenant">
-<b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
-    </div>
-<div class="tp-audit-grid">
-<div class="tp-audit-col tp-col-right">
-<h4>What We Got Right</h4>
-<ul>
-<li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
-</ul>
-</div>
-<div class="tp-audit-col tp-col-over">
-<h4>What We Overstated</h4>
-<ul>
-<li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
-</ul>
-</div>
-<div class="tp-audit-col tp-col-wrong">
-<h4>What We Got Wrong</h4>
-<ul>
-<li>Claims that need correction, tightening, or weaker formulation.</li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<!-- ═══════ GOLD DIVIDER ═══════ -->
-<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
-<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
-<section class="tp-subdomains">
-<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
-<div class="tp-sub-title">The Math Behind the Claims</div>
-<div class="tp-sub-grid">
-<a class="tp-sub-card" href="/equation/"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
-<a class="tp-sub-card" href="/isomorphism/"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
-<a class="tp-sub-card" href="/proof-explorer/"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
-<a class="tp-sub-card" href="/rigor/"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
-<a class="tp-sub-card" href="/lean4/"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
-</div>
-</section>
-<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
-<section class="tp-subdomains">
-<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
-<div class="tp-sub-title">Everything Else</div>
-<div class="tp-sub-grid">
-<a class="tp-sub-card" href="/glossary/"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
-<a class="tp-sub-card" href="/media/"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
-<a class="tp-sub-card" href="/podcast/"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
-<a class="tp-sub-card" href="/audio/"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
-<a class="tp-sub-card" href="/subdomains/"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
-</div>
-</section>
-<!-- ═══════ SERIES NAV ═══════ -->
-<nav class="tp-series-nav">
-<div class="tp-series-strip">
-<a class="active" href="/">Home</a>
-<a href="/moral-decline/">MDA</a>
-<a href="/genesis-to-quantum/">GTQ</a>
-<a href="/Convergence_Series/">Convergence</a>
-<a href="/Logos_Papers/">Logos Papers</a>
-<a href="/one-page-stories/">One-Page Stories</a>
-<a class="soon" href="/consciousness/">Consciousness</a>
-<a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
-</div>
-</nav>
-<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
-<div class="tp-door">
-<div class="tp-door-num">15 + 15 = 100</div>
-<div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
-<span class="tp-door-mark"></span>
-</div>
-<script>
-/* ═══════ AUTO-ACTIVE NAV ═══════
-   Detects current page URL and lights up the matching nav link.
-   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
-   No manual active classes needed per page. */
-const NAV_MAP={
-  home:['/','/index.html','/home'],
-  mtl:['/equation/','/equation','/math-translation-layer/'],
-  proof:['/proof-explorer/','/proof-explorer','/proof/']
-};
-const path=window.location.pathname;
-document.querySelectorAll('.tp-nav-link').forEach(link=>{
-  const key=link.dataset.nav;
-  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
-    link.classList.add('active');
-  } else {
-    link.classList.remove('active');
-  }
-});
-
-/* Article domain profile — swap this array per article */
-const ARTICLE_PROFILE=[
-  {name:"Theology",pct:28,color:"#d4af37"},
-  {name:"Physics",pct:22,color:"#7cc7ff"},
-  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
-  {name:"Evidence",pct:15,color:"#7fc77f"},
-  {name:"Consciousness",pct:10,color:"#a78bfa"},
-  {name:"Mathematics",pct:7,color:"#ff7d90"},
-  {name:"Speculative",pct:3,color:"#aeb8d6"}
-];
-
-/* Render classification bar */
-const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
-if(bar&&tags){
-  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
-  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
-}
-
-/* Reading level tabs */
-document.querySelectorAll('.tp-level').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-/* Big nav hover spotlight effect */
-document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
-  card.addEventListener('mousemove',e=>{
-    const rect=card.getBoundingClientRect();
-    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
-    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
-  });
-});
-
-/* Series nav auto-active (same pattern) */
-const SERIES_MAP={
-  '/':'Home','/index.html':'Home','/home':'Home',
-  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
-  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
-  '/one-page-stories/':'One-Page Stories'
-};
-const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
-if(seriesName){
-  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
-    if(a.textContent.trim()===seriesName){a.classList.add('active');}
-    else{a.classList.remove('active');}
-  });
-}
-</script>
-<!-- MTL worker client -->
-<script defer="" src="/shared/js/mtl-worker-client.js"></script><script src="../components/tp-header-lip.js"></script>
-<script src="../components/audio-dock.js"></script>
-<script src="../components/verification-bar.js"></script>
-<script src="../components/reading-levels.js"></script>
-<script src="../components/tp-scroll-chrome.js"></script>
+</header>
+
+
+
+
+
+
+
+
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+
+
+
+
+
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+
+
+<article class="tp-article">
+
+
+<h1>The Lean 4Evidence Layer</h1>
+
+
+<p class="subtitle"></p>
+
+
+<div class="byline">Bilateral Audit Amendment</div>
+
+
+
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">Context</div>
+
+
+<h2 class="section-title">What Lean 4 Actually Proves</h2>
+
+
+<p class="body-text">Lean 4 is an interactive theorem prover. When a theorem compiles with zero <code>sorry</code> or <code>admit</code> placeholders, it means the proof is formally complete — the machine verified every logical step. It does not mean the real world matches the model. What it proves is structural: if the definitions are correct, the conclusions follow necessarily.</p>
+
+
+<p class="body-text">The overclaim guard runs on every theorem in this corpus. Lean proves the architecture is internally consistent. Whether that architecture correctly describes physics or theology is a separate question answered by domain judgment and empirical evidence — both of which the bilateral audit addresses independently.</p>
+
+
+<p class="body-text">What the corpus does that nothing else in science-religion discourse has done: it makes the structural claims machine-checkable, adversarially testable, and publicly bounded by named kill conditions. The rigor monopoly that academia assumed theology could never enter — this corpus enters it.</p>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     FLAGSHIP RESULT
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">Flagship Result · Layer 8</div>
+
+
+<h2 class="section-title">Maxwell / Trinity Isomorphism</h2>
+
+
+<div class="flagship">
+
+
+<div class="flagship-inner">
+
+
+<div class="flagship-label">⭐ Strongest Standalone Result</div>
+
+
+<div class="flagship-title">Quaternion EM ≅ Relational Trinity</div>
+
+
+<p class="flagship-body">Maxwell's original quaternion electromagnetic field structure and the Nicene Trinitarian relational model satisfy the same five formal conditions simultaneously. Five specific false positives were tested and rejected. Every guard is load-bearing — removing any single guard admits the corresponding false positive.</p>
+
+
+<div class="pass-grid">
+
+
+<div class="pass-item">
+
+
+<div class="pass-label green">✅ Passed</div>
+
+
+<div class="pass-text">Quaternion EM — all 5 ValidTriadic conditions</div>
+
+
+</div>
+
+
+<div class="pass-item">
+
+
+<div class="pass-label green">✅ Passed</div>
+
+
+<div class="pass-text">Trinity relational model — all 5 ValidTriadic conditions</div>
+
+
+</div>
+
+
+<div class="pass-item">
+
+
+<div class="pass-label green">✅ Passed</div>
+
+
+<div class="pass-text">Full structural isomorphism: Quaternion EM ≅ Trinity (TriadicIso)</div>
+
+
+</div>
+
+
+<div class="pass-item">
+
+
+<div class="pass-label green">✅ Passed</div>
+
+
+<div class="pass-text">Coupling invariant — scalar-vector coupling that vector-only lacks</div>
+
+
+</div>
+
+
+<div class="pass-item">
+
+
+<div class="pass-label red">✅ Rejected</div>
+
+
+<div class="pass-text">Heaviside vector-only EM — no coupling invariant</div>
+
+
+</div>
+
+
+<div class="pass-item">
+
+
+<div class="pass-label red">✅ Rejected</div>
+
+
+<div class="pass-text">Modalism — no relational distinctness, persons collapse</div>
+
+
+</div>
+
+
+<div class="pass-item">
+
+
+<div class="pass-label red">✅ Rejected</div>
+
+
+<div class="pass-text">Static single-field EM — not full dynamic triadic structure</div>
+
+
+</div>
+
+
+<div class="pass-item">
+
+
+<div class="pass-label red">✅ Rejected</div>
+
+
+<div class="pass-text">Generic 3-part system — wrong role profiles</div>
+
+
+</div>
+
+
+</div>
+
+
+<p style="font-size:0.78rem; color:var(--text-ghost); margin-top:1.2rem; font-style:italic;">
+
+
+          Safe public wording: The Trinity bridge passes only under the relational triadic specification. Lean does not prove Nicene theology from physics; it proves the intended relational triadic structure satisfies the formal gate while nearby false positives do not. Whether the models faithfully represent historical Maxwell EM and Nicene doctrine is a domain judgment call.
+
+
+        </p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     THE UNIQUE RESULT
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">Uniqueness Result · Layer 9</div>
+
+
+<h2 class="section-title">The Cross Is the Unique Solution</h2>
+
+
+<div class="unique-block">
+
+
+<div class="unique-label">⭐ Strongest Single Result in the Package</div>
+
+
+<div class="unique-statement">∀ c, CrossConvergence(c) → c = cross.<br/>Any configuration satisfying all five conditions IS the Cross.</div>
+
+
+<div class="unique-ref">Theorem 125 · JusticeMercyOperator.lean · exhaustive cases proof</div>
+
+
+</div>
+
+
+<p class="body-text">The Justice/Mercy operator formalizes five conditions for perfect moral repair: proportional justice, impartiality, truth-naming, victim restoration, and voluntary cost-bearing. The theorem proves not just that the Cross satisfies all five — it proves by exhaustive case elimination that the Cross is the <em>only</em> configuration that does. Every alternative fails at least one condition.</p>
+
+
+<div class="theorem-grid">
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 118</div>
+
+
+<div class="theorem-file">JusticeMercyOperator.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">cross_satisfies_convergence</div>
+
+
+<div class="theorem-what">The Cross configuration meets all five convergence conditions simultaneously — justice, mercy, voluntariness, authority, and universality.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 119</div>
+
+
+<div class="theorem-file">JusticeMercyOperator.lean</div>
+
+
+<span class="tag tag-rejected">Rejected</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">offender_payment_fails_mercy_condition</div>
+
+
+<div class="theorem-what">Offender paying their own debt satisfies justice but fails mercy. Self-payment is not mercy.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 120</div>
+
+
+<div class="theorem-file">JusticeMercyOperator.lean</div>
+
+
+<span class="tag tag-rejected">Rejected</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">human_third_party_fails_authority_and_capacity</div>
+
+
+<div class="theorem-what">A human third party who volunteers to pay fails on authority and universality. Scope insufficient.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 122</div>
+
+
+<div class="theorem-file">JusticeMercyOperator.lean</div>
+
+
+<span class="tag tag-rejected">Rejected</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">waived_debt_fails_justice_condition</div>
+
+
+<div class="theorem-what">Waiving the debt entirely fails justice — the cost is not paid. Cheap grace formally eliminated.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 125</div>
+
+
+<div class="theorem-file">JusticeMercyOperator.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">cross_is_unique_solution</div>
+
+
+<div class="theorem-what">Existence AND uniqueness: the Cross satisfies all five conditions, and any configuration satisfying all five conditions IS the Cross. The strongest single formal result in the corpus.</div>
+
+
+<div class="theorem-guard">Uniqueness is within the model. Lean proves the repair structure is unique. Whether Jesus of Nazareth is that structure requires historical evidence tested separately.</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     THE FOUNDATION THEOREMS
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">The Borrowed Foundation · Core.lean + BridgeMatrix</div>
+
+
+<h2 class="section-title">What Science Borrowed — Formally</h2>
+
+
+<p class="body-text">The bilateral audit's central claim is that science operates on a substrate it did not build and cannot ground from within. These theorems formalize that substrate structurally. They do not prove the claim metaphysically — they show the architecture that the claim requires already compiles formally and survives adversarial testing.</p>
+
+
+<div class="theorem-grid">
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 4</div>
+
+
+<div class="theorem-file">Core.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">Q_zero_collapses_chi</div>
+
+
+<div class="theorem-what">If any single factor is zero, total coherence collapses regardless of every other factor. This is the multiplicative architecture: no compensation is possible. Remove will (Q) and coherence dies. Remove knowledge (K) and coherence dies. Every factor is load-bearing.</div>
+
+
+<div class="theorem-guard">This formalizes why the additive scoring frameworks used by every existing cross-domain evaluation system are structurally weaker — they permit weakness in one dimension to be offset by strength in another. Theophysics does not.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 37</div>
+
+
+<div class="theorem-file">MasterEquationInvariance.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">master_equation_invariant_under_canonical_substitution</div>
+
+
+<div class="theorem-what">χ(physical) = χ(spiritual) under the canonical variable map. The Master Equation produces the same coherence value whether its variables are assigned physical or theological values. The equation is genuinely domain-neutral — it does not belong to either register.</div>
+
+
+<div class="theorem-guard">This is the formal statement of the substrate claim. The equation runs the same in both worldviews. What differs is boundary conditions — and boundary conditions are where worldview enters.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 42</div>
+
+
+<div class="theorem-file">MasterEquationInvariance.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">master_invariance_requires_signature_discipline</div>
+
+
+<div class="theorem-what">Product alone is blind to semantic swaps — grace and faith can be exchanged and the product passes. But the signature layer catches the swap. Both product AND signature are required. Neither alone suffices. This is why the bridge is two-layer.</div>
+
+
+<div class="theorem-guard">This theorem named an adversarial boundary inside the system before critics could. Label honesty cannot be verified by Lean alone. The guard is domain review.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 133–136</div>
+
+
+<div class="theorem-file">SignConversionDiscipline.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">burden_sign_conversion_chain</div>
+
+
+<div class="theorem-what">In arithmetic, (-1)×(-1) = +1. In the moral burden domain, two negatives stay negative. Accumulation does not redeem. External Christic conversion is the only operation that flips a negative burden to positive. Self-generated operations cannot change the sign.</div>
+
+
+<div class="theorem-guard">This is the Lean-backed foundation of why the Cross is structurally necessary. It proves the arithmetic of the model. It does not prove moral self-repair is impossible in all philosophical frameworks.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">L2-Q6</div>
+
+
+<div class="theorem-file">PolarityDiscipline.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">good_is_ontologically_prior</div>
+
+
+<div class="theorem-what">Sign arithmetic enforces asymmetry: positive is generative, negative is parasitic. Evil has no independent vocabulary — it borrows every word from good and inverts it. Good is structurally prior, not contingently prior. You cannot corrupt what is not there.</div>
+
+
+<div class="theorem-guard">Model asymmetry. Real-world ontological priority is a separate claim — but this is the formal demonstration that the asymmetry is not arbitrary. It is a structural requirement of the coherence architecture.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 78–87</div>
+
+
+<div class="theorem-file">IsomorphismTest.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">richLaw4Iso — Strong Force ≅ Love</div>
+
+
+<div class="theorem-what">At the RichLawIso level (roles AND transitions preserved), StrongForce and Love are structurally isomorphic. The basic isomorphism alone is insufficient — a coin model also passes at that level. The RichLawIso gate eliminates the coin. Love passes. Coin fails.</div>
+
+
+<div class="theorem-guard">Second of three structural isomorphisms in the corpus. Proves the mapping at model level. Does not wire StrongForce into the χ product (GAP-02 — honestly named).</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     RESURRECTION ARCHITECTURE
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">Layer 13 · MissionReturnOperator.lean</div>
+
+
+<h2 class="section-title">Resurrection as Mission Return</h2>
+
+
+<p class="body-text">The Resurrection is not resuscitation and not reset. These theorems prove the formal distinction: the substrate identity is preserved through incarnation, death, and resurrection, but the post-resurrection state carries the entropy and death contact records — making it richer than the pre-incarnate state, not identical to it.</p>
+
+
+<div class="pull">
+
+
+<p>Same substrate. Richer expression. The scar tissue is part of the proof.</p>
+
+
+</div>
+
+
+<div class="theorem-grid">
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 153–155</div>
+
+
+<div class="theorem-file">MissionReturnOperator.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">identity_preserved_through_full_arc</div>
+
+
+<div class="theorem-what">Substrate identity is unchanged across incarnation, death, and resurrection. The agent who entered is the agent who returned.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 158–160</div>
+
+
+<div class="theorem-file">MissionReturnOperator.lean</div>
+
+
+<span class="tag tag-proved">Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">entropy_and_death_contact_carried_through_resurrection</div>
+
+
+<div class="theorem-what">The resurrection state preserves both entropy contact AND death contact records from the cross. The proof of the mission is carried in the return.</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="theorem-card">
+
+
+<div class="theorem-id-col">
+
+
+<div class="theorem-num">Thm 161–162</div>
+
+
+<div class="theorem-file">MissionReturnOperator.lean</div>
+
+
+<span class="tag tag-rejected">Rejected / Proved</span>
+
+
+</div>
+
+
+<div class="theorem-body-col">
+
+
+<div class="theorem-name">resurrection_is_not_reset</div>
+
+
+<div class="theorem-what">Post-resurrection ≠ pre-incarnate. It is structurally richer — same substrate plus the finite record carried. This formally eliminates the interpretation of resurrection as erasure or return-to-original-state.</div>
+
+
+<div class="theorem-guard">Architecture is formally consistent. Lean does not prove the Resurrection happened. History must be tested separately against this structure.</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     LAYER SCORECARD
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">Full Corpus</div>
+
+
+<h2 class="section-title">16 Layers — What Each Proves</h2>
+
+
+<div class="scorecard">
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L0 · Core.lean</div>
+
+
+<div class="score-title">Dual-Substrate Foundation</div>
+
+
+<div class="score-body">Coupling states, irreversibility gate, χ product. The zero-collapse architecture — any single zero kills the product.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L3 · BridgeMatrix.lean</div>
+
+
+<div class="score-title">10-Factor Signature</div>
+
+
+<div class="score-body">All 10 canonical bridge rows valid. Wrong pairings rejected. Grace↔Faith swap caught by signature layer, not product layer.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L4 · MasterEquationInvariance.lean</div>
+
+
+<div class="score-title">Domain Invariance</div>
+
+
+<div class="score-body">χ(physical) = χ(spiritual) under canonical map. The equation belongs to neither register alone.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L5 · FieldBridgeControls.lean</div>
+
+
+<div class="score-title">Laws 3, 6, 7, 8 Collapse Proofs</div>
+
+
+<div class="score-body">EM/Truth, Information/Logos, Relativity/Frame, Quantum/Faith. Each bypass zeroes the relevant factor → zeroes χ globally.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L7 · IsomorphismTest.lean</div>
+
+
+<div class="score-title">Strong Force ≅ Love</div>
+
+
+<div class="score-body">Two-level isomorphism with adversarial false-positive testing. Coin model eliminated at RichLawIso level.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L8 · MaxwellTrinity.lean</div>
+
+
+<div class="score-title">Maxwell ≅ Trinity</div>
+
+
+<div class="score-body">5-condition structural spec. 5 false positives rejected. Every guard load-bearing. Strongest standalone result.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">⭐ Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L9 · JusticeMercyOperator.lean</div>
+
+
+<div class="score-title">Cross Uniqueness</div>
+
+
+<div class="score-body">The Cross is THE unique convergence configuration. Every alternative formally eliminated. Existence AND uniqueness proved.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">⭐ Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L10–L14 · Discipline Chain</div>
+
+
+<div class="score-title">Polarity, Sign, Christ, Resurrection, Memory</div>
+
+
+<div class="score-body">Two wrongs don't make a right. External conversion required. Identity preserved. Memory filtered at death. Heaven = coherent + eternal.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L15 · DependencyLattice.lean</div>
+
+
+<div class="score-title">Dependency Structure</div>
+
+
+<div class="score-body">44 edges across theology and physics lattices. Teaching order and dependency order formally diverge at justification/union.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+<div class="score-item">
+
+
+<div class="score-layer">L16 · HitRateDiscipline.lean</div>
+
+
+<div class="score-title">Statistical Integrity</div>
+
+
+<div class="score-body">Closed denominator. 8/10 bridges compiled. 90% claim blocked. All attempts and failures counted. No cherry-picking.</div>
+
+
+<div class="score-status"><span class="tag tag-proved">Proved</span></div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     HONEST GAPS
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">Named Gaps — Nothing Hidden</div>
+
+
+<h2 class="section-title">What the Corpus Has Not Yet Proved</h2>
+
+
+<p class="body-text">A framework that names its own gaps is more trustworthy than one that does not. Every gap here is an honest admission. The system does not claim what it has not proved. Gaps are either closable with more Lean or outside Lean's scope entirely.</p>
+
+
+<table class="gap-table">
+
+
+<thead>
+
+
+<tr>
+
+
+<th>Gap</th>
+
+
+<th>Description</th>
+
+
+<th>Status</th>
+
+
+</tr>
+
+
+</thead>
+
+
+<tbody>
+
+
+<tr>
+
+
+<td class="gap-id">GAP-01</td>
+
+
+<td>Laws 1, 2, 9, 10 — generic zero-collapse proved but domain-specific physical mechanisms not yet encoded. Gravity/Grace, Motion/Will, Weak Force/Moral Conservation, Coherence/Christ factor-level controls pending.</td>
+
+
+<td><span class="tag tag-gap">Closable</span></td>
+
+
+</tr>
+
+
+<tr>
+
+
+<td class="gap-id">GAP-02</td>
+
+
+<td>Law 4 factor-level bridge wiring. StrongForce ≅ Love proved at model level but no gate wiring into χ product.</td>
+
+
+<td><span class="tag tag-gap">Closable</span></td>
+
+
+</tr>
+
+
+<tr>
+
+
+<td class="gap-id">GAP-03</td>
+
+
+<td>Law 5 factor-level bridge wiring. Justice/Mercy operator proved independently, no formal wiring to Factor.S slot.</td>
+
+
+<td><span class="tag tag-gap">Closable</span></td>
+
+
+</tr>
+
+
+<tr>
+
+
+<td class="gap-id">GAP-04</td>
+
+
+<td>Category-theoretic upgrade of Mapping.lean. Currently a list-map equality. A proper functor would be stronger.</td>
+
+
+<td><span class="tag tag-gap">Closable</span></td>
+
+
+</tr>
+
+
+<tr>
+
+
+<td class="gap-id">GAP-05</td>
+
+
+<td>Cross-domain lattice coverage. Only 3 of ~20 theology edges have explicit physics witnesses.</td>
+
+
+<td><span class="tag tag-gap">Closable</span></td>
+
+
+</tr>
+
+
+<tr>
+
+
+<td class="gap-id">SPEC-01</td>
+
+
+<td>Faithful abstraction. Do the formal models faithfully represent historical Maxwell EM and Nicene Trinitarian doctrine? Domain judgment — outside Lean's scope.</td>
+
+
+<td><span class="tag tag-boundary">Spec Gap</span></td>
+
+
+</tr>
+
+
+<tr>
+
+
+<td class="gap-id">SPEC-03</td>
+
+
+<td>Empirical validation. The 5.7–6.35σ experimental correlations are not formalized in Lean. External data addresses this separately.</td>
+
+
+<td><span class="tag tag-boundary">Spec Gap</span></td>
+
+
+</tr>
+
+
+<tr>
+
+
+<td class="gap-id">SPEC-05</td>
+
+
+<td>Historical claims. Lean proves the repair structure is unique. Whether Jesus of Nazareth is that structure requires historical evidence — Lean cannot answer this question.</td>
+
+
+<td><span class="tag tag-boundary">Spec Gap</span></td>
+
+
+</tr>
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     DEPENDENCY CHAIN
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section">
+
+
+<div class="section-eyebrow">Architecture</div>
+
+
+<h2 class="section-title">Import Dependency Graph</h2>
+
+
+<p class="body-text">The 16 Lean files form a dependency tree. Each layer builds on the layers it imports. Standalone files prove their claims without depending on the trunk.</p>
+
+
+<div class="dep-chain">
+
+
+<span class="node">Core</span> <span class="arrow">→</span> <span class="node">BridgeMatrix</span> <span class="arrow">→</span> <span class="node">FieldBridgeControls</span> <span class="arrow">→</span> <span class="node">BridgeScoreDiscipline</span>
+
+
+<span class="arrow">→</span> <span class="node">PolarityDiscipline</span> <span class="arrow">→</span> <span class="node">MemoryPersistence</span> <span class="arrow">→</span> <span class="node">SignConversion</span> <span class="arrow">→</span> <span class="node">ChristOperator</span>
+
+
+<span class="branch">├──</span> <span class="node">HitRateDiscipline</span> <span class="arrow">(statistical integrity on top of operator)</span>
+
+
+<span class="branch">└──</span> <span class="node">MissionReturnOperator</span> <span class="arrow">(resurrection architecture)</span>
+
+
+<span class="node">BridgeMatrix</span> <span class="arrow">→</span> <span class="node">MasterEquationInvariance</span> <span class="arrow">(product + signature invariance)</span>
+
+
+<span style="color:var(--text-ghost)">Standalone (no imports):</span>
+
+
+<span class="node">StageMachine</span> · <span class="node">Mapping</span> · <span class="node">IsomorphismTest</span> · <span class="node">DependencyLattice</span>
+
+
+<span class="node">MaxwellTrinity</span> · <span class="node">JusticeMercyOperator</span>
+
+
+<span style="color:var(--text-ghost)">↑ MaxwellTrinity + JusticeMercyOperator are the strongest standalone results</span>
+
+
+</div>
+
+
+</div>
+
+
+ ══════════════════════════════════════════════════════════
+
+
+     CLOSING
+
+
+     ══════════════════════════════════════════════════════════ 
+
+
+<div class="section" style="border-bottom:none;">
+
+
+<div class="pull">
+
+
+<p>The formal layer is strongest when it is rejection-first. A positive mapping does not matter until the obvious false positives have been encoded and rejected under the same gate. Where Lean verifies that adversarial controls fail and the intended structure passes, the result is not merely "this can be made to fit." It is "under these definitions, the alternatives do not fit while this structure does."</p>
+
+
+</div>
+
+
+<p class="body-text">287 theorems. Zero sorry. Zero admit. The compiler does not check credentials. It checks structure. And the structure holds.</p>
+
+
+</div>
+
+
+<img src="/media/media/chatgpt-image-apr-28-2026-07-41-21-pm.webp" alt="Story visualization" class="tp-article-img"/>
+</article>
+
+
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+
+
+
+
+
+<!-- ═══════ FINAL AUDIT ═══════ -->
+
+
+<section class="tp-audit">
+
+
+<div class="tp-audit-box">
+
+
+<div class="tp-audit-head">Final Audit</div>
+
+
+<p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+
+
+<div class="tp-audit-covenant">
+
+
+<b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+
+
+    </div>
+
+
+<div class="tp-audit-grid">
+
+
+<div class="tp-audit-col tp-col-right">
+
+
+<h4>What We Got Right</h4>
+
+
+<ul>
+
+
+<li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+
+
+</ul>
+
+
+</div>
+
+
+<div class="tp-audit-col tp-col-over">
+
+
+<h4>What We Overstated</h4>
+
+
+<ul>
+
+
+<li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+
+
+</ul>
+
+
+</div>
+
+
+<div class="tp-audit-col tp-col-wrong">
+
+
+<h4>What We Got Wrong</h4>
+
+
+<ul>
+
+
+<li>Claims that need correction, tightening, or weaker formulation.</li>
+
+
+</ul>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+
+
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+
+
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+
+
+<section class="tp-subdomains">
+
+
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+
+
+<div class="tp-sub-title">The Math Behind the Claims</div>
+
+
+<div class="tp-sub-grid">
+
+
+<a class="tp-sub-card" href="/equation/"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+
+
+<a class="tp-sub-card" href="/isomorphism/"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+
+
+<a class="tp-sub-card" href="/proof-explorer/"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+
+
+<a class="tp-sub-card" href="/rigor/"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+
+
+<a class="tp-sub-card" href="/lean4/"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+
+
+</div>
+
+
+</section>
+
+
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+
+
+<section class="tp-subdomains">
+
+
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+
+
+<div class="tp-sub-title">Everything Else</div>
+
+
+<div class="tp-sub-grid">
+
+
+<a class="tp-sub-card" href="/glossary/"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+
+
+<a class="tp-sub-card" href="/media/"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+
+
+<a class="tp-sub-card" href="/podcast/"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+
+
+<a class="tp-sub-card" href="/audio/"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+
+
+<a class="tp-sub-card" href="/subdomains/"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+
+
+</div>
+
+
+</section>
+
+
+<!-- ═══════ SERIES NAV ═══════ -->
+
+
+<nav class="tp-series-nav">
+
+
+<div class="tp-series-strip">
+
+
+<a class="active" href="/">Home</a>
+
+
+<a href="/moral-decline/">MDA</a>
+
+
+<a href="/genesis-to-quantum/">GTQ</a>
+
+
+<a href="/Convergence_Series/">Convergence</a>
+
+
+<a href="/Logos_Papers/">Logos Papers</a>
+
+
+<a href="/one-page-stories/">One-Page Stories</a>
+
+
+<a class="soon" href="/consciousness/">Consciousness</a>
+
+
+<a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+
+
+</div>
+
+
+</nav>
+
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+
+
+<div class="tp-door">
+
+
+<div class="tp-door-num">15 + 15 = 100</div>
+
+
+<div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+
+
+<span class="tp-door-mark"></span>
+
+
+</div>
+
+
+<script>
+
+
+/* ═══════ AUTO-ACTIVE NAV ═══════
+
+
+   Detects current page URL and lights up the matching nav link.
+
+
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+
+
+   No manual active classes needed per page. */
+
+
+const NAV_MAP={
+
+
+  home:['/','/index.html','/home'],
+
+
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+
+
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+
+
+};
+
+
+const path=window.location.pathname;
+
+
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+
+
+  const key=link.dataset.nav;
+
+
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+
+
+    link.classList.add('active');
+
+
+  } else {
+
+
+    link.classList.remove('active');
+
+
+  }
+
+
+});
+
+
+
+
+
+/* Article domain profile — swap this array per article */
+
+
+const ARTICLE_PROFILE=[
+
+
+  {name:"Theology",pct:28,color:"#d4af37"},
+
+
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+
+
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+
+
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+
+
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+
+
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+
+
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+
+
+];
+
+
+
+
+
+/* Render classification bar */
+
+
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+
+
+if(bar&&tags){
+
+
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+
+
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+
+
+}
+
+
+
+
+
+/* Reading level tabs */
+
+
+document.querySelectorAll('.tp-level').forEach(btn=>{
+
+
+  btn.addEventListener('click',()=>{
+
+
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+
+
+    btn.classList.add('active');
+
+
+  });
+
+
+});
+
+
+
+
+
+/* Big nav hover spotlight effect */
+
+
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+
+
+  card.addEventListener('mousemove',e=>{
+
+
+    const rect=card.getBoundingClientRect();
+
+
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+
+
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+
+
+  });
+
+
+});
+
+
+
+
+
+/* Series nav auto-active (same pattern) */
+
+
+const SERIES_MAP={
+
+
+  '/':'Home','/index.html':'Home','/home':'Home',
+
+
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+
+
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+
+
+  '/one-page-stories/':'One-Page Stories'
+
+
+};
+
+
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+
+
+if(seriesName){
+
+
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+
+
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+
+
+    else{a.classList.remove('active');}
+
+
+  });
+
+
+}
+
+
+</script>
+
+
+<!-- MTL worker client -->
+
+
+<script defer="" src="/shared/js/mtl-worker-client.js"></script><script src="../../components/tp-header-lip.js"></script>
+<script src="../../components/audio-dock.js"></script>
+<script src="../../components/verification-bar.js"></script>
+<script src="../../components/reading-levels.js"></script>
+<script src="../../components/tp-scroll-chrome.js"></script>
 <script defer src="/shared/js/mtl-worker-client.js"></script>
-</body>
+</body>
+
+
 </html>
