@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cursor Header Entry | Practice Header</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cur-bg: #020507;
+      --cur-panel: rgba(7, 16, 26, 0.92);
+      --cur-line: rgba(60, 110, 200, 0.14);
+      --cur-text: #ccd8ee;
+      --cur-muted: #6e82a0;
+      --cur-gold: #d4af37;
+      --cur-cobalt: #2563be;
+      --cur-cobalt-l: #4d8fe0;
+      --cur-red: #ef4444;
+      --cur-blue: #3b82f6;
+      --cur-violet: #8b5cf6;
+      --cur-teal: #2dd4bf;
+      --cur-purple: #a855f7;
+      --cur-slate: #94a3b8;
+      --cur-row-h: 58px;
+      --cur-rail-h: 38px;
+      --cur-strip-h: 4px;
+      --cur-total-h: calc(var(--cur-row-h) + var(--cur-rail-h) + var(--cur-strip-h));
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding-top: var(--cur-total-h);
+      background:
+        radial-gradient(ellipse at 18% 0%, rgba(37, 99, 190, 0.14), transparent 36rem),
+        radial-gradient(ellipse at 82% 8%, rgba(212, 175, 55, 0.06), transparent 28rem),
+        var(--cur-bg);
+      color: var(--cur-text);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    a { color: inherit; }
+
+    .cur-header {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 1200;
+      background: var(--cur-panel);
+      border-bottom: 1px solid var(--cur-line);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(16px);
+    }
+
+    .cur-header::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(var(--cur-rail-h) + var(--cur-strip-h));
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(77, 143, 224, 0.35), transparent);
+      pointer-events: none;
+    }
+
+    .cur-main-row {
+      height: var(--cur-row-h);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0 1.25rem;
+    }
+
+    .cur-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .cur-brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      border: 1px solid rgba(77, 143, 224, 0.28);
+      background: linear-gradient(145deg, rgba(37, 99, 190, 0.22), rgba(2, 5, 7, 0.6));
+      color: var(--cur-gold);
+      font: 600 1.15rem/1 "Crimson Text", Georgia, serif;
+      box-shadow: 0 0 18px rgba(37, 99, 190, 0.2);
+    }
+
+    .cur-brand-name {
+      font: 600 0.58rem/1 "JetBrains Mono", monospace;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--cur-muted);
+      white-space: nowrap;
+    }
+
+    .cur-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--cur-line);
+      flex-shrink: 0;
+    }
+
+    .cur-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .cur-nav a,
+    .cur-nav button {
+      height: 32px;
+      padding: 0 0.7rem;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--cur-muted);
+      font: 600 0.72rem/1 Inter, sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .cur-nav a:hover,
+    .cur-nav button:hover {
+      color: var(--cur-text);
+      border-color: var(--cur-line);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .cur-nav .active {
+      color: var(--cur-cobalt-l);
+      border-color: rgba(77, 143, 224, 0.35);
+      background: rgba(37, 99, 190, 0.12);
+      box-shadow: inset 0 -2px 0 var(--cur-cobalt-l);
+    }
+
+    .cur-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .cur-levels {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      border: 1px solid var(--cur-line);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .cur-levels button {
+      height: 28px;
+      padding: 0 0.55rem;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--cur-muted);
+      font: 700 0.58rem/1 "JetBrains Mono", monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .cur-levels button:hover { color: var(--cur-text); }
+
+    .cur-levels .active {
+      color: var(--cur-gold);
+      border-color: rgba(212, 175, 55, 0.28);
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .cur-icon-btn {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--cur-line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--cur-muted);
+      font: 700 0.62rem/1 "JetBrains Mono", monospace;
+      cursor: pointer;
+    }
+
+    .cur-icon-btn:hover {
+      color: var(--cur-cobalt-l);
+      border-color: rgba(77, 143, 224, 0.4);
+    }
+
+    .cur-menu-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cur-menu-toggle span {
+      display: block;
+      width: 14px;
+      height: 2px;
+      background: var(--cur-muted);
+      border-radius: 1px;
+    }
+
+  /* ── Domain rail: metrics + pills in one ledger ── */
+    .cur-domain-row {
+      height: var(--cur-rail-h);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: stretch;
+      gap: 0;
+      padding: 0 1.25rem;
+      border-top: 1px solid rgba(60, 110, 200, 0.08);
+      overflow: hidden;
+    }
+
+    .cur-metric-ledger {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-shrink: 0;
+      border-right: 1px solid var(--cur-line);
+      padding-right: 0.85rem;
+      margin-right: 0.85rem;
+    }
+
+    .cur-metric-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      padding: 0 0.35rem;
+      position: relative;
+    }
+
+    .cur-metric-cell::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      margin-left: -3px;
+      border-radius: 50%;
+      background: var(--cur-metric-color, #fff);
+      box-shadow: 0 0 10px var(--cur-metric-glow, rgba(255, 255, 255, 0.2));
+      opacity: 0.85;
+    }
+
+    .cur-metric-num {
+      font: 800 1.05rem/1 "JetBrains Mono", monospace;
+      color: var(--cur-metric-color, var(--cur-text));
+      text-shadow: 0 0 12px var(--cur-metric-glow, transparent);
+    }
+
+    .cur-metric-lbl {
+      margin-top: 2px;
+      font: 600 0.45rem/1 "JetBrains Mono", monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cur-muted);
+    }
+
+    .cur-m-domains { --cur-metric-color: var(--cur-purple); --cur-metric-glow: rgba(168, 85, 247, 0.35); }
+    .cur-m-laws { --cur-metric-color: var(--cur-gold); --cur-metric-glow: rgba(212, 175, 55, 0.3); }
+    .cur-m-coherence { --cur-metric-color: var(--cur-cobalt-l); --cur-metric-glow: rgba(77, 143, 224, 0.35); }
+    .cur-m-claims { --cur-metric-color: var(--cur-violet); --cur-metric-glow: rgba(139, 92, 246, 0.35); }
+
+    .cur-pill-track {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--cur-cobalt) transparent;
+      padding: 4px 0;
+    }
+
+    .cur-pill {
+      height: 24px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 0.65rem;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--cur-pill-color, var(--cur-muted));
+      font: 700 0.58rem/1 "JetBrains Mono", monospace;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0.88;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    .cur-pill:hover { opacity: 1; background: rgba(255, 255, 255, 0.05); }
+    .cur-pill.active { background: currentColor; opacity: 1; }
+    .cur-pill.active span { color: #020507; }
+
+    .cur-p-logic { --cur-pill-color: var(--cur-red); }
+    .cur-p-physics { --cur-pill-color: var(--cur-blue); }
+    .cur-p-info { --cur-pill-color: var(--cur-violet); }
+    .cur-p-theology { --cur-pill-color: var(--cur-gold); }
+    .cur-p-psych { --cur-pill-color: var(--cur-purple); }
+    .cur-p-phil { --cur-pill-color: var(--cur-slate); }
+
+    .cur-color-strip {
+      height: var(--cur-strip-h);
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr 0.9fr 0.95fr 0.8fr;
+    }
+
+    .cur-color-strip span:nth-child(1) { background: var(--cur-red); }
+    .cur-color-strip span:nth-child(2) { background: var(--cur-blue); }
+    .cur-color-strip span:nth-child(3) { background: var(--cur-violet); }
+    .cur-color-strip span:nth-child(4) { background: var(--cur-gold); }
+    .cur-color-strip span:nth-child(5) { background: var(--cur-purple); }
+    .cur-color-strip span:nth-child(6) { background: var(--cur-slate); }
+
+    /* Panels */
+    .cur-panel {
+      position: fixed;
+      top: calc(var(--cur-total-h) + 10px);
+      right: 1.25rem;
+      width: min(400px, calc(100vw - 2.5rem));
+      display: none;
+      border: 1px solid var(--cur-line);
+      border-radius: 10px;
+      background: rgba(4, 10, 18, 0.98);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+      padding: 1rem;
+      z-index: 1199;
+    }
+
+    .cur-panel.open { display: block; }
+
+    .cur-panel h2 {
+      margin: 0 0 0.75rem;
+      font: 700 0.68rem/1 "JetBrains Mono", monospace;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--cur-cobalt-l);
+    }
+
+    .cur-panel-list {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .cur-panel-list a {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid rgba(60, 110, 200, 0.12);
+      border-radius: 7px;
+      background: rgba(12, 24, 36, 0.6);
+      text-decoration: none;
+      font-size: 0.82rem;
+      color: var(--cur-text);
+    }
+
+    .cur-panel-list small { color: var(--cur-muted); }
+
+    .cur-proof-panel {
+      left: 1.25rem;
+      right: 1.25rem;
+      width: auto;
+    }
+
+    .cur-proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+
+    .cur-proof-card {
+      border: 1px solid var(--cur-metric-color, var(--cur-line));
+      border-radius: 8px;
+      padding: 0.85rem;
+      background: linear-gradient(160deg, rgba(37, 99, 190, 0.08), rgba(0, 0, 0, 0.2));
+    }
+
+    .cur-proof-card strong {
+      display: block;
+      font: 800 1.5rem/1 "JetBrains Mono", monospace;
+      color: var(--cur-metric-color, var(--cur-text));
+      margin-bottom: 0.35rem;
+    }
+
+    .cur-proof-card span {
+      font-size: 0.72rem;
+      color: var(--cur-muted);
+      line-height: 1.5;
+    }
+
+    .cur-m-domains.cur-proof-card { --cur-metric-color: var(--cur-purple); }
+    .cur-m-laws.cur-proof-card { --cur-metric-color: var(--cur-gold); }
+    .cur-m-coherence.cur-proof-card { --cur-metric-color: var(--cur-cobalt-l); }
+    .cur-m-claims.cur-proof-card { --cur-metric-color: var(--cur-violet); }
+
+    /* Demo body */
+    .cur-demo {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem 3rem;
+    }
+
+    .cur-demo-kicker {
+      font: 600 0.58rem/1 "JetBrains Mono", monospace;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cur-cobalt-l);
+      margin-bottom: 1rem;
+    }
+
+    .cur-demo h1 {
+      margin: 0 0 1rem;
+      font: 400 clamp(2rem, 5vw, 3.25rem)/1.1 "Crimson Text", Georgia, serif;
+      color: #fff;
+    }
+
+    .cur-demo p {
+      max-width: 640px;
+      color: var(--cur-muted);
+      font-size: 1.02rem;
+      line-height: 1.85;
+    }
+
+    .cur-label-card {
+      margin-top: 2rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--cur-line);
+      border-radius: 8px;
+      background: rgba(12, 24, 36, 0.45);
+      color: var(--cur-muted);
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    .cur-label-card code {
+      color: var(--cur-gold);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 1024px) {
+      .cur-brand-name,
+      .cur-divider,
+      .cur-nav a,
+      .cur-nav button:not([data-panel="series"]) {
+        display: none;
+      }
+
+      .cur-menu-toggle { display: inline-flex; }
+
+      .cur-levels button:not(.active) { display: none; }
+
+      .cur-metric-lbl { display: none; }
+
+      .cur-metric-cell { min-width: 34px; }
+
+      .cur-proof-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .cur-main-row { padding: 0 0.75rem; }
+
+      .cur-domain-row {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: var(--cur-rail-h);
+        padding: 0.35rem 0.75rem;
+      }
+
+      .cur-metric-ledger {
+        border-right: 0;
+        margin-right: 0;
+        padding-right: 0;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid var(--cur-line);
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .cur-metric-cell::after { display: none; }
+
+      body {
+        --cur-total-h: calc(var(--cur-row-h) + 52px + var(--cur-strip-h));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="cur-header" data-header-entry="cursor" data-header-author="Cursor" data-slot="top-frame">
+    <div class="cur-main-row" data-slot="top-frame-main-row">
+      <a class="cur-brand" href="/index.html" data-slot="brand-home" aria-label="Faith Through Physics home">
+        <span class="cur-brand-mark" data-slot="brand-mark" aria-hidden="true">χ</span>
+        <span class="cur-brand-name" data-slot="brand-name">Faith Through Physics</span>
+      </a>
+      <span class="cur-divider" aria-hidden="true"></span>
+      <nav class="cur-nav" aria-label="Primary navigation" data-slot="primary-nav">
+        <a class="active" href="/index.html" data-slot="nav-home">Home</a>
+        <a href="/master-equation/" data-slot="nav-mtl">MTL</a>
+        <a href="/proof-explorer/" data-slot="nav-proof">Proof</a>
+        <button type="button" data-panel="series" data-slot="nav-series">Series</button>
+      </nav>
+      <div class="cur-actions" data-slot="top-frame-actions">
+        <div class="cur-levels" aria-label="Reading level" data-slot="reading-level-control">
+          <button type="button" data-slot="reading-level-high-school">HS</button>
+          <button type="button" class="active" data-slot="reading-level-college">College</button>
+          <button type="button" data-slot="reading-level-phd">PhD</button>
+        </div>
+        <button type="button" class="cur-icon-btn" data-panel="search" data-slot="search-command" title="Search (Ctrl+K)">⌕</button>
+        <button type="button" class="cur-icon-btn" data-panel="proof" data-slot="proof-dashboard-toggle" title="Proof dashboard">▦</button>
+        <button type="button" class="cur-icon-btn cur-menu-toggle" data-panel="series" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="cur-domain-row" aria-label="Domains and page metrics" data-slot="domain-pill-row">
+      <div class="cur-metric-ledger" data-slot="domain-row-metric-numbers">
+        <div class="cur-metric-cell cur-m-domains">
+          <span class="cur-metric-num" data-slot="metric-domains-number">6</span>
+          <span class="cur-metric-lbl">Domains</span>
+        </div>
+        <div class="cur-metric-cell cur-m-laws">
+          <span class="cur-metric-num" data-slot="metric-laws-number">10</span>
+          <span class="cur-metric-lbl">Laws</span>
+        </div>
+        <div class="cur-metric-cell cur-m-coherence">
+          <span class="cur-metric-num" data-slot="metric-coherence-number">8</span>
+          <span class="cur-metric-lbl">χ</span>
+        </div>
+        <div class="cur-metric-cell cur-m-claims">
+          <span class="cur-metric-num" data-slot="metric-claims-number">9</span>
+          <span class="cur-metric-lbl">Claims</span>
+        </div>
+      </div>
+      <div class="cur-pill-track" data-slot="domain-pills">
+        <button type="button" class="cur-pill cur-p-logic" data-slot="domain-logic-mathematics"><span>Logic / Math</span></button>
+        <button type="button" class="cur-pill cur-p-physics active" data-slot="domain-physics"><span>Physics</span></button>
+        <button type="button" class="cur-pill cur-p-info" data-slot="domain-information-theory"><span>Information</span></button>
+        <button type="button" class="cur-pill cur-p-theology" data-slot="domain-theology"><span>Theology</span></button>
+        <button type="button" class="cur-pill cur-p-psych" data-slot="domain-developmental-psychology"><span>Psychology</span></button>
+        <button type="button" class="cur-pill cur-p-phil" data-slot="domain-philosophy"><span>Philosophy</span></button>
+      </div>
+    </div>
+
+    <div class="cur-color-strip" data-slot="domain-color-strip" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </header>
+
+  <script type="application/json" id="header-entry-labels">
+  {
+    "entry": "cursor",
+    "author": "Cursor",
+    "page": "cursor-header.html",
+    "topFrame": "top-frame",
+    "brand": { "home": "brand-home", "mark": "brand-mark", "name": "brand-name" },
+    "nav": { "home": "nav-home", "mtl": "nav-mtl", "proof": "nav-proof", "series": "nav-series" },
+    "readingLevels": {
+      "highSchool": "reading-level-high-school",
+      "college": "reading-level-college",
+      "phd": "reading-level-phd"
+    },
+    "domains": {
+      "metricNumbers": "domain-row-metric-numbers",
+      "pillGroup": "domain-pills",
+      "logicMathematics": "domain-logic-mathematics",
+      "physics": "domain-physics",
+      "informationTheory": "domain-information-theory",
+      "theology": "domain-theology",
+      "developmentalPsychology": "domain-developmental-psychology",
+      "philosophy": "domain-philosophy"
+    },
+    "metrics": {
+      "domains": "metric-domains-number",
+      "tenLaws": "metric-laws-number",
+      "coherence": "metric-coherence-number",
+      "claims": "metric-claims-number"
+    },
+    "actions": { "search": "search-command", "proofDashboard": "proof-dashboard-toggle" }
+  }
+  </script>
+
+  <section class="cur-panel" id="seriesPanel" data-slot="series-panel" aria-label="Series panel">
+    <h2>Series</h2>
+    <div class="cur-panel-list">
+      <a href="/blue/"><span>Blue Series</span><small>Physics + truth</small></a>
+      <a href="/moral-decline/"><span>Moral Decline</span><small>MDA</small></a>
+      <a href="/genesis-to-quantum/"><span>Genesis to Quantum</span><small>GTQ</small></a>
+      <a href="/formal-papers/"><span>Formal Papers</span><small>Proof layer</small></a>
+    </div>
+  </section>
+
+  <section class="cur-panel cur-proof-panel" id="proofPanel" data-slot="proof-dashboard-panel" aria-label="Proof metrics panel">
+    <h2>Proof Dashboard</h2>
+    <div class="cur-proof-grid" data-slot="proof-card-grid">
+      <div class="cur-proof-card cur-m-domains"><strong>6</strong><span>Active domains on this page.</span></div>
+      <div class="cur-proof-card cur-m-laws"><strong>10</strong><span>Ten Laws mapping target.</span></div>
+      <div class="cur-proof-card cur-m-coherence"><strong>8</strong><span>Coherence score (χ).</span></div>
+      <div class="cur-proof-card cur-m-claims"><strong>9</strong><span>Claims surfaced for review.</span></div>
+    </div>
+  </section>
+
+  <section class="cur-panel" id="searchPanel" data-slot="search-panel" aria-label="Search panel">
+    <h2>Search</h2>
+    <div class="cur-panel-list">
+      <a href="/site-index.html"><span>Site Index</span><small>All pages</small></a>
+      <a href="/glossary/"><span>Glossary</span><small>300+ terms</small></a>
+    </div>
+  </section>
+
+  <main class="cur-demo" data-slot="demo-body">
+    <div class="cur-demo-kicker" data-slot="entry-kicker">Cursor · Practice Header</div>
+    <h1 data-slot="entry-title">Coherence Rail</h1>
+    <p data-slot="entry-summary">
+      Blue-native cobalt palette, χ mark in a lit frame, and a domain rail where metric numbers sit in a ledger with colored anchor dots that line up visually with the pill row and color strip below. Built for article pages like Maxwell–Truth — not squeezing content width, full slot map for API wiring.
+    </p>
+    <div class="cur-label-card" data-slot="entry-label-card">
+      Entry: <code>cursor</code> · Page: <code>cursor-header.html</code> · Slots: <code>#header-entry-labels</code>
+    </div>
+  </main>
+
+  <script>
+    const panels = {
+      series: document.getElementById("seriesPanel"),
+      proof: document.getElementById("proofPanel"),
+      search: document.getElementById("searchPanel")
+    };
+
+    function closePanels() {
+      Object.values(panels).forEach((p) => p.classList.remove("open"));
+    }
+
+    document.querySelectorAll("[data-panel]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const panel = panels[btn.dataset.panel];
+        const open = panel && !panel.classList.contains("open");
+        closePanels();
+        if (open) panel.classList.add("open");
+      });
+    });
+
+    document.querySelectorAll(".cur-levels button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".cur-levels button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    document.querySelectorAll(".cur-pill").forEach((pill) => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".cur-pill").forEach((p) => p.classList.remove("active"));
+        pill.classList.add("active");
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".cur-panel")) closePanels();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePanels();
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        closePanels();
+        panels.search.classList.add("open");
+      }
+    });
+  </script>
+</body>
+</html>

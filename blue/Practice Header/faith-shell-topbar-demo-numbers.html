@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faith Through Physics Top Frame Demo</title>
+  <style>
+    :root{
+      --bg:#050505;
+      --panel:#0b0b0b;
+      --panel2:#111;
+      --line:#242424;
+      --line2:#333;
+      --text:#e8e5dd;
+      --muted:#858585;
+      --dim:#555;
+      --gold:#d4af37;
+      --blue:#4a9eff;
+      --red:#d45b6a;
+      --violet:#8b6fe8;
+      --teal:#2dd4bf;
+      --purple:#b783ff;
+      --bar-h:64px;
+      --domain-h:32px;
+      color-scheme:dark;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 20% 0%,rgba(74,158,255,.11),transparent 34rem),
+        radial-gradient(circle at 80% 20%,rgba(212,175,55,.09),transparent 32rem),
+        var(--bg);
+      color:var(--text);
+      font-family:Inter,Segoe UI,system-ui,sans-serif;
+      padding-top:calc(var(--bar-h) + var(--domain-h));
+    }
+    a{color:inherit}
+    .ftp-frame{
+      position:fixed;
+      inset:0 0 auto;
+      z-index:1000;
+      background:rgba(5,5,5,.96);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 12px 40px rgba(0,0,0,.48);
+      backdrop-filter:blur(14px);
+    }
+    .ftp-main{
+      height:var(--bar-h);
+      display:flex;
+      align-items:center;
+      gap:20px;
+      padding:0 28px;
+      border-bottom:1px solid #151515;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:230px;
+      text-decoration:none;
+    }
+    .brand-mark{
+      color:var(--gold);
+      font-size:26px;
+      line-height:1;
+      font-family:Georgia,serif;
+    }
+    .brand-name{
+      font-family:"JetBrains Mono",Consolas,monospace;
+      font-size:12px;
+      letter-spacing:.24em;
+      text-transform:uppercase;
+      color:#9b9b9b;
+      white-space:nowrap;
+    }
+    .divider{
+      width:1px;
+      height:28px;
+      background:#262626;
+      flex:0 0 auto;
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      min-width:0;
+      flex:1 1 auto;
+    }
+    .nav a,.nav button,.levels button,.icon-btn,.search{
+      height:34px;
+      border:1px solid transparent;
+      border-radius:7px;
+      background:transparent;
+      color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:0 12px;
+      font:600 12px/1 Inter,Segoe UI,sans-serif;
+      text-decoration:none;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .nav a:hover,.nav button:hover,.levels button:hover,.icon-btn:hover,.search:hover{
+      color:var(--text);
+      border-color:var(--line);
+      background:rgba(255,255,255,.04);
+    }
+    .nav .active{
+      color:var(--gold);
+      background:rgba(212,175,55,.08);
+      border-color:rgba(212,175,55,.25);
+    }
+    .right{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex:0 0 auto;
+    }
+    .levels{
+      display:flex;
+      align-items:center;
+      border:1px solid var(--line);
+      background:#101010;
+      border-radius:8px;
+      padding:3px;
+      gap:2px;
+    }
+    .levels button{
+      height:30px;
+      padding:0 13px;
+      font-family:"JetBrains Mono",Consolas,monospace;
+      font-size:10px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      border-radius:6px;
+    }
+    .levels button.active{
+      color:var(--gold);
+      border-color:rgba(212,175,55,.25);
+      background:rgba(212,175,55,.1);
+    }
+    .search{
+      min-width:76px;
+      justify-content:center;
+      border-color:var(--line);
+      color:#737373;
+      font-family:"JetBrains Mono",Consolas,monospace;
+      font-size:11px;
+    }
+    .icon-btn{
+      width:34px;
+      justify-content:center;
+      padding:0;
+      border-color:var(--line);
+    }
+    .domain-row{
+      height:var(--domain-h);
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:8px;
+      padding:0 28px;
+      overflow:hidden;
+    }
+    .pill{
+      height:23px;
+      display:inline-flex;
+      align-items:center;
+      border-radius:99px;
+      border:1px solid currentColor;
+      padding:0 11px;
+      font-family:"JetBrains Mono",Consolas,monospace;
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      opacity:.84;
+      cursor:pointer;
+      background:rgba(255,255,255,.02);
+    }
+    .logic{color:var(--red)}
+    .physics{color:var(--blue)}
+    .info{color:var(--violet)}
+    .theology{color:var(--gold)}
+    .psych{color:var(--purple)}
+    .phil{color:#a6adbb}
+    .color-strip{
+      height:5px;
+      display:grid;
+      grid-template-columns:1.1fr 1fr 1fr .9fr .95fr .8fr;
+    }
+    .color-strip span:nth-child(1){background:rgba(212,91,106,.7)}
+    .color-strip span:nth-child(2){background:rgba(74,158,255,.7)}
+    .color-strip span:nth-child(3){background:rgba(139,111,232,.7)}
+    .color-strip span:nth-child(4){background:rgba(212,175,55,.72)}
+    .color-strip span:nth-child(5){background:rgba(183,131,255,.65)}
+    .color-strip span:nth-child(6){background:rgba(166,173,187,.65)}
+    .menu{
+      position:fixed;
+      top:calc(var(--bar-h) + var(--domain-h) + 10px);
+      right:28px;
+      width:min(520px,calc(100vw - 32px));
+      max-height:calc(100vh - 130px);
+      overflow:auto;
+      background:rgba(10,10,10,.98);
+      border:1px solid var(--line2);
+      border-radius:10px;
+      box-shadow:0 26px 80px rgba(0,0,0,.62);
+      padding:18px;
+      display:none;
+    }
+    .menu.proof-tray{
+      left:36px;
+      right:36px;
+      width:auto;
+      max-height:calc(100vh - 128px);
+      border-color:rgba(212,175,55,.55);
+      border-radius:0 0 10px 10px;
+      padding:28px 30px 24px;
+    }
+    .menu.open{display:block}
+    .menu h3{
+      margin:0 0 12px;
+      color:var(--gold);
+      font-family:"JetBrains Mono",Consolas,monospace;
+      font-size:13px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .proof-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .proof-head h3{margin:0}
+    .proof-status{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#a9a9a9;
+      font:700 12px/1 "JetBrains Mono",Consolas,monospace;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+    .proof-status-dot{
+      width:34px;
+      height:34px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(45,212,191,.55);
+      border-radius:7px;
+      color:var(--teal);
+      background:rgba(45,212,191,.08);
+      font-size:18px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .proof-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(260px,1fr));
+      gap:18px;
+    }
+    .number-rail{
+      display:grid;
+      grid-template-columns:repeat(6,minmax(0,1fr));
+      gap:10px;
+      margin:0 0 18px;
+    }
+    .rail-number{
+      height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--metric-color,#333);
+      border-radius:9px;
+      color:var(--metric-color,#ddd);
+      background:var(--metric-fill,rgba(255,255,255,.04));
+      box-shadow:0 0 24px var(--metric-glow,rgba(255,255,255,.06));
+      font:900 28px/1 "JetBrains Mono",Consolas,monospace;
+    }
+    .card{
+      border:1px solid #242424;
+      background:#121212;
+      border-radius:8px;
+      padding:14px;
+      min-height:86px;
+    }
+    .metric-card{
+      position:relative;
+      min-height:150px;
+      padding:24px 24px 20px;
+      overflow:hidden;
+      border-color:var(--metric-color,#333);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.015),0 18px 44px rgba(0,0,0,.24);
+    }
+    .metric-card::before{
+      content:"";
+      position:absolute;
+      inset:0 auto 0 0;
+      width:5px;
+      background:var(--metric-color,#333);
+      opacity:.95;
+    }
+    .metric-card::after{
+      content:"";
+      position:absolute;
+      inset:-40% -20% auto auto;
+      width:180px;
+      height:180px;
+      background:radial-gradient(circle,var(--metric-glow,rgba(255,255,255,.08)),transparent 66%);
+      pointer-events:none;
+    }
+    .metric-card .metric-title{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0 0 0 0);
+      white-space:nowrap;
+      border:0;
+    }
+    .metric-number{
+      position:absolute;
+      top:16px;
+      right:18px;
+      min-width:48px;
+      height:48px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--metric-color,#333);
+      border-radius:9px;
+      color:var(--metric-color,#ddd);
+      background:var(--metric-fill,rgba(255,255,255,.04));
+      font:800 24px/1 "JetBrains Mono",Consolas,monospace;
+      box-shadow:0 0 24px var(--metric-glow,rgba(255,255,255,.06));
+    }
+    .metric-lines{
+      display:grid;
+      gap:9px;
+      color:#a8a8a8;
+      font-size:15px;
+    }
+    .metric-line{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      padding-bottom:6px;
+    }
+    .metric-line strong{
+      color:#e7e7e7;
+      font-weight:700;
+    }
+    .metric-axioms{--metric-color:var(--red);--metric-fill:rgba(212,91,106,.08);--metric-glow:rgba(212,91,106,.16)}
+    .metric-laws{--metric-color:var(--gold);--metric-fill:rgba(212,175,55,.08);--metric-glow:rgba(212,175,55,.16)}
+    .metric-coherence{--metric-color:var(--blue);--metric-fill:rgba(74,158,255,.08);--metric-glow:rgba(74,158,255,.16)}
+    .metric-claims{--metric-color:var(--violet);--metric-fill:rgba(139,111,232,.09);--metric-glow:rgba(139,111,232,.18)}
+    .metric-isomorphisms{--metric-color:var(--teal);--metric-fill:rgba(45,212,191,.08);--metric-glow:rgba(45,212,191,.16)}
+    .metric-domains{--metric-color:var(--purple);--metric-fill:rgba(183,131,255,.09);--metric-glow:rgba(183,131,255,.18)}
+    .card .label{
+      color:#a5a5a5;
+      font-size:13px;
+      margin-bottom:6px;
+    }
+    .card .value{
+      color:#e8e8e8;
+      font:700 18px/1.2 "JetBrains Mono",Consolas,monospace;
+      text-align:right;
+    }
+    .laws{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin-top:8px;
+    }
+    .law{
+      height:28px;
+      min-width:38px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid #303030;
+      border-radius:5px;
+      color:#898989;
+      background:#181818;
+      font:12px "JetBrains Mono",Consolas,monospace;
+    }
+    .law.on{color:var(--gold);border-color:rgba(212,175,55,.35);background:rgba(212,175,55,.08)}
+    .metric-laws .law.on{
+      color:var(--gold);
+      border-color:rgba(212,175,55,.5);
+      background:rgba(212,175,55,.12);
+      box-shadow:0 0 16px rgba(212,175,55,.12);
+    }
+    .proof-link{
+      margin-top:14px;
+      display:inline-flex;
+      align-items:center;
+      height:36px;
+      padding:0 14px;
+      border:1px solid var(--gold);
+      border-radius:7px;
+      color:var(--gold);
+      text-decoration:none;
+      font-size:13px;
+    }
+    .series-list{
+      display:grid;
+      gap:7px;
+    }
+    .series-list a{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 11px;
+      border:1px solid #242424;
+      border-radius:7px;
+      text-decoration:none;
+      background:#111;
+      color:#ddd;
+      font-size:13px;
+    }
+    .series-list small{color:#777}
+    .demo{
+      max-width:980px;
+      margin:0 auto;
+      padding:80px 24px;
+    }
+    .demo h1{
+      margin:0 0 16px;
+      font-family:Georgia,serif;
+      font-size:clamp(34px,6vw,72px);
+      font-weight:400;
+      line-height:1;
+    }
+    .demo p{
+      color:#aaa;
+      max-width:680px;
+      line-height:1.8;
+      font-size:17px;
+    }
+    .note{
+      margin-top:34px;
+      border:1px solid #242424;
+      background:rgba(255,255,255,.03);
+      border-radius:10px;
+      padding:18px;
+      color:#aaa;
+    }
+    @media(max-width:980px){
+      .ftp-main{padding:0 14px;gap:10px}
+      .brand{min-width:auto}
+      .brand-name{display:none}
+      .divider{display:none}
+      .nav a{display:none}
+      .nav button{display:inline-flex}
+      .levels{display:none}
+      .domain-row{justify-content:flex-start;padding:0 14px;overflow-x:auto}
+      .search{display:none}
+      .grid{grid-template-columns:1fr}
+      .menu.proof-tray{left:12px;right:12px;padding:20px 16px}
+      .number-rail{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .proof-grid{grid-template-columns:1fr}
+      .proof-head{align-items:flex-start;flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <header class="ftp-frame" id="topFrame">
+    <div class="ftp-main">
+      <a class="brand" href="/index.html">
+        <span class="brand-mark">χ</span>
+        <span class="brand-name">Faith Thru Physics</span>
+      </a>
+      <span class="divider"></span>
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="active" href="/index.html">Home</a>
+        <a href="/master-equation/">MTL</a>
+        <a href="/proof-explorer/">Proof</a>
+        <button type="button" data-panel="series">Series ▾</button>
+      </nav>
+      <div class="right">
+        <div class="levels" aria-label="Reading level">
+          <button type="button">High School</button>
+          <button type="button" class="active">College</button>
+          <button type="button">PhD</button>
+        </div>
+        <button type="button" class="search" data-panel="search">⌘K</button>
+        <button type="button" class="icon-btn" data-panel="proof" aria-label="Proof metrics">☷</button>
+      </div>
+    </div>
+    <div class="domain-row" aria-label="Domains">
+      <button class="pill logic">Logic/Mathematics</button>
+      <button class="pill physics">Physics</button>
+      <button class="pill info">Information Theory</button>
+      <button class="pill theology">Theology</button>
+      <button class="pill psych">Developmental Psychology</button>
+      <button class="pill phil">Philosophy</button>
+    </div>
+    <div class="color-strip" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  </header>
+
+  <section class="menu" id="seriesPanel" aria-label="Series panel">
+    <h3>Series</h3>
+    <div class="series-list">
+      <a href="/blue/"><span>Blue Series</span><small>Physics + truth</small></a>
+      <a href="/moral-decline/"><span>Moral Decline</span><small>MDA</small></a>
+      <a href="/genesis-to-quantum/"><span>Genesis to Quantum</span><small>GTQ</small></a>
+      <a href="/consciousness/"><span>Consciousness</span><small>χ field</small></a>
+      <a href="/formal-papers/"><span>Formal Papers</span><small>Proof layer</small></a>
+    </div>
+  </section>
+
+  <section class="menu proof-tray" id="proofPanel" aria-label="Proof metrics panel">
+    <div class="proof-head">
+      <h3>Proof Dashboard</h3>
+      <div class="proof-status"><span>Verified</span><span class="proof-status-dot">-</span></div>
+    </div>
+    <div class="number-rail" aria-label="Color-coded proof metric numbers">
+      <span class="rail-number metric-axioms" title="Axiom coverage">5</span>
+      <span class="rail-number metric-laws" title="Ten laws mapping">9</span>
+      <span class="rail-number metric-coherence" title="Chi coherence score">9</span>
+      <span class="rail-number metric-claims" title="Claims">23</span>
+      <span class="rail-number metric-isomorphisms" title="Isomorphisms">1</span>
+      <span class="rail-number metric-domains" title="Domains">6</span>
+    </div>
+    <div class="proof-grid">
+      <article class="card metric-card metric-axioms">
+        <div class="metric-number">5</div>
+        <h4 class="metric-title">Axiom Coverage</h4>
+        <div class="metric-lines">
+          <div class="metric-line"><span>Axioms tested</span><strong>5/188</strong></div>
+          <div class="metric-line"><span>Coverage</span><strong>2.7%</strong></div>
+          <div class="metric-line"><span>Layer</span><strong>Core</strong></div>
+        </div>
+      </article>
+      <article class="card metric-card metric-laws">
+        <div class="metric-number">9</div>
+        <h4 class="metric-title">Ten Laws Mapping</h4>
+        <div class="laws">
+          <span class="law on">L1</span><span class="law on">L2</span><span class="law on">L3</span><span class="law on">L4</span><span class="law on">L5</span>
+          <span class="law on">L6</span><span class="law on">L7</span><span class="law on">L8</span><span class="law on">L9</span><span class="law">L10</span>
+        </div>
+      </article>
+      <article class="card metric-card metric-coherence">
+        <div class="metric-number">9</div>
+        <h4 class="metric-title">Chi Coherence Score</h4>
+        <div class="metric-lines">
+          <div class="metric-line"><span>Raw</span><strong>9</strong></div>
+          <div class="metric-line"><span>Normalized</span><strong>9/10</strong></div>
+          <div class="metric-line"><span>Fruits</span><strong>9/9</strong></div>
+        </div>
+      </article>
+      <article class="card metric-card metric-claims">
+        <div class="metric-number">23</div>
+        <h4 class="metric-title">Claims</h4>
+        <div class="metric-lines">
+          <div class="metric-line"><span>Total</span><strong>23</strong></div>
+          <div class="metric-line"><span>Load-bearing</span><strong>7</strong></div>
+          <div class="metric-line"><span>Kill conditions</span><strong>3</strong></div>
+        </div>
+      </article>
+      <article class="card metric-card metric-isomorphisms">
+        <div class="metric-number">1</div>
+        <h4 class="metric-title">Isomorphisms</h4>
+        <div class="metric-lines">
+          <div class="metric-line"><span>Bridges</span><strong>1</strong></div>
+          <div class="metric-line"><span>Physics</span><strong>Maxwell</strong></div>
+          <div class="metric-line"><span>MEQ vars</span><strong>1/10</strong></div>
+        </div>
+      </article>
+      <article class="card metric-card metric-domains">
+        <div class="metric-number">6</div>
+        <h4 class="metric-title">Domains</h4>
+        <div class="metric-lines">
+          <div class="metric-line"><span>Active domains</span><strong>6</strong></div>
+          <div class="metric-line"><span>Primary</span><strong>Physics</strong></div>
+          <div class="metric-line"><span>Bridge</span><strong>Theology</strong></div>
+        </div>
+      </article>
+    </div>
+    <a class="proof-link" href="/proof-explorer/">Full Proof Explorer →</a>
+  </section>
+
+  <section class="menu" id="searchPanel" aria-label="Search panel">
+    <h3>Search</h3>
+    <div class="card">
+      <div class="label">Template placeholder</div>
+      <p style="margin:0;color:#aaa;line-height:1.7">This button is wired. Later it can open site search, glossary lookup, or an AI prompt/search bridge.</p>
+    </div>
+  </section>
+
+  <main class="demo">
+    <h1>Top Frame Template</h1>
+    <p>This is the top bar by itself, sitting at the top of a plain page. The nav, level buttons, domain pills, Series dropdown, Proof dashboard, and search button are all clickable.</p>
+    <div class="note">
+      This is the shape I think you mean: one uploaded template, driven later by JSON, that physically owns the top frame and can sit above any page without squeezing the article.
+    </div>
+  </main>
+
+  <script>
+    const panels = {
+      series: document.getElementById("seriesPanel"),
+      proof: document.getElementById("proofPanel"),
+      search: document.getElementById("searchPanel")
+    };
+
+    function closePanels(){
+      Object.values(panels).forEach((panel) => panel.classList.remove("open"));
+    }
+
+    document.querySelectorAll("[data-panel]").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const panel = panels[button.dataset.panel];
+        const willOpen = panel && !panel.classList.contains("open");
+        closePanels();
+        if (willOpen) panel.classList.add("open");
+      });
+    });
+
+    document.querySelectorAll(".levels button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".levels button").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+      });
+    });
+
+    document.querySelectorAll(".pill").forEach((pill) => {
+      pill.addEventListener("click", () => pill.classList.toggle("active"));
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".menu")) closePanels();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closePanels();
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        closePanels();
+        panels.search.classList.add("open");
+      }
+    });
+  </script>
+</body>
+</html>

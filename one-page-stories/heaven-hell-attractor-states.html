@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>Heaven and Hell as Attractor States — Theophysics</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-amazing/6.4.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}}</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;
+  --border:#2a2a2a;--border-h:#3a3a3a;
+  --text:#e0e0e0;--text-d:#a0a0a0;--text-m:#555;
+  --gold:#d4af37;--gold-dim:rgba(212,175,55,0.08);--gold-b:rgba(212,175,55,0.2);
+  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.07);--blue-b:rgba(74,158,255,0.2);
+  --teal:#2dd4bf;--teal-dim:rgba(45,212,191,0.07);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.08);--red-b:rgba(239,68,68,0.2);
+  --green:#22c55e;--green-dim:rgba(34,197,94,0.07);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.78;overflow-x:hidden}
+.serif{font-family:'Crimson Text',serif}
+.mono{font-family:'JetBrains Mono',monospace}
+
+.prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--gold));z-index:100;transition:width .15s}
+
+.player-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+
+.hero{padding:5rem 2rem 3rem;max-width:800px;margin:0 auto;text-align:center}
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem;display:block}
+.hero h1{font-family:'Crimson Text',serif;font-size:clamp(2.4rem,5vw,3.6rem);font-weight:400;color:white;line-height:1.1;margin-bottom:1rem}
+.hero h1 em{font-style:italic;color:var(--teal)}
+.hero .sub{font-family:'Crimson Text',serif;font-size:1.25rem;color:var(--text-d);font-style:italic;margin-bottom:.8rem}
+.hero .kicker{font-family:'Crimson Text',serif;font-size:1.05rem;color:var(--text-m);font-style:italic;max-width:520px;margin:0 auto 1.5rem;line-height:1.7;border-top:1px solid var(--border);padding-top:1rem}
+.hero .byline{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-m)}
+
+/* ATTRACTOR DIAGRAM */
+.attractor-diagram{max-width:720px;margin:2rem auto;padding:0 2rem}
+.basin-split{display:grid;grid-template-columns:1fr 40px 1fr;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.basin-upper{background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(212,175,55,0.04));padding:1.6rem;text-align:center}
+.basin-lower{background:linear-gradient(135deg,rgba(239,68,68,0.12),rgba(239,68,68,0.04));padding:1.6rem;text-align:center}
+.basin-sep{background:var(--border);display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl}
+.basin-sep span{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-m)}
+.basin-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem;display:block}
+.basin-upper .basin-label{color:var(--gold)}
+.basin-lower .basin-label{color:var(--red)}
+.basin-name{font-family:'Crimson Text',serif;font-size:1.6rem;color:white;margin-bottom:.4rem}
+.basin-eq{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text-d);margin-bottom:.5rem}
+.basin-desc{font-size:.88rem;color:var(--text-d);line-height:1.7}
+
+.story{max-width:720px;margin:0 auto;padding:1rem 2rem 5rem}
+.story p{font-size:1.05rem;color:var(--text-d);line-height:1.9;margin-bottom:1.4rem}
+.story p:last-child{margin-bottom:0}
+.story h2{font-family:'Crimson Text',serif;font-size:1.8rem;color:white;margin:3rem 0 1rem;line-height:1.2}
+.story h2 .num{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:.3rem}
+
+.drop-cap::first-letter{font-family:'Crimson Text',serif;font-size:4.5rem;float:left;line-height:.82;padding:.3rem .55rem 0 0;color:var(--teal);font-weight:600}
+
+.eq-box{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:8px;padding:1.5rem 2rem;margin:1.5rem 0;text-align:center}
+.eq-box .eq-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-m);margin-bottom:.8rem;display:block}
+.eq-box .eq-note{font-size:.88rem;color:var(--text-d);margin-top:.8rem;line-height:1.75;text-align:left}
+.eq-box .eq-note strong{color:var(--gold)}
+
+.insight{border-left:4px solid var(--gold);background:var(--gold-dim);padding:1.2rem 1.5rem;margin:1.5rem 0;border-radius:0 6px 6px 0}
+.insight .ilabel{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;display:block}
+.insight p{font-size:.95rem;color:var(--text-d);line-height:1.82;margin-bottom:.5rem}
+.insight p:last-child{margin-bottom:0}
+.insight strong{color:var(--gold)}
+
+.warning{border-left:4px solid var(--red);background:var(--red-dim);padding:1.2rem 1.5rem;margin:1.5rem 0;border-radius:0 6px 6px 0}
+.warning .wlabel{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;display:block}
+.warning p{font-size:.95rem;color:var(--text-d);line-height:1.82;margin-bottom:.5rem}
+.warning p:last-child{margin-bottom:0}
+
+.teal-box{border-left:4px solid var(--teal);background:var(--teal-dim);padding:1.2rem 1.5rem;margin:1.5rem 0;border-radius:0 6px 6px 0}
+.teal-box .tlabel{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.4rem;display:block}
+.teal-box p{font-size:.95rem;color:var(--text-d);line-height:1.82;margin-bottom:.5rem}
+.teal-box p:last-child{margin-bottom:0}
+.teal-box strong{color:var(--teal)}
+
+.sec-rule{display:flex;align-items:center;gap:1rem;margin:3rem 0}
+.sec-rule::before,.sec-rule::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-rule span{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-m);white-space:nowrap}
+
+.closing{max-width:720px;margin:3rem auto;padding:2.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;text-align:center}
+.closing .verdict{font-family:'Crimson Text',serif;font-size:1.4rem;color:white;font-style:italic;line-height:1.65;margin-bottom:1.8rem}
+.closing .verdict em{color:var(--teal);font-style:normal}
+.closing blockquote{font-family:'Crimson Text',serif;font-size:.98rem;color:var(--text-d);font-style:italic;line-height:1.7;margin:.7rem 0}
+.closing blockquote cite{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-m);font-style:normal;display:block;margin-top:.3rem}
+
+.bottom-nav{border-top:1px solid var(--border);padding:2rem;margin-top:3rem}
+.nav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;max-width:800px;margin:0 auto}
+.nav-card{background:var(--surface);padding:1rem 1.2rem;text-decoration:none;display:flex;flex-direction:column;gap:.2rem;transition:background .2s}
+.nav-card:hover{background:var(--surface2)}
+.nav-card .nt{font-family:'JetBrains Mono',monospace;font-size:.45rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-m)}
+.nav-card .nn{font-size:.88rem;color:var(--text);line-height:1.3}
+.nav-card.cur{background:var(--teal-dim)}
+.nav-card.cur .nt{color:var(--teal)}
+.foot{text-align:center;padding:2rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text-m);letter-spacing:.1em}
+
+@media(max-width:640px){
+  .basin-split{grid-template-columns:1fr}
+  .basin-sep{display:none}
+  .nav-grid{grid-template-columns:1fr}
+  .hero{padding:3rem 1.5rem 2rem}
+  .story{padding:1rem 1.5rem 4rem}
+}
+
+/* ═══ AUDIO PLAYER v2 (pill) ═══ */
+.tp-player-block{max-width:720px;margin:0 auto 1.5rem;}
+.tp-read-aloud{display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.15);border-radius:.5rem;margin-bottom:.65rem;}
+.tp-read-aloud .tp-dot{width:7px;height:7px;border-radius:50%;background:var(--highlight,#d4af37);box-shadow:0 0 6px rgba(212,175,55,.4);flex-shrink:0;}
+.tp-read-aloud .tp-label{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--highlight,#d4af37);white-space:nowrap;min-width:62px;}
+.tp-read-aloud .tp-play{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--highlight,#d4af37);background:transparent;color:var(--highlight,#d4af37);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.tp-read-aloud .tp-play:hover{background:rgba(212,175,55,.12);box-shadow:0 0 12px rgba(212,175,55,.2);}
+.tp-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;cursor:pointer;position:relative;min-width:0;}
+.tp-track:hover{height:6px;}
+.tp-fill{height:100%;border-radius:2px;width:0%;transition:width .1s linear;}
+.tp-read-aloud .tp-fill{background:linear-gradient(90deg,var(--highlight,#d4af37),#e8c84a);}
+.tp-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;min-width:32px;text-align:right;flex-shrink:0;}
+.tp-mute{background:none;border:none;color:#555;cursor:pointer;font-size:.7rem;padding:2px;flex-shrink:0;transition:color .2s;}
+.tp-mute:hover{color:#e0e0e0;}
+@media(max-width:560px){.tp-read-aloud .tp-label{min-width:50px;font-size:.5rem;}}
+
+</style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/one-page-stories/heaven-hell-attractor-states.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/one-page-stories/images/Cosmic_Source_Code_Theophysics conv 0.webp"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+<!-- FTP_TOPBAR_PREP:START -->
+<style id="ftp-topbar-page-prep">
+  :root {
+    --ftp-header-h: 52px;
+  }
+
+  html {
+    scroll-padding-top: calc(var(--ftp-header-h, 52px) + 16px);
+  }
+
+  body.ftp-topbar-enabled {
+    padding-top: var(--ftp-header-h, 52px);
+  }
+
+  body.ftp-topbar-enabled .tp-ribbon,
+  body.ftp-topbar-enabled .site-ribbon,
+  body.ftp-topbar-enabled .page-ribbon {
+    top: var(--ftp-header-h, 52px) !important;
+    z-index: 2147482000 !important;
+  }
+
+  body.ftp-topbar-enabled main,
+  body.ftp-topbar-enabled .page,
+  body.ftp-topbar-enabled .content,
+  body.ftp-topbar-enabled article {
+    scroll-margin-top: calc(var(--ftp-header-h, 52px) + 16px);
+  }
+
+  @media (max-width: 768px) {
+    body.ftp-topbar-enabled table {
+      max-width: 100%;
+    }
+
+    body.ftp-topbar-enabled .dtbl {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    body.ftp-topbar-enabled .dtbl th,
+    body.ftp-topbar-enabled .dtbl td {
+      white-space: nowrap;
+    }
+  }
+</style>
+<!-- FTP_TOPBAR_PREP:END -->
+<!-- FTP_TOPBAR_CONFIG:START -->
+<script id="ftp-topbar-config">
+  window.FTP_TOPBAR = {
+    replaceLegacyNav: false,
+    compact: true,
+    equationHref: "/master-equation/"
+  };
+</script>
+<!-- FTP_TOPBAR_CONFIG:END -->
+<!-- FTP_TOPBAR_ASSETS:START -->
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
+<!-- FTP_TOPBAR_ASSETS:END -->
+</head>
+<body data-tp-page="article">
+<nav data-tp-role="ribbon" data-tp-i="0" data-tp-color="gold" class="tp-ribbon" style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:2px solid #d4af3733;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <a href="/index.html" style="color:#999;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
+    <span style="color:#333;">|</span>
+    <span style="color:#d4af37;font-weight:500;">One-Page Stories</span>
+  </div>
+</nav>
+
+<div class="prog" id="prog"></div>
+
+<!-- ═══ AUDIO PLAYER v2 ═══ -->
+<div data-tp-role="audio-player" data-tp-i="0" data-tp-media="audio-hub" class="tp-player-block" id="heavenhellattractorstatesplayerBlock">
+  <div data-tp-role="audio-player-part" data-tp-i="0" data-tp-media="read-aloud" class="tp-read-aloud">
+    <span data-tp-role="shell-ornament" data-tp-i="0" class="tp-dot"></span>
+    <span data-tp-role="shell-label" data-tp-i="0" class="tp-label">Listen</span>
+    <audio data-tp-role="media-audio" data-tp-i="0" data-tp-media="audio" id="heavenhellattractorstatesAudio" preload="metadata">
+      <source data-tp-role="media-source" data-tp-i="0" data-tp-media="audio" src="https://r2.faiththruphysics.com/audio/Heaven_Hell_Attractor_States.mp3" type="audio/mpeg">
+    </audio>
+    <button class="tp-play" data-audio="heavenhellattractorstatesAudio" onclick="tpToggle('heavenhellattractorstatesAudio',this)">
+      <i class="fas fa-play"></i>
+    </button>
+    <div data-tp-role="audio-player-part" data-tp-i="1" class="tp-track" onclick="tpSeek(event,'heavenhellattractorstatesAudio')">
+      <div data-tp-role="audio-player-part" data-tp-i="2" class="tp-fill"></div>
+    </div>
+    <span data-tp-role="audio-player-part" data-tp-i="3" class="tp-time">0:00</span>
+    <button class="tp-mute" onclick="tpMute('heavenhellattractorstatesAudio',this)">
+      <i class="fas fa-volume-up"></i>
+    </button>
+  </div>
+</div>
+
+<div data-tp-role="hero" data-tp-i="0" data-tp-domain="genesis:16|grace:11|justice:11|physics:9" data-tp-page="article" class="hero">
+  <span data-tp-role="hero-kicker" data-tp-i="0" class="hero-tag">The Convergence Series · Dynamical Systems</span>
+  <h1 data-tp-role="heading-1" data-tp-i="0" data-tp-level="1">Heaven and Hell as<br><em>Attractor States</em></h1>
+  <p data-tp-role="paragraph" data-tp-i="0" class="sub">They are not where you go. They are where you've been going.</p>
+  <p data-tp-role="paragraph" data-tp-i="1" class="kicker">The judgment isn't the destination. The judgment is the revelation of which direction you were already traveling.</p>
+  <div data-tp-role="byline" data-tp-i="0" class="byline">David Lowe · POF 2828 · Theophysics Research Program · March 2026</div>
+</div>
+
+<!-- ATTRACTOR DIAGRAM -->
+<div class="attractor-diagram">
+  <div class="basin-split">
+    <div class="basin-upper">
+      <span class="basin-label">Upper Attractor</span>
+      <div class="basin-name" style="color:var(--gold)">Heaven</div>
+      <div class="basin-eq">C → 1 &nbsp;·&nbsp; dC/dt → 0⁺</div>
+      <p data-tp-role="paragraph" data-tp-i="2" class="basin-desc">Maximum coherence. O fully open, G received, growth term dominant. Asymptotic approach to perfect alignment — not a ceiling you hit, a direction you go forever.</p>
+    </div>
+    <div class="basin-sep"><span>Separatrix</span></div>
+    <div class="basin-lower">
+      <span class="basin-label">Lower Attractor</span>
+      <div class="basin-name" style="color:var(--red)">Hell</div>
+      <div class="basin-eq">C → 0 &nbsp;·&nbsp; dC/dt = −S·C</div>
+      <p data-tp-role="paragraph" data-tp-i="3" class="basin-desc">Minimum coherence. O closed, growth term zero, decay term runs unopposed. Second Law to completion. The floor is nonzero — grace maintains it — but the trajectory holds.</p>
+    </div>
+  </div>
+</div>
+
+<div class="story">
+
+<p data-tp-role="drop-cap" data-tp-i="0" class="drop-cap">There's a version of heaven and hell most people carry that looks like this: you live your life, you die, and then there's a moment — a judgment, a decision, a final accounting — where you get sorted into one destination or the other. The moment of death is the hinge. Everything before it is the trial. The verdict comes after. I want to show you why that picture isn't wrong so much as it's missing the physics of what's actually happening.</p>
+
+<p data-tp-role="paragraph" data-tp-i="4">In dynamical systems — the branch of mathematics that studies how systems evolve over time — there is a concept called an attractor state. It's the state a system naturally moves toward given its current dynamics. You don't reach an attractor by arriving at it from outside. You reach it by following the internal logic of your own trajectory until the trajectory has nowhere else to go. The coherence equation has two attractor states. I just haven't named what they converge to until now.</p>
+
+<div class="sec-rule"><span>I · Dynamical Systems</span></div>
+
+<h2 data-tp-role="heading-2" data-tp-i="0" data-tp-level="2"><span class="num">Section I</span>What Dynamical Systems Know About Where Things End Up</h2>
+
+<p data-tp-role="paragraph" data-tp-i="5">A dynamical system is any system that evolves over time according to rules. A pendulum. The weather. A population of predators and prey. Your own behavior over years and decades. All of these have states, rules for how states change, and they evolve.</p>
+
+<p data-tp-role="paragraph" data-tp-i="6">Most dynamical systems don't wander randomly. They organize around attractor states — regions of the state space toward which trajectories naturally flow. Given enough time, most trajectories converge to one of a finite number of attractors and stay there.</p>
+
+<div class="teal-box">
+  <span class="tlabel">The Ball in a Bowl</span>
+  <p data-tp-role="paragraph" data-tp-i="7">Wherever you place the ball on the rim, whatever angle, whatever velocity — it rolls, oscillates, and comes to rest at the bottom. The bottom is the attractor state. <strong>The ball doesn't decide to go there. The physics of the system pulls it there from every starting point.</strong></p>
+  <p data-tp-role="paragraph" data-tp-i="8">More complex systems have multiple attractor states with a boundary between them — what mathematicians call a basin of attraction. A ball on a saddle shape has two basins: roll left and it falls to the left attractor; roll right and it falls to the right. The boundary is called the separatrix. The trajectory determines the destination. The destination doesn't determine the trajectory.</p>
+</div>
+
+<div class="sec-rule"><span>II · The Phase Portrait</span></div>
+
+<h2 data-tp-role="heading-2" data-tp-i="1" data-tp-level="2"><span class="num">Section II</span>The Phase Portrait of the Soul</h2>
+
+<p data-tp-role="paragraph" data-tp-i="9">The coherence equation is a dynamical system. Map out what it says for every possible value of C — trace every possible trajectory — and you get the phase portrait: the map of where every starting point eventually ends up.</p>
+
+<div data-tp-role="equation" data-tp-i="0" class="eq-box">
+  <span data-tp-role="equation-label" data-tp-i="0" class="eq-label">The Coherence Equation</span>
+  $$\frac{dC}{dt} = O \cdot G(1-C) - S \cdot C$$
+  <div data-tp-role="equation-note" data-tp-i="0" class="eq-note">
+    The equation has two fixed points — two states where dC/dt = 0, where the system stops changing.<br><br>
+    <strong>Upper attractor C → 1:</strong> When O is open and G flows, the growth term dominates. As C approaches 1, the (1-C) term approaches zero and growth decelerates. The system stabilizes near maximum coherence as a stable equilibrium. Not because grace runs out — because the room to grow approaches zero as alignment approaches perfection.<br><br>
+    <strong>Lower attractor C → 0:</strong> When O is closed, the growth term vanishes. What remains is dC/dt = −S·C. Pure decay. The Second Law runs unopposed. C declines exponentially toward zero — asymptotically, because the floor is nonzero — but the trajectory holds toward minimum coherence as a stable equilibrium.
+  </div>
+</div>
+
+<p data-tp-role="paragraph" data-tp-i="10">This is heaven. Not a location. A state. The attractor state of a soul in which O has remained open, G has been consistently received, and the trajectory has been pulling toward C = 1 over the full integration window of a life.</p>
+
+<p data-tp-role="paragraph" data-tp-i="11">This is hell. Not a location. A state. The attractor state of a soul in which O has remained closed, the decay term has run unopposed, and the trajectory has been pulling toward C = 0 over the full integration window of a life.</p>
+
+<div class="sec-rule"><span>III · The Separatrix</span></div>
+
+<h2 data-tp-role="heading-2" data-tp-i="2" data-tp-level="2"><span class="num">Section III</span>The Separatrix — The Line Nobody Talks About</h2>
+
+<p data-tp-role="paragraph" data-tp-i="12">Between the two basins there is a boundary — the separatrix. A specific value of C below which the trajectory, given the current dynamics, flows toward the lower attractor. Above it, toward the upper attractor. The separatrix is not fixed. It depends on the current values of O, G, and S. The boundary moves with the system's parameters. But boundaries are real.</p>
+
+<div class="warning">
+  <span class="wlabel">The Event Horizon Analog</span>
+  <p data-tp-role="paragraph" data-tp-i="13">Inside a black hole's event horizon, all paths through spacetime lead to the singularity. Not most paths. All paths. The geometry is such that moving forward in time is moving toward the singularity. You can still move, still choose, still experience local physics as roughly normal — but the global geometry has already decided.</p>
+  <p data-tp-role="paragraph" data-tp-i="14">The coherence equation has a spiritual analog. There is a region of the phase portrait — not a sharp line, but a region — where the trajectory toward the lower attractor has accumulated enough momentum that no internal process can reverse it. Where the decay term is running so hard and O has been closed so long that the growth term, even if O were suddenly opened, cannot overcome the accumulated decay.</p>
+  <p data-tp-role="paragraph" data-tp-i="15">This is not eternal torment administered from outside. This is the thermodynamic description of a soul whose trajectory has gone past the point where internal reversal is possible. And from inside that region, the local physics still feels roughly normal. The days proceed. The horizon was crossed without announcement.</p>
+</div>
+
+<p data-tp-role="paragraph" data-tp-i="16">This is why "today is the day of salvation" is not rhetorical urgency. It is a statement about trajectory. About where the momentum currently points and what it would take to reverse it before reversal becomes impossible from inside the system.</p>
+
+<div class="sec-rule"><span>IV · The Judgment</span></div>
+
+<h2 data-tp-role="heading-2" data-tp-i="3" data-tp-level="2"><span class="num">Section IV</span>The Question the Judgment Actually Answers</h2>
+
+<p data-tp-role="paragraph" data-tp-i="17">The judgment is real. The framework is not collapsing eschatology into mere physics. But the judgment is not the moment of sorting. The sorting has been happening continuously, in every choice, through the entire trajectory. The judgment is the moment of revelation — when the trajectory that has been running becomes fully visible, when the attractor state the dynamics have been pointing toward becomes explicitly manifest.</p>
+
+<p data-tp-role="paragraph" data-tp-i="18">Imagine every choice as a small adjustment of the ball's position on the slope. Left or right. Toward the basin or away from it. No single choice is usually catastrophic. But the aggregate of all the choices — the integral over the full lifetime — produces a trajectory that has been heading somewhere specific. The judgment reveals where.</p>
+
+<div data-tp-role="insight" data-tp-i="0" class="insight">
+  <span class="ilabel">1 Corinthians 3:13</span>
+  <p data-tp-role="paragraph" data-tp-i="19">"Each person's work will become manifest, for the Day will disclose it, because it will be revealed by fire, and the fire will test what sort of work each one has done."</p>
+  <p data-tp-role="paragraph" data-tp-i="20"><strong>The fire doesn't choose what survives. It reveals what was always going to survive.</strong> What's aligned with the invariant — what has the Logos property — survives because it was never going to decay. What's opposed to the invariant — what requires work to sustain against the grain of truth — is consumed because it was always going to decay. The judgment accelerates and makes visible what the dynamics were already producing.</p>
+</div>
+
+<div class="sec-rule"><span>V · The Mercy</span></div>
+
+<h2 data-tp-role="heading-2" data-tp-i="4" data-tp-level="2"><span class="num">Section V</span>The Mercy Hidden in the Physics</h2>
+
+<p data-tp-role="paragraph" data-tp-i="21">The attractor state picture can feel cold if you stop at the physics. But the lower attractor has a floor. The Higgs field's nonzero vacuum. The Hawking radiation that bleeds through even at the event horizon. The χ field ground state that never reaches zero. The invitation that never stops broadcasting.</p>
+
+<div class="teal-box">
+  <span class="tlabel">Common Grace — The Nonzero Floor</span>
+  <p data-tp-role="paragraph" data-tp-i="22">The reason the lower attractor is not absolute zero. The reason the soul whose trajectory has been toward maximum decoherence is not absolutely abandoned — the χ field is still there, still maintaining the nonzero floor, still transmitting. <strong>This is not universalism.</strong> The lower attractor is a real stable state. But the floor being nonzero means the difference between the lower attractor and absolute destruction is maintained by grace even there.</p>
+</div>
+
+<p data-tp-role="paragraph" data-tp-i="23">And at the upper end — the growth term has a structure that matters. As C approaches 1, the (1-C) term approaches zero and growth decelerates. This is the mathematical description of progressive sanctification — not exponential endless growth, but asymptotic approach to maximum alignment. The closer you get, the more precise the refinement required. The upper attractor is not a static ceiling. It's a living state of continuous approach to an alignment that is perfect but that the approaching system experiences as perpetually deepening.</p>
+
+<div data-tp-role="insight" data-tp-i="1" class="insight">
+  <span class="ilabel">1 John 3:2</span>
+  <p data-tp-role="paragraph" data-tp-i="24">"We shall be like him, for we shall see him as he is."</p>
+  <p data-tp-role="paragraph" data-tp-i="25">Not finished. Not static. <strong>Perpetually more aligned with the invariant</strong> as the (1-C) term approaches but never quite reaches zero, because the Logos is infinite and the approach to perfect alignment with the infinite is a process that never terminates. The upper attractor is not a destination you reach and stop. It's a direction you go forever.</p>
+</div>
+
+<div class="sec-rule"><span>VI · Every Day</span></div>
+
+<h2 data-tp-role="heading-2" data-tp-i="5" data-tp-level="2"><span class="num">Section VI</span>What This Changes About How You Think About Every Day</h2>
+
+<p data-tp-role="paragraph" data-tp-i="26">If heaven and hell are attractor states — if the judgment reveals the trajectory rather than assigning a destination — then every day is not the day before a verdict. Every day is the trajectory itself.</p>
+
+<p data-tp-role="paragraph" data-tp-i="27">Every opening of O contributes to the growth term. Every closing of O lets the decay term run. Every received grace shifts the basin in one direction. Every refused grace shifts it in the other. The integral over a life isn't the sum of dramatic choices at existential crossroads. It's the aggregate of a thousand small adjustments — the channel opened or closed in the ordinary moment, the true bit honored or the false bit accepted, the gap preserved or filled.</p>
+
+<div class="warning">
+  <span class="wlabel">The Separatrix Is Not Dramatic</span>
+  <p data-tp-role="paragraph" data-tp-i="28">It doesn't announce itself. Crossing it toward the lower basin doesn't feel like catastrophe. It feels like the natural continuation of a trajectory that's been building for years. Which is why the framework's insistence on the gap, on the O term, on the daily practice of reception — is not spiritual disciplines designed to feel virtuous. It's maintenance of the dynamics that determine which basin your trajectory is in.</p>
+</div>
+
+<p data-tp-role="paragraph" data-tp-i="29">The attractor states are two. The trajectory determines which one you approach. The trajectory is made of ten thousand ordinary choices about whether the channel is open. God built the mathematics that way on purpose — not to make salvation feel precarious, but to make every moment genuinely matter. The coefficient on every day is real. The integral is real. The attractor is real.</p>
+
+<p data-tp-role="paragraph" data-tp-i="30">And grace is what makes the trajectory reversible before it isn't, and what maintains the floor after it is.</p>
+
+</div>
+
+<div class="closing">
+  <div class="verdict">
+    Heaven is where you've been going when you've been going <em>toward</em> the invariant.<br>
+    Hell is where you've been going when you've been going <em>away</em> from it.<br>
+    The judgment reveals the trajectory.<br>
+    The trajectory is made of every day that preceded it.<br><br>
+    <em style="color:var(--gold);font-size:1.1em">Today is one of those days.</em>
+  </div>
+  <blockquote data-tp-role="quote" data-tp-i="0">"Enter through the narrow gate. For wide is the gate and broad is the road that leads to destruction, and many enter through it." <cite>— Matthew 7:13</cite></blockquote>
+  <blockquote data-tp-role="quote" data-tp-i="1">"Today, if you hear his voice, do not harden your hearts." <cite>— Hebrews 3:15</cite></blockquote>
+  <blockquote data-tp-role="quote" data-tp-i="2">"We all, with unveiled face, beholding the glory of the Lord, are being transformed into the same image from one degree of glory to another." <cite>— 2 Corinthians 3:18</cite></blockquote>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-grid">
+    <a class="nav-card" href="../genesis-to-quantum/index.html"><span class="nt">Home</span><span class="nn">Genesis to Quantum</span></a>
+    <a class="nav-card cur" href="#"><span class="nt">Current</span><span class="nn">Heaven & Hell as Attractor States</span></a>
+    <a class="nav-card" href="why-grace-from-outside.html"><span class="nt">Related</span><span class="nn">Why Grace Has to Come from Outside</span></a>
+    <a class="nav-card" href="salvation-phase-transition.html"><span class="nt">Related</span><span class="nn">Salvation as Phase Transition</span></a>
+    <a class="nav-card" href="salvation-algorithm.html"><span class="nt">Related</span><span class="nn">The Salvation Algorithm</span></a>
+    <a class="nav-card" href="../genesis-to-quantum/gtq-03-free-will-two-frames.html"><span class="nt">GTQ Series</span><span class="nn">Free Will in Two Frames</span></a>
+  </div>
+</div>
+
+<div data-tp-role="footer" data-tp-i="0" class="foot">David Lowe · faiththruphysics.com · March 2026 · The Convergence Series · POF 2828</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const d=document.documentElement;
+  document.getElementById('prog').style.width=((d.scrollTop/(d.scrollHeight-d.clientHeight))*100)+'%';
+});
+</script>
+<script src="/glossary-linker.js" defer></script>
+
+<script>
+function tpToggle(id,btn){
+  var a=document.getElementById(id);
+  if(!a)return;
+  if(a.paused){
+    document.querySelectorAll('audio').forEach(function(x){if(x.id!==id&&!x.paused)x.pause();});
+    a.play();btn.innerHTML='<i class="fas fa-pause"></i>';
+  }else{a.pause();btn.innerHTML='<i class="fas fa-play"></i>';}
+  a.onended=function(){btn.innerHTML='<i class="fas fa-play"></i>';
+    var fill=btn.closest('.tp-read-aloud').querySelector('.tp-fill');if(fill)fill.style.width='0%';};
+  a.ontimeupdate=function(){
+    var pct=(a.currentTime/a.duration*100)||0;
+    var fill=btn.closest('.tp-read-aloud').querySelector('.tp-fill');if(fill)fill.style.width=pct+'%';
+    var tEl=btn.closest('.tp-read-aloud').querySelector('.tp-time');
+    if(tEl){var m=Math.floor(a.currentTime/60),s=Math.floor(a.currentTime%60);tEl.textContent=m+':'+(s<10?'0':'')+s;}
+  };
+}
+function tpSeek(evt,id){
+  var a=document.getElementById(id);if(!a||!a.duration)return;
+  var r=evt.currentTarget.getBoundingClientRect();
+  a.currentTime=(evt.clientX-r.left)/r.width*a.duration;
+}
+function tpMute(id,btn){
+  var a=document.getElementById(id);if(!a)return;
+  a.muted=!a.muted;
+  btn.innerHTML=a.muted?'<i class="fas fa-volume-mute"></i>':'<i class="fas fa-volume-up"></i>';
+}
+</script>
+
+<section class="ring-nav" data-tp-region="article-footer">
+  <div class="ring-header">
+    <h2 data-tp-role="heading-2" data-tp-i="6" data-tp-level="2">Related Work</h2>
+    <p data-tp-role="paragraph" data-tp-i="31">Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p data-tp-role="paragraph" data-tp-i="32" class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p data-tp-role="paragraph" data-tp-i="33" class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p data-tp-role="paragraph" data-tp-i="34" class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

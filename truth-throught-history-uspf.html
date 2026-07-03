@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>USPF — Universal Signal Persistence Framework</title>
+<style>
+.serif{font-family:'Crimson Text',serif;}
+.display{font-family:'Oswald',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap');
+
+  :root {
+    --bg:       #080b0f;
+    --bg2:      #0d1117;
+    --bg3:      #111820;
+    --border:   #1e2d3d;
+    --amber:    #f0a500;
+    --amber2:   #ffcc44;
+    --red:      #e05252;
+    --green:    #52c97a;
+    --blue:     #4d9de0;
+    --muted:    #4a6278;
+    --text:     #c8d8e8;
+    --text2:    #8aa0b4;
+    --mono:     'Share Tech Mono', monospace;
+    --head:     'Rajdhani', sans-serif;
+    --body:     'Crimson Pro', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* scanline overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(180deg, rgba(240,165,0,0.04) 0%, transparent 100%);
+  }
+  .logo {
+    font-family: var(--head);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: var(--amber);
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--text2); font-weight: 300; font-size: 13px; letter-spacing: 2px; display: block; margin-top: 2px; }
+  .nav { display: flex; gap: 2px; }
+  .nav button {
+    background: none; border: 1px solid transparent;
+    color: var(--text2); font-family: var(--mono); font-size: 11px;
+    letter-spacing: 2px; padding: 7px 16px; cursor: pointer;
+    text-transform: uppercase; transition: all 0.15s;
+  }
+  .nav button:hover, .nav button.active {
+    border-color: var(--amber); color: var(--amber);
+    background: rgba(240,165,0,0.06);
+  }
+
+  /* ── TABS ── */
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  /* ── CALCULATOR ── */
+  .calc-layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 65px);
+  }
+
+  .input-panel {
+    border-right: 1px solid var(--border);
+    padding: 28px 28px;
+    overflow-y: auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field-group { margin-bottom: 20px; }
+  .field-group label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .field-group input, .field-group select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field-group input:focus, .field-group select:focus {
+    border-color: var(--amber);
+  }
+  .field-group select option { background: var(--bg3); }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .slider-row label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text2);
+    width: 160px;
+    flex-shrink: 0;
+  }
+  .slider-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--amber);
+    cursor: pointer;
+  }
+  .slider-row .val {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--amber2);
+    width: 36px;
+    text-align: right;
+  }
+
+  .var-block {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .var-title {
+    font-family: var(--head);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .var-title .computed {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--amber);
+  }
+  .var-desc {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--text2);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .calc-btn {
+    width: 100%;
+    background: var(--amber);
+    color: var(--bg);
+    border: none;
+    font-family: var(--head);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.15s;
+  }
+  .calc-btn:hover { background: var(--amber2); }
+
+  /* ── RESULTS PANEL ── */
+  .result-panel {
+    padding: 28px 32px;
+    overflow-y: auto;
+  }
+
+  .equation-display {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--amber);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 2;
+  }
+  .eq-line { display: flex; align-items: baseline; gap: 10px; }
+  .eq-label { color: var(--text2); width: 200px; flex-shrink: 0; font-size: 11px; letter-spacing: 1px; }
+  .eq-formula { color: var(--text); }
+  .eq-result { color: var(--amber2); font-size: 15px; margin-left: auto; }
+  .eq-line.highlight .eq-result { color: var(--amber); font-size: 18px; font-weight: bold; }
+  .eq-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+
+  .step-container { margin-bottom: 24px; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 2px;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+  }
+  .step.revealed { opacity: 1; transform: translateX(0); }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    width: 24px;
+    flex-shrink: 0;
+    padding-top: 3px;
+    text-align: right;
+  }
+  .step-body {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    margin-bottom: 6px;
+  }
+  .step-title {
+    font-family: var(--head);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step-math {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .step-math .val { color: var(--amber2); }
+  .step-note {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--text2);
+    font-style: italic;
+  }
+
+  .anomaly-badge {
+    display: inline-block;
+    font-family: var(--head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border: 1px solid;
+    margin-top: 8px;
+  }
+  .badge-extreme { color: var(--red); border-color: var(--red); background: rgba(224,82,82,0.08); }
+  .badge-highly  { color: var(--amber); border-color: var(--amber); background: rgba(240,165,0,0.08); }
+  .badge-notable { color: var(--blue); border-color: var(--blue); background: rgba(77,157,224,0.08); }
+  .badge-normal  { color: var(--text2); border-color: var(--border); }
+  .badge-decay   { color: var(--muted); border-color: var(--muted); background: rgba(74,98,120,0.08); }
+
+  .sigma-display {
+    font-family: var(--mono);
+    font-size: 52px;
+    color: var(--amber);
+    margin: 16px 0 4px;
+    letter-spacing: -2px;
+  }
+  .sigma-display sup { font-size: 24px; vertical-align: super; }
+
+  /* ── DATABASE ── */
+  .db-layout { padding: 28px 32px; }
+
+  .db-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+  .db-controls input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 14px;
+    outline: none;
+    width: 240px;
+  }
+  .db-controls input:focus { border-color: var(--amber); }
+  .db-controls select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 8px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .signal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+
+  .signal-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .signal-card:hover { border-color: var(--amber); }
+  .signal-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .signal-card.extreme::before { background: var(--red); }
+  .signal-card.highly::before  { background: var(--amber); }
+  .signal-card.notable::before { background: var(--blue); }
+  .signal-card.normal::before  { background: var(--muted); }
+  .signal-card.decay::before   { background: #2a3a4a; }
+
+  .card-rank {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .card-name {
+    font-family: var(--head);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .card-cat {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .card-bar-bg {
+    height: 3px;
+    background: var(--border);
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .card-bar-fill {
+    height: 100%;
+    background: var(--amber);
+    transition: width 0.6s ease;
+  }
+  .card-sigma {
+    font-family: var(--mono);
+    font-size: 20px;
+    color: var(--amber2);
+  }
+  .card-sigma small {
+    font-size: 12px;
+    color: var(--text2);
+    margin-left: 2px;
+  }
+  .card-age {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    float: right;
+    margin-top: -20px;
+  }
+
+  /* ── METHODOLOGY ── */
+  .method-layout {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 32px;
+    font-family: var(--body);
+    line-height: 1.7;
+  }
+  .method-layout h2 {
+    font-family: var(--head);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 32px 0 12px;
+  }
+  .method-layout h2:first-child { margin-top: 0; }
+  .method-layout p { color: var(--text2); margin-bottom: 12px; }
+  .method-layout .eq {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--amber2);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 14px 20px;
+    margin: 16px 0;
+  }
+  .method-layout table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .method-layout th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .method-layout td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(30,45,61,0.5);
+    color: var(--text2);
+  }
+  .method-layout td:first-child { color: var(--text); font-family: var(--mono); font-size: 13px; }
+
+  .warning-box {
+    background: rgba(240,165,0,0.05);
+    border: 1px solid rgba(240,165,0,0.25);
+    border-left: 3px solid var(--amber);
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--text2);
+  }
+
+  /* misc */
+  .dimmed { opacity: 0.4; }
+  .mono { font-family: var(--mono); }
+  .amber { color: var(--amber); }
+  .stats-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  .stat-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 12px 18px;
+    flex: 1;
+  }
+  .stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text2); text-transform: uppercase; }
+  .stat-val { font-family: var(--mono); font-size: 22px; color: var(--amber); margin-top: 2px; }
+</style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/truth-throught-history-uspf.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+<!-- FTP_TOPBAR_PREP:START -->
+<style id="ftp-topbar-page-prep">
+  :root {
+    --ftp-header-h: 52px;
+  }
+
+  html {
+    scroll-padding-top: calc(var(--ftp-header-h, 52px) + 16px);
+  }
+
+  body.ftp-topbar-enabled {
+    padding-top: var(--ftp-header-h, 52px);
+  }
+
+  body.ftp-topbar-enabled .tp-ribbon,
+  body.ftp-topbar-enabled .site-ribbon,
+  body.ftp-topbar-enabled .page-ribbon {
+    top: var(--ftp-header-h, 52px) !important;
+    z-index: 2147482000 !important;
+  }
+
+  body.ftp-topbar-enabled main,
+  body.ftp-topbar-enabled .page,
+  body.ftp-topbar-enabled .content,
+  body.ftp-topbar-enabled article {
+    scroll-margin-top: calc(var(--ftp-header-h, 52px) + 16px);
+  }
+
+  @media (max-width: 768px) {
+    body.ftp-topbar-enabled table {
+      max-width: 100%;
+    }
+
+    body.ftp-topbar-enabled .dtbl {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    body.ftp-topbar-enabled .dtbl th,
+    body.ftp-topbar-enabled .dtbl td {
+      white-space: nowrap;
+    }
+  }
+</style>
+<!-- FTP_TOPBAR_PREP:END -->
+<!-- FTP_TOPBAR_CONFIG:START -->
+<script id="ftp-topbar-config">
+  window.FTP_TOPBAR = {
+    replaceLegacyNav: false,
+    compact: true,
+    equationHref: "/master-equation/"
+  };
+</script>
+<!-- FTP_TOPBAR_CONFIG:END -->
+<!-- FTP_TOPBAR_ASSETS:START -->
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
+<!-- FTP_TOPBAR_ASSETS:END -->
+</head>
+<body data-tp-page="article">
+<nav data-tp-role="ribbon" data-tp-i="0" data-tp-color="gold" class="tp-ribbon" style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:2px solid #d4af3733;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <a href="/index.html" style="color:#999;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
+    <span style="color:#333;">|</span>
+    <span style="color:#d4af37;font-weight:500;">Theophysics</span>
+  </div>
+</nav>
+
+
+<header data-tp-component="legacy-header" data-slot="legacy-page-header" data-tp-region="article-header">
+  <div class="logo">USPF<span>Universal Signal Persistence Framework · v1.0</span></div>
+  <nav class="nav">
+    <button class="active" onclick="showTab('calc', this)">Calculator</button>
+    <button onclick="showTab('db', this)">Signal Registry</button>
+    <button onclick="showTab('method', this)">Methodology</button>
+  </nav>
+</header>
+
+<!-- ══════════════════════════ CALCULATOR ══════════════════════════ -->
+<div id="tab-calc" class="tab active">
+<div class="calc-layout">
+
+  <!-- INPUT PANEL -->
+  <div class="input-panel">
+
+    <div data-tp-role="heading-section-label" data-tp-i="0" class="section-label">Signal Identity</div>
+    <div class="field-group">
+      <label>Signal Name</label>
+      <input type="text" id="sig-name" placeholder="e.g. The Bible (Complete Canon)" value="">
+    </div>
+    <div class="field-group">
+      <label>Category</label>
+      <select id="sig-cat">
+        <option value="written">Written Text</option>
+        <option value="oral">Oral Tradition</option>
+        <option value="mathematical">Mathematical Framework</option>
+        <option value="physical">Physical Structure</option>
+        <option value="legal">Legal / Social Code</option>
+        <option value="biological">Biological Signal</option>
+        <option value="artistic">Artistic Work</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>Age (years)</label>
+      <input type="number" id="sig-age" placeholder="3500" value="">
+    </div>
+
+    <!-- S: SIGNAL INTEGRITY -->
+    <div data-tp-role="heading-section-label" data-tp-i="1" class="section-label">S — Signal Integrity</div>
+    <div class="var-block">
+      <div class="var-title">Integrity <span class="computed" id="s-val">—</span></div>
+      <div class="var-desc">How much of the original signal survives in usable, interpretable form.</div>
+      <div class="slider-row">
+        <label>Fidelity to original</label>
+        <input type="range" id="s1" min="0" max="100" value="50" oninput="updateSlider('s1-v',this.value/100);calcAll()">
+        <span class="val" id="s1-v">0.50</span>
+      </div>
+      <div class="slider-row">
+        <label>Fragmentation (inverted)</label>
+        <input type="range" id="s2" min="0" max="100" value="50" oninput="updateSlider('s2-v',this.value/100);calcAll()">
+        <span class="val" id="s2-v">0.50</span>
+      </div>
+      <div class="slider-row">
+        <label>Semantic stability</label>
+        <input type="range" id="s3" min="0" max="100" value="50" oninput="updateSlider('s3-v',this.value/100);calcAll()">
+        <span class="val" id="s3-v">0.50</span>
+      </div>
+    </div>
+
+    <!-- M: MECHANISM -->
+    <div data-tp-role="heading-section-label" data-tp-i="2" class="section-label">M — Mechanism</div>
+    <div class="var-block">
+      <div class="var-title">Mechanism <span class="computed" id="m-val">—</span></div>
+      <div class="var-desc">How the signal protected and replicated itself — redundancy, independence, reconstruction ability.</div>
+      <div class="slider-row">
+        <label>Redundant copies</label>
+        <input type="range" id="m1" min="0" max="100" value="50" oninput="updateSlider('m1-v',this.value/100);calcAll()">
+        <span class="val" id="m1-v">0.50</span>
+      </div>
+      <div class="slider-row">
+        <label>Independence of paths</label>
+        <input type="range" id="m2" min="0" max="100" value="50" oninput="updateSlider('m2-v',this.value/100);calcAll()">
+        <span class="val" id="m2-v">0.50</span>
+      </div>
+      <div class="slider-row">
+        <label>Reconstruction ability</label>
+        <input type="range" id="m3" min="0" max="100" value="50" oninput="updateSlider('m3-v',this.value/100);calcAll()">
+        <span class="val" id="m3-v">0.50</span>
+      </div>
+    </div>
+
+    <!-- P: PRESSURE -->
+    <div data-tp-role="heading-section-label" data-tp-i="3" class="section-label">P — Survival Pressure</div>
+    <div class="var-block">
+      <div class="var-title">Pressure Load <span class="computed" id="p-val">—</span></div>
+      <div class="var-desc">Total entropy load survived — deliberate destruction, suppression, catastrophe, medium transitions.</div>
+      <div class="slider-row">
+        <label>Deliberate suppression</label>
+        <input type="range" id="p1" min="0" max="100" value="20" oninput="updateSlider('p1-v',this.value/100);calcAll()">
+        <span class="val" id="p1-v">0.20</span>
+      </div>
+      <div class="slider-row">
+        <label>Catastrophic events</label>
+        <input type="range" id="p2" min="0" max="100" value="20" oninput="updateSlider('p2-v',this.value/100);calcAll()">
+        <span class="val" id="p2-v">0.20</span>
+      </div>
+      <div class="slider-row">
+        <label>Cultural discontinuity</label>
+        <input type="range" id="p3" min="0" max="100" value="20" oninput="updateSlider('p3-v',this.value/100);calcAll()">
+        <span class="val" id="p3-v">0.20</span>
+      </div>
+      <div class="slider-row">
+        <label>Medium transitions</label>
+        <input type="range" id="p4" min="0" max="100" value="20" oninput="updateSlider('p4-v',this.value/100);calcAll()">
+        <span class="val" id="p4-v">0.20</span>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="runCalculation()">▶ Run Analysis</button>
+  </div>
+
+  <!-- RESULT PANEL -->
+  <div class="result-panel" id="result-panel">
+
+    <div data-tp-role="heading-section-label" data-tp-i="4" class="section-label">Shannon Derivation</div>
+    <div class="equation-display">
+      <div class="eq-line">
+        <span data-tp-role="equation-label" data-tp-i="0" class="eq-label">Shannon Channel Capacity</span>
+        <span class="eq-formula">C = B · log₂(1 + S/N)</span>
+      </div>
+      <div class="eq-line">
+        <span data-tp-role="equation-label" data-tp-i="1" class="eq-label">USPF Isomorphism</span>
+        <span class="eq-formula">Strength = S · M · ln(1 + P)</span>
+      </div>
+      <hr data-tp-role="divider" data-tp-i="0" class="eq-divider">
+      <div class="eq-line">
+        <span data-tp-role="equation-label" data-tp-i="2" class="eq-label" style="color:var(--text2);font-size:10px;">S·M maps to signal power &nbsp;|&nbsp; P maps to S/N ratio &nbsp;|&nbsp; ln(1+P) is channel capacity under load</span>
+      </div>
+    </div>
+
+    <div data-tp-role="heading-section-label" data-tp-i="5" class="section-label">Step-by-Step Derivation</div>
+    <div class="step-container" id="steps">
+      <div style="font-family:var(--mono);font-size:12px;color:var(--muted);padding:20px 0;">
+        Enter signal values and click Run Analysis
+      </div>
+    </div>
+
+    <div id="final-result" style="display:none;">
+      <div data-tp-role="heading-section-label" data-tp-i="6" class="section-label">Result</div>
+      <div class="sigma-display" id="sigma-out">—</div>
+      <div id="badge-out"></div>
+      <div style="margin-top:16px;font-family:var(--body);font-size:14px;color:var(--text2);max-width:480px;line-height:1.6;" id="interp-out"></div>
+      <div style="margin-top:20px;">
+        <button class="calc-btn" style="max-width:200px;" onclick="saveToRegistry()">+ Save to Registry</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════ DATABASE ══════════════════════════ -->
+<div id="tab-db" class="tab">
+<div class="db-layout">
+
+  <div class="stats-row" id="db-stats"></div>
+
+  <div class="db-controls">
+    <input type="text" id="db-search" placeholder="Search signals..." oninput="renderDB()">
+    <select onchange="filterCat=this.value;renderDB()">
+      <option value="">All Categories</option>
+      <option value="written">Written</option>
+      <option value="oral">Oral</option>
+      <option value="mathematical">Mathematical</option>
+      <option value="physical">Physical</option>
+      <option value="legal">Legal</option>
+      <option value="biological">Biological</option>
+      <option value="artistic">Artistic</option>
+    </select>
+    <select onchange="sortMode=this.value;renderDB()">
+      <option value="sigma">Sort: Anomaly Score</option>
+      <option value="age">Sort: Age</option>
+      <option value="name">Sort: Name</option>
+    </select>
+  </div>
+
+  <div class="signal-grid" id="db-grid"></div>
+</div>
+</div>
+
+<!-- ══════════════════════════ METHODOLOGY ══════════════════════════ -->
+<div id="tab-method" class="tab">
+<div class="method-layout">
+  <h2 data-tp-role="heading-2" data-tp-i="0" data-tp-level="2">The Shannon Isomorphism</h2>
+  <p data-tp-role="paragraph" data-tp-i="0">The Universal Signal Persistence Framework is not a custom scoring system. It is a formal application of Claude Shannon's Channel Capacity Theorem (1948) to the problem of historical signal transmission.</p>
+  <div data-tp-role="equation" data-tp-i="0" class="eq">C = B · log₂(1 + S/N) &nbsp;&nbsp;[Shannon, 1948]<br>Strength = S · M · ln(1 + P) &nbsp;&nbsp;[USPF]</div>
+  <p data-tp-role="paragraph" data-tp-i="1">The mapping is direct: signal integrity (S) times mechanism strength (M) corresponds to net signal power; survival pressure (P) corresponds to the signal-to-noise ratio; and the logarithmic term captures channel capacity under that noise load. This is not metaphor — it is the same mathematical structure, applied to a different channel domain.</p>
+
+  <h2 data-tp-role="heading-2" data-tp-i="1" data-tp-level="2">The Three Variables</h2>
+  <table data-tp-role="table" data-tp-i="0">
+    <tr data-tp-role="table-row" data-tp-i="0"><th data-tp-role="table-header-cell" data-tp-i="0">Variable</th><th data-tp-role="table-header-cell" data-tp-i="1">Shannon Analog</th><th data-tp-role="table-header-cell" data-tp-i="2">Definition</th></tr>
+    <tr data-tp-role="table-row" data-tp-i="1"><td data-tp-role="table-cell" data-tp-i="0">S — Integrity</td><td data-tp-role="table-cell" data-tp-i="1">Signal power</td><td data-tp-role="table-cell" data-tp-i="2">What fraction of the original signal survives intact and interpretable</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="2"><td data-tp-role="table-cell" data-tp-i="3">M — Mechanism</td><td data-tp-role="table-cell" data-tp-i="4">Error-correction / amplification</td><td data-tp-role="table-cell" data-tp-i="5">How the signal protected itself: redundancy, independence, reconstruction</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="3"><td data-tp-role="table-cell" data-tp-i="6">P — Pressure</td><td data-tp-role="table-cell" data-tp-i="7">Signal-to-Noise Ratio</td><td data-tp-role="table-cell" data-tp-i="8">Total entropy load survived: suppression, catastrophe, cultural discontinuity, medium transitions</td></tr>
+  </table>
+
+  <h2 data-tp-role="heading-2" data-tp-i="2" data-tp-level="2">Why Multiplicative, Not Additive</h2>
+  <p data-tp-role="paragraph" data-tp-i="2">The variables multiply rather than add. This is intentional: if any single dimension collapses to zero, the entire score collapses. A signal that lasted forever but lost all integrity scores zero. A signal that was perfectly preserved but never faced any pressure scores zero. Neither condition alone is sufficient. This prevents any single variable from compensating for complete failure in another.</p>
+
+  <h2 data-tp-role="heading-2" data-tp-i="3" data-tp-level="2">The 10 Entropy Categories</h2>
+  <p data-tp-role="paragraph" data-tp-i="3">Survival Pressure (P) is computed from ten distinct entropy mechanisms. Every historical destructive event maps into one or more of these categories. This prevents raw events ("King X outlawed it") from entering the equation directly — instead, their effect on transmission is encoded through standardized channels.</p>
+  <p data-tp-role="paragraph" data-tp-i="4" style="font-size:13px;color:var(--amber);font-family:var(--mono);margin-bottom:8px;">NOTE: Drift and semantic mutation are NOT included here. They belong entirely in S (Integrity) to prevent double-counting.</p>
+  <table data-tp-role="table" data-tp-i="1">
+    <tr data-tp-role="table-row" data-tp-i="4"><th data-tp-role="table-header-cell" data-tp-i="3">Category</th><th data-tp-role="table-header-cell" data-tp-i="4">Weight</th><th data-tp-role="table-header-cell" data-tp-i="5">Definition</th></tr>
+    <tr data-tp-role="table-row" data-tp-i="5"><td data-tp-role="table-cell" data-tp-i="9">E1 — Physical Degradation</td><td data-tp-role="table-cell" data-tp-i="10">0.75</td><td data-tp-role="table-cell" data-tp-i="11">Material decay: erosion, corrosion, thermal stress, chemical breakdown</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="6"><td data-tp-role="table-cell" data-tp-i="12">E2 — Catastrophic Events</td><td data-tp-role="table-cell" data-tp-i="13">0.90</td><td data-tp-role="table-cell" data-tp-i="14">Sudden high-impact destruction: earthquakes, floods, fire, war</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="7"><td data-tp-role="table-cell" data-tp-i="15">E3 — Deliberate Destruction</td><td data-tp-role="table-cell" data-tp-i="16">1.00</td><td data-tp-role="table-cell" data-tp-i="17">Intentional targeting: book burning, iconoclasm, systematic erasure</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="8"><td data-tp-role="table-cell" data-tp-i="18">E4 — Carrier Suppression</td><td data-tp-role="table-cell" data-tp-i="19">0.95</td><td data-tp-role="table-cell" data-tp-i="20">Targeting transmitters: killing scribes, imprisoning teachers, banning practitioners</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="9"><td data-tp-role="table-cell" data-tp-i="21">E5 — Transmission Capacity Collapse</td><td data-tp-role="table-cell" data-tp-i="22">0.85</td><td data-tp-role="table-cell" data-tp-i="23">Loss of ability to copy or propagate: literacy collapse, institutional breakdown, network failure</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="10"><td data-tp-role="table-cell" data-tp-i="24">E6 — Encoding Loss</td><td data-tp-role="table-cell" data-tp-i="25">0.70</td><td data-tp-role="table-cell" data-tp-i="26">Loss during format change: oral→written, manuscript→print, analog→digital — always lossy</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="11"><td data-tp-role="table-cell" data-tp-i="27">E7 — Structural Fragmentation</td><td data-tp-role="table-cell" data-tp-i="28">0.70</td><td data-tp-role="table-cell" data-tp-i="29">Signal breaks into disconnected parts: partial texts, broken structures, incomplete traditions</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="12"><td data-tp-role="table-cell" data-tp-i="30">E8 — Context Loss</td><td data-tp-role="table-cell" data-tp-i="31">0.80</td><td data-tp-role="table-cell" data-tp-i="32">Supporting framework collapses: language extinction, symbolic system loss, cultural decoding failure</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="13"><td data-tp-role="table-cell" data-tp-i="33">E9 — Access Restriction</td><td data-tp-role="table-cell" data-tp-i="34">0.65</td><td data-tp-role="table-cell" data-tp-i="35">Signal exists but is inaccessible: locked archives, restricted priesthoods, hidden knowledge systems</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="14"><td data-tp-role="table-cell" data-tp-i="36">E10 — Centralization Risk</td><td data-tp-role="table-cell" data-tp-i="37">0.85</td><td data-tp-role="table-cell" data-tp-i="38">Single-point-of-failure structure: one manuscript, one monument, one institutional custodian</td></tr>
+  </table>
+  <p data-tp-role="paragraph" data-tp-i="5">Total pressure load: L = Σ(wᵢ · Eᵢ) integrated over time. Events interact multiplicatively, not additively — a flood that destroys archives followed by a suppression regime that prevents reconstruction compounds, it does not simply add.</p>
+
+  <h2 data-tp-role="heading-2" data-tp-i="4" data-tp-level="2">Anomaly Scoring</h2>
+  <p data-tp-role="paragraph" data-tp-i="6">Raw strength scores are converted to Z-scores against a category-locked baseline — baselines are set from the existing registry before any new signal is entered. This prevents the comparison class from being tailored to favor a predetermined result.</p>
+  <table data-tp-role="table" data-tp-i="2">
+    <tr data-tp-role="table-row" data-tp-i="15"><th data-tp-role="table-header-cell" data-tp-i="6">Classification</th><th data-tp-role="table-header-cell" data-tp-i="7">Z-Score</th></tr>
+    <tr data-tp-role="table-row" data-tp-i="16"><td data-tp-role="table-cell" data-tp-i="39">Extreme Anomaly</td><td data-tp-role="table-cell" data-tp-i="40">> 4.0σ</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="17"><td data-tp-role="table-cell" data-tp-i="41">Highly Anomalous</td><td data-tp-role="table-cell" data-tp-i="42">2.5 – 4.0σ</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="18"><td data-tp-role="table-cell" data-tp-i="43">Notable</td><td data-tp-role="table-cell" data-tp-i="44">1.5 – 2.5σ</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="19"><td data-tp-role="table-cell" data-tp-i="45">Normal</td><td data-tp-role="table-cell" data-tp-i="46">-1.5 – 1.5σ</td></tr>
+    <tr data-tp-role="table-row" data-tp-i="20"><td data-tp-role="table-cell" data-tp-i="47">Rapid Decay</td><td data-tp-role="table-cell" data-tp-i="48">< -1.5σ</td></tr>
+  </table>
+
+  <div class="warning-box">
+    <strong style="font-family:var(--head);letter-spacing:2px;color:var(--amber);">METHODOLOGICAL HONESTY</strong><br><br>
+    This framework measures signal robustness — how well something survived transmission through a hostile channel. It does not directly measure truth. Persistence is not proof of correspondence with reality. The framework identifies structurally non-arbitrary signals that demand explanation. What that explanation is remains a separate inquiry. The anomaly score is the start of a question, not the end of one.
+  </div>
+
+  <h2 data-tp-role="heading-2" data-tp-i="5" data-tp-level="2">Pre-Registration Requirement</h2>
+  <p data-tp-role="paragraph" data-tp-i="7">To be scientifically defensible, all variable definitions, baseline categories, and anomaly thresholds must be locked before the signal of interest is entered into the system. The registry enforces this by computing baselines from existing data prior to any new addition.</p>
+
+  <h2 data-tp-role="heading-2" data-tp-i="6" data-tp-level="2">Challenge This Framework</h2>
+  <div class="warning-box" style="border-color:rgba(77,157,224,0.3);background:rgba(77,157,224,0.04);">
+    <strong style="font-family:var(--head);letter-spacing:2px;color:var(--blue);">OPEN TO CHALLENGE</strong><br><br>
+    If you believe a variable is miscalibrated, a signal has been scored incorrectly, a comparison category is biased, or the entropy weights are defensibly wrong — we want to know. This framework is designed to be falsifiable. A challenge that holds up improves the system. A challenge that doesn't hold up strengthens the result.<br><br>
+    <span style="font-family:var(--mono);font-size:12px;color:var(--text2);">Contact: &nbsp;</span>
+    <a href="mailto:david@faiththruphysics.com" style="font-family:var(--mono);font-size:13px;color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(77,157,224,0.4);">david@faiththruphysics.com</a>
+    <br><span style="font-family:var(--mono);font-size:11px;color:var(--muted);display:block;margin-top:8px;">Include: signal name · variable in question · your proposed value · reasoning · sources</span>
+  </div>
+
+  <p data-tp-role="paragraph" data-tp-i="8" style="margin-top:32px;font-size:13px;color:var(--muted);font-family:var(--mono);">USPF v1.1 · David Lowe (POF 2828) · March 2026 · Grounded in Shannon (1948) · faiththruphysics.com</p>
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════
+
+let filterCat = '';
+let sortMode = 'sigma';
+
+const SIGNALS = [
+  // WRITTEN
+  { name:'The Bible (Complete Canon)',   cat:'written',      age:3500, S:0.94, M:0.96, P:9.2,  notes:'Survived empire-scale suppression across 6 civilizations. 66,000+ manuscripts. 40 authors, 3 continents, 1500 years.' },
+  { name:'Dead Sea Scrolls',             cat:'written',      age:2100, S:0.97, M:0.62, P:5.8,  notes:'Exceptional fidelity. Single cache, limited independent paths.' },
+  { name:'The Iliad',                    cat:'oral',         age:2900, S:0.78, M:0.71, P:5.2,  notes:'Oral-to-written transition. Multiple independent manuscript traditions.' },
+  { name:'The Quran',                    cat:'written',      age:1400, S:0.96, M:0.88, P:6.4,  notes:'Hafiz memory tradition provides oral redundancy alongside written.' },
+  { name:'Torah (Pentateuch)',           cat:'written',      age:3300, S:0.91, M:0.82, P:8.1,  notes:'Masoretic precision. Survived Babylonian captivity and multiple dispersions.' },
+  { name:'Mahabharata',                  cat:'oral',         age:3000, S:0.72, M:0.68, P:4.8,  notes:'Vast oral-to-written tradition. High drift over transmission.' },
+  { name:'Bhagavad Gita',               cat:'written',      age:2200, S:0.84, M:0.74, P:4.1,  notes:'Core preserved. Commentary traditions diverge significantly.' },
+  { name:'Tao Te Ching',                cat:'written',      age:2500, S:0.80, M:0.66, P:4.4,  notes:'81 verses remarkably stable. Multiple independent early manuscripts.' },
+  { name:'Epic of Gilgamesh',           cat:'written',      age:4200, S:0.61, M:0.44, P:6.8,  notes:'Oldest surviving narrative. Significant fragmentation. Multiple clay tablet caches.' },
+  { name:'The Vedas',                   cat:'oral',         age:3500, S:0.85, M:0.78, P:5.6,  notes:'Oral precision culture. Remarkably stable despite age.' },
+  { name:'Book of the Dead',            cat:'written',      age:3500, S:0.65, M:0.52, P:4.2,  notes:'Fragmented. Multiple variant editions. High drift.' },
+  { name:'Beowulf',                     cat:'written',      age:1100, S:0.82, M:0.31, P:3.4,  notes:'Single manuscript survived. Near-total loss event.' },
+  { name:'Confucian Analects',          cat:'written',      age:2500, S:0.79, M:0.71, P:5.1,  notes:'Burned under Qin. Reconstructed from memory. Disputed chapters.' },
+  // MATHEMATICAL
+  { name:'Pythagorean Theorem',         cat:'mathematical', age:2600, S:1.00, M:0.98, P:7.2,  notes:'Zero semantic drift possible. Self-validating. Independent discovery across cultures.' },
+  { name:"Euclid's Elements",          cat:'mathematical', age:2300, S:0.98, M:0.91, P:6.8,  notes:'Survived Arabic preservation during European dark ages. Near-perfect fidelity.' },
+  { name:'Standard Model of Physics',  cat:'mathematical', age:55,   S:0.96, M:0.94, P:1.2,  notes:'Young. Highly distributed. No suppression pressure yet.' },
+  { name:"Newton's Laws of Motion",    cat:'mathematical', age:340,  S:0.99, M:0.95, P:2.8,  notes:'Universally reproduced. Minor relativistic revision noted.' },
+  // PHYSICAL
+  { name:'Great Pyramid of Giza',       cat:'physical',     age:4600, S:0.83, M:0.58, P:7.4,  notes:'Survived as physical mass. Significant quarrying. Limited independent channels.' },
+  { name:'Bent Pyramid',               cat:'physical',     age:4600, S:0.91, M:0.52, P:5.1,  notes:'Exceptional structural preservation. Less targeted by quarrying.' },
+  { name:'Stonehenge',                  cat:'physical',     age:5000, S:0.55, M:0.42, P:5.8,  notes:'Significant collapse and stone removal. Remarkable age.' },
+  { name:'The Parthenon',              cat:'physical',     age:2500, S:0.58, M:0.61, P:6.2,  notes:'Venetian bombardment 1687. Extensive documentation.' },
+  { name:'Colosseum',                  cat:'physical',     age:1950, S:0.62, M:0.68, P:5.4,  notes:'Used as quarry for centuries. Extensively documented.' },
+  { name:'Abu Simbel',                  cat:'physical',     age:3300, S:0.88, M:0.55, P:5.6,  notes:'Relocated 1968. Inscriptions exceptionally preserved.' },
+  { name:'Angkor Wat',                  cat:'physical',     age:900,  S:0.70, M:0.54, P:4.2,  notes:'Jungle reclamation. Significant but reversible entropy.' },
+  // LEGAL
+  { name:'Code of Hammurabi',          cat:'legal',        age:3750, S:0.78, M:0.41, P:6.1,  notes:'Single stele survived. Near-zero redundancy. Remarkable fidelity.' },
+  { name:'Ten Commandments',           cat:'legal',        age:3400, S:0.94, M:0.88, P:7.8,  notes:'Embedded in Torah transmission. Extraordinarily high redundancy.' },
+  { name:'Magna Carta',                cat:'legal',        age:810,  S:0.88, M:0.74, P:4.2,  notes:'Multiple originals issued. Constitutional embedding amplifies persistence.' },
+  { name:'Roman Law (Corpus Juris)',   cat:'legal',        age:1500, S:0.81, M:0.72, P:5.6,  notes:'Byzantine preservation. Forms basis of most modern legal systems.' },
+  // BIOLOGICAL
+  { name:'Mitochondrial Eve DNA',      cat:'biological',   age:150000,S:0.88, M:0.99, P:8.4, notes:'Every living human carries this signal. Extreme redundancy.' },
+  { name:'LUCA Genetic Sequences',     cat:'biological',   age:3800000000,S:0.41,M:0.99,P:9.8,notes:'3.8 billion years. Extraordinary persistence through mass extinctions.' },
+  // ARTISTIC
+  { name:"Beethoven's 9th Symphony",  cat:'artistic',     age:202,  S:0.97, M:0.88, P:2.8,  notes:'Written under total deafness. Near-perfect fidelity. Widely distributed.' },
+  { name:'Rosetta Stone',             cat:'physical',     age:2220, S:0.96, M:0.38, P:4.8,  notes:'Single artifact. Exceptional state preservation.' },
+  { name:'My Startup Idea',           cat:'artistic',     age:1,    S:0.50, M:0.10, P:0.1,  notes:'Control case. Rapid decay expected.' },
+];
+
+// Add user-saved signals
+let userSignals = JSON.parse(localStorage.getItem('uspf_signals') || '[]');
+
+function allSignals() { return [...SIGNALS, ...userSignals]; }
+
+// ══════════════════════════════════════════════════════════
+// SCORING ENGINE
+// ══════════════════════════════════════════════════════════
+
+function score(S, M, P) {
+  return S * M * Math.log(1 + P);
+}
+
+function getBaseline(cat) {
+  const sigs = SIGNALS.filter(s => s.cat === cat);
+  if (sigs.length < 2) {
+    // fallback to all
+    const all = SIGNALS;
+    const scores = all.map(s => score(s.S, s.M, s.P));
+    const mean = scores.reduce((a,b)=>a+b,0)/scores.length;
+    const std  = Math.sqrt(scores.map(v=>(v-mean)**2).reduce((a,b)=>a+b,0)/scores.length);
+    return { mean, std };
+  }
+  const scores = sigs.map(s => score(s.S, s.M, s.P));
+  const mean = scores.reduce((a,b)=>a+b,0)/scores.length;
+  const std  = Math.sqrt(scores.map(v=>(v-mean)**2).reduce((a,b)=>a+b,0)/scores.length) || 0.01;
+  return { mean, std };
+}
+
+function zscore(raw, cat) {
+  const { mean, std } = getBaseline(cat);
+  return (raw - mean) / std;
+}
+
+function classify(z) {
+  if (z > 4.0)  return { label:'EXTREME ANOMALY', cls:'extreme' };
+  if (z > 2.5)  return { label:'HIGHLY ANOMALOUS', cls:'highly' };
+  if (z > 1.5)  return { label:'NOTABLE', cls:'notable' };
+  if (z > -1.5) return { label:'NORMAL', cls:'normal' };
+  return { label:'RAPID DECAY', cls:'decay' };
+}
+
+function rarity(z) {
+  // Approximate one-tailed: very rough
+  if (z > 5)   return '> 10^6 : 1';
+  if (z > 4.5) return '~ 10^5 : 1';
+  if (z > 4.0) return '~ 10^4 : 1';
+  if (z > 3.5) return '~ 2000 : 1';
+  if (z > 3.0) return '~ 700 : 1';
+  if (z > 2.5) return '~ 160 : 1';
+  if (z > 2.0) return '~ 44 : 1';
+  if (z > 1.5) return '~ 15 : 1';
+  return 'Unremarkable';
+}
+
+// ══════════════════════════════════════════════════════════
+// CALCULATOR UI
+// ══════════════════════════════════════════════════════════
+
+function updateSlider(id, val) {
+  document.getElementById(id).textContent = val.toFixed(2);
+}
+
+function calcAll() {
+  const s1 = +document.getElementById('s1').value/100;
+  const s2 = +document.getElementById('s2').value/100;
+  const s3 = +document.getElementById('s3').value/100;
+  const S  = (s1+s2+s3)/3;
+  document.getElementById('s-val').textContent = S.toFixed(3);
+
+  const m1 = +document.getElementById('m1').value/100;
+  const m2 = +document.getElementById('m2').value/100;
+  const m3 = +document.getElementById('m3').value/100;
+  const M  = (m1+m2+m3)/3;
+  document.getElementById('m-val').textContent = M.toFixed(3);
+
+  const p1 = +document.getElementById('p1').value/100;
+  const p2 = +document.getElementById('p2').value/100;
+  const p3 = +document.getElementById('p3').value/100;
+  const p4 = +document.getElementById('p4').value/100;
+  const P  = (p1+p2+p3+p4) * 2.5; // scale 0-10
+  document.getElementById('p-val').textContent = P.toFixed(3);
+}
+
+function runCalculation() {
+  const name = document.getElementById('sig-name').value || 'Unknown Signal';
+  const cat  = document.getElementById('sig-cat').value;
+  const age  = +document.getElementById('sig-age').value || 100;
+
+  const s1 = +document.getElementById('s1').value/100;
+  const s2 = +document.getElementById('s2').value/100;
+  const s3 = +document.getElementById('s3').value/100;
+  const S  = (s1+s2+s3)/3;
+
+  const m1 = +document.getElementById('m1').value/100;
+  const m2 = +document.getElementById('m2').value/100;
+  const m3 = +document.getElementById('m3').value/100;
+  const M  = (m1+m2+m3)/3;
+
+  const p1 = +document.getElementById('p1').value/100;
+  const p2 = +document.getElementById('p2').value/100;
+  const p3 = +document.getElementById('p3').value/100;
+  const p4 = +document.getElementById('p4').value/100;
+  const P  = (p1+p2+p3+p4) * 2.5;
+
+  const raw = score(S, M, P);
+  const z   = zscore(raw, cat);
+  const cls = classify(z);
+  const rar = rarity(z);
+  const { mean, std } = getBaseline(cat);
+
+  const steps = [
+    {
+      title: 'Step 1 — Signal Integrity (S)',
+      math: `S = (${s1.toFixed(2)} + ${s2.toFixed(2)} + ${s3.toFixed(2)}) / 3 = <span class="val">${S.toFixed(4)}</span>`,
+      note: 'Average of fidelity, fragmentation resistance, and semantic stability.'
+    },
+    {
+      title: 'Step 2 — Mechanism Strength (M)',
+      math: `M = (${m1.toFixed(2)} + ${m2.toFixed(2)} + ${m3.toFixed(2)}) / 3 = <span class="val">${M.toFixed(4)}</span>`,
+      note: 'Average of redundancy, path independence, and reconstruction ability.'
+    },
+    {
+      title: 'Step 3 — Survival Pressure (P)',
+      math: `P = (${p1.toFixed(2)} + ${p2.toFixed(2)} + ${p3.toFixed(2)} + ${p4.toFixed(2)}) × 2.5 = <span class="val">${P.toFixed(4)}</span>`,
+      note: 'Scaled sum of suppression, catastrophe, cultural discontinuity, and medium transitions.'
+    },
+    {
+      title: 'Step 4 — Raw Strength Score',
+      math: `Strength = S × M × ln(1 + P)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ${S.toFixed(4)} × ${M.toFixed(4)} × ln(1 + ${P.toFixed(4)})<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ${S.toFixed(4)} × ${M.toFixed(4)} × ${Math.log(1+P).toFixed(4)}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="val">${raw.toFixed(6)}</span>`,
+      note: 'Shannon Channel Capacity applied to historical transmission.'
+    },
+    {
+      title: `Step 5 — Category Baseline (${cat})`,
+      math: `Mean = <span class="val">${mean.toFixed(4)}</span> &nbsp;|&nbsp; Std Dev = <span class="val">${std.toFixed(4)}</span>`,
+      note: 'Baseline locked from existing registry before this signal was entered.'
+    },
+    {
+      title: 'Step 6 — Z-Score (Anomaly)',
+      math: `Z = (${raw.toFixed(4)} − ${mean.toFixed(4)}) / ${std.toFixed(4)} = <span class="val">${z.toFixed(4)}</span>σ`,
+      note: `Rarity estimate: ${rar}`
+    }
+  ];
+
+  const container = document.getElementById('steps');
+  container.innerHTML = '';
+  steps.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'step';
+    el.innerHTML = `
+      <div class="step-num">0${i+1}</div>
+      <div class="step-body">
+        <div class="step-title">${s.title}</div>
+        <div class="step-math">${s.math}</div>
+        <div class="step-note">${s.note}</div>
+      </div>`;
+    container.appendChild(el);
+    setTimeout(() => el.classList.add('revealed'), i * 180);
+  });
+
+  setTimeout(() => {
+    document.getElementById('sigma-out').textContent = z.toFixed(2) + 'σ';
+    const badgeEl = document.getElementById('badge-out');
+    badgeEl.innerHTML = `<span class="anomaly-badge badge-${cls.cls}">${cls.label}</span>`;
+    document.getElementById('interp-out').textContent =
+      `"${name}" scores ${z.toFixed(2)}σ above the ${cat} category baseline. `+
+      `Raw strength: ${raw.toFixed(4)}. Rarity estimate: ${rar}. `+
+      (z > 4 ? 'This is a statistically extreme anomaly that demands structural explanation.' :
+       z > 2.5 ? 'This signal is highly anomalous relative to its category peers.' :
+       z > 1.5 ? 'Notable persistence above baseline.' :
+       'Performance within expected range for this category.');
+    document.getElementById('final-result').style.display = 'block';
+
+    // Store current calculation for save
+    window._currentCalc = { name, cat, age, S, M, P, raw, z, notes:'User entry' };
+  }, steps.length * 180 + 200);
+}
+
+const TOP_N = 33;
+
+function saveToRegistry() {
+  if (!window._currentCalc) return;
+  const entry = window._currentCalc;
+
+  // Build full scored list: base + user signals + new entry
+  const combined = [...SIGNALS, ...userSignals, entry]
+    .map(s => ({ ...s, _score: score(s.S, s.M, s.P) }));
+
+  // Deduplicate by name — keep highest score
+  const deduped = [];
+  const seen = new Set();
+  combined.sort((a,b) => b._score - a._score);
+  for (const s of combined) {
+    if (!seen.has(s.name.toLowerCase())) {
+      seen.add(s.name.toLowerCase());
+      deduped.push(s);
+    }
+  }
+
+  // Top 33 by raw score
+  const top33 = deduped.slice(0, TOP_N);
+  const newRank = top33.findIndex(s => s.name === entry.name);
+  const droppedOff = deduped.length > TOP_N ? deduped[TOP_N] : null;
+  const madeIt = newRank !== -1;
+
+  // User signals = top33 minus the base SIGNALS
+  const baseNames = new Set(SIGNALS.map(s => s.name));
+  userSignals = top33.filter(s => !baseNames.has(s.name));
+  localStorage.setItem('uspf_signals', JSON.stringify(userSignals));
+
+  // Feedback
+  if (!madeIt) {
+    const lowestInTop = top33[top33.length - 1];
+    alert(`"${entry.name}" did not make the Top ${TOP_N}.\n\nScore: ${entry.raw.toFixed(4)} — below #${TOP_N}: "${lowestInTop.name}" (${lowestInTop._score.toFixed(4)}).\n\nKeep trying.`);
+  } else if (droppedOff) {
+    alert(`"${entry.name}" entered at #${newRank + 1}.\n\n"${droppedOff.name}" dropped off the Top ${TOP_N}.`);
+  } else {
+    alert(`"${entry.name}" entered the registry at #${newRank + 1}.`);
+  }
+
+  renderDB();
+}
+
+// ══════════════════════════════════════════════════════════
+// DATABASE
+// ══════════════════════════════════════════════════════════
+
+function renderDB() {
+  const search = (document.getElementById('db-search')?.value || '').toLowerCase();
+  let sigs = allSignals().filter(s => {
+    if (filterCat && s.cat !== filterCat) return false;
+    if (search && !s.name.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  sigs = sigs.map(s => ({ ...s, raw: score(s.S, s.M, s.P), z: zscore(score(s.S, s.M, s.P), s.cat) }));
+
+  if (sortMode === 'sigma') sigs.sort((a,b) => b.z - a.z);
+  else if (sortMode === 'age') sigs.sort((a,b) => b.age - a.age);
+  else sigs.sort((a,b) => a.name.localeCompare(b.name));
+
+  // Stats
+  const statsEl = document.getElementById('db-stats');
+  const topZ = Math.max(...sigs.map(s=>s.z));
+  statsEl.innerHTML = `
+    <div class="stat-box"><div class="stat-label">Total Signals</div><div class="stat-val">${sigs.length}</div></div>
+    <div class="stat-box"><div class="stat-label">Max Anomaly</div><div class="stat-val">${topZ.toFixed(2)}σ</div></div>
+    <div class="stat-box"><div class="stat-label">Extreme Anomalies</div><div class="stat-val">${sigs.filter(s=>s.z>4).length}</div></div>
+    <div class="stat-box"><div class="stat-label">Categories</div><div class="stat-val">${[...new Set(sigs.map(s=>s.cat))].length}</div></div>
+  `;
+
+  const maxZ = Math.max(...sigs.map(s=>s.z), 1);
+  const grid = document.getElementById('db-grid');
+  grid.innerHTML = sigs.map((s, i) => {
+    const cls = classify(s.z);
+    const pct = Math.max(0, Math.min(100, (s.z / maxZ) * 100));
+    return `
+    <div class="signal-card ${cls.cls}" onclick="">
+      <div class="card-rank">#${i+1} &nbsp;·&nbsp; ${s.cat.toUpperCase()}</div>
+      <div class="card-name">${s.name}</div>
+      <div class="card-bar-bg"><div class="card-bar-fill" style="width:${pct}%"></div></div>
+      <div class="card-sigma">${s.z.toFixed(2)}<small>σ</small></div>
+      <div class="card-age">~${s.age.toLocaleString()}y</div>
+      <div style="clear:both;margin-top:8px;">
+        <span class="anomaly-badge badge-${cls.cls}" style="font-size:9px;padding:3px 8px;">${cls.label}</span>
+      </div>
+      <div style="font-family:var(--body);font-size:12px;color:var(--text2);margin-top:8px;font-style:italic;line-height:1.5;">${s.notes || ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// TAB CONTROL
+// ══════════════════════════════════════════════════════════
+
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'db') renderDB();
+}
+
+// Init
+calcAll();
+renderDB();
+</script>
+<section class="ring-nav" data-tp-region="article-footer">
+  <div class="ring-header">
+    <h2 data-tp-role="heading-2" data-tp-i="7" data-tp-level="2">Related Work</h2>
+    <p data-tp-role="paragraph" data-tp-i="9">Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p data-tp-role="paragraph" data-tp-i="10" class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p data-tp-role="paragraph" data-tp-i="11" class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p data-tp-role="paragraph" data-tp-i="12" class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>

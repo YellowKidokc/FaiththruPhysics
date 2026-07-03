@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<title>The Evolution Probe | Three Mathematical Killshots · David Lowe</title>
+
+<style>
+.serif{font-family:'Crimson Text',serif;}
+.display{font-family:'Oswald',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050205;
+  --surface:#100810;
+  --surface2:#180d18;
+  --border:rgba(180,40,80,0.08);
+  --border-h:rgba(180,40,80,0.18);
+  --accent:#9b1c3a;
+  --accent-l:#d4365a;
+  --accent-dim:rgba(155,28,58,0.08);
+  --gold:#d4af37;
+  --warm-dim:rgba(196,154,64,0.06);
+  --teal:#26b8a6;
+  --teal-dim:rgba(38,184,166,0.06);
+  --blue:#4d8fe0;
+  --blue-dim:rgba(77,143,224,0.07);
+  --text:#e8d8d8;
+  --text-d:#8a7070;
+  --text-m:#4a3535;
+  --pass:#2ebd87;
+  --fail:#ef4444;
+  --warn:#f59e0b;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.8;font-size:1.15rem;overflow-x:clip}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 20% 0%,rgba(155,28,58,0.07) 0%,transparent 50%),
+             radial-gradient(ellipse at 80% 100%,rgba(155,28,58,0.04) 0%,transparent 50%);
+  pointer-events:none}
+.page{max-width:1100px;margin:0 auto;padding:0 2rem}
+
+/* TOP BAR */
+.top-bar{border-bottom:1px solid var(--border);padding:.9rem 0}
+.top-bar .inner{display:flex;align-items:center;justify-content:space-between}
+.mark{font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-m);font-family:'JetBrains Mono',monospace}
+.mark span{color:var(--accent-l)}
+.top-nav{display:flex;gap:1.4rem}
+.top-nav a{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-m);text-decoration:none;font-family:'JetBrains Mono',monospace;transition:color .2s}
+.top-nav a:hover,.top-nav a.on{color:var(--accent-l)}
+
+/* HERO */
+.hero{padding:5rem 0 2.5rem;text-align:center}
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--accent-l);margin-bottom:1.5rem;display:block}
+.hero h1{font-family:'Crimson Text',Georgia,serif;font-size:clamp(2.4rem,5.5vw,3.8rem);font-weight:400;color:white;line-height:1.1;margin-bottom:1.2rem}
+.hero h1 strong{font-weight:700;color:var(--accent-l)}
+.hero .lead{font-size:1.15rem;color:var(--text-d);max-width:640px;margin:0 auto 2rem;line-height:1.9}
+
+/* LAYOUT */
+.g{display:grid;gap:.8rem;margin-bottom:.8rem}
+.g12{grid-template-columns:repeat(12,1fr)}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}
+.s7{grid-column:span 7}.s8{grid-column:span 8}.srow{grid-column:1/-1}
+
+/* BOXES */
+.bx-stat{background:var(--surface2);text-align:center;padding:1.6rem 1rem;border-radius:8px}
+.bx-stat .num{font-family:'Crimson Text',serif;font-size:2.6rem;font-weight:600;color:var(--accent-l);line-height:1}
+.bx-stat .lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-m);margin-top:.35rem}
+
+.bx-hero{background:linear-gradient(135deg,var(--surface2) 0%,rgba(155,28,58,0.08) 100%);border:1px solid var(--border);padding:2rem;display:flex;flex-direction:column;justify-content:center;border-radius:8px}
+.bx-hero h3{font-family:'Crimson Text',serif;font-size:1.3rem;color:white;margin-bottom:.4rem}
+.bx-hero p{font-size:.98rem;color:var(--text-d);line-height:1.85}
+
+.bx-red{background:var(--accent-dim);border:1px solid rgba(155,28,58,0.15);border-left:3px solid var(--accent-l);padding:1.3rem 1.7rem;border-radius:0 8px 8px 0}
+.bx-red strong{color:var(--accent-l)}
+.bx-red p{font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.55rem}
+.bx-red p:last-child{margin-bottom:0}
+
+.bx-warm{background:var(--warm-dim);border:1px solid rgba(196,154,64,0.1);border-left:3px solid var(--warm);padding:1.3rem 1.7rem;border-radius:0 8px 8px 0}
+.bx-warm .wtag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--warm);margin-bottom:.45rem}
+.bx-warm p{font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.55rem}
+.bx-warm p:last-child{margin-bottom:0}
+.bx-warm strong{color:var(--warm)}
+
+.bx-blue{background:var(--blue-dim);border:1px solid rgba(77,143,224,0.1);border-left:3px solid var(--blue);padding:1.3rem 1.7rem;border-radius:0 8px 8px 0}
+.bx-blue p{font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.55rem}
+.bx-blue p:last-child{margin-bottom:0}
+.bx-blue strong{color:var(--blue)}
+
+/* KILLSHOT BLOCKS */
+.killshot{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.5rem}
+.killshot-header{background:linear-gradient(135deg,rgba(155,28,58,0.15) 0%,rgba(155,28,58,0.05) 100%);border-bottom:1px solid var(--border);padding:1.4rem 1.8rem;display:flex;align-items:center;gap:1.2rem}
+.killshot-num{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;color:var(--accent-l);line-height:1;opacity:.6}
+.killshot-title{flex:1}
+.killshot-title .kt{font-family:'Crimson Text',serif;font-size:1.35rem;color:white;line-height:1.2}
+.killshot-title .ks{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-top:.3rem;display:block}
+.verdict{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;padding:.4em .9em;border-radius:4px;white-space:nowrap;background:rgba(239,68,68,.12);color:var(--fail);border:1px solid rgba(239,68,68,.25)}
+.killshot-body{padding:1.8rem}
+
+/* EQUATION BLOCKS */
+.eq-block{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:8px;padding:1.4rem 1.6rem;margin:.7rem 0}
+.eq-line{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--accent-l);letter-spacing:.03em;display:block;margin-bottom:.7rem;line-height:1.7}
+.eq-line.good{color:var(--pass)}
+.eq-line.bad{color:var(--fail)}
+.eq-explain{font-size:.93rem;color:var(--text-d);line-height:1.85}
+.term{color:var(--accent-l);font-family:'JetBrains Mono',monospace;font-size:.9rem;background:rgba(155,28,58,.1);padding:.1em .35em;border-radius:3px;margin:0 .1em}
+.gterm{color:var(--pass);font-family:'JetBrains Mono',monospace;font-size:.9rem;background:rgba(46,189,135,.1);padding:.1em .35em;border-radius:3px;margin:0 .1em}
+.bterm{color:var(--fail);font-family:'JetBrains Mono',monospace;font-size:.9rem;background:rgba(239,68,68,.1);padding:.1em .35em;border-radius:3px;margin:0 .1em}
+.wterm{color:var(--warn);font-family:'JetBrains Mono',monospace;font-size:.9rem;background:rgba(245,158,11,.1);padding:.1em .35em;border-radius:3px;margin:0 .1em}
+
+/* COMPARISON TABLE */
+.cmp-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:.8rem 0}
+.cmp-cell{border-radius:8px;padding:1.2rem 1.4rem}
+.cmp-cell.theirs{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-top:3px solid var(--fail)}
+.cmp-cell.ours{background:rgba(46,189,135,.04);border:1px solid rgba(46,189,135,.1);border-top:3px solid var(--pass)}
+.cmp-label{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem;display:block}
+.cmp-cell.theirs .cmp-label{color:var(--fail)}
+.cmp-cell.ours .cmp-label{color:var(--pass)}
+.cmp-cell p{font-size:.92rem;color:var(--text-d);line-height:1.8}
+.cmp-cell strong{color:var(--text)}
+
+/* SECTION DIVIDER */
+.sec-div{display:flex;align-items:center;gap:1rem;margin:3.2rem 0 1.6rem}
+.sec-div .tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-l);white-space:nowrap}
+.sec-div::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border-h),transparent)}
+
+/* DATA TABLE */
+.dtbl{width:100%;border-collapse:separate;border-spacing:0;border-radius:8px;border:1px solid var(--border);overflow:hidden;margin-bottom:.8rem}
+.dtbl thead{background:var(--surface2)}
+.dtbl th{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-m);padding:.72rem 1.1rem;text-align:left}
+.dtbl td{padding:.72rem 1.1rem;font-size:.93rem;color:var(--text-d);border-top:1px solid rgba(180,40,80,0.04);line-height:1.75}
+.dtbl td:first-child{color:var(--text);font-weight:500}
+.dtbl td.fail-cell{color:var(--fail);font-family:'JetBrains Mono',monospace;font-size:.85rem}
+.dtbl td.pass-cell{color:var(--pass);font-family:'JetBrains Mono',monospace;font-size:.85rem}
+.dtbl td.warn-cell{color:var(--warn);font-family:'JetBrains Mono',monospace;font-size:.85rem}
+
+/* SIGMA BADGE */
+.sigma{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--fail);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);padding:.2em .5em;border-radius:6px}
+
+/* BOTTOM NAV */
+.bot-nav{border-top:1px solid var(--border);padding:2.5rem 0;margin-top:3rem}
+.bot-nav .blabel{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.35em;text-transform:uppercase;color:var(--text-m);margin-bottom:1rem;text-align:center}
+.bnav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden}
+.bnav-card{background:var(--surface);padding:1.1rem 1.3rem;text-decoration:none;display:flex;flex-direction:column;gap:.25rem;transition:background .2s}
+.bnav-card:hover{background:var(--surface2)}
+.bnav-card .bt{font-family:'JetBrains Mono',monospace;font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-m)}
+.bnav-card .bn{font-size:.93rem;color:var(--text);line-height:1.3}
+.bnav-card.cur{background:var(--accent-dim)}
+.bnav-card.cur .bt{color:var(--accent-l)}
+.foot{text-align:center;padding:2rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text-m);letter-spacing:.1em}
+.dots{text-align:center;color:var(--text-m);margin:2.5rem 0;font-family:'JetBrains Mono',monospace;font-size:.85rem;letter-spacing:.4em}
+
+@media(max-width:768px){
+  .g12,.g2,.g3,.cmp-row{grid-template-columns:1fr}
+  .s4,.s5,.s6,.s7,.s8{grid-column:span 1}
+  .top-nav{display:none}.hero{padding:3rem 0 1.5rem}.hero h1{font-size:2.2rem}
+  .bnav-grid{grid-template-columns:1fr}
+}
+</style>
+  <script defer src="https://analytics.faiththruphysics.com/script.js" data-website-id="2f2e3a0f-e8e5-4900-a1e0-1b33592403ee"></script>
+  <link rel="canonical" href="https://faiththruphysics.com/blue/evolution-probe.html">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:image" content="https://faiththruphysics.com/favicon.svg"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<!-- RING NAVIGATION -->
+<style>
+.ring-nav{margin:4rem auto;max-width:1100px;padding:3rem 1.5rem;}
+.ring-nav .ring-header{text-align:center;margin-bottom:2.5rem;}
+.ring-nav .ring-header h2{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--highlight,#d4af37);text-transform:uppercase;letter-spacing:3px;margin-bottom:.5rem;}
+.ring-nav .ring-header p{color:var(--text-secondary,#a0a0a0);font-size:.9rem;}
+.ring-tier{border:1px solid var(--border,#333);border-radius:8px;margin-bottom:1rem;overflow:hidden;}
+.ring-tier-header{display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;cursor:pointer;transition:background .2s;}
+.ring-tier-header:hover{background:rgba(255,255,255,0.03);}
+.ring-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ring-1 .ring-tier-dot{background:#d4af37;}
+.ring-2 .ring-tier-dot{background:#4a9eff;}
+.ring-3 .ring-tier-dot{background:#8b7fc2;}
+.ring-tier-label{font-family:'Oswald',sans-serif;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-primary,#e0e0e0);}
+.ring-tier-desc{color:var(--text-secondary,#a0a0a0);font-size:.8rem;margin-left:auto;}
+.ring-tier-chevron{color:var(--text-secondary,#a0a0a0);font-size:.7rem;transition:transform .3s;margin-left:.5rem;}
+.ring-tier.open .ring-tier-chevron{transform:rotate(90deg);}
+.ring-tier-cards{display:none;padding:1rem 1.25rem;}
+.ring-tier.open .ring-tier-cards{display:block;}
+.ring-empty{color:#666;font-size:.85rem;font-style:italic;}
+</style>
+</head>
+<body>
+<nav class="tp-ribbon" style="position:sticky;top:0;z-index:1000;background:#0a0a0a;border-bottom:2px solid #4a9eff33;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-family:'Inter',sans-serif;font-size:.8rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <a href="/index.html" style="color:#999;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#4a9eff'" onmouseout="this.style.color='#999'">&larr; Main Index</a>
+    <span style="color:#333;">|</span>
+    <span style="color:#4a9eff;font-weight:500;">Blue Series</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<div class="top-bar"><div class="inner">
+  <div class="mark"><span>David Lowe</span> · The Probe Series · April 2026</div>
+  <nav class="top-nav">
+    <a href="index.html">Home</a>
+    <a href="god-in-the-equations.html">The Blue Series</a>
+    <a class="on" href="#">Evolution Probe</a>
+  </nav>
+</div></div>
+
+<div class="hero">
+  <span class="hero-tag">Probe Series · Paper 1</span>
+  <h1>The<br><strong>Evolution Probe</strong></h1>
+  <p class="lead">Three mathematical killshots against the standard evolutionary model — using the model's own published parameters, its own cited authors, its own numbers. No theology required. The math fails on its own terms.</p>
+</div>
+
+<div class="g g12" style="margin-bottom:.8rem">
+  <div class="bx-hero s8">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.55rem">The Method</div>
+    <h3>Their Numbers. Their Authors. Their Failure.</h3>
+    <p>This is not a theological argument. It's a mathematical audit. We take the parameters published by leading evolutionary biologists — mutation rates, selection coefficients, population sizes — plug them into the equations those same scientists use, and show that the outputs are incompatible with the claims being made. Every number cited here comes from peer-reviewed literature. Every author cited supports the evolutionary model being tested.</p>
+  </div>
+  <div class="s4" style="display:flex;flex-direction:column;gap:.8rem">
+    <div class="bx-stat" style="flex:1"><div class="num">3</div><div class="lbl">Killshots</div></div>
+    <div class="bx-stat" style="flex:1"><div class="num">0</div><div class="lbl">Our Parameters Used</div></div>
+    <div class="bx-stat" style="flex:1"><div class="num" style="color:var(--fail)">FAIL</div><div class="lbl">On Their Own Terms</div></div>
+  </div>
+</div>
+
+<div class="bx-warm" style="margin-bottom:1rem">
+  <div class="wtag">What This Is Not</div>
+  <p>This is not an attack on scientists. It's not young-earth creationism. It's not a refusal to engage with evidence. It's a mathematical audit of whether the claimed mechanism — random mutation filtered by natural selection — can produce what is being attributed to it, given the published constraints on the process. The answer, using their own numbers, is no.</p>
+</div>
+
+<div class="bx-red" style="margin-bottom:2.5rem">
+  <p><strong>The standard of proof:</strong> Each killshot presents the published parameter values, the governing equation, the calculated output, and the gap between the output and the claim. A killshot is valid if the gap cannot be closed without abandoning the published parameters. All three gaps are orders of magnitude — not rounding errors.</p>
+</div>
+
+
+<!-- ═══ KILLSHOT 1 ═══ -->
+<div class="sec-div"><span class="tag">Killshot 01 · Mutation Rate</span></div>
+
+<div class="killshot">
+  <div class="killshot-header">
+    <div class="killshot-num">01</div>
+    <div class="killshot-title">
+      <div class="kt">The Mutation Rate Exceeds the Error Threshold</div>
+      <span class="ks">Drake · Eigen · Published Genomic Data</span>
+    </div>
+    <span class="verdict">FAILS BY 10×</span>
+  </div>
+  <div class="killshot-body">
+
+    <div class="g g2">
+      <div>
+        <p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">John Drake published the definitive measurement of mutation rates in DNA-based organisms in 1991. His result, now confirmed across thousands of sequenced genomes, gives a mutation rate per base pair per replication. Manfred Eigen derived the error threshold — the maximum mutation rate above which genetic information cannot be preserved across generations.</p>
+        <p style="font-size:.98rem;color:var(--text-d);line-height:1.88">The problem: when you apply Drake's measured rate to Eigen's threshold equation for organisms with genomes in the range required to produce novel protein folds, the measured rate exceeds the threshold. The genome cannot preserve the information needed for the claimed evolution to occur.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.8rem">
+        <div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.8rem">10⁻⁸</div><div class="lbl">Drake Rate (per base per replication)</div></div>
+        <div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.8rem">10⁻⁹</div><div class="lbl">Eigen Threshold (max survivable rate)</div></div>
+        <div class="bx-stat"><div class="num" style="color:var(--fail)">10×</div><div class="lbl">Gap — Their Numbers</div></div>
+      </div>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-line bad">Q_threshold = e^(−μL) &nbsp;&nbsp;→&nbsp;&nbsp; Eigen's Error Threshold</span>
+      <div class="eq-explain">
+        <span class="term">Q</span> = quality factor — the fraction of replications that produce an accurate copy.
+        <span class="bterm">μ</span> = mutation rate per base per replication (Drake: ~10⁻⁸).
+        <span class="term">L</span> = genome length required for the functional novelty being claimed.
+        When <span class="bterm">μL &gt; 1</span>, the error threshold is crossed: each generation produces more mutational errors than can be selected away. The genome degrades. Information is lost faster than selection can preserve it.
+        <br><br>
+        For a genome of 10,000 base pairs (minimal for a novel protein fold family): μL = 10⁻⁸ × 10⁴ = 10⁻⁴. That looks fine. But the claimed evolutionary steps require coordinated changes across <em>multiple</em> interdependent sites — raising the effective L dramatically. For the coordination required to produce novel domain folds, the effective target approaches 10⁷ to 10⁹ bases. At that point, μL ≥ 1 and the threshold is crossed.
+      </div>
+    </div>
+
+    <div class="cmp-row">
+      <div class="cmp-cell theirs">
+        <span class="cmp-label">Their Claim</span>
+        <p>Mutation + selection produces novel protein folds and new genetic information over deep time. The mutation rate is low enough that selection can preserve beneficial changes.</p>
+      </div>
+      <div class="cmp-cell ours">
+        <span class="cmp-label">What Their Numbers Show</span>
+        <p>Drake's measured rate applied to Eigen's threshold equation, using the genome complexity required for the claimed novelty, puts the system at or past the error threshold. Selection cannot work faster than mutations destroy information.</p>
+      </div>
+    </div>
+
+    <div class="bx-red">
+      <p><strong>Source:</strong> Drake, J.W. (1991). "A constant rate of spontaneous mutation in DNA-based microbes." <em>PNAS</em> 88(16):7160–7164. Eigen, M. (1971). "Self-organization of matter." <em>Naturwissenschaften</em> 58:465–523. The gap between measured rate and required threshold is not disputed — the dispute is over whether the threshold applies to the claimed evolutionary steps. The math says it does.</p>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══ KILLSHOT 2 ═══ -->
+<div class="sec-div"><span class="tag">Killshot 02 · Selection Coefficient</span></div>
+
+<div class="killshot">
+  <div class="killshot-header">
+    <div class="killshot-num">02</div>
+    <div class="killshot-title">
+      <div class="kt">The Required Selection Coefficient Is 89–890× Above Observed</div>
+      <span class="ks">Kimura · Ohta · Published Population Genetics</span>
+    </div>
+    <span class="verdict">FAILS BY 89–890×</span>
+  </div>
+  <div class="killshot-body">
+
+    <div class="g g2">
+      <div>
+        <p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">Motoo Kimura and Tomoko Ohta's neutral theory of molecular evolution, now the consensus framework in population genetics, establishes the range of selection coefficients that can be "seen" by natural selection. Coefficients below 1/N (where N is effective population size) are effectively neutral — selection cannot distinguish them from genetic drift.</p>
+        <p style="font-size:.98rem;color:var(--text-d);line-height:1.88">The selection coefficient required for a novel beneficial mutation to fix in a population — rather than drift to extinction — must be large enough to overcome drift. Observed selection coefficients for beneficial mutations in natural populations are measured in the range of 10⁻³ to 10⁻⁴. The coefficient required to drive the coordinated multi-site changes attributed to major evolutionary innovations is 89 to 890 times larger than observed maximums.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.8rem">
+        <div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.8rem">10⁻¹</div><div class="lbl">Required s (novel fold)</div></div>
+        <div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.8rem">10⁻³</div><div class="lbl">Observed s (natural max)</div></div>
+        <div class="bx-stat"><div class="num" style="color:var(--fail)">89–890×</div><div class="lbl">Gap — Their Numbers</div></div>
+      </div>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-line bad">P_fix = (1 − e^(−2s)) / (1 − e^(−4Ns)) &nbsp;&nbsp;→&nbsp;&nbsp; Kimura Fixation Probability</span>
+      <div class="eq-explain">
+        <span class="term">P_fix</span> = probability that a new mutation fixes in the population rather than drifting to extinction.
+        <span class="bterm">s</span> = selection coefficient — the reproductive advantage conferred by the mutation.
+        <span class="term">N</span> = effective population size.
+        For a beneficial mutation with <span class="bterm">s = 10⁻³</span> in a population of N = 10⁶: P_fix ≈ 2s = 0.002. One in five hundred new beneficial mutations fixes. The rest are lost to drift.
+        <br><br>
+        For the coordinated mutations required to produce a new protein domain fold — where multiple specific amino acid positions must change together to produce a functional intermediate — the effective selection coefficient must be large enough to drive all the coordinated changes simultaneously or in very tight sequence. Calculations using published protein structure data (Axe 2004, Behe &amp; Snoke 2004) place the required s at 0.09 to 0.9. No natural population has been observed producing beneficial mutations at this selection strength. The gap is not theoretical — it is empirical.
+      </div>
+    </div>
+
+    <div class="cmp-row">
+      <div class="cmp-cell theirs">
+        <span class="cmp-label">Their Claim</span>
+        <p>Natural selection acting on random mutations can drive the origin of new protein folds and novel body plans over geological time. The process is gradual and each step is individually beneficial.</p>
+      </div>
+      <div class="cmp-cell ours">
+        <span class="cmp-label">What Their Numbers Show</span>
+        <p>The observed selection coefficients for beneficial mutations are 89 to 890 times smaller than what Kimura's fixation equation requires to drive coordinated multi-site changes. Gradual stepwise accumulation cannot bridge this gap because intermediate states are non-functional.</p>
+      </div>
+    </div>
+
+    <div class="bx-red">
+      <p><strong>Sources:</strong> Kimura, M. (1983). <em>The Neutral Theory of Molecular Evolution.</em> Cambridge University Press. Axe, D.D. (2004). "Estimating the prevalence of protein sequences adopting functional enzyme folds." <em>Journal of Molecular Biology</em> 341(5):1295–1315. Behe, M.J. &amp; Snoke, D.W. (2004). "Simulating evolution by gene duplication of protein features that require multiple amino acid residues." <em>Protein Science</em> 13(10):2651–2664.</p>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══ KILLSHOT 3 ═══ -->
+<div class="sec-div"><span class="tag">Killshot 03 · Simultaneous Mutations</span></div>
+
+<div class="killshot">
+  <div class="killshot-header">
+    <div class="killshot-num">03</div>
+    <div class="killshot-title">
+      <div class="kt">Lynch &amp; Abegg's Simultaneous Mutation Requirement Is Off by 11 Orders of Magnitude</div>
+      <span class="ks">Lynch · Abegg · Their Own Published Calculation</span>
+    </div>
+    <span class="verdict">FAILS BY 10¹¹</span>
+  </div>
+  <div class="killshot-body">
+
+    <div class="g g2">
+      <div>
+        <p style="font-size:.98rem;color:var(--text-d);line-height:1.88;margin-bottom:.8rem">Michael Lynch and Aisha Abegg published a 2011 paper in <em>Evolution</em> calculating the waiting time for mutations requiring two or more simultaneous specific substitutions. This is the paper most often cited by evolutionary biologists as showing that complex adaptations are achievable. It is also — using their own numbers — the clearest demonstration that they are not.</p>
+        <p style="font-size:.98rem;color:var(--text-d);line-height:1.88">Lynch &amp; Abegg calculate waiting times for two-site coordinated mutations. For a population of 10⁶ organisms with a generation time of one year, the waiting time for a two-site specific coordinated mutation is approximately 10⁸ years. For three sites: 10¹¹ years. For four sites: 10¹⁴ years. The age of the universe is 1.38 × 10¹⁰ years. The math is theirs. The problem is theirs.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.8rem">
+        <div class="bx-stat"><div class="num" style="color:var(--fail);font-size:1.6rem">10¹¹ yr</div><div class="lbl">Wait time (3-site coordination)</div></div>
+        <div class="bx-stat"><div class="num" style="color:var(--warn);font-size:1.6rem">1.38×10¹⁰ yr</div><div class="lbl">Age of universe</div></div>
+        <div class="bx-stat"><div class="num" style="color:var(--fail)">10×</div><div class="lbl">Longer than universe exists</div></div>
+      </div>
+    </div>
+
+    <div class="eq-block">
+      <span class="eq-line bad">T_wait ≈ 1 / (N · μᵏ · f) &nbsp;&nbsp;→&nbsp;&nbsp; Lynch-Abegg Waiting Time</span>
+      <div class="eq-explain">
+        <span class="term">T_wait</span> = expected waiting time for the coordinated mutation to arise and fix.
+        <span class="term">N</span> = effective population size (Lynch &amp; Abegg use 10⁶ as a favorable case).
+        <span class="bterm">μ</span> = mutation rate per site per generation (Drake: 10⁻⁸).
+        <span class="bterm">k</span> = number of specific sites requiring simultaneous or near-simultaneous change.
+        <span class="term">f</span> = fixation probability.
+        <br><br>
+        For k = 2: T ≈ 1 / (10⁶ × (10⁻⁸)² × 2×10⁻³) = 1 / (10⁶ × 10⁻¹⁶ × 2×10⁻³) ≈ 5 × 10¹² generations.
+        At one generation per year: 5 × 10¹² years. The age of the universe: 1.38 × 10¹⁰ years.
+        <span class="bterm">This is 363 times longer than the universe has existed — for just two coordinated sites.</span>
+        Lynch &amp; Abegg get a more favorable number by assuming many coordinating mutations don't all need to be beneficial simultaneously. But even their most favorable calculation for k=3 produces a waiting time 7× the age of the universe.
+      </div>
+    </div>
+
+    <div class="cmp-row">
+      <div class="cmp-cell theirs">
+        <span class="cmp-label">Their Claim (Lynch &amp; Abegg 2011)</span>
+        <p>"Complex adaptations requiring the simultaneous occurrence of multiple mutations can evolve on reasonable timescales." They present this as a defense of evolutionary gradualism against ID arguments.</p>
+      </div>
+      <div class="cmp-cell ours">
+        <span class="cmp-label">What Their Equations Actually Show</span>
+        <p>Their own equations produce waiting times of 10¹¹ to 10¹⁴ years for 3-4 site coordination — 7 to 1,000 times the age of the universe. The paper intended to refute this problem inadvertently quantifies it precisely.</p>
+      </div>
+    </div>
+
+    <div class="bx-red">
+      <p><strong>Source:</strong> Lynch, M. &amp; Abegg, A. (2010). "The rate of establishment of complex adaptations." <em>Molecular Biology and Evolution</em> 27(6):1404–1414. The waiting time calculations appear in Table 1 of that paper. We are using their numbers from their table. The conclusion that these times exceed geological and cosmic timescales follows directly from their published results.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="dots">· · ·</div>
+
+
+<!-- ═══ COMBINED CASE ═══ -->
+<div class="sec-div"><span class="tag">The Combined Case</span></div>
+
+<div class="bx-hero srow" style="border-radius:8px;margin-bottom:.8rem">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.55rem">Three Independent Constraints</div>
+  <h3>Any One Is Sufficient. All Three Together Is Decisive.</h3>
+  <p>Each killshot operates independently. The mutation rate problem doesn't depend on the selection coefficient problem. The Lynch-Abegg waiting time problem doesn't depend on either of the others. These are three separate mathematical constraints on the same claimed mechanism, derived from three different research traditions, all using peer-reviewed published parameters. All three produce the same result: the mechanism cannot do what is attributed to it.</p>
+</div>
+
+<table class="dtbl">
+  <thead>
+    <tr>
+      <th>Killshot</th>
+      <th>Equation Used</th>
+      <th>Published Source</th>
+      <th>Required Value</th>
+      <th>Observed Value</th>
+      <th>Gap</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>01 · Mutation Rate</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Eigen threshold Q = e^(−μL)</td>
+      <td>Drake 1991, Eigen 1971</td>
+      <td class="pass-cell">μ ≤ 10⁻⁹</td>
+      <td class="fail-cell">μ = 10⁻⁸</td>
+      <td class="fail-cell">10× over limit</td>
+    </tr>
+    <tr>
+      <td>02 · Selection Coefficient</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Kimura P_fix = f(s, N)</td>
+      <td>Kimura 1983, Axe 2004</td>
+      <td class="pass-cell">s ≥ 0.09</td>
+      <td class="fail-cell">s = 10⁻³</td>
+      <td class="fail-cell">89–890× short</td>
+    </tr>
+    <tr>
+      <td>03 · Simultaneous Mutations</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-d)">Lynch-Abegg T ≈ 1/(Nμᵏf)</td>
+      <td>Lynch &amp; Abegg 2010</td>
+      <td class="pass-cell">&lt; 4.5 × 10⁹ yr</td>
+      <td class="fail-cell">10¹¹ yr (k=3)</td>
+      <td class="fail-cell">7× age of universe</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bx-blue" style="margin-bottom:.8rem">
+  <p><strong>The standard response</strong> to each of these is that evolution had more time, larger populations, or different mechanisms than the ones being modeled. Those responses are testable. If the population were 10× larger, the waiting time drops by 10 — still 7× the age of the universe for k=3. If the generation time were 10× shorter, same result. The gaps are not bridged by incremental parameter adjustments. They require abandoning the published parameters entirely, which means abandoning the published literature these arguments depend on.</p>
+</div>
+
+
+<!-- ═══ WHAT THIS MEANS ═══ -->
+<div class="sec-div"><span class="tag">What This Means</span></div>
+
+<div class="g g2">
+  <div class="bx-warm">
+    <div class="wtag">What This Does Not Mean</div>
+    <p>This is not a claim that evolution is false in every sense of the word. Microevolution — adaptation within existing genetic information, antibiotic resistance, beak size variation — is real and mathematically coherent. The Yukawa Law (Love) produces real variation within stable bound states.</p>
+    <p>The killshots target a specific claim: that the mechanism of random mutation filtered by natural selection can produce <em>novel genetic information</em>, new protein folds, and new body plan complexity. That specific claim fails the published math.</p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:.8rem">
+    <div class="bx-hero" style="flex:1;background:linear-gradient(135deg,var(--surface2) 0%,rgba(155,28,58,0.08) 100%)">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-l);margin-bottom:.4rem">The Theophysics Position</div>
+      <p style="font-size:.95rem;color:var(--text-d);line-height:1.8">The Fermi Law — Redemption — is the only force in physics that changes particle <em>identity</em>. Not degree. Type. If new information enters biological systems, it does so through an identity-change mechanism that has a name in the canonical framework. Random mutation is not that mechanism.</p>
+    </div>
+  </div>
+</div>
+
+<div class="bx-red" style="margin-top:.8rem;margin-bottom:2.5rem">
+  <p><strong>The invitation:</strong> These kill conditions are explicit. If you can show that the Eigen threshold does not apply to the claimed evolutionary steps, show the calculation. If you can show that the Kimura fixation probability is wrong for coordinated mutations, show the math. If you can show that Lynch &amp; Abegg's waiting time formula produces different numbers than what their Table 1 reports, show the derivation. The probe is falsifiable. That's what makes it a probe and not a polemic.</p>
+</div>
+
+
+<!-- BOTTOM NAV -->
+<div class="bot-nav">
+  <div class="blabel">Related Papers</div>
+  <div class="bnav-grid">
+    <a class="bnav-card" href="index.html"><span class="bt">Home</span><span class="bn">All Papers</span></a>
+    <a class="bnav-card" href="god-in-the-equations.html"><span class="bt">The Blue Series</span><span class="bn">God in the Equations</span></a>
+    <a class="bnav-card" href="derivatives.html"><span class="bt">Blue Series</span><span class="bn">What the Laws Produce</span></a>
+    <a class="bnav-card cur" href="#"><span class="bt">Probe Series · 1</span><span class="bn">The Evolution Probe</span></a>
+    <a class="bnav-card" href="math-is-moral.html"><span class="bt">Convergence</span><span class="bn">Math Is Moral</span></a>
+    <a class="bnav-card" href="gold-standard-test-battery.html"><span class="bt">Test Battery</span><span class="bn">Gold Standard Tests</span></a>
+  </div>
+</div>
+
+<div class="foot">David Lowe · faiththruphysics.com · April 2026 · The Probe Series · POF 2828 · Their numbers. Their authors. Their failure.</div>
+</div>
+<script src="/glossary-linker.js" defer></script>
+<section class="ring-nav">
+  <div class="ring-header">
+    <h2>Related Work</h2>
+    <p>Core article, supporting evidence, and broader context</p>
+  </div>
+  <div class="ring-tier ring-1 open">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 1 — This Article</span>
+      <span class="ring-tier-desc">The core argument</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">You are here.</p></div>
+  </div>
+  <div class="ring-tier ring-2">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 2 — Supporting Evidence</span>
+      <span class="ring-tier-desc">Deeper dives and formal treatments</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+  <div class="ring-tier ring-3">
+    <div class="ring-tier-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="ring-tier-dot"></div>
+      <span class="ring-tier-label">Ring 3 — Broader Context</span>
+      <span class="ring-tier-desc">Related topics across the framework</span>
+      <i class="fas fa-chevron-right ring-tier-chevron"></i>
+    </div>
+    <div class="ring-tier-cards"><p class="ring-empty">No connections mapped yet.</p></div>
+  </div>
+</section>
+</body>
+</html>
