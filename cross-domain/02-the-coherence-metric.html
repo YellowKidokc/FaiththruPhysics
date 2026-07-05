@@ -1,823 +1,1756 @@
-﻿<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Coherence Metric — David Lowe</title>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-<style>
-:root {
-  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
-  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
-  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
-  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
-  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
-  --serif:'Crimson Text',Georgia,serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-  --display:'Oswald','Inter',sans-serif;
-  --sans:'Inter',system-ui,sans-serif;
-  --max:1140px; --header-h:48px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-
-/* ═══════ TOP BAR ═══════ */
-.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
-.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
-.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
-.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
-.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
-.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
-.tp-brand:hover .tp-brand-name{color:var(--gold)}
-.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
-.tp-brand:hover::after{width:140px;height:140px;opacity:1}
-.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
-
-/* Left nav */
-.tp-nav-links{display:flex;gap:3px;align-items:center}
-.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
-.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
-.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
-.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
-.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
-.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
-.tp-spacer{flex:1}
-
-/* Reading levels */
-.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
-.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
-.tp-level:hover{color:var(--text)}
-.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
-.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
-.tp-level:hover::after{width:80px;height:80px;opacity:1}
-.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
-.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
-.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
-@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
-
-/* ═══════ CLASSIFICATION BAR ═══════ */
-.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
-.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
-.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
-.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
-.tp-class-seg{transition:flex .4s ease;position:relative}
-.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
-.tp-class-bar:hover .tp-class-seg::after{opacity:1}
-.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
-.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
-.tp-class-tag:hover{color:var(--text-dim)}
-.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
-/* Small nav */
-.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
-.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
-@media(max-width:600px){.tp-class-tags{display:none}}
-
-/* ═══════ ARTICLE BODY ═══════ */
-.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
-.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
-.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
-.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
-.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
-.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
-.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
-.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
-.tp-article li{margin-bottom:.4rem}
-.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
-.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
-.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
-
-/* ═══════ BIG PREV / NEXT NAV ═══════ */
-.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
-.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
-.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
-.tp-bignav-prev{justify-content:flex-start}
-.tp-bignav-next{justify-content:flex-end;text-align:right}
-.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
-.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
-.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
-.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
-.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
-.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
-.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
-.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
-.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
-.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
-.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
-
-/* Center: Series Home + Site Home */
-.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
-.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
-.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
-.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
-.tp-bignav-home:hover{color:var(--gold)}
-
-@media(max-width:650px){
-  .tp-bignav-row{flex-direction:column;gap:.6rem}
-  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
-  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
-  .tp-bignav-title{font-size:1rem}
-}
-
-/* ═══════ FINAL AUDIT ═══════ */
-.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
-.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
-.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
-.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
-.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
-.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
-.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
-.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
-@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
-.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
-.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
-.tp-audit-col:hover::before{opacity:1}
-.tp-audit-col:hover{transform:translateY(-3px)}
-.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
-.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
-.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.tp-audit-col li:last-child{border-bottom:0}
-.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
-.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
-.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
-.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
-.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
-.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
-
-/* ═══════ GOLD DIVIDER ═══════ */
-.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
-.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
-
-/* ═══════ SUBDOMAIN GRID ═══════ */
-.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
-.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
-.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
-.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
-.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
-.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
-@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
-.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
-.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
-.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
-.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
-.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
-.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
-.tp-sub-card:hover::before{opacity:1}
-.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
-.tp-sub-card:hover h4{color:var(--gold)}
-.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
-
-/* ═══════ SERIES NAV ═══════ */
-.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
-.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
-.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
-.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
-.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
-
-/* ═══════ BOTTOM BAR ═══════ */
-.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
-.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
-.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
-.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
-
-/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
-.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
-.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
-@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
-.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
-.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
-.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
-.tp-door:hover .tp-door-sub{color:var(--text-dim)}
-.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
-
-/* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
-
-/* ═══════ SELECTION ═══════ */
-::selection{background:rgba(212,175,55,.2);color:var(--text)}
-</style>
-<base target="_blank"/>
-<!-- MathJax + MTL support -->
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
-  svg: { fontCache: 'global' },
-  startup: {
-    pageReady: function() {
-      return MathJax.startup.defaultPageReady().then(function() {
-        if (MathJax.startup.document && MathJax.startup.document.math) {
-          MathJax.startup.document.math.forEach(function(item) {
-            if (item.typesetRoot) {
-              item.typesetRoot.dataset.latex = item.math;
-              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
-            }
-          });
-        }
-      });
-    }
-  }
-};
-</script>
-<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+﻿<!DOCTYPE html>
+
+
+
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>The Coherence Metric — David Lowe</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=Oswald:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+<style>
+
+:root {
+
+  --bg:#050505; --surface:#0a0a0a; --surface2:#111; --surface3:#1a1a1a;
+
+  --border:#222; --border-2:#2a2a2a; --border-hi:#3a3a3a;
+
+  --text:#e5e3df; --text-dim:#9a9a9a; --text-muted:#5a5a5a;
+
+  --gold:#d4af37; --gold-dim:rgba(212,175,55,.08); --gold-glow:rgba(212,175,55,.3);
+
+  --red:#c94040; --teal:#3bb39a; --blue:#7cc7ff; --purple:#a78bfa; --green:#7fc77f;
+
+  --serif:'Crimson Text',Georgia,serif;
+
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+
+  --display:'Oswald','Inter',sans-serif;
+
+  --sans:'Inter',system-ui,sans-serif;
+
+  --max:1140px; --header-h:48px;
+
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth}
+
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+a{color:inherit;text-decoration:none}
+
+
+
+/* ═══════ TOP BAR ═══════ */
+
+.tp-top{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:var(--header-h)}
+
+.tp-top-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;height:100%;padding:0 1.2rem;gap:.6rem}
+
+.tp-brand{display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative;overflow:hidden;padding:.2rem .4rem .2rem 0;border-radius:4px;transition:background .3s}
+
+.tp-brand-chi{font-family:var(--serif);font-size:1.4rem;color:var(--gold);line-height:1;transition:all .3s}
+
+.tp-brand-name{font-family:var(--display);font-size:.62rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;transition:color .3s}
+
+.tp-brand:hover .tp-brand-chi{text-shadow:0 0 14px var(--gold-glow)}
+
+.tp-brand:hover .tp-brand-name{color:var(--gold)}
+
+.tp-brand::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,var(--gold-glow),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .4s ease}
+
+.tp-brand:hover::after{width:140px;height:140px;opacity:1}
+
+.tp-div{width:1px;height:20px;background:var(--border-2);flex-shrink:0;margin:0 .3rem}
+
+
+
+/* Left nav */
+
+.tp-nav-links{display:flex;gap:3px;align-items:center}
+
+.tp-nav-link{font-family:var(--mono);font-size:.65rem;color:var(--text-muted);padding:.32rem .55rem;border-radius:4px;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden;border:1px solid transparent}
+
+.tp-nav-link:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 10px rgba(212,175,55,.1)}
+
+.tp-nav-link.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2);box-shadow:0 0 8px rgba(212,175,55,.08)}
+
+.tp-nav-link i{margin-right:.3rem;font-size:.55rem}
+
+.tp-nav-link::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.15),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .3s}
+
+.tp-nav-link:hover::after{width:60px;height:60px;opacity:1}
+
+.tp-spacer{flex:1}
+
+
+
+/* Reading levels */
+
+.tp-levels{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:6px;border:1px solid var(--border)}
+
+.tp-level{font-family:var(--display);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .7rem;border-radius:4px;border:0;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s;white-space:nowrap;position:relative;overflow:hidden}
+
+.tp-level:hover{color:var(--text)}
+
+.tp-level.active{background:var(--surface3);color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.2)}
+
+.tp-level::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 70%);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:all .35s}
+
+.tp-level:hover::after{width:80px;height:80px;opacity:1}
+
+.tp-search{display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:transparent;border:1px solid var(--border-2);border-radius:4px;color:var(--text-muted);font-size:.7rem;cursor:pointer;transition:all .2s}
+
+.tp-search:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.12)}
+
+.tp-search kbd{font-family:var(--mono);font-size:.58rem;background:var(--surface2);border:1px solid var(--border);padding:0 .3rem;border-radius:2px}
+
+@media(max-width:700px){.tp-brand-name{display:none}.tp-search kbd{display:none}.tp-level{font-size:.55rem;padding:.3rem .4rem}.tp-nav-link{font-size:.58rem;padding:.25rem .4rem}}
+
+
+
+/* ═══════ CLASSIFICATION BAR ═══════ */
+
+.tp-class{position:fixed;top:var(--header-h);left:0;right:0;z-index:99;background:rgba(8,8,8,.94);border-bottom:1px solid var(--border);padding:.4rem 0}
+
+.tp-class-inner{max-width:var(--max);margin:0 auto;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem}
+
+.tp-class-center{flex:1;display:flex;flex-direction:column;gap:.3rem}
+
+.tp-class-label{font-family:var(--mono);font-size:.55rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+
+.tp-class-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;gap:1px}
+
+.tp-class-seg{transition:flex .4s ease;position:relative}
+
+.tp-class-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+
+.tp-class-bar:hover .tp-class-seg::after{opacity:1}
+
+.tp-class-tags{display:flex;gap:.7rem;flex-wrap:wrap}
+
+.tp-class-tag{font-family:var(--mono);font-size:.55rem;display:flex;align-items:center;gap:.35rem;color:var(--text-muted);transition:color .2s}
+
+.tp-class-tag:hover{color:var(--text-dim)}
+
+.tp-class-dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px currentColor}
+
+/* Small nav */
+
+.tp-class-nav{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);padding:.25rem .5rem;border-radius:4px;transition:all .15s;flex-shrink:0;border:1px solid transparent}
+
+.tp-class-nav:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15)}
+
+@media(max-width:600px){.tp-class-tags{display:none}}
+
+
+
+/* ═══════ ARTICLE BODY ═══════ */
+
+.tp-article{max-width:800px;margin:0 auto;padding:calc(var(--header-h) + 68px) 1.5rem 3rem}
+
+.tp-article h1{font-family:var(--serif);font-size:2.4rem;font-weight:400;color:#fff;margin-bottom:.6rem;line-height:1.1;letter-spacing:-.01em}
+
+.tp-article .subtitle{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--text-dim);margin-bottom:1.2rem;line-height:1.4}
+
+.tp-article .byline{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+
+.tp-article h2{font-family:var(--serif);font-size:1.5rem;color:#fff;font-weight:400;margin:3rem 0 1rem;padding-top:1.5rem;border-top:1px solid var(--border);letter-spacing:-.01em}
+
+.tp-article h3{font-family:var(--serif);font-size:1.15rem;color:var(--text-dim);font-weight:600;margin:2rem 0 .6rem}
+
+.tp-article p{font-family:var(--serif);font-size:1.1rem;color:var(--text-dim);margin-bottom:1.3rem;line-height:1.75}
+
+.tp-article blockquote{border-left:2px solid var(--gold);padding-left:1.2rem;margin:1.5rem 0;font-style:italic;color:var(--text-dim);font-family:var(--serif);font-size:1.05rem}
+
+.tp-article ul,.tp-article ol{margin:1rem 0 1.5rem 1.5rem;font-family:var(--serif);font-size:1.05rem;color:var(--text-dim);line-height:1.7}
+
+.tp-article li{margin-bottom:.4rem}
+
+.tp-article code{font-family:var(--mono);font-size:.85rem;background:var(--surface2);padding:.15rem .4rem;border-radius:3px;color:var(--gold)}
+
+.tp-article pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem;overflow-x:auto;margin:1.5rem 0}
+
+.tp-article pre code{background:none;padding:0;font-size:.8rem;color:var(--text-dim)}
+
+
+
+/* ═══════ BIG PREV / NEXT NAV ═══════ */
+
+.tp-bignav{max-width:var(--max);margin:0 auto;padding:1.5rem 1.5rem 3rem}
+
+.tp-bignav-row{display:flex;align-items:stretch;gap:1rem}
+
+.tp-bignav-prev,.tp-bignav-next{flex:1;display:flex;align-items:center;padding:1.4rem 1.6rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;transition:all .3s;min-height:90px;position:relative;overflow:hidden}
+
+.tp-bignav-prev{justify-content:flex-start}
+
+.tp-bignav-next{justify-content:flex-end;text-align:right}
+
+.tp-bignav-prev::before,.tp-bignav-next::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--hover-x,50%) var(--hover-y,50%),rgba(212,175,55,.06),transparent 60%);opacity:0;transition:opacity .4s}
+
+.tp-bignav-prev:hover::before,.tp-bignav-next:hover::before{opacity:1}
+
+.tp-bignav-prev:hover,.tp-bignav-next:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 8px 30px rgba(212,175,55,.1)}
+
+.tp-bignav-arrow{font-family:var(--serif);font-size:1.8rem;color:var(--gold);opacity:.4;transition:all .3s;flex-shrink:0}
+
+.tp-bignav-prev:hover .tp-bignav-arrow,.tp-bignav-next:hover .tp-bignav-arrow{opacity:1;transform:scale(1.1)}
+
+.tp-bignav-text{display:flex;flex-direction:column;gap:.2rem}
+
+.tp-bignav-label{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase}
+
+.tp-bignav-title{font-family:var(--serif);font-size:1.1rem;color:var(--text);line-height:1.3;transition:color .2s}
+
+.tp-bignav-prev:hover .tp-bignav-title,.tp-bignav-next:hover .tp-bignav-title{color:var(--gold)}
+
+.tp-bignav-prev .tp-bignav-arrow{margin-right:1.2rem}
+
+.tp-bignav-next .tp-bignav-arrow{margin-left:1.2rem}
+
+
+
+/* Center: Series Home + Site Home */
+
+.tp-bignav-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;flex-shrink:0;padding:0 .6rem;min-width:140px}
+
+.tp-bignav-series{font-family:var(--display);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);padding:.5rem 1rem;border:1px solid var(--border);border-radius:5px;transition:all .25s;text-align:center;background:var(--surface2)}
+
+.tp-bignav-series:hover{color:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,55,.12);background:var(--surface)}
+
+.tp-bignav-home{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);transition:color .2s;letter-spacing:.1em}
+
+.tp-bignav-home:hover{color:var(--gold)}
+
+
+
+@media(max-width:650px){
+
+  .tp-bignav-row{flex-direction:column;gap:.6rem}
+
+  .tp-bignav-center{flex-direction:row;gap:1rem;padding:.6rem 0;order:-1;justify-content:center}
+
+  .tp-bignav-prev,.tp-bignav-next{padding:1.2rem 1rem}
+
+  .tp-bignav-title{font-size:1rem}
+
+}
+
+
+
+/* ═══════ FINAL AUDIT ═══════ */
+
+.tp-audit{max-width:var(--max);margin:0 auto;padding:0 1.5rem 2.5rem}
+
+.tp-audit-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+
+.tp-audit-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+
+.tp-audit-head{font-family:var(--mono);font-size:.7rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
+
+.tp-audit-intro{font-size:.88rem;color:var(--text-dim);margin:0 auto .8rem;max-width:640px;line-height:1.6}
+
+.tp-audit-covenant{font-size:.78rem;color:var(--text-muted);margin:0 auto 2rem;max-width:640px;padding:.8rem 1.2rem;border-left:2px solid rgba(212,175,55,.3);border-right:2px solid rgba(212,175,55,.3);background:rgba(212,175,55,.04);line-height:1.6;font-style:italic}
+
+.tp-audit-covenant b{color:var(--gold);font-weight:500;font-style:normal}
+
+.tp-audit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:left}
+
+@media(max-width:700px){.tp-audit-grid{grid-template-columns:1fr}}
+
+.tp-audit-col{padding:1.2rem;border-radius:8px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+
+.tp-audit-col::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.03),transparent 60%);opacity:0;transition:opacity .3s}
+
+.tp-audit-col:hover::before{opacity:1}
+
+.tp-audit-col:hover{transform:translateY(-3px)}
+
+.tp-audit-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+
+.tp-audit-col ul{list-style:none;font-size:.82rem;color:var(--text-dim);line-height:1.55}
+
+.tp-audit-col li{padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+
+.tp-audit-col li:last-child{border-bottom:0}
+
+.tp-col-right{border-color:rgba(59,179,154,.2)}.tp-col-right h4{color:var(--teal)}
+
+.tp-col-right:hover{border-color:var(--teal);box-shadow:0 6px 25px rgba(59,179,154,.1)}
+
+.tp-col-over{border-color:rgba(212,175,55,.2)}.tp-col-over h4{color:var(--gold)}
+
+.tp-col-over:hover{border-color:var(--gold);box-shadow:0 6px 25px rgba(212,175,55,.1)}
+
+.tp-col-wrong{border-color:rgba(201,64,64,.2)}.tp-col-wrong h4{color:var(--red)}
+
+.tp-col-wrong:hover{border-color:var(--red);box-shadow:0 6px 25px rgba(201,64,64,.1)}
+
+
+
+/* ═══════ GOLD DIVIDER ═══════ */
+
+.tp-gold-divider{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+
+.tp-gold-divider-line{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.3),transparent)}
+
+
+
+/* ═══════ SUBDOMAIN GRID ═══════ */
+
+.tp-subdomains{max-width:var(--max);margin:0 auto;padding:2.5rem 1.5rem}
+
+.tp-sub-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+
+.tp-sub-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(212,175,55,.3)}
+
+.tp-sub-kicker{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+
+.tp-sub-title{font-family:var(--serif);font-size:1.05rem;color:#fff;margin-bottom:1.2rem}
+
+.tp-sub-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
+
+@media(max-width:900px){.tp-sub-grid{grid-template-columns:repeat(3,1fr)}}
+
+@media(max-width:550px){.tp-sub-grid{grid-template-columns:repeat(2,1fr)}}
+
+.tp-sub-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.3rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;transition:all .35s;text-align:center;min-height:100px;position:relative;overflow:hidden;cursor:pointer}
+
+.tp-sub-card i{font-size:1.2rem;color:var(--gold);opacity:.4;transition:all .35s}
+
+.tp-sub-card h4{font-size:.78rem;font-weight:500;color:var(--text);margin:0;line-height:1.25;transition:color .3s}
+
+.tp-sub-card p{font-family:var(--mono);font-size:.52rem;color:var(--text-muted);margin:0;transition:color .3s}
+
+.tp-sub-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(212,175,55,.1),transparent 70%);opacity:0;transition:opacity .35s}
+
+.tp-sub-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(212,175,55,.12)}
+
+.tp-sub-card:hover::before{opacity:1}
+
+.tp-sub-card:hover i{opacity:1;text-shadow:0 0 12px var(--gold-glow)}
+
+.tp-sub-card:hover h4{color:var(--gold)}
+
+.tp-sub-grid:hover .tp-sub-card:not(:hover){opacity:.35;border-color:transparent;transform:scale(.98)}
+
+
+
+/* ═══════ SERIES NAV ═══════ */
+
+.tp-series-nav{max-width:var(--max);margin:0 auto;padding:0 1.5rem 1.5rem}
+
+.tp-series-strip{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:1rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+
+.tp-series-strip a{font-family:var(--display);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem .7rem;border-radius:4px;color:var(--text-muted);transition:all .2s;border:1px solid transparent}
+
+.tp-series-strip a:hover{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.15);box-shadow:0 0 8px rgba(212,175,55,.1)}
+
+.tp-series-strip a.soon{opacity:.3;cursor:default;pointer-events:none}
+
+.tp-series-strip a.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(212,175,55,.2)}
+
+
+
+/* ═══════ BOTTOM BAR ═══════ */
+
+.tp-bottom{max-width:var(--max);margin:0 auto;padding:0 1.5rem;text-align:center}
+
+.tp-bottom-eq{font-family:var(--mono);font-size:.72rem;color:var(--gold);opacity:.5;margin-bottom:.6rem;letter-spacing:.05em}
+
+.tp-bottom-copy{color:var(--text-muted);font-size:.68rem;margin:.25rem 0}
+
+.tp-bottom-vow{font-family:var(--serif);font-style:italic;color:var(--text-muted);font-size:.82rem;margin-top:.8rem;padding-bottom:1.5rem}
+
+
+
+/* ═══════ 15 + 15 = 100 (THE DOOR) ═══════ */
+
+.tp-door{text-align:center;padding:3rem 1rem 3.5rem;border-top:1px solid var(--border);position:relative;overflow:hidden;background:var(--surface)}
+
+.tp-door::before{content:'';position:absolute;top:50%;left:50%;width:300px;height:300px;background:radial-gradient(circle,rgba(212,175,55,.08),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;animation:pulse-gold 4s ease-in-out infinite}
+
+@keyframes pulse-gold{0%,100%{opacity:.6}50%{opacity:1}}
+
+.tp-door-num{font-family:var(--mono);font-size:2.2rem;color:var(--gold);letter-spacing:.15em;margin-bottom:.5rem;cursor:default;transition:all .5s;position:relative}
+
+.tp-door-num:hover{text-shadow:0 0 30px var(--gold-glow),0 0 60px rgba(212,175,55,.2);letter-spacing:.22em}
+
+.tp-door-sub{font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--text-muted);transition:color .3s;max-width:400px;margin:0 auto;line-height:1.5}
+
+.tp-door:hover .tp-door-sub{color:var(--text-dim)}
+
+.tp-door-mark{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1.2rem auto 0;opacity:.4}
+
+
+
+/* ═══════ SCROLLBAR ═══════ */
+
+::-webkit-scrollbar{width:6px}
+
+::-webkit-scrollbar-track{background:var(--bg)}
+
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px}
+
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+
+
+/* ═══════ SELECTION ═══════ */
+
+::selection{background:rgba(212,175,55,.2);color:var(--text)}
+
+</style>
+
+<base target="_blank"/>
+
+<!-- MathJax + MTL support -->
+
+<script>
+
+window.MathJax = {
+
+  tex: { inlineMath: [['$','$'], ['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+
+  svg: { fontCache: 'global' },
+
+  startup: {
+
+    pageReady: function() {
+
+      return MathJax.startup.defaultPageReady().then(function() {
+
+        if (MathJax.startup.document && MathJax.startup.document.math) {
+
+          MathJax.startup.document.math.forEach(function(item) {
+
+            if (item.typesetRoot) {
+
+              item.typesetRoot.dataset.latex = item.math;
+
+              item.typesetRoot.dataset.display = item.display ? 'block' : 'inline';
+
+            }
+
+          });
+
+        }
+
+      });
+
+    }
+
+  }
+
+};
+
+</script>
+
+<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 <link href="/shared/css/mtl-worker-client.css" rel="stylesheet"/>
 <style>
 .tp-article-img{margin:2.5rem 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);display:block;max-width:100%;height:auto}
 .tp-article-img:hover{border-color:var(--border-hi);box-shadow:0 8px 24px rgba(212,175,55,.08)}
-</style>
-</head>
-<body>
-<!-- ═══════ TOP BAR ═══════ -->
-
-
-<!-- ═══════ CLASSIFICATION BAR ═══════ -->
-
-<!-- ═══════ ARTICLE (demo content) ═══════ -->
-<article class="tp-article">
-<h1>TheCoherence Metric</h1>
-<p class="subtitle">A Predictive Framework for Civilizational Stability</p>
-<div class="byline">David Lowe</div>
-
-  
- ═══ I. WHAT IT IS ═══ 
-<section class="section">
-<span class="section-num">I</span>
-<h2><span class="part-label">Section I</span>What It Is</h2>
-<p>Every civilization runs on invisible infrastructure. Not roads or power grids—<em>meaning</em>.</p>
-<p>The Coherence Metric (χ) measures this invisible infrastructure. It quantifies the alignment between what a society <em>says it values</em> and what it <em>actually does</em>. When words and actions align, coherence is high. When they diverge, coherence degrades.</p>
-<div class="eq-stage">
-<span class="label">The Coherence Metric</span>
-    $$\chi = \int \Psi \times \Phi \times \Lambda \, dV$$
-    <p class="caption">Integrity between language, belief, and behavior—integrated across a population</p>
-</div>
-<div class="term-card">
-<div class="symbol">$\Psi$</div>
-<div class="meaning">
-<h4>Consciousness</h4>
-<p>What people believe, intend, and mean.</p>
-</div>
-</div>
-<div class="term-card">
-<div class="symbol">$\Phi$</div>
-<div class="meaning">
-<h4>Physical Reality</h4>
-<p>What people actually do, build, and measure.</p>
-</div>
-</div>
-<div class="term-card">
-<div class="symbol">$\Lambda$</div>
-<div class="meaning">
-<h4>Logos</h4>
-<p>The semantic field that connects meaning to action.</p>
-</div>
-</div>
-<div class="pull-quote">
-<p>Coherence is the integrity between language, belief, and behavior integrated across a population.</p>
-</div>
-<p>When a society says “family matters” but divorce rates climb, χ drops. When a society says “honesty matters” but trust in institutions collapses, χ drops. When a society stops using words like “duty,” “honor,” and “virtue” altogether, χ is already falling—years before the visible symptoms appear.</p>
-</section>
- ═══ II. WHAT IT DOES ═══ 
-<section class="section">
-<span class="section-num">II</span>
-<h2><span class="part-label">Section II</span>What It Does</h2>
-<p>The Coherence Metric does something no existing social science framework does: <strong>it predicts collapse before the collapse is visible.</strong></p>
-<p>Most metrics are lagging indicators. GDP measures economic damage <em>after</em> it occurs. Crime rates measure social breakdown <em>after</em> it manifests. Election results measure political fracture <em>after</em> it solidifies.</p>
-<p>Coherence is a <strong>leading indicator</strong>. It detects the semantic rot—the dissolution of shared meaning—that precedes every measurable crisis by years or decades.</p>
-<h3>The Mechanism</h3>
-<ol class="mechanism-list">
-<li><strong>Semantic layer fails first.</strong> Words lose their “thickness.” Virtue becomes “values.” Duty becomes “preference.” Sin becomes “mistake.” The language of moral obligation thins into the language of personal choice.</li>
-<li><strong>Familial layer fails second.</strong> Without shared language for commitment, families destabilize. Divorce, illegitimacy, and household fragmentation follow—not because of economic pressure, but because the <em>words</em> that held families together have already dissolved.</li>
-<li><strong>Institutional layer fails third.</strong> Institutions depend on trust. Trust depends on shared meaning. When the semantic foundation cracks, institutions hollow out. They continue to exist structurally while dying functionally.</li>
-<li><strong>Economic layer fails last.</strong> Material conditions are the <em>trailing</em> indicator, not the cause. By the time economic metrics signal crisis, the civilization is already dead. The economy is merely the carcass decomposing.</li>
-</ol>
-<div class="sequence-callout">
-<span class="invariant-label">Invariant Sequence</span>
-<div class="arrow-chain">
-      Semantic <span class="arrow">→</span> Familial <span class="arrow">→</span> Institutional <span class="arrow">→</span> Economic
-    </div>
-<p class="invariant-note">This sequence does not reverse. It does not skip steps. Every time.</p>
-</div>
-</section>
- ═══ III. WHY IT MATTERS ═══ 
-<section class="section">
-<span class="section-num">III</span>
-<h2><span class="part-label">Section III</span>Why It Matters</h2>
-<p>Because we can measure it. And because the measurement is falsifiable.</p>
-<div class="falsification-box">
-<span class="falsi-label">Falsification Criteria</span>
-<p style="margin-bottom:1rem">If the Coherence Metric is valid, then:</p>
-<ul>
-<li>Semantic decline (measured via word frequency analysis) should <em>precede</em> familial decline by 3–8 years</li>
-<li>Familial decline should <em>precede</em> institutional decline by 5–10 years</li>
-<li>Institutional decline should <em>precede</em> economic decline by 5–15 years</li>
-<li>This sequence should hold across multiple civilizations, eras, and political systems</li>
-</ul>
-</div>
-<p>If any civilization shows economic collapse <em>preceding</em> semantic collapse, the framework fails. If any civilization shows institutional recovery <em>without</em> prior semantic reconstruction, the framework fails.</p>
-<div class="pull-quote">
-<p>The framework invites disproof. That’s what makes it science, not ideology.</p>
-</div>
-</section>
- ═══ IV. THE HISTORICAL EVIDENCE ═══ 
-<section class="section">
-<span class="section-num">IV</span>
-<h2><span class="part-label">Section IV</span>The Historical Evidence</h2>
-<p>Four civilizations. Four collapses. One sequence.</p>
-<!-- ROME -->
-<h3>A. The Roman West</h3>
-<table class="collapse-table">
-<thead>
-<tr>
-<th>Domain</th>
-<th>Threshold Crossed</th>
-<th>Visible Collapse</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SEMANTIC</td>
-<td>~60 BC</td>
-<td>Sallust’s cynicism, <em>mos maiorum</em> abandoned</td>
-</tr>
-<tr>
-<td>FAMILIAL</td>
-<td>18 BC</td>
-<td>Augustus’s marriage laws (state intervention proves family failure)</td>
-</tr>
-<tr>
-<td>INSTITUTIONAL</td>
-<td>193 AD</td>
-<td>Praetorian Auction (empire sold to highest bidder)</td>
-</tr>
-<tr>
-<td>ECONOMIC</td>
-<td>235 AD</td>
-<td>Crisis of Third Century, denarius debasement</td>
-</tr>
-<tr class="cycle-row">
-<td colspan="3">Total cycle: 295 years</td>
-</tr>
-</tbody>
-</table>
-<p>The Roman sequence moved slowly because communication moved slowly. Semantic rot took generations to propagate. But the sequence held: meaning died first, family second, institutions third, economy last.</p>
-<!-- WEIMAR -->
-<h3>B. Weimar Germany</h3>
-<table class="collapse-table">
-<thead>
-<tr>
-<th>Domain</th>
-<th>Threshold Crossed</th>
-<th>Visible Collapse</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SEMANTIC</td>
-<td>1910</td>
-<td>Expressionism, Nietzsche’s “Death of God” permeates culture</td>
-</tr>
-<tr>
-<td>FAMILIAL</td>
-<td>1919</td>
-<td>Divorce triples, Institut für Sexualwissenschaft founded</td>
-</tr>
-<tr>
-<td>INSTITUTIONAL</td>
-<td>1923</td>
-<td>Beer Hall Putsch (state loses monopoly on violence)</td>
-</tr>
-<tr>
-<td>ECONOMIC</td>
-<td>1923</td>
-<td>Hyperinflation annihilates middle class</td>
-</tr>
-<tr class="cycle-row">
-<td colspan="3">Total cycle: 13 years</td>
-</tr>
-</tbody>
-</table>
-<p>Weimar compressed the Roman sequence into a single generation. Modern communication accelerated semantic dissolution. The sequence remained invariant; only the velocity changed.</p>
-<!-- SOVIET UNION -->
-<h3>C. The Soviet Union</h3>
-<table class="collapse-table">
-<thead>
-<tr>
-<th>Domain</th>
-<th>Threshold Crossed</th>
-<th>Visible Collapse</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SEMANTIC</td>
-<td>1966</td>
-<td>Sinyavsky-Daniel trial, <em>samizdat</em> era begins, belief dies</td>
-</tr>
-<tr>
-<td>FAMILIAL</td>
-<td>1975</td>
-<td>Male life expectancy falling, alcoholism epidemic, data censored</td>
-</tr>
-<tr>
-<td>INSTITUTIONAL</td>
-<td>1982</td>
-<td>Brezhnev death exposes gerontocracy as zombie structure</td>
-</tr>
-<tr>
-<td>ECONOMIC</td>
-<td>1989</td>
-<td>GDP absolute decline, supply chains fail</td>
-</tr>
-<tr class="cycle-row">
-<td colspan="3">Total cycle: 23 years</td>
-</tr>
-</tbody>
-</table>
-<p>The Soviet case is instructive because the economic system was <em>already</em> dysfunctional. Yet it persisted for decades after semantic collapse—proving that material conditions are insufficient to explain civilizational death. The Soviets stopped believing in the 1960s. The state didn’t fall until the 1990s. Meaning precedes matter.</p>
-<!-- UNITED STATES -->
-<h3>D. The United States (1960–1980)</h3>
-<table class="collapse-table">
-<thead>
-<tr>
-<th>Order</th>
-<th>Domain</th>
-<th>Threshold (P<sub>c</sub>)</th>
-<th>Visible Collapse (T<sub>v</sub>)</th>
-<th>Lag</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>1</td><td>SEMANTIC</td><td>1962</td><td>1970</td><td>8 years</td></tr>
-<tr><td>2</td><td>COGNITIVE</td><td>1963</td><td>1975</td><td>12 years</td></tr>
-<tr><td>3</td><td>PSYCHOLOGICAL</td><td>1963</td><td>1978</td><td>15 years</td></tr>
-<tr><td>4</td><td>MORAL</td><td>1964</td><td>1972</td><td>8 years</td></tr>
-<tr><td>5</td><td>INSTITUTIONAL</td><td>1965</td><td>1974</td><td>9 years</td></tr>
-<tr><td>6</td><td>SPIRITUAL</td><td>1965</td><td>1975</td><td>10 years</td></tr>
-<tr><td>7</td><td>MONETARY</td><td>1965</td><td>1979</td><td>14 years</td></tr>
-<tr><td>8</td><td>FAMILIAL</td><td>1967</td><td>1980</td><td>13 years</td></tr>
-<tr><td>9</td><td>STRUCTURAL</td><td>1968</td><td>1973</td><td>5 years</td></tr>
-<tr><td>10</td><td>SOMATIC</td><td>1978</td><td>1990s</td><td>12+ years</td></tr>
-</tbody>
-</table>
-<div class="voice-block">
-<span class="voice-label">The “Integrity Interval” of 1963–1965</span>
-<p>A catastrophic cascade failure compressed into three years. SAT scores, crime rates, institutional trust, and mainline church membership all inverted within this window—<em>after</em> semantic indicators (virtue word frequency) began accelerating downward in 1960–62.</p>
-<p style="margin-bottom:0"><strong>Key finding:</strong> The Great Society expansion (1964–65) occurred <em>exactly</em> when the semantic foundation collapsed. The state expanded responsibility precisely as the population abandoned the language of responsibility.</p>
-</div>
-<div class="source-tag">
-<strong>Source data:</strong> Google Ngram (semantic), College Board (cognitive), FDA/CDC (psychological), FBI UCR (moral), Gallup (institutional), denominational records (spiritual), FRED (monetary/structural), Census Bureau (familial), NHANES (somatic).
-  </div>
-</section>
- ═══ V. THE PROGNOSIS ═══ 
-<section class="section">
-<span class="section-num">V</span>
-<h2><span class="part-label">Section V</span>The Prognosis</h2>
-<p>The United States crossed its semantic threshold sixty years ago. The familial and institutional collapses followed on schedule. We are now deep in the economic phase—the <em>trailing</em> indicator.</p>
-<h3>Current Position on the Curve</h3>
-<p>The language of virtue has not recovered. Google Ngram data through 2019 shows continued decline in “thick” moral concepts. The brief stabilizations of the 1980s and early 2000s did not reverse the trajectory; they merely slowed it.</p>
-<p>Trust in institutions remains at historic lows. Family formation rates continue to decline. Economic metrics (wage stagnation, wealth concentration, debt levels) reflect the accumulated damage of six decades of coherence loss.</p>
-<h3>The Lag Compression Problem</h3>
-<p>Each successive civilization in our dataset collapsed faster than the previous one:</p>
-<div class="lag-strip">
-<div class="lag-item">
-<div class="years">295</div>
-<span class="civ-name">Rome</span>
-</div>
-<span class="lag-arrow">→</span>
-<div class="lag-item">
-<div class="years">23</div>
-<span class="civ-name">Soviet Union</span>
-</div>
-<span class="lag-arrow">→</span>
-<div class="lag-item">
-<div class="years">13</div>
-<span class="civ-name">Weimar</span>
-</div>
-</div>
-<p>Modern interconnection does not increase resilience. It <em>accelerates fragility</em>. Semantic contagion now spreads at the speed of social media. A civilization can lose its meaning-infrastructure in years rather than generations.</p>
-<div class="pull-quote">
-<p>If the pattern holds, we are not in a cyclical downturn. We are in a phase transition. The question is not whether American civilization will transform, but into what.</p>
-</div>
-</section>
- ═══ VI. THE REDEMPTION ═══ 
-<section class="section restoration">
-<span class="section-num">VI</span>
-<h2><span class="part-label">Section VI</span>The Redemption</h2>
-<p>Collapse follows a sequence. So does restoration.</p>
-<p>The same framework that predicts dissolution predicts repair. If Semantic → Familial → Institutional → Economic describes the downward cascade, then <strong>Semantic → Familial → Institutional</strong> describes the upward reconstruction.</p>
-<p>Three case studies prove this is not speculation.</p>
-<!-- VICTORIAN BRITAIN -->
-<div class="restoration-card">
-<span class="case-label">Case Study A</span>
-<h4>Victorian Britain (1795–1860)</h4>
-<p class="baseline">Baseline entropy: Late 18th century England—libertine aristocracy, rising illegitimacy, the “Bloody Code” (200+ capital offenses), the Gin Craze legacy, violent working class.</p>
-<div class="phase">
-<span class="phase-label">Phase 1 — Semantic (1795–1830)</span>
-<p>The Clapham Sect—approximately twenty families—launched what they called the “Reformation of Manners.” Hannah More’s <em>Cheap Repository Tracts</em> distributed 2 million copies in their first year to a population of 10 million. This was a semantic saturation event. New moral vocabulary entered circulation. “Thick” concepts (prudence, temperance, fortitude) were reintroduced through narrative.</p>
-</div>
-<div class="phase">
-<span class="phase-label">Phase 2 — Familial (1830–1850)</span>
-<p>The Sunday School movement enrolled 1.25 million children by 1831—25% of the child population. The concept of “Respectability” solidified, stabilizing the family unit. The Victorian family ideal emerged not from legislation but from <em>language</em>.</p>
-</div>
-<div class="phase">
-<span class="phase-label">Phase 3 — Institutional (1850–1900)</span>
-<p>Crime dropped 50% between 1857–1901 <em>despite</em> rapid urbanization. Illegitimacy declined from 7% to 4%. Police were effective because they reinforced a moral order that had already been internalized. The state <em>ratified</em> the order; it did not create it.</p>
-</div>
-<span class="lag-time">Lag time: 55 years from Tracts to crime drop</span>
-</div>
-<!-- SECOND GREAT AWAKENING -->
-<div class="restoration-card">
-<span class="case-label">Case Study B</span>
-<h4>The Second Great Awakening (1800–1850)</h4>
-<p class="baseline">Baseline entropy: The “Alcoholic Republic” of 1790–1830—alcohol consumption at 7.1 gallons of pure alcohol per capita (triple modern levels), “rough and tumble” fighting, frontier lawlessness.</p>
-<div class="phase">
-<span class="phase-label">Phase 1 — Semantic (1800–1840)</span>
-<p>Charles Finney and Lyman Beecher led revival. The “Anxious Bench” made moral status public. Drinking was <em>redefined</em>—from “conviviality” to “Intemperance” (sin). By 1835: 5,000+ temperance societies, over one million members.</p>
-</div>
-<div class="phase">
-<span class="phase-label">Phase 2 — Familial (1830–1850)</span>
-<p>The temperance movement framed the “Drunkard” as the enemy of the “Home.” Alcohol consumption fell 75% (7.1 to 1.8 gallons) between 1830–1845 through <em>moral suasion alone</em>—before any prohibition legislation.</p>
-</div>
-<div class="phase">
-<span class="phase-label">Phase 3 — Institutional (1840–1860)</span>
-<p>“Rough and tumble” fighting vanished by the 1840s—<em>defined out of existence</em>. The Common School movement institutionalized Protestant ethics, creating the high-trust workforce that enabled Northern industrialization.</p>
-</div>
-<span class="lag-time">Lag time: 20 years from Temperance Society to behavioral floor</span>
-</div>
-<!-- MEIJI JAPAN -->
-<div class="restoration-card">
-<span class="case-label">Case Study C</span>
-<h4>Meiji Japan (1890–1912)</h4>
-<p class="baseline">Baseline entropy: Post-1868 Japan—feudal loyalties abolished, samurai class dismantled, identity crisis, political instability.</p>
-<div class="phase">
-<span class="phase-label">Phase 1 — Semantic (1890)</span>
-<p>The Imperial Rescript on Education—the most explicit semantic reconstruction in recorded history. It fused Confucian virtues with State Shinto. “Thick” concepts were <em>mandated</em>: “Be filial to your parents,” “bear yourselves in modesty,” “offer yourselves courageously to the State.” Every school received a copy, housed it in a shrine, and required daily bowing. Shushin (Ethics) became the primary curriculum subject.</p>
-</div>
-<div class="phase">
-<span class="phase-label">Phase 2 — Familial (1890–1900)</span>
-<p>The Civil Code of 1898 codified the <em>Ie</em> (Household) system, modeling family on state. Divorce collapsed 50% within a decade as marriage was redefined from contract to patriotic duty.</p>
-</div>
-<div class="phase">
-<span class="phase-label">Phase 3 — Institutional (1900–1912)</span>
-<p>Semantic and familial cohesion provided the “social glue” for industrial transformation. Japan became the only non-Western nation to industrialize rapidly. Military victory over Russia (1905) confirmed Great Power status.</p>
-</div>
-<span class="lag-time">Lag time: 15 years — remarkably short due to centralized semantic injection via the school system</span>
-</div>
-</section>
- ═══ VII. THE PROTOCOL ═══ 
-<section class="section restoration">
-<span class="section-num">VII</span>
-<h2><span class="part-label">Section VII</span>The Protocol</h2>
-<p>Restoration is possible. It follows rules. Here is what the historical evidence reveals:</p>
-<div class="protocol-card">
-<div class="phase-head">Phase I: Semantic Reconstruction</div>
-<span class="phase-time">Years 0–20</span>
-<span class="detail-label">Agent</span>
-<p style="font-size:.95rem;color:var(--cream-d)">Creative minorities operating <em>outside</em> state structures.</p>
-<span class="detail-label">Tactics</span>
-<ul>
-<li>Establish “islands of coherence”—small communities practicing the restored language</li>
-<li>Develop “moral technology”—narratives, aesthetics, and phrases that carry thick concepts</li>
-<li>Infiltrate elite networks to make virtue high-status</li>
-</ul>
-<span class="detail-label">Metric</span>
-<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:.5rem">Frequency of thick moral terms in public discourse.</p>
-<span class="detail-label">Modern Application</span>
-<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:0">The whisper. Person to person. “Be Blessed” as a shibboleth—a frequency marker identifying those who resonate. When the echo returns from everywhere, the semantic layer has shifted.</p>
-</div>
-<div class="protocol-card">
-<div class="phase-head">Phase II: Familial Fortification</div>
-<span class="phase-time">Years 20–40</span>
-<span class="detail-label">Agent</span>
-<p style="font-size:.95rem;color:var(--cream-d)">Family and parallel institutions (churches, schools, voluntary associations).</p>
-<span class="detail-label">Tactics</span>
-<ul>
-<li>Use the restored semantic code to insulate families from entropic cultural pressure</li>
-<li>Build parallel institutions that socialize children into coherent meaning-structures</li>
-<li>Stigmatize familial failure while offering redemption pathways</li>
-</ul>
-<span class="detail-label">Metric</span>
-<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:0">Decline in familial entropy (divorce, illegitimacy, household fragmentation).</p>
-</div>
-<div class="protocol-card">
-<div class="phase-head">Phase III: Institutional Ratification</div>
-<span class="phase-time">Years 40–60</span>
-<span class="detail-label">Agent</span>
-<p style="font-size:.95rem;color:var(--cream-d)">State and formal institutions.</p>
-<span class="detail-label">Tactics</span>
-<ul>
-<li>Pass laws <em>reflecting</em> already-achieved consensus (not attempting to create it)</li>
-<li>Use institutional authority to <em>defend</em> the semantic code, not impose it</li>
-</ul>
-<span class="detail-label">Metric</span>
-<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:0">Decline in institutional entropy (crime, corruption, transaction costs).</p>
-</div>
-</section>
- ═══ VIII. THE IMPLICATION ═══ 
-<section class="section">
-<span class="section-num">VIII</span>
-<h2><span class="part-label">Section VIII</span>The Implication</h2>
-<p>Every government program since 1965 has attempted Phase III without Phase I.</p>
-<p>Top-down without bottom-up. Law without language. Coercion without conviction.</p>
-<p>This is why they fail. Augustus failed for the same reason. You cannot legislate meaning into existence. You can only <em>ratify</em> meaning that has already taken root in the semantic layer.</p>
-<p>The Coherence Metric explains why trillions of dollars in social spending have not reversed the trends. The intervention targeted the wrong layer. Economic transfers cannot repair semantic collapse. Institutional reforms cannot rebuild families. Only restored <em>meaning</em> can do that.</p>
-<div class="pull-quote">
-<p>And meaning spreads the way it has always spread: person to person. Two words at a time.</p>
-</div>
-</section>
- ═══ IX. THE INVITATION ═══ 
-<section class="section">
-<span class="section-num">IX</span>
-<h2><span class="part-label">Section IX</span>The Invitation</h2>
-<p>This framework is falsifiable. We invite disproof.</p>
-<div class="challenge">
-<h3>The Open Challenge</h3>
-<p>If you can identify a civilization that collapsed economically <em>before</em> it collapsed semantically, the framework fails.</p>
-<p>If you can identify a civilization that restored its institutions <em>without</em> prior semantic reconstruction, the framework fails.</p>
-<p>If you can demonstrate that the 1963–1965 American “Integrity Interval” was caused by factors <em>other</em> than the preceding semantic dissolution, we will revise.</p>
-<p class="final">The data is public. The methodology is transparent. The invitation is open.</p>
-</div>
-<p>We are not claiming certainty. We are claiming a pattern—documented across four civilizations spanning two millennia—that has predictive power and falsification criteria.</p>
-</section>
- ═══ X. THE CALL ═══ 
-<section class="section">
-<span class="section-num">X</span>
-<h2><span class="part-label">Section X</span>The Call</h2>
-<p>You are reading this because someone passed it to you. That transmission—that act of sharing—is itself the mechanism.</p>
-<p>Hannah More didn’t buy billboards. She handed out tracts, person to person, until two million were circulating in a nation of ten million.</p>
-<p>Finney didn’t pass laws. He passed pledges, person to person, until the drinking stopped before the legislation arrived.</p>
-<p>The oldest pattern in civilizational repair begins with a word, spreads through relationship, and becomes an army before anyone realizes they were recruited.</p>
-<h3>The Test</h3>
-<p>Tomorrow morning. First stranger you see. Look them in the eyes.</p>
-<p>Say: <em>“Be blessed.”</em></p>
-<p>Count how many say it back.</p>
-<p>That’s your signal. That’s your metric. That’s your army.</p>
-<p>No app. No platform. No leader to cancel.</p>
-<p>Just the word, traveling through the noise.</p>
-<div class="blessed-finale">
-<div class="blessed-text">Be Blessed.</div>
-<p class="blessed-sub">The Coherence Metric Project · theophysics.pro</p>
-</div>
-</section>
+
+/* ═══ TP-HEADING-CLEANUP-v1 ═══ */
+
+/* H1: big, white, serif — page anchor */
+.tp-article h1, .ftp-article h1 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: .8rem;
+  margin-top: 2rem;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+
+/* H2: GOLD — section markers */
+.tp-article h2, .ftp-article h2 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.6rem;
+  color: #d4af37;
+  font-weight: 400;
+  margin: 3rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  letter-spacing: -.01em;
+}
+
+/* H3: clean subordinate */
+.tp-article h3, .ftp-article h3 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.2rem;
+  color: #9a9a9a;
+  font-weight: 600;
+  margin: 2rem 0 .6rem;
+}
+
+/* Tables: gold header, dark rows, hover */
+.tp-article table, .ftp-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: .9rem;
+}
+.tp-article th, .ftp-article th {
+  background: rgba(212, 175, 55, 0.08);
+  color: #d4af37;
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  font-size: .8rem;
+  letter-spacing: .03em;
+}
+.tp-article td, .ftp-article td {
+  padding: .5rem .8rem;
+  border-bottom: 1px solid #222;
+  color: #e5e3df;
+}
+.tp-article tr:hover td, .ftp-article tr:hover td {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+/* Lists: proper spacing */
+.tp-article ul, .tp-article ol,
+.ftp-article ul, .ftp-article ol {
+  margin: 1rem 0 1rem 1.5rem;
+  line-height: 1.8;
+}
+.tp-article li, .ftp-article li {
+  margin-bottom: .3rem;
+}
+
+/* Blockquotes: gold accent */
+.tp-article blockquote, .ftp-article blockquote {
+  border-left: 3px solid #d4af37;
+  margin: 1.5rem 0;
+  padding: .8rem 1.2rem;
+  background: rgba(212, 175, 55, 0.04);
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-style: italic;
+  color: #9a9a9a;
+}
+
+/* Drop cap on first paragraph */
+.tp-article > p:first-of-type::first-letter,
+.ftp-article > p:first-of-type::first-letter,
+.tp-level-panel > p:first-of-type::first-letter {
+  font-size: 3.2rem;
+  float: left;
+  color: #d4af37;
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-weight: 600;
+  line-height: .8;
+  margin: .1rem .4rem 0 0;
+  padding-top: .1rem;
+}
+
+/* Code/mono blocks */
+.tp-article pre, .tp-article code,
+.ftp-article pre, .ftp-article code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .85rem;
+}
+.tp-article pre, .ftp-article pre {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* ═══ END TP-HEADING-CLEANUP-v1 ═══ */
+</style>
+
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
+
+</head>
+
+<body>
+
+<!-- ═══════ TOP BAR ═══════ -->
+
+
+
+
+
+<!-- ═══════ CLASSIFICATION BAR ═══════ -->
+
+
+
+<!-- ═══════ ARTICLE (demo content) ═══════ -->
+
+<article class="tp-article">
+
+<h1>TheCoherence Metric</h1>
+
+<p class="subtitle drop-cap">A Predictive Framework for Civilizational Stability</p>
+
+<div class="byline">David Lowe</div>
+
+
+
+  
+
+ ═══ I. WHAT IT IS ═══ 
+
+<section class="section">
+
+<span class="section-num">I</span>
+
+<h2><span class="part-label">Section I</span>What It Is</h2>
+
+<p>Every civilization runs on invisible infrastructure. Not roads or power grids—<em>meaning</em>.</p>
+
+<p>The Coherence Metric (χ) measures this invisible infrastructure. It quantifies the alignment between what a society <em>says it values</em> and what it <em>actually does</em>. When words and actions align, coherence is high. When they diverge, coherence degrades.</p>
+
+<div class="eq-stage">
+
+<span class="label">The Coherence Metric</span>
+
+    $$\chi = \int \Psi \times \Phi \times \Lambda \, dV$$
+
+    <p class="caption">Integrity between language, belief, and behavior—integrated across a population</p>
+
+</div>
+
+<div class="term-card">
+
+<div class="symbol">$\Psi$</div>
+
+<div class="meaning">
+
+<h4>Consciousness</h4>
+
+<p>What people believe, intend, and mean.</p>
+
+</div>
+
+</div>
+
+<div class="term-card">
+
+<div class="symbol">$\Phi$</div>
+
+<div class="meaning">
+
+<h4>Physical Reality</h4>
+
+<p>What people actually do, build, and measure.</p>
+
+</div>
+
+</div>
+
+<div class="term-card">
+
+<div class="symbol">$\Lambda$</div>
+
+<div class="meaning">
+
+<h4>Logos</h4>
+
+<p>The semantic field that connects meaning to action.</p>
+
+</div>
+
+</div>
+
+<div class="pull-quote">
+
+<p>Coherence is the integrity between language, belief, and behavior integrated across a population.</p>
+
+</div>
+
+<p>When a society says “family matters” but divorce rates climb, χ drops. When a society says “honesty matters” but trust in institutions collapses, χ drops. When a society stops using words like “duty,” “honor,” and “virtue” altogether, χ is already falling—years before the visible symptoms appear.</p>
+
+</section>
+
+ ═══ II. WHAT IT DOES ═══ 
+
+<section class="section">
+
+<span class="section-num">II</span>
+
+<h2><span class="part-label">Section II</span>What It Does</h2>
+
+<p>The Coherence Metric does something no existing social science framework does: <strong>it predicts collapse before the collapse is visible.</strong></p>
+
+<p>Most metrics are lagging indicators. GDP measures economic damage <em>after</em> it occurs. Crime rates measure social breakdown <em>after</em> it manifests. Election results measure political fracture <em>after</em> it solidifies.</p>
+
+<p>Coherence is a <strong>leading indicator</strong>. It detects the semantic rot—the dissolution of shared meaning—that precedes every measurable crisis by years or decades.</p>
+
+<h3>The Mechanism</h3>
+
+<ol class="mechanism-list">
+
+<li><strong>Semantic layer fails first.</strong> Words lose their “thickness.” Virtue becomes “values.” Duty becomes “preference.” Sin becomes “mistake.” The language of moral obligation thins into the language of personal choice.</li>
+
+<li><strong>Familial layer fails second.</strong> Without shared language for commitment, families destabilize. Divorce, illegitimacy, and household fragmentation follow—not because of economic pressure, but because the <em>words</em> that held families together have already dissolved.</li>
+
+<li><strong>Institutional layer fails third.</strong> Institutions depend on trust. Trust depends on shared meaning. When the semantic foundation cracks, institutions hollow out. They continue to exist structurally while dying functionally.</li>
+
+<li><strong>Economic layer fails last.</strong> Material conditions are the <em>trailing</em> indicator, not the cause. By the time economic metrics signal crisis, the civilization is already dead. The economy is merely the carcass decomposing.</li>
+
+</ol>
+
+<div class="sequence-callout">
+
+<span class="invariant-label">Invariant Sequence</span>
+
+<div class="arrow-chain">
+
+      Semantic <span class="arrow">→</span> Familial <span class="arrow">→</span> Institutional <span class="arrow">→</span> Economic
+
+    </div>
+
+<p class="invariant-note">This sequence does not reverse. It does not skip steps. Every time.</p>
+
+</div>
+
+</section>
+
+ ═══ III. WHY IT MATTERS ═══ 
+
+<section class="section">
+
+<span class="section-num">III</span>
+
+<h2><span class="part-label">Section III</span>Why It Matters</h2>
+
+<p>Because we can measure it. And because the measurement is falsifiable.</p>
+
+<div class="falsification-box">
+
+<span class="falsi-label">Falsification Criteria</span>
+
+<p style="margin-bottom:1rem">If the Coherence Metric is valid, then:</p>
+
+<ul>
+
+<li>Semantic decline (measured via word frequency analysis) should <em>precede</em> familial decline by 3–8 years</li>
+
+<li>Familial decline should <em>precede</em> institutional decline by 5–10 years</li>
+
+<li>Institutional decline should <em>precede</em> economic decline by 5–15 years</li>
+
+<li>This sequence should hold across multiple civilizations, eras, and political systems</li>
+
+</ul>
+
+</div>
+
+<p>If any civilization shows economic collapse <em>preceding</em> semantic collapse, the framework fails. If any civilization shows institutional recovery <em>without</em> prior semantic reconstruction, the framework fails.</p>
+
+<div class="pull-quote">
+
+<p>The framework invites disproof. That’s what makes it science, not ideology.</p>
+
+</div>
+
+</section>
+
+ ═══ IV. THE HISTORICAL EVIDENCE ═══ 
+
+<section class="section">
+
+<span class="section-num">IV</span>
+
+<h2><span class="part-label">Section IV</span>The Historical Evidence</h2>
+
+<p>Four civilizations. Four collapses. One sequence.</p>
+
+<!-- ROME -->
+
+<h3>A. The Roman West</h3>
+
+<table class="collapse-table">
+
+<thead>
+
+<tr>
+
+<th>Domain</th>
+
+<th>Threshold Crossed</th>
+
+<th>Visible Collapse</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>SEMANTIC</td>
+
+<td>~60 BC</td>
+
+<td>Sallust’s cynicism, <em>mos maiorum</em> abandoned</td>
+
+</tr>
+
+<tr>
+
+<td>FAMILIAL</td>
+
+<td>18 BC</td>
+
+<td>Augustus’s marriage laws (state intervention proves family failure)</td>
+
+</tr>
+
+<tr>
+
+<td>INSTITUTIONAL</td>
+
+<td>193 AD</td>
+
+<td>Praetorian Auction (empire sold to highest bidder)</td>
+
+</tr>
+
+<tr>
+
+<td>ECONOMIC</td>
+
+<td>235 AD</td>
+
+<td>Crisis of Third Century, denarius debasement</td>
+
+</tr>
+
+<tr class="cycle-row">
+
+<td colspan="3">Total cycle: 295 years</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<p>The Roman sequence moved slowly because communication moved slowly. Semantic rot took generations to propagate. But the sequence held: meaning died first, family second, institutions third, economy last.</p>
+
+<!-- WEIMAR -->
+
+<h3>B. Weimar Germany</h3>
+
+<table class="collapse-table">
+
+<thead>
+
+<tr>
+
+<th>Domain</th>
+
+<th>Threshold Crossed</th>
+
+<th>Visible Collapse</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>SEMANTIC</td>
+
+<td>1910</td>
+
+<td>Expressionism, Nietzsche’s “Death of God” permeates culture</td>
+
+</tr>
+
+<tr>
+
+<td>FAMILIAL</td>
+
+<td>1919</td>
+
+<td>Divorce triples, Institut für Sexualwissenschaft founded</td>
+
+</tr>
+
+<tr>
+
+<td>INSTITUTIONAL</td>
+
+<td>1923</td>
+
+<td>Beer Hall Putsch (state loses monopoly on violence)</td>
+
+</tr>
+
+<tr>
+
+<td>ECONOMIC</td>
+
+<td>1923</td>
+
+<td>Hyperinflation annihilates middle class</td>
+
+</tr>
+
+<tr class="cycle-row">
+
+<td colspan="3">Total cycle: 13 years</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<p>Weimar compressed the Roman sequence into a single generation. Modern communication accelerated semantic dissolution. The sequence remained invariant; only the velocity changed.</p>
+
+<!-- SOVIET UNION -->
+
+<h3>C. The Soviet Union</h3>
+
+<table class="collapse-table">
+
+<thead>
+
+<tr>
+
+<th>Domain</th>
+
+<th>Threshold Crossed</th>
+
+<th>Visible Collapse</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>SEMANTIC</td>
+
+<td>1966</td>
+
+<td>Sinyavsky-Daniel trial, <em>samizdat</em> era begins, belief dies</td>
+
+</tr>
+
+<tr>
+
+<td>FAMILIAL</td>
+
+<td>1975</td>
+
+<td>Male life expectancy falling, alcoholism epidemic, data censored</td>
+
+</tr>
+
+<tr>
+
+<td>INSTITUTIONAL</td>
+
+<td>1982</td>
+
+<td>Brezhnev death exposes gerontocracy as zombie structure</td>
+
+</tr>
+
+<tr>
+
+<td>ECONOMIC</td>
+
+<td>1989</td>
+
+<td>GDP absolute decline, supply chains fail</td>
+
+</tr>
+
+<tr class="cycle-row">
+
+<td colspan="3">Total cycle: 23 years</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<p>The Soviet case is instructive because the economic system was <em>already</em> dysfunctional. Yet it persisted for decades after semantic collapse—proving that material conditions are insufficient to explain civilizational death. The Soviets stopped believing in the 1960s. The state didn’t fall until the 1990s. Meaning precedes matter.</p>
+
+<!-- UNITED STATES -->
+
+<h3>D. The United States (1960–1980)</h3>
+
+<table class="collapse-table">
+
+<thead>
+
+<tr>
+
+<th>Order</th>
+
+<th>Domain</th>
+
+<th>Threshold (P<sub>c</sub>)</th>
+
+<th>Visible Collapse (T<sub>v</sub>)</th>
+
+<th>Lag</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr><td>1</td><td>SEMANTIC</td><td>1962</td><td>1970</td><td>8 years</td></tr>
+
+<tr><td>2</td><td>COGNITIVE</td><td>1963</td><td>1975</td><td>12 years</td></tr>
+
+<tr><td>3</td><td>PSYCHOLOGICAL</td><td>1963</td><td>1978</td><td>15 years</td></tr>
+
+<tr><td>4</td><td>MORAL</td><td>1964</td><td>1972</td><td>8 years</td></tr>
+
+<tr><td>5</td><td>INSTITUTIONAL</td><td>1965</td><td>1974</td><td>9 years</td></tr>
+
+<tr><td>6</td><td>SPIRITUAL</td><td>1965</td><td>1975</td><td>10 years</td></tr>
+
+<tr><td>7</td><td>MONETARY</td><td>1965</td><td>1979</td><td>14 years</td></tr>
+
+<tr><td>8</td><td>FAMILIAL</td><td>1967</td><td>1980</td><td>13 years</td></tr>
+
+<tr><td>9</td><td>STRUCTURAL</td><td>1968</td><td>1973</td><td>5 years</td></tr>
+
+<tr><td>10</td><td>SOMATIC</td><td>1978</td><td>1990s</td><td>12+ years</td></tr>
+
+</tbody>
+
+</table>
+
+<div class="voice-block">
+
+<span class="voice-label">The “Integrity Interval” of 1963–1965</span>
+
+<p>A catastrophic cascade failure compressed into three years. SAT scores, crime rates, institutional trust, and mainline church membership all inverted within this window—<em>after</em> semantic indicators (virtue word frequency) began accelerating downward in 1960–62.</p>
+
+<p style="margin-bottom:0"><strong>Key finding:</strong> The Great Society expansion (1964–65) occurred <em>exactly</em> when the semantic foundation collapsed. The state expanded responsibility precisely as the population abandoned the language of responsibility.</p>
+
+</div>
+
+<div class="source-tag">
+
+<strong>Source data:</strong> Google Ngram (semantic), College Board (cognitive), FDA/CDC (psychological), FBI UCR (moral), Gallup (institutional), denominational records (spiritual), FRED (monetary/structural), Census Bureau (familial), NHANES (somatic).
+
+  </div>
+
+</section>
+
+ ═══ V. THE PROGNOSIS ═══ 
+
+<section class="section">
+
+<span class="section-num">V</span>
+
+<h2><span class="part-label">Section V</span>The Prognosis</h2>
+
+<p>The United States crossed its semantic threshold sixty years ago. The familial and institutional collapses followed on schedule. We are now deep in the economic phase—the <em>trailing</em> indicator.</p>
+
+<h3>Current Position on the Curve</h3>
+
+<p>The language of virtue has not recovered. Google Ngram data through 2019 shows continued decline in “thick” moral concepts. The brief stabilizations of the 1980s and early 2000s did not reverse the trajectory; they merely slowed it.</p>
+
+<p>Trust in institutions remains at historic lows. Family formation rates continue to decline. Economic metrics (wage stagnation, wealth concentration, debt levels) reflect the accumulated damage of six decades of coherence loss.</p>
+
+<h3>The Lag Compression Problem</h3>
+
+<p>Each successive civilization in our dataset collapsed faster than the previous one:</p>
+
+<div class="lag-strip">
+
+<div class="lag-item">
+
+<div class="years">295</div>
+
+<span class="civ-name">Rome</span>
+
+</div>
+
+<span class="lag-arrow">→</span>
+
+<div class="lag-item">
+
+<div class="years">23</div>
+
+<span class="civ-name">Soviet Union</span>
+
+</div>
+
+<span class="lag-arrow">→</span>
+
+<div class="lag-item">
+
+<div class="years">13</div>
+
+<span class="civ-name">Weimar</span>
+
+</div>
+
+</div>
+
+<p>Modern interconnection does not increase resilience. It <em>accelerates fragility</em>. Semantic contagion now spreads at the speed of social media. A civilization can lose its meaning-infrastructure in years rather than generations.</p>
+
+<div class="pull-quote">
+
+<p>If the pattern holds, we are not in a cyclical downturn. We are in a phase transition. The question is not whether American civilization will transform, but into what.</p>
+
+</div>
+
+</section>
+
+ ═══ VI. THE REDEMPTION ═══ 
+
+<section class="section restoration">
+
+<span class="section-num">VI</span>
+
+<h2><span class="part-label">Section VI</span>The Redemption</h2>
+
+<p>Collapse follows a sequence. So does restoration.</p>
+
+<p>The same framework that predicts dissolution predicts repair. If Semantic → Familial → Institutional → Economic describes the downward cascade, then <strong>Semantic → Familial → Institutional</strong> describes the upward reconstruction.</p>
+
+<p>Three case studies prove this is not speculation.</p>
+
+<!-- VICTORIAN BRITAIN -->
+
+<div class="restoration-card">
+
+<span class="case-label">Case Study A</span>
+
+<h4>Victorian Britain (1795–1860)</h4>
+
+<p class="baseline">Baseline entropy: Late 18th century England—libertine aristocracy, rising illegitimacy, the “Bloody Code” (200+ capital offenses), the Gin Craze legacy, violent working class.</p>
+
+<div class="phase">
+
+<span class="phase-label">Phase 1 — Semantic (1795–1830)</span>
+
+<p>The Clapham Sect—approximately twenty families—launched what they called the “Reformation of Manners.” Hannah More’s <em>Cheap Repository Tracts</em> distributed 2 million copies in their first year to a population of 10 million. This was a semantic saturation event. New moral vocabulary entered circulation. “Thick” concepts (prudence, temperance, fortitude) were reintroduced through narrative.</p>
+
+</div>
+
+<div class="phase">
+
+<span class="phase-label">Phase 2 — Familial (1830–1850)</span>
+
+<p>The Sunday School movement enrolled 1.25 million children by 1831—25% of the child population. The concept of “Respectability” solidified, stabilizing the family unit. The Victorian family ideal emerged not from legislation but from <em>language</em>.</p>
+
+</div>
+
+<div class="phase">
+
+<span class="phase-label">Phase 3 — Institutional (1850–1900)</span>
+
+<p>Crime dropped 50% between 1857–1901 <em>despite</em> rapid urbanization. Illegitimacy declined from 7% to 4%. Police were effective because they reinforced a moral order that had already been internalized. The state <em>ratified</em> the order; it did not create it.</p>
+
+</div>
+
+<span class="lag-time">Lag time: 55 years from Tracts to crime drop</span>
+
+</div>
+
+<!-- SECOND GREAT AWAKENING -->
+
+<div class="restoration-card">
+
+<span class="case-label">Case Study B</span>
+
+<h4>The Second Great Awakening (1800–1850)</h4>
+
+<p class="baseline">Baseline entropy: The “Alcoholic Republic” of 1790–1830—alcohol consumption at 7.1 gallons of pure alcohol per capita (triple modern levels), “rough and tumble” fighting, frontier lawlessness.</p>
+
+<div class="phase">
+
+<span class="phase-label">Phase 1 — Semantic (1800–1840)</span>
+
+<p>Charles Finney and Lyman Beecher led revival. The “Anxious Bench” made moral status public. Drinking was <em>redefined</em>—from “conviviality” to “Intemperance” (sin). By 1835: 5,000+ temperance societies, over one million members.</p>
+
+</div>
+
+<div class="phase">
+
+<span class="phase-label">Phase 2 — Familial (1830–1850)</span>
+
+<p>The temperance movement framed the “Drunkard” as the enemy of the “Home.” Alcohol consumption fell 75% (7.1 to 1.8 gallons) between 1830–1845 through <em>moral suasion alone</em>—before any prohibition legislation.</p>
+
+</div>
+
+<div class="phase">
+
+<span class="phase-label">Phase 3 — Institutional (1840–1860)</span>
+
+<p>“Rough and tumble” fighting vanished by the 1840s—<em>defined out of existence</em>. The Common School movement institutionalized Protestant ethics, creating the high-trust workforce that enabled Northern industrialization.</p>
+
+</div>
+
+<span class="lag-time">Lag time: 20 years from Temperance Society to behavioral floor</span>
+
+</div>
+
+<!-- MEIJI JAPAN -->
+
+<div class="restoration-card">
+
+<span class="case-label">Case Study C</span>
+
+<h4>Meiji Japan (1890–1912)</h4>
+
+<p class="baseline">Baseline entropy: Post-1868 Japan—feudal loyalties abolished, samurai class dismantled, identity crisis, political instability.</p>
+
+<div class="phase">
+
+<span class="phase-label">Phase 1 — Semantic (1890)</span>
+
+<p>The Imperial Rescript on Education—the most explicit semantic reconstruction in recorded history. It fused Confucian virtues with State Shinto. “Thick” concepts were <em>mandated</em>: “Be filial to your parents,” “bear yourselves in modesty,” “offer yourselves courageously to the State.” Every school received a copy, housed it in a shrine, and required daily bowing. Shushin (Ethics) became the primary curriculum subject.</p>
+
+</div>
+
+<div class="phase">
+
+<span class="phase-label">Phase 2 — Familial (1890–1900)</span>
+
+<p>The Civil Code of 1898 codified the <em>Ie</em> (Household) system, modeling family on state. Divorce collapsed 50% within a decade as marriage was redefined from contract to patriotic duty.</p>
+
+</div>
+
+<div class="phase">
+
+<span class="phase-label">Phase 3 — Institutional (1900–1912)</span>
+
+<p>Semantic and familial cohesion provided the “social glue” for industrial transformation. Japan became the only non-Western nation to industrialize rapidly. Military victory over Russia (1905) confirmed Great Power status.</p>
+
+</div>
+
+<span class="lag-time">Lag time: 15 years — remarkably short due to centralized semantic injection via the school system</span>
+
+</div>
+
+</section>
+
+ ═══ VII. THE PROTOCOL ═══ 
+
+<section class="section restoration">
+
+<span class="section-num">VII</span>
+
+<h2><span class="part-label">Section VII</span>The Protocol</h2>
+
+<p>Restoration is possible. It follows rules. Here is what the historical evidence reveals:</p>
+
+<div class="protocol-card">
+
+<div class="phase-head">Phase I: Semantic Reconstruction</div>
+
+<span class="phase-time">Years 0–20</span>
+
+<span class="detail-label">Agent</span>
+
+<p style="font-size:.95rem;color:var(--cream-d)">Creative minorities operating <em>outside</em> state structures.</p>
+
+<span class="detail-label">Tactics</span>
+
+<ul>
+
+<li>Establish “islands of coherence”—small communities practicing the restored language</li>
+
+<li>Develop “moral technology”—narratives, aesthetics, and phrases that carry thick concepts</li>
+
+<li>Infiltrate elite networks to make virtue high-status</li>
+
+</ul>
+
+<span class="detail-label">Metric</span>
+
+<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:.5rem">Frequency of thick moral terms in public discourse.</p>
+
+<span class="detail-label">Modern Application</span>
+
+<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:0">The whisper. Person to person. “Be Blessed” as a shibboleth—a frequency marker identifying those who resonate. When the echo returns from everywhere, the semantic layer has shifted.</p>
+
+</div>
+
+<div class="protocol-card">
+
+<div class="phase-head">Phase II: Familial Fortification</div>
+
+<span class="phase-time">Years 20–40</span>
+
+<span class="detail-label">Agent</span>
+
+<p style="font-size:.95rem;color:var(--cream-d)">Family and parallel institutions (churches, schools, voluntary associations).</p>
+
+<span class="detail-label">Tactics</span>
+
+<ul>
+
+<li>Use the restored semantic code to insulate families from entropic cultural pressure</li>
+
+<li>Build parallel institutions that socialize children into coherent meaning-structures</li>
+
+<li>Stigmatize familial failure while offering redemption pathways</li>
+
+</ul>
+
+<span class="detail-label">Metric</span>
+
+<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:0">Decline in familial entropy (divorce, illegitimacy, household fragmentation).</p>
+
+</div>
+
+<div class="protocol-card">
+
+<div class="phase-head">Phase III: Institutional Ratification</div>
+
+<span class="phase-time">Years 40–60</span>
+
+<span class="detail-label">Agent</span>
+
+<p style="font-size:.95rem;color:var(--cream-d)">State and formal institutions.</p>
+
+<span class="detail-label">Tactics</span>
+
+<ul>
+
+<li>Pass laws <em>reflecting</em> already-achieved consensus (not attempting to create it)</li>
+
+<li>Use institutional authority to <em>defend</em> the semantic code, not impose it</li>
+
+</ul>
+
+<span class="detail-label">Metric</span>
+
+<p style="font-size:.95rem;color:var(--cream-d);margin-bottom:0">Decline in institutional entropy (crime, corruption, transaction costs).</p>
+
+</div>
+
+</section>
+
+ ═══ VIII. THE IMPLICATION ═══ 
+
+<section class="section">
+
+<span class="section-num">VIII</span>
+
+<h2><span class="part-label">Section VIII</span>The Implication</h2>
+
+<p>Every government program since 1965 has attempted Phase III without Phase I.</p>
+
+<p>Top-down without bottom-up. Law without language. Coercion without conviction.</p>
+
+<p>This is why they fail. Augustus failed for the same reason. You cannot legislate meaning into existence. You can only <em>ratify</em> meaning that has already taken root in the semantic layer.</p>
+
+<p>The Coherence Metric explains why trillions of dollars in social spending have not reversed the trends. The intervention targeted the wrong layer. Economic transfers cannot repair semantic collapse. Institutional reforms cannot rebuild families. Only restored <em>meaning</em> can do that.</p>
+
+<div class="pull-quote">
+
+<p>And meaning spreads the way it has always spread: person to person. Two words at a time.</p>
+
+</div>
+
+</section>
+
+ ═══ IX. THE INVITATION ═══ 
+
+<section class="section">
+
+<span class="section-num">IX</span>
+
+<h2><span class="part-label">Section IX</span>The Invitation</h2>
+
+<p>This framework is falsifiable. We invite disproof.</p>
+
+<div class="challenge">
+
+<h3>The Open Challenge</h3>
+
+<p>If you can identify a civilization that collapsed economically <em>before</em> it collapsed semantically, the framework fails.</p>
+
+<p>If you can identify a civilization that restored its institutions <em>without</em> prior semantic reconstruction, the framework fails.</p>
+
+<p>If you can demonstrate that the 1963–1965 American “Integrity Interval” was caused by factors <em>other</em> than the preceding semantic dissolution, we will revise.</p>
+
+<p class="final">The data is public. The methodology is transparent. The invitation is open.</p>
+
+</div>
+
+<p>We are not claiming certainty. We are claiming a pattern—documented across four civilizations spanning two millennia—that has predictive power and falsification criteria.</p>
+
+</section>
+
+ ═══ X. THE CALL ═══ 
+
+<section class="section">
+
+<span class="section-num">X</span>
+
+<h2><span class="part-label">Section X</span>The Call</h2>
+
+<p>You are reading this because someone passed it to you. That transmission—that act of sharing—is itself the mechanism.</p>
+
+<p>Hannah More didn’t buy billboards. She handed out tracts, person to person, until two million were circulating in a nation of ten million.</p>
+
+<p>Finney didn’t pass laws. He passed pledges, person to person, until the drinking stopped before the legislation arrived.</p>
+
+<p>The oldest pattern in civilizational repair begins with a word, spreads through relationship, and becomes an army before anyone realizes they were recruited.</p>
+
+<h3>The Test</h3>
+
+<p>Tomorrow morning. First stranger you see. Look them in the eyes.</p>
+
+<p>Say: <em>“Be blessed.”</em></p>
+
+<p>Count how many say it back.</p>
+
+<p>That’s your signal. That’s your metric. That’s your army.</p>
+
+<p>No app. No platform. No leader to cancel.</p>
+
+<p>Just the word, traveling through the noise.</p>
+
+<div class="blessed-finale">
+
+<div class="blessed-text">Be Blessed.</div>
+
+<p class="blessed-sub">The Coherence Metric Project · theophysics.pro</p>
+
+</div>
+
+</section>
+
 <img src="/media/media/character-salvation-science-standards-blackout.webp" alt="Content visualization" class="tp-article-img"/>
-</article>
-<!-- ═══════ BIG PREV / NEXT ═══════ -->
-
-<!-- ═══════ FINAL AUDIT ═══════ -->
-<section class="tp-audit">
-<div class="tp-audit-box">
-<div class="tp-audit-head">Final Audit</div>
-<p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
-<div class="tp-audit-covenant">
-<b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
-    </div>
-<div class="tp-audit-grid">
-<div class="tp-audit-col tp-col-right">
-<h4>What We Got Right</h4>
-<ul>
-<li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
-</ul>
-</div>
-<div class="tp-audit-col tp-col-over">
-<h4>What We Overstated</h4>
-<ul>
-<li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
-</ul>
-</div>
-<div class="tp-audit-col tp-col-wrong">
-<h4>What We Got Wrong</h4>
-<ul>
-<li>Claims that need correction, tightening, or weaker formulation.</li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<!-- ═══════ GOLD DIVIDER ═══════ -->
-<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
-<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
-<section class="tp-subdomains">
-<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
-<div class="tp-sub-title">The Math Behind the Claims</div>
-<div class="tp-sub-grid">
-<a class="tp-sub-card" href="/equation/"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
-<a class="tp-sub-card" href="/isomorphism/"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
-<a class="tp-sub-card" href="/proof-explorer/"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
-<a class="tp-sub-card" href="/rigor/"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
-<a class="tp-sub-card" href="/lean4/"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
-</div>
-</section>
-<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
-<section class="tp-subdomains">
-<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
-<div class="tp-sub-title">Everything Else</div>
-<div class="tp-sub-grid">
-<a class="tp-sub-card" href="/glossary/"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
-<a class="tp-sub-card" href="/media/"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
-<a class="tp-sub-card" href="/podcast/"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
-<a class="tp-sub-card" href="/audio/"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
-<a class="tp-sub-card" href="/subdomains/"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
-</div>
-</section>
-<!-- ═══════ SERIES NAV ═══════ -->
-<nav class="tp-series-nav">
-<div class="tp-series-strip">
-<a class="active" href="/">Home</a>
-<a href="/moral-decline/">MDA</a>
-<a href="/genesis-to-quantum/">GTQ</a>
-<a href="/Convergence_Series/">Convergence</a>
-<a href="/Logos_Papers/">Logos Papers</a>
-<a href="/one-page-stories/">One-Page Stories</a>
-<a class="soon" href="/consciousness/">Consciousness</a>
-<a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
-</div>
-</nav>
-<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
-<div class="tp-door">
-<div class="tp-door-num">15 + 15 = 100</div>
-<div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
-<span class="tp-door-mark"></span>
-</div>
-<script>
-/* ═══════ AUTO-ACTIVE NAV ═══════
-   Detects current page URL and lights up the matching nav link.
-   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
-   No manual active classes needed per page. */
-const NAV_MAP={
-  home:['/','/index.html','/home'],
-  mtl:['/equation/','/equation','/math-translation-layer/'],
-  proof:['/proof-explorer/','/proof-explorer','/proof/']
-};
-const path=window.location.pathname;
-document.querySelectorAll('.tp-nav-link').forEach(link=>{
-  const key=link.dataset.nav;
-  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
-    link.classList.add('active');
-  } else {
-    link.classList.remove('active');
-  }
-});
-
-/* Article domain profile — swap this array per article */
-const ARTICLE_PROFILE=[
-  {name:"Theology",pct:28,color:"#d4af37"},
-  {name:"Physics",pct:22,color:"#7cc7ff"},
-  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
-  {name:"Evidence",pct:15,color:"#7fc77f"},
-  {name:"Consciousness",pct:10,color:"#a78bfa"},
-  {name:"Mathematics",pct:7,color:"#ff7d90"},
-  {name:"Speculative",pct:3,color:"#aeb8d6"}
-];
-
-/* Render classification bar */
-const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
-if(bar&&tags){
-  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
-  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
-}
-
-/* Reading level tabs */
-document.querySelectorAll('.tp-level').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-/* Big nav hover spotlight effect */
-document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
-  card.addEventListener('mousemove',e=>{
-    const rect=card.getBoundingClientRect();
-    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
-    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
-  });
-});
-
-/* Series nav auto-active (same pattern) */
-const SERIES_MAP={
-  '/':'Home','/index.html':'Home','/home':'Home',
-  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
-  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
-  '/one-page-stories/':'One-Page Stories'
-};
-const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
-if(seriesName){
-  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
-    if(a.textContent.trim()===seriesName){a.classList.add('active');}
-    else{a.classList.remove('active');}
-  });
-}
-</script>
-<!-- MTL worker client -->
-<script defer="" src="/shared/js/mtl-worker-client.js"></script>
-<script defer="" src="/site-shell/frame.js"></script></body>
+</article>
+
+<!-- ═══════ BIG PREV / NEXT ═══════ -->
+
+
+
+<!-- ═══════ FINAL AUDIT ═══════ -->
+
+<section class="tp-audit">
+
+<div class="tp-audit-box">
+
+<div class="tp-audit-head">Final Audit</div>
+
+<p class="tp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+
+<div class="tp-audit-covenant">
+
+<b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+
+    </div>
+
+<div class="tp-audit-grid">
+
+<div class="tp-audit-col tp-col-right">
+
+<h4>What We Got Right</h4>
+
+<ul>
+
+<li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+
+</ul>
+
+</div>
+
+<div class="tp-audit-col tp-col-over">
+
+<h4>What We Overstated</h4>
+
+<ul>
+
+<li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+
+</ul>
+
+</div>
+
+<div class="tp-audit-col tp-col-wrong">
+
+<h4>What We Got Wrong</h4>
+
+<ul>
+
+<li>Claims that need correction, tightening, or weaker formulation.</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ═══════ GOLD DIVIDER ═══════ -->
+
+<div class="tp-gold-divider"><div class="tp-gold-divider-line"></div></div>
+
+<!-- ═══════ SUBDOMAIN GRID — PROOF & RESEARCH ═══════ -->
+
+<section class="tp-subdomains">
+
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Proof &amp; Research</span></div>
+
+<div class="tp-sub-title">The Math Behind the Claims</div>
+
+<div class="tp-sub-grid">
+
+<a class="tp-sub-card" href="/equation/"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+
+<a class="tp-sub-card" href="/isomorphism/"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+
+<a class="tp-sub-card" href="/proof-explorer/"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+
+<a class="tp-sub-card" href="/rigor/"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+
+<a class="tp-sub-card" href="/lean4/"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+
+</div>
+
+</section>
+
+<!-- ═══════ SUBDOMAIN GRID — REFERENCE & MEDIA ═══════ -->
+
+<section class="tp-subdomains">
+
+<div class="tp-sub-head"><span class="tp-sub-dot"></span><span class="tp-sub-kicker">Reference &amp; Media</span></div>
+
+<div class="tp-sub-title">Everything Else</div>
+
+<div class="tp-sub-grid">
+
+<a class="tp-sub-card" href="/glossary/"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+
+<a class="tp-sub-card" href="/media/"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+
+<a class="tp-sub-card" href="/podcast/"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+
+<a class="tp-sub-card" href="/audio/"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+
+<a class="tp-sub-card" href="/subdomains/"><i class="fas fa-chart-bar"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+
+</div>
+
+</section>
+
+<!-- ═══════ SERIES NAV ═══════ -->
+
+<nav class="tp-series-nav">
+
+<div class="tp-series-strip">
+
+<a class="active" href="/">Home</a>
+
+<a href="/moral-decline/">MDA</a>
+
+<a href="/genesis-to-quantum/">GTQ</a>
+
+<a href="/Convergence_Series/">Convergence</a>
+
+<a href="/Logos_Papers/">Logos Papers</a>
+
+<a href="/one-page-stories/">One-Page Stories</a>
+
+<a class="soon" href="/consciousness/">Consciousness</a>
+
+<a href="https://zenodo.org/communities/theophysics/" target="_blank">Zenodo</a>
+
+</div>
+
+</nav>
+
+<!-- ═══════ THE DOOR (15 + 15 = 100) ═══════ -->
+
+<div class="tp-door">
+
+<div class="tp-door-num">15 + 15 = 100</div>
+
+<div class="tp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+
+<span class="tp-door-mark"></span>
+
+</div>
+
+<script>
+
+/* ═══════ AUTO-ACTIVE NAV ═══════
+
+   Detects current page URL and lights up the matching nav link.
+
+   Add data-nav="key" to each .tp-nav-link, map keys to URL paths below.
+
+   No manual active classes needed per page. */
+
+const NAV_MAP={
+
+  home:['/','/index.html','/home'],
+
+  mtl:['/equation/','/equation','/math-translation-layer/'],
+
+  proof:['/proof-explorer/','/proof-explorer','/proof/']
+
+};
+
+const path=window.location.pathname;
+
+document.querySelectorAll('.tp-nav-link').forEach(link=>{
+
+  const key=link.dataset.nav;
+
+  if(key && NAV_MAP[key] && NAV_MAP[key].some(p=>path===p || path.startsWith(p+'/'))){
+
+    link.classList.add('active');
+
+  } else {
+
+    link.classList.remove('active');
+
+  }
+
+});
+
+
+
+/* Article domain profile — swap this array per article */
+
+const ARTICLE_PROFILE=[
+
+  {name:"Theology",pct:28,color:"#d4af37"},
+
+  {name:"Physics",pct:22,color:"#7cc7ff"},
+
+  {name:"Cross-Domain",pct:15,color:"#3bb39a"},
+
+  {name:"Evidence",pct:15,color:"#7fc77f"},
+
+  {name:"Consciousness",pct:10,color:"#a78bfa"},
+
+  {name:"Mathematics",pct:7,color:"#ff7d90"},
+
+  {name:"Speculative",pct:3,color:"#aeb8d6"}
+
+];
+
+
+
+/* Render classification bar */
+
+const bar=document.getElementById('classBar'),tags=document.getElementById('classTags');
+
+if(bar&&tags){
+
+  bar.innerHTML=ARTICLE_PROFILE.map(d=>`<div class="tp-class-seg" style="flex:${d.pct};background:${d.color}"></div>`).join('');
+
+  tags.innerHTML=ARTICLE_PROFILE.map(d=>`<span class="tp-class-tag"><span class="tp-class-dot" style="background:${d.color}"></span>${d.name} ${d.pct}%</span>`).join('');
+
+}
+
+
+
+/* Reading level tabs */
+
+document.querySelectorAll('.tp-level').forEach(btn=>{
+
+  btn.addEventListener('click',()=>{
+
+    document.querySelectorAll('.tp-level').forEach(b=>b.classList.remove('active'));
+
+    btn.classList.add('active');
+
+  });
+
+});
+
+
+
+/* Big nav hover spotlight effect */
+
+document.querySelectorAll('.tp-bignav-prev, .tp-bignav-next').forEach(card=>{
+
+  card.addEventListener('mousemove',e=>{
+
+    const rect=card.getBoundingClientRect();
+
+    card.style.setProperty('--hover-x',((e.clientX-rect.left)/rect.width*100)+'%');
+
+    card.style.setProperty('--hover-y',((e.clientY-rect.top)/rect.height*100)+'%');
+
+  });
+
+});
+
+
+
+/* Series nav auto-active (same pattern) */
+
+const SERIES_MAP={
+
+  '/':'Home','/index.html':'Home','/home':'Home',
+
+  '/moral-decline/':'MDA','/genesis-to-quantum/':'GTQ',
+
+  '/Convergence_Series/':'Convergence','/Logos_Papers/':'Logos Papers',
+
+  '/one-page-stories/':'One-Page Stories'
+
+};
+
+const seriesName=SERIES_MAP[path] || (path.includes('/moral-decline/')?'MDA':null);
+
+if(seriesName){
+
+  document.querySelectorAll('.tp-series-strip a').forEach(a=>{
+
+    if(a.textContent.trim()===seriesName){a.classList.add('active');}
+
+    else{a.classList.remove('active');}
+
+  });
+
+}
+
+</script>
+
+<!-- MTL worker client -->
+
+<script defer="" src="/shared/js/mtl-worker-client.js"></script>
+
+<script defer="" src="/site-shell/frame.js"></script></body>
+
 </html>

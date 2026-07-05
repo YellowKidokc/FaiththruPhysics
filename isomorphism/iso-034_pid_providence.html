@@ -1,616 +1,742 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="The PID controller C(s) = Kp + Ki/s + Kd·s maps structurally onto providential governance: conscience (Kp), sanctification (Ki), and prophetic warning (Kd). The controller/plant distinction resolves the free will–sovereignty problem with engineering precision.">
-  <title>ISO-034 · Control Theory ↔ Providence · Theophysics</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
-      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
-      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
-      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
-      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
-      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
-      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
-      --max-width:1100px; --section-gap:5rem;
-    }
-    html{scroll-behavior:smooth;}
-    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.65;}
-    .container{max-width:1100px;margin:0 auto;padding:0 2rem;}
-    .site-header{border-bottom:1px solid var(--border);padding:.9rem 0;position:sticky;top:0;
-      background:rgba(10,10,10,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:100;}
-    .site-header .container{display:flex;align-items:center;justify-content:space-between;}
-    .site-brand{font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.2em;
-      text-transform:uppercase;color:var(--text-muted);text-decoration:none;}
-    .site-brand span{color:var(--gold);}
-    .iso-badge{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);
-      border:1px solid var(--border-gold);padding:.22rem .65rem;border-radius:3px;letter-spacing:.12em;}
-    .hero{padding:5rem 0 4rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-    .hero-bg-number{position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
-      font-family:var(--font-display);font-size:clamp(12rem,28vw,26rem);font-weight:700;
-      color:var(--gold-faded);line-height:1;pointer-events:none;user-select:none;letter-spacing:-.05em;}
-    .hero-iso-id{font-family:var(--font-mono);font-size:.8rem;color:var(--gold);
-      letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
-    .hero-iso-id::after{content:'';display:inline-block;width:80px;height:1px;
-      background:linear-gradient(90deg,var(--gold),transparent);}
-    .hero-title{font-family:var(--font-display);font-size:clamp(2rem,5.5vw,3.8rem);font-weight:700;
-      text-transform:uppercase;letter-spacing:.04em;color:#fff;line-height:1.08;margin-bottom:1rem;}
-    .hero-subtitle{font-family:var(--font-mono);font-size:clamp(.85rem,2vw,1.05rem);
-      color:var(--gold);margin-bottom:2rem;letter-spacing:.06em;}
-    .hero-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2.5rem;}
-    .tag{font-family:var(--font-display);font-size:.62rem;font-weight:500;letter-spacing:.14em;
-      text-transform:uppercase;padding:.28rem .7rem;border-radius:2px;border:1px solid;
-      display:inline-flex;align-items:center;gap:.35rem;}
-    .tag-gold{color:var(--gold);border-color:var(--border-gold);background:var(--gold-faded);}
-    .tag-green{color:var(--success);border-color:rgba(63,185,80,.25);background:rgba(63,185,80,.05);}
-    .tag-blue{color:var(--info);border-color:rgba(121,192,255,.25);background:rgba(121,192,255,.05);}
-    .tag-purple{color:var(--purple);border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.05);}
-    .tag-warn{color:var(--warn);border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.05);}
-    .hero-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
-      background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;max-width:780px;}
-    .hero-meta-item{padding:1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
-    .hero-meta-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.16em;
-      text-transform:uppercase;color:var(--text-dim);margin-bottom:.25rem;}
-    .hero-meta-value{font-family:var(--font-display);font-size:.82rem;font-weight:500;color:var(--text);letter-spacing:.04em;}
-    .hero-meta-value.gold{color:var(--gold);}
-    .hero-meta-value.green{color:var(--success);}
-    .hero-meta-value.blue{color:var(--info);}
-    .hero-meta-value.purple{color:var(--purple);}
-    .main-content{padding:0 0 7rem;}
-    .iso-section{padding:var(--section-gap) 0;border-bottom:1px solid var(--border);}
-    .iso-section:last-child{border-bottom:none;}
-    .section-header{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:2.5rem;}
-    .section-num{font-family:var(--font-display);font-size:6rem;font-weight:700;line-height:.85;
-      color:var(--gold-faded-2);letter-spacing:-.03em;user-select:none;min-width:100px;text-align:right;padding-top:.1em;}
-    .section-title-group{padding-top:.3rem;}
-    .section-title{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.85rem);
-      font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:.5rem;}
-    .section-divider{height:2px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
-      border-radius:1px;margin-bottom:.5rem;}
-    .section-subtitle{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;}
-    .claim-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);
-      padding:1.75rem 2rem;border-radius:0 6px 6px 0;margin-bottom:1.5rem;font-size:1.03rem;line-height:1.75;}
-    .kill-condition{background:var(--surface-2);border:1px solid rgba(248,81,73,.25);
-      border-left:3px solid var(--danger);padding:1.25rem 1.75rem;border-radius:0 6px 6px 0;}
-    .kill-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;letter-spacing:.2em;
-      text-transform:uppercase;color:var(--danger);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
-    .iso-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;}
-    .iso-table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:580px;}
-    .iso-table thead tr{background:var(--surface-2);border-bottom:1px solid var(--border-gold);}
-    .iso-table thead th{font-family:var(--font-display);font-size:.62rem;font-weight:600;
-      letter-spacing:.16em;text-transform:uppercase;padding:.9rem 1.1rem;text-align:left;}
-    .iso-table thead th.col-physics{color:var(--info);}
-    .iso-table thead th.col-theology{color:var(--purple);}
-    .iso-table thead th.col-label{color:var(--text-muted);}
-    .iso-table thead th.col-note{color:var(--gold);}
-    .iso-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
-    .iso-table tbody tr:last-child{border-bottom:none;}
-    .iso-table tbody tr:hover{background:rgba(212,175,55,.04);}
-    .iso-table td{padding:.9rem 1.1rem;vertical-align:top;line-height:1.58;}
-    .td-label{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--gold);
-      text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
-    .td-physics{color:var(--info);}
-    .td-theology{color:var(--purple);}
-    .td-note{color:var(--text-muted);font-size:.82rem;}
-    .equation-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;
-      padding:1.25rem 1.5rem;margin-bottom:1rem;overflow-x:auto;}
-    .equation-block .eq-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;
-      text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;}
-    .equation{font-family:var(--font-mono);font-size:1rem;color:var(--gold);line-height:1.8;white-space:pre-wrap;}
-    .eq-note{font-size:.82rem;color:var(--text-muted);margin-top:.5rem;line-height:1.55;}
-    .var-table{width:100%;border-collapse:collapse;font-size:.875rem;margin-bottom:1.5rem;}
-    .var-table tr{border-bottom:1px solid var(--border);}
-    .var-table tr:last-child{border-bottom:none;}
-    .var-table td{padding:.7rem 1rem;vertical-align:top;line-height:1.55;}
-    .var-sym{font-family:var(--font-mono);color:var(--gold);white-space:nowrap;width:160px;}
-    .var-desc{color:var(--text);}
-    .var-analog{font-family:var(--font-mono);font-size:.78rem;color:var(--purple);width:220px;}
-    .accent-block{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;
-      border-radius:0 6px 6px 0;margin-bottom:1rem;}
-    .accent-block.gold{border-left:3px solid var(--gold);}
-    .accent-block.green{border-left:3px solid var(--success);}
-    .accent-block.warn{border-left:3px solid var(--warn);}
-    .accent-block.blue{border-left:3px solid var(--info);}
-    .accent-block.danger{border-left:3px solid var(--danger);}
-    .accent-label{font-family:var(--font-display);font-size:.63rem;font-weight:600;
-      letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
-    .accent-block.gold .accent-label{color:var(--gold);}
-    .accent-block.green .accent-label{color:var(--success);}
-    .accent-block.warn .accent-label{color:var(--warn);}
-    .accent-block.blue .accent-label{color:var(--info);}
-    .accent-block.danger .accent-label{color:var(--danger);}
-    .accent-block p{font-size:.9rem;line-height:1.65;}
-    .iso-quote{font-family:var(--font-quote);font-style:italic;font-size:1.05rem;color:var(--text);
-      padding:1.25rem 1.5rem;background:var(--gold-faded-2);border:1px solid var(--border-gold);
-      border-radius:6px;line-height:1.75;margin-bottom:1rem;}
-    .iso-quote-source{font-family:var(--font-mono);font-style:normal;font-size:.65rem;
-      letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:.5rem;display:block;}
-    .classification-banner{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;
-      text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;}
-    .classification-banner::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold);}
-    .classification-banner::after{content:'';display:inline-block;flex:1;height:1px;
-      background:linear-gradient(90deg,var(--border-gold),transparent);}
-    .test-grid{display:grid;gap:.75rem;margin-bottom:1.5rem;}
-    .test-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;
-      padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;}
-    .test-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
-      justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:.1rem;}
-    .test-icon.pass{background:rgba(63,185,80,.12);color:var(--success);border:1px solid rgba(63,185,80,.25);}
-    .test-icon.fail{background:rgba(248,81,73,.12);color:var(--danger);border:1px solid rgba(248,81,73,.25);}
-    .test-icon.warn{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
-    .test-label{font-family:var(--font-display);font-size:.68rem;font-weight:600;letter-spacing:.14em;
-      text-transform:uppercase;color:var(--text-muted);margin-bottom:.25rem;}
-    .test-text{font-size:.88rem;color:var(--text);line-height:1.6;}
-    p{margin-bottom:1rem;}
-    p:last-child{margin-bottom:0;}
-    strong{color:#e6edf3;font-weight:600;}
-    .prose{font-size:.95rem;line-height:1.75;color:var(--text);margin-bottom:1.5rem;}
-    ul{padding-left:1.4rem;margin-bottom:1rem;}
-    ul li{margin-bottom:.4rem;font-size:.92rem;line-height:1.65;}
-    code{font-family:var(--font-mono);font-size:.85em;color:var(--gold);
-      background:var(--gold-faded);padding:.1em .4em;border-radius:3px;}
-    .section-intro{font-size:.95rem;line-height:1.78;color:var(--text);margin-bottom:2rem;
-      padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
-    .page-footer{border-top:1px solid var(--border);padding:2.5rem 0;}
-    .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
-    .footer-meta{font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);line-height:1.9;}
-    .footer-meta span{color:var(--text-muted);}
-    .footer-back{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
-      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
-      text-decoration:none;padding:.5rem .8rem;border:1px solid var(--border);border-radius:4px;transition:all .2s;}
-    .footer-back:hover{color:var(--gold);border-color:var(--border-gold);}
-    .back-link{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
-      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
-      text-decoration:none;margin-bottom:2rem;transition:color .2s;}
-    .back-link:hover{color:var(--gold);}
-    .scroll-top{position:fixed;bottom:1.75rem;right:1.75rem;width:38px;height:38px;
-      background:var(--surface);border:1px solid var(--border);border-radius:50%;
-      display:flex;align-items:center;justify-content:center;color:var(--text-muted);
-      cursor:pointer;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
-      font-size:.75rem;z-index:50;}
-    .scroll-top.visible{opacity:1;visibility:visible;}
-    .scroll-top:hover{border-color:var(--border-gold);color:var(--gold);}
-    /* PID diagram */
-    .pid-diagram{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;
-      align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;
-      overflow:hidden;margin-bottom:1.5rem;}
-    .pid-box{padding:1rem 1.25rem;text-align:center;}
-    .pid-arrow{font-size:1.5rem;color:var(--gold);padding:.5rem;text-align:center;}
-    .pid-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;
-      color:var(--text-dim);margin-bottom:.3rem;}
-    .pid-value{font-family:var(--font-display);font-size:.9rem;font-weight:600;color:var(--gold);}
-    .pid-desc{font-size:.78rem;color:var(--text-muted);margin-top:.25rem;}
-    @media(max-width:768px){
-      .container{padding:0 1.1rem;}
-      .hero{padding:3rem 0 2.5rem;}
-      :root{--section-gap:3.5rem;}
-      .section-header{grid-template-columns:1fr;gap:.4rem;}
-      .section-num{font-size:3.8rem;text-align:left;min-width:auto;line-height:1;}
-      .pid-diagram{grid-template-columns:1fr;grid-template-rows:auto;}
-      .pid-arrow{transform:rotate(90deg);}
-    }
-    @media(max-width:520px){
-      .hero-title{font-size:1.9rem;}
-    }
-  </style>
-</head>
-<body>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The PID controller C(s) = Kp + Ki/s + Kd·s maps structurally onto providential governance: conscience (Kp), sanctification (Ki), and prophetic warning (Kd). The controller/plant distinction resolves the free will–sovereignty problem with engineering precision.">
+  <title>ISO-034 · Control Theory ↔ Providence · Theophysics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
+      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
+      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
+      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
+      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
+      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
+      --max-width:1100px; --section-gap:5rem;
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.65;}
+    .container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+    .site-header{border-bottom:1px solid var(--border);padding:.9rem 0;position:sticky;top:0;
+      background:rgba(10,10,10,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:100;}
+    .site-header .container{display:flex;align-items:center;justify-content:space-between;}
+    .site-brand{font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--text-muted);text-decoration:none;}
+    .site-brand span{color:var(--gold);}
+    .iso-badge{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);
+      border:1px solid var(--border-gold);padding:.22rem .65rem;border-radius:3px;letter-spacing:.12em;}
+    .hero{padding:5rem 0 4rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+    .hero-bg-number{position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
+      font-family:var(--font-display);font-size:clamp(12rem,28vw,26rem);font-weight:700;
+      color:var(--gold-faded);line-height:1;pointer-events:none;user-select:none;letter-spacing:-.05em;}
+    .hero-iso-id{font-family:var(--font-mono);font-size:.8rem;color:var(--gold);
+      letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
+    .hero-iso-id::after{content:'';display:inline-block;width:80px;height:1px;
+      background:linear-gradient(90deg,var(--gold),transparent);}
+    .hero-title{font-family:var(--font-display);font-size:clamp(2rem,5.5vw,3.8rem);font-weight:700;
+      text-transform:uppercase;letter-spacing:.04em;color:#fff;line-height:1.08;margin-bottom:1rem;}
+    .hero-subtitle{font-family:var(--font-mono);font-size:clamp(.85rem,2vw,1.05rem);
+      color:var(--gold);margin-bottom:2rem;letter-spacing:.06em;}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2.5rem;}
+    .tag{font-family:var(--font-display);font-size:.62rem;font-weight:500;letter-spacing:.14em;
+      text-transform:uppercase;padding:.28rem .7rem;border-radius:2px;border:1px solid;
+      display:inline-flex;align-items:center;gap:.35rem;}
+    .tag-gold{color:var(--gold);border-color:var(--border-gold);background:var(--gold-faded);}
+    .tag-green{color:var(--success);border-color:rgba(63,185,80,.25);background:rgba(63,185,80,.05);}
+    .tag-blue{color:var(--info);border-color:rgba(121,192,255,.25);background:rgba(121,192,255,.05);}
+    .tag-purple{color:var(--purple);border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.05);}
+    .tag-warn{color:var(--warn);border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.05);}
+    .hero-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+      background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;max-width:780px;}
+    .hero-meta-item{padding:1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .hero-meta-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-dim);margin-bottom:.25rem;}
+    .hero-meta-value{font-family:var(--font-display);font-size:.82rem;font-weight:500;color:var(--text);letter-spacing:.04em;}
+    .hero-meta-value.gold{color:var(--gold);}
+    .hero-meta-value.green{color:var(--success);}
+    .hero-meta-value.blue{color:var(--info);}
+    .hero-meta-value.purple{color:var(--purple);}
+    .main-content{padding:0 0 7rem;}
+    .iso-section{padding:var(--section-gap) 0;border-bottom:1px solid var(--border);}
+    .iso-section:last-child{border-bottom:none;}
+    .section-header{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:2.5rem;}
+    .section-num{font-family:var(--font-display);font-size:6rem;font-weight:700;line-height:.85;
+      color:var(--gold-faded-2);letter-spacing:-.03em;user-select:none;min-width:100px;text-align:right;padding-top:.1em;}
+    .section-title-group{padding-top:.3rem;}
+    .section-title{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.85rem);
+      font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:.5rem;}
+    .section-divider{height:2px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
+      border-radius:1px;margin-bottom:.5rem;}
+    .section-subtitle{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;}
+    .claim-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);
+      padding:1.75rem 2rem;border-radius:0 6px 6px 0;margin-bottom:1.5rem;font-size:1.03rem;line-height:1.75;}
+    .kill-condition{background:var(--surface-2);border:1px solid rgba(248,81,73,.25);
+      border-left:3px solid var(--danger);padding:1.25rem 1.75rem;border-radius:0 6px 6px 0;}
+    .kill-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--danger);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
+    .iso-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;}
+    .iso-table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:580px;}
+    .iso-table thead tr{background:var(--surface-2);border-bottom:1px solid var(--border-gold);}
+    .iso-table thead th{font-family:var(--font-display);font-size:.62rem;font-weight:600;
+      letter-spacing:.16em;text-transform:uppercase;padding:.9rem 1.1rem;text-align:left;}
+    .iso-table thead th.col-physics{color:var(--info);}
+    .iso-table thead th.col-theology{color:var(--purple);}
+    .iso-table thead th.col-label{color:var(--text-muted);}
+    .iso-table thead th.col-note{color:var(--gold);}
+    .iso-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+    .iso-table tbody tr:last-child{border-bottom:none;}
+    .iso-table tbody tr:hover{background:rgba(212,175,55,.04);}
+    .iso-table td{padding:.9rem 1.1rem;vertical-align:top;line-height:1.58;}
+    .td-label{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--gold);
+      text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
+    .td-physics{color:var(--info);}
+    .td-theology{color:var(--purple);}
+    .td-note{color:var(--text-muted);font-size:.82rem;}
+    .equation-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1.25rem 1.5rem;margin-bottom:1rem;overflow-x:auto;}
+    .equation-block .eq-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;}
+    .equation{font-family:var(--font-mono);font-size:1rem;color:var(--gold);line-height:1.8;white-space:pre-wrap;}
+    .eq-note{font-size:.82rem;color:var(--text-muted);margin-top:.5rem;line-height:1.55;}
+    .var-table{width:100%;border-collapse:collapse;font-size:.875rem;margin-bottom:1.5rem;}
+    .var-table tr{border-bottom:1px solid var(--border);}
+    .var-table tr:last-child{border-bottom:none;}
+    .var-table td{padding:.7rem 1rem;vertical-align:top;line-height:1.55;}
+    .var-sym{font-family:var(--font-mono);color:var(--gold);white-space:nowrap;width:160px;}
+    .var-desc{color:var(--text);}
+    .var-analog{font-family:var(--font-mono);font-size:.78rem;color:var(--purple);width:220px;}
+    .accent-block{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;
+      border-radius:0 6px 6px 0;margin-bottom:1rem;}
+    .accent-block.gold{border-left:3px solid var(--gold);}
+    .accent-block.green{border-left:3px solid var(--success);}
+    .accent-block.warn{border-left:3px solid var(--warn);}
+    .accent-block.blue{border-left:3px solid var(--info);}
+    .accent-block.danger{border-left:3px solid var(--danger);}
+    .accent-label{font-family:var(--font-display);font-size:.63rem;font-weight:600;
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
+    .accent-block.gold .accent-label{color:var(--gold);}
+    .accent-block.green .accent-label{color:var(--success);}
+    .accent-block.warn .accent-label{color:var(--warn);}
+    .accent-block.blue .accent-label{color:var(--info);}
+    .accent-block.danger .accent-label{color:var(--danger);}
+    .accent-block p{font-size:.9rem;line-height:1.65;}
+    .iso-quote{font-family:var(--font-quote);font-style:italic;font-size:1.05rem;color:var(--text);
+      padding:1.25rem 1.5rem;background:var(--gold-faded-2);border:1px solid var(--border-gold);
+      border-radius:6px;line-height:1.75;margin-bottom:1rem;}
+    .iso-quote-source{font-family:var(--font-mono);font-style:normal;font-size:.65rem;
+      letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:.5rem;display:block;}
+    .classification-banner{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;
+      text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;}
+    .classification-banner::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold);}
+    .classification-banner::after{content:'';display:inline-block;flex:1;height:1px;
+      background:linear-gradient(90deg,var(--border-gold),transparent);}
+    .test-grid{display:grid;gap:.75rem;margin-bottom:1.5rem;}
+    .test-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;}
+    .test-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:.1rem;}
+    .test-icon.pass{background:rgba(63,185,80,.12);color:var(--success);border:1px solid rgba(63,185,80,.25);}
+    .test-icon.fail{background:rgba(248,81,73,.12);color:var(--danger);border:1px solid rgba(248,81,73,.25);}
+    .test-icon.warn{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+    .test-label{font-family:var(--font-display);font-size:.68rem;font-weight:600;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.25rem;}
+    .test-text{font-size:.88rem;color:var(--text);line-height:1.6;}
+    p{margin-bottom:1rem;}
+    p:last-child{margin-bottom:0;}
+    strong{color:#e6edf3;font-weight:600;}
+    .prose{font-size:.95rem;line-height:1.75;color:var(--text);margin-bottom:1.5rem;}
+    ul{padding-left:1.4rem;margin-bottom:1rem;}
+    ul li{margin-bottom:.4rem;font-size:.92rem;line-height:1.65;}
+    code{font-family:var(--font-mono);font-size:.85em;color:var(--gold);
+      background:var(--gold-faded);padding:.1em .4em;border-radius:3px;}
+    .section-intro{font-size:.95rem;line-height:1.78;color:var(--text);margin-bottom:2rem;
+      padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+    .page-footer{border-top:1px solid var(--border);padding:2.5rem 0;}
+    .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
+    .footer-meta{font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);line-height:1.9;}
+    .footer-meta span{color:var(--text-muted);}
+    .footer-back{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;padding:.5rem .8rem;border:1px solid var(--border);border-radius:4px;transition:all .2s;}
+    .footer-back:hover{color:var(--gold);border-color:var(--border-gold);}
+    .back-link{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;margin-bottom:2rem;transition:color .2s;}
+    .back-link:hover{color:var(--gold);}
+    .scroll-top{position:fixed;bottom:1.75rem;right:1.75rem;width:38px;height:38px;
+      background:var(--surface);border:1px solid var(--border);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;color:var(--text-muted);
+      cursor:pointer;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
+      font-size:.75rem;z-index:50;}
+    .scroll-top.visible{opacity:1;visibility:visible;}
+    .scroll-top:hover{border-color:var(--border-gold);color:var(--gold);}
+    /* PID diagram */
+    .pid-diagram{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;
+      align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+      overflow:hidden;margin-bottom:1.5rem;}
+    .pid-box{padding:1rem 1.25rem;text-align:center;}
+    .pid-arrow{font-size:1.5rem;color:var(--gold);padding:.5rem;text-align:center;}
+    .pid-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--text-dim);margin-bottom:.3rem;}
+    .pid-value{font-family:var(--font-display);font-size:.9rem;font-weight:600;color:var(--gold);}
+    .pid-desc{font-size:.78rem;color:var(--text-muted);margin-top:.25rem;}
+    @media(max-width:768px){
+      .container{padding:0 1.1rem;}
+      .hero{padding:3rem 0 2.5rem;}
+      :root{--section-gap:3.5rem;}
+      .section-header{grid-template-columns:1fr;gap:.4rem;}
+      .section-num{font-size:3.8rem;text-align:left;min-width:auto;line-height:1;}
+      .pid-diagram{grid-template-columns:1fr;grid-template-rows:auto;}
+      .pid-arrow{transform:rotate(90deg);}
+    }
+    @media(max-width:520px){
+      .hero-title{font-size:1.9rem;}
+    }
+  
+/* ═══ TP-HEADING-CLEANUP-v1 ═══ */
+
+/* H1: big, white, serif — page anchor */
+.tp-article h1, .ftp-article h1 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: .8rem;
+  margin-top: 2rem;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+
+/* H2: GOLD — section markers */
+.tp-article h2, .ftp-article h2 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.6rem;
+  color: #d4af37;
+  font-weight: 400;
+  margin: 3rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  letter-spacing: -.01em;
+}
+
+/* H3: clean subordinate */
+.tp-article h3, .ftp-article h3 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.2rem;
+  color: #9a9a9a;
+  font-weight: 600;
+  margin: 2rem 0 .6rem;
+}
+
+/* Tables: gold header, dark rows, hover */
+.tp-article table, .ftp-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: .9rem;
+}
+.tp-article th, .ftp-article th {
+  background: rgba(212, 175, 55, 0.08);
+  color: #d4af37;
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  font-size: .8rem;
+  letter-spacing: .03em;
+}
+.tp-article td, .ftp-article td {
+  padding: .5rem .8rem;
+  border-bottom: 1px solid #222;
+  color: #e5e3df;
+}
+.tp-article tr:hover td, .ftp-article tr:hover td {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+/* Lists: proper spacing */
+.tp-article ul, .tp-article ol,
+.ftp-article ul, .ftp-article ol {
+  margin: 1rem 0 1rem 1.5rem;
+  line-height: 1.8;
+}
+.tp-article li, .ftp-article li {
+  margin-bottom: .3rem;
+}
+
+/* Blockquotes: gold accent */
+.tp-article blockquote, .ftp-article blockquote {
+  border-left: 3px solid #d4af37;
+  margin: 1.5rem 0;
+  padding: .8rem 1.2rem;
+  background: rgba(212, 175, 55, 0.04);
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-style: italic;
+  color: #9a9a9a;
+}
+
+/* Drop cap on first paragraph */
+.tp-article > p:first-of-type::first-letter,
+.ftp-article > p:first-of-type::first-letter,
+.tp-level-panel > p:first-of-type::first-letter {
+  font-size: 3.2rem;
+  float: left;
+  color: #d4af37;
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-weight: 600;
+  line-height: .8;
+  margin: .1rem .4rem 0 0;
+  padding-top: .1rem;
+}
+
+/* Code/mono blocks */
+.tp-article pre, .tp-article code,
+.ftp-article pre, .ftp-article code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .85rem;
+}
+.tp-article pre, .ftp-article pre {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* ═══ END TP-HEADING-CLEANUP-v1 ═══ */
+</style>
+<link href="../components/audio-dock.css" rel="stylesheet"/>
+<link href="../components/tp-header-lip.css" rel="stylesheet"/>
+<link href="../components/verification-bar.css" rel="stylesheet"/>
+<link href="../components/top-bar-bottom-bar.css" rel="stylesheet"/>
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
 
-  <header class="site-header">
-    <div class="container">
-      <a href="index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
-      <div class="iso-badge">ISO-034</div>
-    </div>
-  </header>
-
-  <section class="hero">
-    <div class="container">
-      <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
-      <div aria-hidden="true" class="hero-bg-number">034</div>
-      <div class="hero-iso-id"><i class="fas fa-sliders-h"></i> ISO-034 &middot; Control Theory &harr; Providence</div>
-      <h1 class="hero-title">Control Theory &harr; Providence</h1>
-      <p class="hero-subtitle">C(s) = K<sub>p</sub> + K<sub>i</sub>/s + K<sub>d</sub>&middot;s &mdash; God Steers But Does Not Replace the Plant</p>
-      <div class="hero-tags">
-        <span class="tag tag-gold"><i class="fas fa-sliders-h"></i> Control Theory</span>
-        <span class="tag tag-blue">PID Controller</span>
-        <span class="tag tag-purple">Providence</span>
-        <span class="tag tag-green">Free Will</span>
-        <span class="tag tag-gold">Sovereignty</span>
-        <span class="tag tag-blue">Structural ISO</span>
-        <span class="tag tag-gold">Status: Testing</span>
-        <span class="tag tag-green">Confidence: High</span>
-      </div>
-      <div class="hero-meta">
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">ID</div>
-          <div class="hero-meta-value gold">ISO-034</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Type</div>
-          <div class="hero-meta-value">Structural ISO</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain A</div>
-          <div class="hero-meta-value blue">Control Theory</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain B</div>
-          <div class="hero-meta-value purple">Providence / Free Will</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Level</div>
-          <div class="hero-meta-value gold">L3</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Confidence</div>
-          <div class="hero-meta-value green">High</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <main class="main-content">
-    <div class="container">
-
-      <!-- SECTION 01: DOMAIN A -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">01</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Domain A &mdash; Control Theory</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">The PID controller &mdash; three-term feedback, stability, and the controller/plant distinction</div>
-          </div>
-        </div>
-
-        <div class="section-intro">
-          The Proportional-Integral-Derivative (PID) controller is the workhorse of industrial and engineering feedback systems, governing everything from thermostats to aircraft autopilots. Its three-term structure captures three fundamentally different modes of error correction: present, past, and future.
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">PID Controller Transfer Function (Laplace Domain)</div>
-          <div class="equation">C(s) = K_p + K_i/s + K_d·s
-
-Output:  u(t) = K_p·e(t) + K_i·∫e(τ)dτ + K_d·de/dt
-
-where:
-  e(t) = r(t) - y(t)  [error = setpoint - measured output]
-  r(t) = reference setpoint
-  y(t) = measured plant output
-  u(t) = controller output (input to plant)</div>
-          <div class="eq-note">The controller drives the plant G(s) to reduce the error signal e(t) toward zero. The controller output u(t) is the mechanism of control — it is NOT the plant; it acts ON the plant.</div>
-        </div>
-
-        <p class="prose">The three terms operate on fundamentally different time horizons:</p>
-
-        <ul>
-          <li><strong>Proportional term K_p · e(t):</strong> Responds to the <em>present</em> error. If you are off-target now, apply correction proportional to how far off you are. Fast but cannot eliminate steady-state error alone — a pure P controller always maintains residual offset.</li>
-          <li><strong>Integral term K_i · ∫e(τ)dτ:</strong> Responds to the <em>accumulated past</em> error. Integrates all previous deviations and keeps applying correction until error is <em>exactly</em> zero. The only term that can eliminate steady-state error. Slower to act, but drives the system to perfect alignment over time.</li>
-          <li><strong>Derivative term K_d · de/dt:</strong> Responds to the <em>rate of change</em> of error — anticipating where the error is heading. If error is small but growing rapidly, the derivative term applies anticipatory correction. Predictive rather than reactive.</li>
-        </ul>
-
-        <div class="equation-block">
-          <div class="eq-label">Closed-Loop System Architecture</div>
-          <div class="equation">r(t) → [CONTROLLER C(s)] → u(t) → [PLANT G(s)] → y(t)
-              ↑__________________________________|
-              [feedback: e(t) = r(t) - y(t)]</div>
-          <div class="eq-note">Critical architectural fact: the controller C(s) and the plant G(s) are DISTINCT subsystems. The controller acts ON the plant via its input u(t). The plant retains its own transfer function G(s) — its own dynamics, its own characteristic response. The controller does not replace or eliminate the plant.</div>
-        </div>
-
-        <div class="accent-block blue">
-          <div class="accent-label"><i class="fas fa-ruler"></i> Stability Margins</div>
-          <p>Stability requires adequate gain margin (how much gain can increase before oscillation) and phase margin (how much delay the system can tolerate before going unstable). Well-tuned PID controllers balance correction speed (high K_p) against stability (which degrades with excessive gain). This tradeoff maps directly onto theological concepts in Section 3.</p>
-        </div>
-      </section>
-
-      <!-- SECTION 02: DOMAIN B -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">02</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Domain B &mdash; Theology of Providence</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Conscience, sanctification, and prophetic warning as three modes of divine governance</div>
-          </div>
-        </div>
-
-        <div class="section-intro">
-          Providence is God's ongoing governance of creation — not merely creation and then abandonment (deism), but active, continuous steering. The PID isomorphism reveals that this governance operates through three structurally distinct channels that mirror the three controller terms.
-        </div>
-
-        <div class="iso-quote">
-          In him we live and move and have our being.
-          <span class="iso-quote-source">Acts 17:28 (ESV) &mdash; Providence as continuous, not punctuated</span>
-        </div>
-
-        <p class="prose">The three providential channels:</p>
-
-        <ul>
-          <li><strong>Conscience (K_p — present):</strong> Immediate moral perception of present deviation from the setpoint. "Their conscience bearing witness, and their conflicting thoughts accusing or even excusing them" (Romans 2:15). Conscience responds to current error in real time — proportional to the magnitude of the deviation.</li>
-          <li><strong>Sanctification (K_i — accumulated past):</strong> The long-term, integral transformation of character. "He who began a good work in you will bring it to completion" (Philippians 1:6). Sanctification accumulates — each experience of conviction, repentance, and correction is integrated into the ongoing transformation. This is the only mode that ultimately eliminates remaining sin (steady-state error goes to zero).</li>
-          <li><strong>Prophetic warning (K_d — rate of change):</strong> Anticipatory correction — warning of where current trajectory leads before the error fully develops. "Repent, for the kingdom of heaven is at hand" — spoken when the trajectory is headed wrong, not merely when it has already arrived. Responds to the derivative (rate of change) of deviation, not the deviation itself.</li>
-        </ul>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-balance-scale"></i> The Critical Theological Point</div>
-          <p>Providence does NOT override human agency. The PID architecture shows exactly why this is formally consistent: the controller C(s) acts on the <strong>input</strong> to the plant G_human(s). The plant retains its own transfer function — its own dynamics, its own response characteristics, its own freedom to respond or not respond to the controller signal. God steers the input; the human system responds according to its own nature. This is the engineering-precise resolution of the free will / sovereignty paradox.</p>
-        </div>
-      </section>
-
-      <!-- SECTION 03: MAPPING TABLE -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">03</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Structural Mapping</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">13 bidirectional correspondences — control theory to providence</div>
-          </div>
-        </div>
-
-        <div class="classification-banner">
-          <span>Structural Isomorphism &middot; PID Controller &harr; Providence &middot; 13 Correspondences</span>
-        </div>
-
-        <div class="iso-table-wrap">
-          <table class="iso-table">
-            <thead>
-              <tr>
-                <th class="col-label">#</th>
-                <th class="col-physics">Control Theory (Domain A)</th>
-                <th class="col-theology">Providence (Domain B)</th>
-                <th class="col-note">Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="td-label">01</td>
-                <td class="td-physics">Proportional gain K_p — responds to present error</td>
-                <td class="td-theology">Conscience — immediate conviction of present sin</td>
-                <td class="td-note">Fast, proportional to magnitude of current deviation from God's will</td>
-              </tr>
-              <tr>
-                <td class="td-label">02</td>
-                <td class="td-physics">Integral gain K_i — accumulates past error, eliminates steady-state offset</td>
-                <td class="td-theology">Sanctification — long-term, accumulated transformation of character</td>
-                <td class="td-note">The ONLY term that drives steady-state error to zero; the only mode that eliminates remaining sin</td>
-              </tr>
-              <tr>
-                <td class="td-label">03</td>
-                <td class="td-physics">Derivative gain K_d — responds to rate of change of error (anticipatory)</td>
-                <td class="td-theology">Prophetic warning — anticipatory correction of trajectory before arrival</td>
-                <td class="td-note">"Repent!" spoken when trajectory is wrong, not yet at destination; responds to velocity, not position</td>
-              </tr>
-              <tr>
-                <td class="td-label">04</td>
-                <td class="td-physics">Setpoint r(t) — the desired system output</td>
-                <td class="td-theology">God's will / telos — the target state the system is being driven toward</td>
-                <td class="td-note">"Your will be done on earth as it is in heaven" — the reference signal</td>
-              </tr>
-              <tr>
-                <td class="td-label">05</td>
-                <td class="td-physics">Error signal e(t) = r(t) − y(t)</td>
-                <td class="td-theology">Conviction of sin — the measured gap between where you are and where God wants you</td>
-                <td class="td-note">Conviction is the error signal; it drives correction (controller output) proportionally</td>
-              </tr>
-              <tr>
-                <td class="td-label">06</td>
-                <td class="td-physics">Plant G(s) — the system being controlled, retains its own transfer function</td>
-                <td class="td-theology">Human agency — the person being governed, retains their own will and response</td>
-                <td class="td-note"><strong>Critical:</strong> the plant is NOT replaced by the controller. G_human(s) has its own dynamics.</td>
-              </tr>
-              <tr>
-                <td class="td-label">07</td>
-                <td class="td-physics">Disturbance d(t) — external perturbation pushing system off setpoint</td>
-                <td class="td-theology">Temptation — external force pushing the agent away from the telos</td>
-                <td class="td-note">A well-tuned controller (strong conscience + sanctification) rejects disturbances</td>
-              </tr>
-              <tr>
-                <td class="td-label">08</td>
-                <td class="td-physics">BIBO stability — bounded-input bounded-output; system stays within bounds despite disturbances</td>
-                <td class="td-theology">Perseverance of the saints — "they shall never perish" (John 10:28-29)</td>
-                <td class="td-note">A stable closed-loop system does not go unbounded even under sustained disturbance</td>
-              </tr>
-              <tr>
-                <td class="td-label">09</td>
-                <td class="td-physics">Overshoot — corrective action exceeds the setpoint before settling</td>
-                <td class="td-theology">"Zeal without knowledge" (Romans 10:2) — correct goal, excessive correction</td>
-                <td class="td-note">Overshoot is a tuning problem (K_p too high), not a wrong setpoint. The direction is right; the gain is miscalibrated.</td>
-              </tr>
-              <tr>
-                <td class="td-label">10</td>
-                <td class="td-physics">Steady-state error — residual offset that persists even under control</td>
-                <td class="td-theology">Remaining sin — simul justus et peccator (simultaneously justified and sinner)</td>
-                <td class="td-note">Eliminated only by K_i (integral / sanctification); K_p and K_d alone leave residual offset</td>
-              </tr>
-              <tr>
-                <td class="td-label">11</td>
-                <td class="td-physics">Gain margin — how much gain can increase before system goes unstable</td>
-                <td class="td-theology">Grace margin — "where sin increased, grace abounded all the more" (Romans 5:20)</td>
-                <td class="td-note">The system can tolerate increased disturbance because grace scales to match</td>
-              </tr>
-              <tr>
-                <td class="td-label">12</td>
-                <td class="td-physics">Phase margin — how much delay the system can tolerate before losing stability</td>
-                <td class="td-theology">Timing of divine intervention — "he who is coming will come and will not delay" (Heb 10:37)</td>
-                <td class="td-note">Delayed response to sin (high phase lag) reduces the system's ability to resist oscillation</td>
-              </tr>
-              <tr>
-                <td class="td-label">13</td>
-                <td class="td-physics">Adaptive control — controller parameters change as the system changes</td>
-                <td class="td-theology">Progressive revelation — divine governance adapts as humanity develops (covenantal progression)</td>
-                <td class="td-note">Law → Prophets → Christ → Spirit: the control law updates across covenantal epochs</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- SECTION 04: FREE WILL RESOLUTION -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">04</div>
-          <div class="section-title-group">
-            <h2 class="section-title">The Free Will Resolution</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">The controller/plant distinction as engineering-precise answer to the sovereignty paradox</div>
-          </div>
-        </div>
-
-        <div class="claim-block">
-          <p>The free will / sovereignty problem has been framed as a paradox for two millennia: if God is sovereign over all things, how can humans be genuinely free? If humans are genuinely free, how can God be truly sovereign? Both seem to require eliminating the other.</p>
-          <p style="margin-top:1rem;">The PID architecture dissolves this paradox by providing a third option that no pre-engineering theology could articulate precisely: <strong>the controller is not the plant.</strong></p>
-          <p style="margin-top:1rem;">A feedback controller governs a physical plant without substituting for it. The thermostat does not <em>become</em> the room. The autopilot does not <em>replace</em> the aircraft. The controller acts on the input to the plant — it shapes what the plant receives — but the plant's transfer function G(s) is entirely its own. Two systems with identical G(s) will respond identically to the same controller output; two systems with different G(s) will respond differently to the same input. The plant's response is the plant's own.</p>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Controller/Plant Separation — Formal Statement</div>
-          <div class="equation">Closed-loop transfer function:
-  T(s) = C(s)·G(s) / (1 + C(s)·G(s))
-
-Controller C(s) and Plant G(s) remain DISTINCT.
-The total response T(s) is a function of both —
-neither eliminates the other.
-
-Providence (C_divine(s)) operates on the input to
-G_human(s). The human system responds according
-to its own transfer function — its own will,
-nature, and disposition.</div>
-          <div class="eq-note">Sovereignty means C_divine(s) is real and operative. Free will means G_human(s) is real and not replaced. Both are true simultaneously because they operate at different points in the loop.</div>
-        </div>
-
-        <div class="accent-block green">
-          <div class="accent-label"><i class="fas fa-check-double"></i> What This Resolves</div>
-          <p style="margin-bottom:.75rem;"><strong>Calvinist concern:</strong> Is God truly sovereign? Yes — C_divine(s) is always present and effective in the loop. The setpoint r(t) = God's will is the reference signal. Providence is real and operative.</p>
-          <p style="margin-bottom:.75rem;"><strong>Arminian concern:</strong> Does God override human will? No — G_human(s) is never replaced. The human plant retains its own transfer function. Two people receiving identical providential input respond differently because they have different G(s).</p>
-          <p><strong>The resolution:</strong> Both traditions are correct about their primary claim and wrong only in assuming the claims are mutually exclusive. The controller/plant architecture shows they are simultaneously true and formally compatible.</p>
-        </div>
-      </section>
-
-      <!-- SECTION 05: INTEGRAL TERM = SANCTIFICATION -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">05</div>
-          <div class="section-title-group">
-            <h2 class="section-title">K<sub>i</sub> as Sanctification — Why the Integral Alone Eliminates Sin</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">The only term that drives steady-state error to zero</div>
-          </div>
-        </div>
-
-        <div class="section-intro">
-          The integral term K_i is theologically the most important of the three PID components. It is the only term capable of eliminating steady-state error — and therefore the only analog for the doctrine that remaining sin is progressively eliminated through sanctification.
-        </div>
-
-        <div class="accent-block gold" style="padding:2rem 2rem;margin-bottom:1.5rem;">
-          <div class="accent-label"><i class="fas fa-integral"></i> Why K_p and K_d Alone Are Not Enough</div>
-          <p style="margin-bottom:1rem;">A pure proportional controller (K_p only, K_i = 0) always maintains a residual steady-state error. This is provable: if error e = 0, the controller output u = K_p · 0 = 0, and zero output cannot maintain the system against a finite disturbance. Therefore e ≠ 0 at steady state — there must be some nonzero error to produce nonzero control action.</p>
-          <p style="margin-bottom:1rem;">A pure derivative controller cannot produce steady-state correction at all — it responds only to change, not to persistent offset.</p>
-          <p>Only the integral term accumulates until the error is driven to exactly zero, then maintains that correction indefinitely. This is simul justus et peccator: justified (setpoint reached) but with K_p and K_d providing the immediate responses while K_i (sanctification) works across a lifetime to close the gap.</p>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Steady-State Error Analysis</div>
-          <div class="equation">With K_i = 0 (no sanctification):
-  e_ss = lim(t→∞) e(t) = 1/(1 + K_p·G(0)) ≠ 0
-  [nonzero remaining sin — simul justus et peccator]
-
-With K_i > 0 (sanctification active):
-  e_ss = lim(s→0) s·E(s) = 0
-  [sin eliminated asymptotically — glorification as limit]</div>
-          <div class="eq-note">The integral term is the mathematical mechanism by which God's work in the believer drives residual sin to zero over the course of sanctification. It operates slowly but eliminates what K_p and K_d cannot.</div>
-        </div>
-
-        <div class="iso-quote">
-          And I am sure of this, that he who began a good work in you will bring it to completion at the day of Jesus Christ.
-          <span class="iso-quote-source">Philippians 1:6 (ESV) &mdash; the integral converges; the work completes</span>
-        </div>
-      </section>
-
-      <!-- SECTION 06: SEPARATOR TESTS -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">06</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Separator Tests &amp; Falsification</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">What passes, what would destroy this mapping</div>
-          </div>
-        </div>
-
-        <div class="test-grid">
-          <div class="test-row">
-            <div class="test-icon pass"><i class="fas fa-check"></i></div>
-            <div>
-              <div class="test-label">Swap Test &mdash; Passed</div>
-              <div class="test-text">Replace "PID controller" with "providence" and "plant" with "human agency." The feedback structure holds exactly. The controller-plant distinction maps onto the sovereignty-free will distinction without remainder. The three PID terms (proportional / conscience, integral / sanctification, derivative / prophetic warning) are non-interchangeable in both domains — swapping them produces engineering nonsense in Domain A and theological nonsense in Domain B.</div>
-            </div>
-          </div>
-          <div class="test-row">
-            <div class="test-icon pass"><i class="fas fa-check"></i></div>
-            <div>
-              <div class="test-label">Bidirectional Prediction &mdash; Passed</div>
-              <div class="test-text"><strong>Forward (control → theology):</strong> Removing K_i should leave steady-state error → theology confirms that without ongoing sanctification, residual sin persists indefinitely (simul justus et peccator never resolves). <strong>Reverse (theology → control):</strong> God's intervention should have timing constraints (delayed response degrades stability) → phase margin precisely models this. "He who is coming will come and will not delay" (Heb 10:37) is a stability requirement.</div>
-            </div>
-          </div>
-          <div class="test-row">
-            <div class="test-icon pass"><i class="fas fa-check"></i></div>
-            <div>
-              <div class="test-label">Non-Interchangeability &mdash; Passed</div>
-              <div class="test-text">Conscience (K_p) is not sanctification (K_i). Sanctification is not prophetic warning (K_d). The three are structurally distinct — each responds to a different function of the error signal (instantaneous value, integral, derivative). Collapsing them would be like claiming conscience alone can eliminate remaining sin (K_p eliminates steady-state error) — which the isomorphism specifically predicts is impossible.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="kill-condition">
-          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition &mdash; Falsification</div>
-          <p><strong>Primary:</strong> If providential action showed <em>no feedback characteristics</em> — if God's governance were purely open-loop (no response to human state, just predetermined outputs regardless of error) — the mapping fails. The isomorphism requires a feedback God: one whose governance is shaped by the actual measured error, not just an a priori plan. Scripture describes a God who responds, relents, is moved, and adjusts — a feedback system, not a pre-recorded sequence.</p>
-          <p style="margin-top:.75rem;"><strong>Secondary:</strong> If God's governance <em>replaced</em> the plant entirely — if divine sovereignty meant human agency was eliminated (hard determinism) — the controller/plant distinction would collapse. The plant G_human(s) must retain its own transfer function for the architecture to hold. Any theological position that makes human responses merely epiphenomenal (not genuine outputs of a real plant) falsifies the mapping.</p>
-          <p style="margin-top:.75rem;"><strong>Tertiary:</strong> If conscience, sanctification, and prophetic warning showed <em>identical behavioral signatures</em> — if they could not be empirically distinguished in their mode of action — the three-term structure would be unfalsifiable. But empirically they are distinct: conscience is immediate, sanctification is slow and accumulative, and prophetic warning is anticipatory.</p>
-        </div>
-
-        <div class="accent-block gold" style="margin-top:1.5rem;">
-          <div class="accent-label"><i class="fas fa-book"></i> Key Scripture References</div>
-          <p>Romans 2:15 (conscience as error signal) · Philippians 1:6 (integral converges to completion) · Amos 3:7 (prophetic warning as K_d) · Romans 10:2 (overshoot: zeal without knowledge) · Romans 5:20 (gain margin: grace abounds with sin) · John 10:28-29 (BIBO stability: perseverance) · Hebrews 10:37 (phase margin: "will not delay") · Acts 17:28 (ongoing presence: closed-loop, not open-loop)</p>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <footer class="page-footer">
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-meta">
-          <div>ID: <span>ISO-034</span></div>
-          <div>Status: <span>Testing</span></div>
-          <div>Confidence: <span>High</span></div>
-          <div>Type: <span>Structural Isomorphism</span></div>
-          <div>Created: <span>2026-04-04</span></div>
-          <div>Related: <span>ISO-012 (Sign Operator), ISO-033 (Pharmacology/Grace), ISO-002 (Grace/Strong Force)</span></div>
-        </div>
-        <a href="index.html" class="footer-back"><i class="fas fa-arrow-left"></i> Registry Index</a>
-      </div>
-    </div>
-  </footer>
-
-  <div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <i class="fas fa-arrow-up"></i>
-  </div>
-
-  <script>
-    const scrollTop = document.getElementById('scrollTop');
-    window.addEventListener('scroll', () => {
-      scrollTop.classList.toggle('visible', window.scrollY > 400);
-    });
-  </script>
-
-</body>
-</html>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
+      <div class="iso-badge">ISO-034</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      <div aria-hidden="true" class="hero-bg-number">034</div>
+      <div class="hero-iso-id"><i class="fas fa-sliders-h"></i> ISO-034 &middot; Control Theory &harr; Providence</div>
+      <h1 class="hero-title">Control Theory &harr; Providence</h1>
+      <p class="hero-subtitle drop-cap">C(s) = K<sub>p</sub> + K<sub>i</sub>/s + K<sub>d</sub>&middot;s &mdash; God Steers But Does Not Replace the Plant</p>
+      <div class="hero-tags">
+        <span class="tag tag-gold"><i class="fas fa-sliders-h"></i> Control Theory</span>
+        <span class="tag tag-blue">PID Controller</span>
+        <span class="tag tag-purple">Providence</span>
+        <span class="tag tag-green">Free Will</span>
+        <span class="tag tag-gold">Sovereignty</span>
+        <span class="tag tag-blue">Structural ISO</span>
+        <span class="tag tag-gold">Status: Testing</span>
+        <span class="tag tag-green">Confidence: High</span>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">ID</div>
+          <div class="hero-meta-value gold">ISO-034</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Type</div>
+          <div class="hero-meta-value">Structural ISO</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain A</div>
+          <div class="hero-meta-value blue">Control Theory</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain B</div>
+          <div class="hero-meta-value purple">Providence / Free Will</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Level</div>
+          <div class="hero-meta-value gold">L3</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Confidence</div>
+          <div class="hero-meta-value green">High</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="container">
+
+      <!-- SECTION 01: DOMAIN A -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">01</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Domain A &mdash; Control Theory</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">The PID controller &mdash; three-term feedback, stability, and the controller/plant distinction</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          The Proportional-Integral-Derivative (PID) controller is the workhorse of industrial and engineering feedback systems, governing everything from thermostats to aircraft autopilots. Its three-term structure captures three fundamentally different modes of error correction: present, past, and future.
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">PID Controller Transfer Function (Laplace Domain)</div>
+          <div class="equation">C(s) = K_p + K_i/s + K_d·s
+
+Output:  u(t) = K_p·e(t) + K_i·∫e(τ)dτ + K_d·de/dt
+
+where:
+  e(t) = r(t) - y(t)  [error = setpoint - measured output]
+  r(t) = reference setpoint
+  y(t) = measured plant output
+  u(t) = controller output (input to plant)</div>
+          <div class="eq-note">The controller drives the plant G(s) to reduce the error signal e(t) toward zero. The controller output u(t) is the mechanism of control — it is NOT the plant; it acts ON the plant.</div>
+        </div>
+
+        <p class="prose">The three terms operate on fundamentally different time horizons:</p>
+
+        <ul>
+          <li><strong>Proportional term K_p · e(t):</strong> Responds to the <em>present</em> error. If you are off-target now, apply correction proportional to how far off you are. Fast but cannot eliminate steady-state error alone — a pure P controller always maintains residual offset.</li>
+          <li><strong>Integral term K_i · ∫e(τ)dτ:</strong> Responds to the <em>accumulated past</em> error. Integrates all previous deviations and keeps applying correction until error is <em>exactly</em> zero. The only term that can eliminate steady-state error. Slower to act, but drives the system to perfect alignment over time.</li>
+          <li><strong>Derivative term K_d · de/dt:</strong> Responds to the <em>rate of change</em> of error — anticipating where the error is heading. If error is small but growing rapidly, the derivative term applies anticipatory correction. Predictive rather than reactive.</li>
+        </ul>
+
+        <div class="equation-block">
+          <div class="eq-label">Closed-Loop System Architecture</div>
+          <div class="equation">r(t) → [CONTROLLER C(s)] → u(t) → [PLANT G(s)] → y(t)
+              ↑__________________________________|
+              [feedback: e(t) = r(t) - y(t)]</div>
+          <div class="eq-note">Critical architectural fact: the controller C(s) and the plant G(s) are DISTINCT subsystems. The controller acts ON the plant via its input u(t). The plant retains its own transfer function G(s) — its own dynamics, its own characteristic response. The controller does not replace or eliminate the plant.</div>
+        </div>
+
+        <div class="accent-block blue">
+          <div class="accent-label"><i class="fas fa-ruler"></i> Stability Margins</div>
+          <p>Stability requires adequate gain margin (how much gain can increase before oscillation) and phase margin (how much delay the system can tolerate before going unstable). Well-tuned PID controllers balance correction speed (high K_p) against stability (which degrades with excessive gain). This tradeoff maps directly onto theological concepts in Section 3.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 02: DOMAIN B -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">02</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Domain B &mdash; Theology of Providence</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Conscience, sanctification, and prophetic warning as three modes of divine governance</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          Providence is God's ongoing governance of creation — not merely creation and then abandonment (deism), but active, continuous steering. The PID isomorphism reveals that this governance operates through three structurally distinct channels that mirror the three controller terms.
+        </div>
+
+        <div class="iso-quote">
+          In him we live and move and have our being.
+          <span class="iso-quote-source">Acts 17:28 (ESV) &mdash; Providence as continuous, not punctuated</span>
+        </div>
+
+        <p class="prose">The three providential channels:</p>
+
+        <ul>
+          <li><strong>Conscience (K_p — present):</strong> Immediate moral perception of present deviation from the setpoint. "Their conscience bearing witness, and their conflicting thoughts accusing or even excusing them" (Romans 2:15). Conscience responds to current error in real time — proportional to the magnitude of the deviation.</li>
+          <li><strong>Sanctification (K_i — accumulated past):</strong> The long-term, integral transformation of character. "He who began a good work in you will bring it to completion" (Philippians 1:6). Sanctification accumulates — each experience of conviction, repentance, and correction is integrated into the ongoing transformation. This is the only mode that ultimately eliminates remaining sin (steady-state error goes to zero).</li>
+          <li><strong>Prophetic warning (K_d — rate of change):</strong> Anticipatory correction — warning of where current trajectory leads before the error fully develops. "Repent, for the kingdom of heaven is at hand" — spoken when the trajectory is headed wrong, not merely when it has already arrived. Responds to the derivative (rate of change) of deviation, not the deviation itself.</li>
+        </ul>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-balance-scale"></i> The Critical Theological Point</div>
+          <p>Providence does NOT override human agency. The PID architecture shows exactly why this is formally consistent: the controller C(s) acts on the <strong>input</strong> to the plant G_human(s). The plant retains its own transfer function — its own dynamics, its own response characteristics, its own freedom to respond or not respond to the controller signal. God steers the input; the human system responds according to its own nature. This is the engineering-precise resolution of the free will / sovereignty paradox.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 03: MAPPING TABLE -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">03</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Structural Mapping</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">13 bidirectional correspondences — control theory to providence</div>
+          </div>
+        </div>
+
+        <div class="classification-banner">
+          <span>Structural Isomorphism &middot; PID Controller &harr; Providence &middot; 13 Correspondences</span>
+        </div>
+
+        <div class="iso-table-wrap">
+          <table class="iso-table">
+            <thead>
+              <tr>
+                <th class="col-label">#</th>
+                <th class="col-physics">Control Theory (Domain A)</th>
+                <th class="col-theology">Providence (Domain B)</th>
+                <th class="col-note">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">01</td>
+                <td class="td-physics">Proportional gain K_p — responds to present error</td>
+                <td class="td-theology">Conscience — immediate conviction of present sin</td>
+                <td class="td-note">Fast, proportional to magnitude of current deviation from God's will</td>
+              </tr>
+              <tr>
+                <td class="td-label">02</td>
+                <td class="td-physics">Integral gain K_i — accumulates past error, eliminates steady-state offset</td>
+                <td class="td-theology">Sanctification — long-term, accumulated transformation of character</td>
+                <td class="td-note">The ONLY term that drives steady-state error to zero; the only mode that eliminates remaining sin</td>
+              </tr>
+              <tr>
+                <td class="td-label">03</td>
+                <td class="td-physics">Derivative gain K_d — responds to rate of change of error (anticipatory)</td>
+                <td class="td-theology">Prophetic warning — anticipatory correction of trajectory before arrival</td>
+                <td class="td-note">"Repent!" spoken when trajectory is wrong, not yet at destination; responds to velocity, not position</td>
+              </tr>
+              <tr>
+                <td class="td-label">04</td>
+                <td class="td-physics">Setpoint r(t) — the desired system output</td>
+                <td class="td-theology">God's will / telos — the target state the system is being driven toward</td>
+                <td class="td-note">"Your will be done on earth as it is in heaven" — the reference signal</td>
+              </tr>
+              <tr>
+                <td class="td-label">05</td>
+                <td class="td-physics">Error signal e(t) = r(t) − y(t)</td>
+                <td class="td-theology">Conviction of sin — the measured gap between where you are and where God wants you</td>
+                <td class="td-note">Conviction is the error signal; it drives correction (controller output) proportionally</td>
+              </tr>
+              <tr>
+                <td class="td-label">06</td>
+                <td class="td-physics">Plant G(s) — the system being controlled, retains its own transfer function</td>
+                <td class="td-theology">Human agency — the person being governed, retains their own will and response</td>
+                <td class="td-note"><strong>Critical:</strong> the plant is NOT replaced by the controller. G_human(s) has its own dynamics.</td>
+              </tr>
+              <tr>
+                <td class="td-label">07</td>
+                <td class="td-physics">Disturbance d(t) — external perturbation pushing system off setpoint</td>
+                <td class="td-theology">Temptation — external force pushing the agent away from the telos</td>
+                <td class="td-note">A well-tuned controller (strong conscience + sanctification) rejects disturbances</td>
+              </tr>
+              <tr>
+                <td class="td-label">08</td>
+                <td class="td-physics">BIBO stability — bounded-input bounded-output; system stays within bounds despite disturbances</td>
+                <td class="td-theology">Perseverance of the saints — "they shall never perish" (John 10:28-29)</td>
+                <td class="td-note">A stable closed-loop system does not go unbounded even under sustained disturbance</td>
+              </tr>
+              <tr>
+                <td class="td-label">09</td>
+                <td class="td-physics">Overshoot — corrective action exceeds the setpoint before settling</td>
+                <td class="td-theology">"Zeal without knowledge" (Romans 10:2) — correct goal, excessive correction</td>
+                <td class="td-note">Overshoot is a tuning problem (K_p too high), not a wrong setpoint. The direction is right; the gain is miscalibrated.</td>
+              </tr>
+              <tr>
+                <td class="td-label">10</td>
+                <td class="td-physics">Steady-state error — residual offset that persists even under control</td>
+                <td class="td-theology">Remaining sin — simul justus et peccator (simultaneously justified and sinner)</td>
+                <td class="td-note">Eliminated only by K_i (integral / sanctification); K_p and K_d alone leave residual offset</td>
+              </tr>
+              <tr>
+                <td class="td-label">11</td>
+                <td class="td-physics">Gain margin — how much gain can increase before system goes unstable</td>
+                <td class="td-theology">Grace margin — "where sin increased, grace abounded all the more" (Romans 5:20)</td>
+                <td class="td-note">The system can tolerate increased disturbance because grace scales to match</td>
+              </tr>
+              <tr>
+                <td class="td-label">12</td>
+                <td class="td-physics">Phase margin — how much delay the system can tolerate before losing stability</td>
+                <td class="td-theology">Timing of divine intervention — "he who is coming will come and will not delay" (Heb 10:37)</td>
+                <td class="td-note">Delayed response to sin (high phase lag) reduces the system's ability to resist oscillation</td>
+              </tr>
+              <tr>
+                <td class="td-label">13</td>
+                <td class="td-physics">Adaptive control — controller parameters change as the system changes</td>
+                <td class="td-theology">Progressive revelation — divine governance adapts as humanity develops (covenantal progression)</td>
+                <td class="td-note">Law → Prophets → Christ → Spirit: the control law updates across covenantal epochs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 04: FREE WILL RESOLUTION -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">04</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Free Will Resolution</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">The controller/plant distinction as engineering-precise answer to the sovereignty paradox</div>
+          </div>
+        </div>
+
+        <div class="claim-block">
+          <p>The free will / sovereignty problem has been framed as a paradox for two millennia: if God is sovereign over all things, how can humans be genuinely free? If humans are genuinely free, how can God be truly sovereign? Both seem to require eliminating the other.</p>
+          <p style="margin-top:1rem;">The PID architecture dissolves this paradox by providing a third option that no pre-engineering theology could articulate precisely: <strong>the controller is not the plant.</strong></p>
+          <p style="margin-top:1rem;">A feedback controller governs a physical plant without substituting for it. The thermostat does not <em>become</em> the room. The autopilot does not <em>replace</em> the aircraft. The controller acts on the input to the plant — it shapes what the plant receives — but the plant's transfer function G(s) is entirely its own. Two systems with identical G(s) will respond identically to the same controller output; two systems with different G(s) will respond differently to the same input. The plant's response is the plant's own.</p>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Controller/Plant Separation — Formal Statement</div>
+          <div class="equation">Closed-loop transfer function:
+  T(s) = C(s)·G(s) / (1 + C(s)·G(s))
+
+Controller C(s) and Plant G(s) remain DISTINCT.
+The total response T(s) is a function of both —
+neither eliminates the other.
+
+Providence (C_divine(s)) operates on the input to
+G_human(s). The human system responds according
+to its own transfer function — its own will,
+nature, and disposition.</div>
+          <div class="eq-note">Sovereignty means C_divine(s) is real and operative. Free will means G_human(s) is real and not replaced. Both are true simultaneously because they operate at different points in the loop.</div>
+        </div>
+
+        <div class="accent-block green">
+          <div class="accent-label"><i class="fas fa-check-double"></i> What This Resolves</div>
+          <p style="margin-bottom:.75rem;"><strong>Calvinist concern:</strong> Is God truly sovereign? Yes — C_divine(s) is always present and effective in the loop. The setpoint r(t) = God's will is the reference signal. Providence is real and operative.</p>
+          <p style="margin-bottom:.75rem;"><strong>Arminian concern:</strong> Does God override human will? No — G_human(s) is never replaced. The human plant retains its own transfer function. Two people receiving identical providential input respond differently because they have different G(s).</p>
+          <p><strong>The resolution:</strong> Both traditions are correct about their primary claim and wrong only in assuming the claims are mutually exclusive. The controller/plant architecture shows they are simultaneously true and formally compatible.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 05: INTEGRAL TERM = SANCTIFICATION -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">05</div>
+          <div class="section-title-group">
+            <h2 class="section-title">K<sub>i</sub> as Sanctification — Why the Integral Alone Eliminates Sin</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">The only term that drives steady-state error to zero</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          The integral term K_i is theologically the most important of the three PID components. It is the only term capable of eliminating steady-state error — and therefore the only analog for the doctrine that remaining sin is progressively eliminated through sanctification.
+        </div>
+
+        <div class="accent-block gold" style="padding:2rem 2rem;margin-bottom:1.5rem;">
+          <div class="accent-label"><i class="fas fa-integral"></i> Why K_p and K_d Alone Are Not Enough</div>
+          <p style="margin-bottom:1rem;">A pure proportional controller (K_p only, K_i = 0) always maintains a residual steady-state error. This is provable: if error e = 0, the controller output u = K_p · 0 = 0, and zero output cannot maintain the system against a finite disturbance. Therefore e ≠ 0 at steady state — there must be some nonzero error to produce nonzero control action.</p>
+          <p style="margin-bottom:1rem;">A pure derivative controller cannot produce steady-state correction at all — it responds only to change, not to persistent offset.</p>
+          <p>Only the integral term accumulates until the error is driven to exactly zero, then maintains that correction indefinitely. This is simul justus et peccator: justified (setpoint reached) but with K_p and K_d providing the immediate responses while K_i (sanctification) works across a lifetime to close the gap.</p>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Steady-State Error Analysis</div>
+          <div class="equation">With K_i = 0 (no sanctification):
+  e_ss = lim(t→∞) e(t) = 1/(1 + K_p·G(0)) ≠ 0
+  [nonzero remaining sin — simul justus et peccator]
+
+With K_i > 0 (sanctification active):
+  e_ss = lim(s→0) s·E(s) = 0
+  [sin eliminated asymptotically — glorification as limit]</div>
+          <div class="eq-note">The integral term is the mathematical mechanism by which God's work in the believer drives residual sin to zero over the course of sanctification. It operates slowly but eliminates what K_p and K_d cannot.</div>
+        </div>
+
+        <div class="iso-quote">
+          And I am sure of this, that he who began a good work in you will bring it to completion at the day of Jesus Christ.
+          <span class="iso-quote-source">Philippians 1:6 (ESV) &mdash; the integral converges; the work completes</span>
+        </div>
+      </section>
+
+      <!-- SECTION 06: SEPARATOR TESTS -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">06</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Separator Tests &amp; Falsification</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">What passes, what would destroy this mapping</div>
+          </div>
+        </div>
+
+        <div class="test-grid">
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Swap Test &mdash; Passed</div>
+              <div class="test-text">Replace "PID controller" with "providence" and "plant" with "human agency." The feedback structure holds exactly. The controller-plant distinction maps onto the sovereignty-free will distinction without remainder. The three PID terms (proportional / conscience, integral / sanctification, derivative / prophetic warning) are non-interchangeable in both domains — swapping them produces engineering nonsense in Domain A and theological nonsense in Domain B.</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Bidirectional Prediction &mdash; Passed</div>
+              <div class="test-text"><strong>Forward (control → theology):</strong> Removing K_i should leave steady-state error → theology confirms that without ongoing sanctification, residual sin persists indefinitely (simul justus et peccator never resolves). <strong>Reverse (theology → control):</strong> God's intervention should have timing constraints (delayed response degrades stability) → phase margin precisely models this. "He who is coming will come and will not delay" (Heb 10:37) is a stability requirement.</div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Non-Interchangeability &mdash; Passed</div>
+              <div class="test-text">Conscience (K_p) is not sanctification (K_i). Sanctification is not prophetic warning (K_d). The three are structurally distinct — each responds to a different function of the error signal (instantaneous value, integral, derivative). Collapsing them would be like claiming conscience alone can eliminate remaining sin (K_p eliminates steady-state error) — which the isomorphism specifically predicts is impossible.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kill-condition">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition &mdash; Falsification</div>
+          <p><strong>Primary:</strong> If providential action showed <em>no feedback characteristics</em> — if God's governance were purely open-loop (no response to human state, just predetermined outputs regardless of error) — the mapping fails. The isomorphism requires a feedback God: one whose governance is shaped by the actual measured error, not just an a priori plan. Scripture describes a God who responds, relents, is moved, and adjusts — a feedback system, not a pre-recorded sequence.</p>
+          <p style="margin-top:.75rem;"><strong>Secondary:</strong> If God's governance <em>replaced</em> the plant entirely — if divine sovereignty meant human agency was eliminated (hard determinism) — the controller/plant distinction would collapse. The plant G_human(s) must retain its own transfer function for the architecture to hold. Any theological position that makes human responses merely epiphenomenal (not genuine outputs of a real plant) falsifies the mapping.</p>
+          <p style="margin-top:.75rem;"><strong>Tertiary:</strong> If conscience, sanctification, and prophetic warning showed <em>identical behavioral signatures</em> — if they could not be empirically distinguished in their mode of action — the three-term structure would be unfalsifiable. But empirically they are distinct: conscience is immediate, sanctification is slow and accumulative, and prophetic warning is anticipatory.</p>
+        </div>
+
+        <div class="accent-block gold" style="margin-top:1.5rem;">
+          <div class="accent-label"><i class="fas fa-book"></i> Key Scripture References</div>
+          <p>Romans 2:15 (conscience as error signal) · Philippians 1:6 (integral converges to completion) · Amos 3:7 (prophetic warning as K_d) · Romans 10:2 (overshoot: zeal without knowledge) · Romans 5:20 (gain margin: grace abounds with sin) · John 10:28-29 (BIBO stability: perseverance) · Hebrews 10:37 (phase margin: "will not delay") · Acts 17:28 (ongoing presence: closed-loop, not open-loop)</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          <div>ID: <span>ISO-034</span></div>
+          <div>Status: <span>Testing</span></div>
+          <div>Confidence: <span>High</span></div>
+          <div>Type: <span>Structural Isomorphism</span></div>
+          <div>Created: <span>2026-04-04</span></div>
+          <div>Related: <span>ISO-012 (Sign Operator), ISO-033 (Pharmacology/Grace), ISO-002 (Grace/Strong Force)</span></div>
+        </div>
+        <a href="index.html" class="footer-back"><i class="fas fa-arrow-left"></i> Registry Index</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <script>
+    const scrollTop = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      scrollTop.classList.toggle('visible', window.scrollY > 400);
+    });
+  </script>
+
+<script src="../components/tp-header-lip.js"></script>
+<script src="../components/audio-dock.js"></script>
+<script src="../components/verification-bar.js"></script>
+<script src="../components/reading-levels.js"></script>
+<script src="../components/tp-scroll-chrome.js"></script>
+<script defer src="/shared/js/mtl-worker-client.js"></script>
+</body>
+</html>

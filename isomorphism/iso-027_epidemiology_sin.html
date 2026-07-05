@@ -1,1208 +1,1334 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="The SIR epidemiological model maps structurally onto sin propagation through communities: R₀ &gt; 1 means exponential spread, church discipline is quarantine, and the righteous remnant functions as herd immunity.">
-  <title>ISO-027 · SIR Model of Hamartiology · Theophysics</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-  <style>
-    /* ─── ROOT VARIABLES ─── */
-    :root {
-      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
-      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
-      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
-      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
-      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
-      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
-      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
-      --max-width:1100px; --section-gap:5rem;
-    }
-
-    /* ─── RESET & BASE ─── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:16px; line-height:1.65; }
-    .container { max-width:1100px; margin:0 auto; padding:0 2rem; }
-    p { margin-bottom:1rem; }
-    p:last-child { margin-bottom:0; }
-    strong { color:#e6edf3; font-weight:600; }
-    .prose { font-size:.95rem; line-height:1.75; color:var(--text); margin-bottom:1.5rem; }
-
-    /* ─── STICKY HEADER ─── */
-    .site-header { border-bottom:1px solid var(--border); padding:.9rem 0; position:sticky; top:0;
-      background:rgba(10,10,10,.96); backdrop-filter:blur(14px); z-index:100; }
-    .site-header .container { display:flex; align-items:center; justify-content:space-between; }
-    .site-brand { font-family:var(--font-display); font-size:.72rem; font-weight:500; letter-spacing:.2em;
-      text-transform:uppercase; color:var(--text-muted); text-decoration:none; }
-    .site-brand span { color:var(--gold); }
-    .iso-badge { font-family:var(--font-mono); font-size:.7rem; color:var(--gold);
-      border:1px solid var(--border-gold); padding:.22rem .65rem; border-radius:3px; letter-spacing:.12em; }
-
-    /* ─── HERO ─── */
-    .hero { padding:5rem 0 4rem; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
-    .hero-bg-number { position:absolute; right:-1rem; top:50%; transform:translateY(-50%);
-      font-family:var(--font-display); font-size:clamp(12rem,28vw,26rem); font-weight:700;
-      color:var(--gold-faded); line-height:1; pointer-events:none; user-select:none; letter-spacing:-.05em; }
-    .hero-iso-id { font-family:var(--font-mono); font-size:.8rem; color:var(--gold);
-      letter-spacing:.3em; text-transform:uppercase; margin-bottom:1.25rem; display:flex; align-items:center; gap:.75rem; }
-    .hero-iso-id::after { content:''; display:inline-block; width:80px; height:1px;
-      background:linear-gradient(90deg,var(--gold),transparent); }
-    .hero-title { font-family:var(--font-display); font-size:clamp(2rem,5.5vw,3.8rem); font-weight:700;
-      text-transform:uppercase; letter-spacing:.04em; color:#fff; line-height:1.08; margin-bottom:1rem; }
-    .hero-subtitle { font-family:var(--font-mono); font-size:clamp(.85rem,2vw,1.05rem);
-      color:var(--gold); margin-bottom:2rem; letter-spacing:.06em; }
-    .hero-tags { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:2.5rem; }
-    .tag { font-family:var(--font-display); font-size:.62rem; font-weight:500; letter-spacing:.14em;
-      text-transform:uppercase; padding:.28rem .7rem; border-radius:2px; border:1px solid;
-      display:inline-flex; align-items:center; gap:.35rem; }
-    .tag-gold { color:var(--gold); border-color:var(--border-gold); background:var(--gold-faded); }
-    .tag-green { color:var(--success); border-color:rgba(63,185,80,.25); background:rgba(63,185,80,.05); }
-    .tag-blue { color:var(--info); border-color:rgba(121,192,255,.25); background:rgba(121,192,255,.05); }
-    .tag-purple { color:var(--purple); border-color:rgba(192,132,252,.25); background:rgba(192,132,252,.05); }
-    .tag-warn { color:var(--warn); border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.05); }
-    .hero-meta { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
-      background:var(--surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; max-width:780px; }
-    .hero-meta-item { padding:1rem 1.25rem; border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
-    .hero-meta-label { font-family:var(--font-mono); font-size:.52rem; letter-spacing:.16em;
-      text-transform:uppercase; color:var(--text-dim); margin-bottom:.25rem; }
-    .hero-meta-value { font-family:var(--font-display); font-size:.82rem; font-weight:500;
-      color:var(--text); letter-spacing:.04em; }
-    .hero-meta-value.gold { color:var(--gold); }
-    .hero-meta-value.green { color:var(--success); }
-    .hero-meta-value.blue { color:var(--info); }
-    .hero-meta-value.warn { color:var(--warn); }
-
-    /* ─── SECTIONS ─── */
-    .main-content { padding:0 0 7rem; }
-    .iso-section { padding:var(--section-gap) 0; border-bottom:1px solid var(--border); }
-    .iso-section:last-child { border-bottom:none; }
-    .section-header { display:grid; grid-template-columns:auto 1fr; gap:1.5rem; align-items:start; margin-bottom:2.5rem; }
-    .section-num { font-family:var(--font-display); font-size:6rem; font-weight:700; line-height:.85;
-      color:var(--gold-faded-2); letter-spacing:-.03em; user-select:none; min-width:100px;
-      text-align:right; padding-top:.1em; }
-    .section-title-group { padding-top:.3rem; }
-    .section-title { font-family:var(--font-display); font-size:clamp(1.3rem,3vw,1.85rem);
-      font-weight:600; text-transform:uppercase; letter-spacing:.1em; color:#fff; margin-bottom:.5rem; }
-    .section-divider { height:2px; background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
-      border-radius:1px; margin-bottom:.5rem; }
-    .section-subtitle { font-family:var(--font-mono); font-size:.7rem; color:var(--text-muted);
-      letter-spacing:.1em; text-transform:uppercase; }
-
-    /* ─── CONTENT BLOCKS ─── */
-    .claim-block { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--gold);
-      padding:1.75rem 2rem; border-radius:0 6px 6px 0; margin-bottom:1.5rem; font-size:1.03rem; line-height:1.75; }
-    .kill-condition { background:var(--surface-2); border:1px solid rgba(248,81,73,.25);
-      border-left:3px solid var(--danger); padding:1.25rem 1.75rem; border-radius:0 6px 6px 0; }
-    .kill-label { font-family:var(--font-display); font-size:.65rem; font-weight:600; letter-spacing:.2em;
-      text-transform:uppercase; color:var(--danger); margin-bottom:.5rem; display:flex; align-items:center; gap:.5rem; }
-
-    /* ─── TABLES ─── */
-    .iso-table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:8px; }
-    .iso-table { width:100%; border-collapse:collapse; font-size:.875rem; min-width:580px; }
-    .iso-table thead tr { background:var(--surface-2); border-bottom:1px solid var(--border-gold); }
-    .iso-table thead th { font-family:var(--font-display); font-size:.62rem; font-weight:600;
-      letter-spacing:.16em; text-transform:uppercase; padding:.9rem 1.1rem; text-align:left; }
-    .iso-table thead th.col-physics { color:var(--info); }
-    .iso-table thead th.col-theology { color:var(--purple); }
-    .iso-table thead th.col-moral { color:var(--success); }
-    .iso-table thead th.col-property { color:var(--gold); }
-    .iso-table thead th.col-label { color:var(--text-muted); }
-    .iso-table tbody tr { border-bottom:1px solid var(--border); transition:background .12s; }
-    .iso-table tbody tr:last-child { border-bottom:none; }
-    .iso-table tbody tr:hover { background:rgba(212,175,55,.04); }
-    .iso-table td { padding:.9rem 1.1rem; vertical-align:top; line-height:1.58; }
-    .td-label { font-family:var(--font-display); font-size:.85rem; font-weight:600; color:var(--gold);
-      text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; }
-    .td-physics { color:var(--info); }
-    .td-theology { color:var(--purple); }
-    .td-moral { color:var(--success); }
-
-    /* ─── EQUATION BLOCKS ─── */
-    .equation-block { background:var(--surface); border:1px solid var(--border); border-radius:6px;
-      padding:1.25rem 1.5rem; margin-bottom:1rem; overflow-x:auto; }
-    .equation-block .eq-label { font-family:var(--font-mono); font-size:.58rem; letter-spacing:.16em;
-      text-transform:uppercase; color:var(--text-muted); margin-bottom:.5rem; }
-    .equation { font-family:var(--font-mono); font-size:1rem; color:var(--gold); line-height:1.8; white-space:pre-wrap; }
-    .eq-note { font-size:.82rem; color:var(--text-muted); margin-top:.5rem; line-height:1.55; }
-
-    /* ─── INFO CARDS ─── */
-    .card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; }
-    .info-card { background:var(--surface); border:1px solid var(--border); border-radius:6px;
-      padding:1.25rem; transition:border-color .2s; }
-    .info-card:hover { border-color:var(--border-gold); }
-    .info-card-label { font-family:var(--font-display); font-size:.65rem; font-weight:600;
-      letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:.4rem; }
-    .info-card-value { font-family:var(--font-display); font-size:1.5rem; font-weight:700;
-      color:var(--gold); line-height:1; margin-bottom:.3rem; }
-    .info-card-text { font-size:.82rem; color:var(--text-muted); line-height:1.55; }
-
-    /* ─── STATUS GRID ─── */
-    .status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
-      border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:1.75rem; }
-    .status-card { padding:1.1rem 1.2rem; border-right:1px solid var(--border);
-      border-bottom:1px solid var(--border); background:var(--surface); }
-    .status-label { font-family:var(--font-mono); font-size:.52rem; letter-spacing:.15em;
-      text-transform:uppercase; color:var(--text-dim); margin-bottom:.35rem; }
-    .status-value { font-family:var(--font-display); font-size:.95rem; font-weight:600; letter-spacing:.04em; }
-    .status-value.green { color:var(--success); }
-    .status-value.gold { color:var(--gold); }
-    .status-value.blue { color:var(--info); }
-    .status-value.warn { color:var(--warn); }
-
-    /* ─── ACCENT BLOCKS ─── */
-    .accent-block { background:var(--surface); border:1px solid var(--border); padding:1.25rem 1.5rem;
-      border-radius:0 6px 6px 0; margin-bottom:1rem; }
-    .accent-block.gold { border-left:3px solid var(--gold); }
-    .accent-block.green { border-left:3px solid var(--success); }
-    .accent-block.warn { border-left:3px solid var(--warn); }
-    .accent-block.blue { border-left:3px solid var(--info); }
-    .accent-block.danger { border-left:3px solid var(--danger); }
-    .accent-label { font-family:var(--font-display); font-size:.63rem; font-weight:600;
-      letter-spacing:.2em; text-transform:uppercase; margin-bottom:.4rem; display:flex; align-items:center; gap:.5rem; }
-    .accent-block.gold .accent-label { color:var(--gold); }
-    .accent-block.green .accent-label { color:var(--success); }
-    .accent-block.warn .accent-label { color:var(--warn); }
-    .accent-block.blue .accent-label { color:var(--info); }
-    .accent-block.danger .accent-label { color:var(--danger); }
-    .accent-block p { font-size:.9rem; line-height:1.65; }
-
-    /* ─── QUOTE ─── */
-    .iso-quote { font-family:var(--font-quote); font-style:italic; font-size:1.05rem; color:var(--text);
-      padding:1.25rem 1.5rem; background:var(--gold-faded-2); border:1px solid var(--border-gold);
-      border-radius:6px; line-height:1.75; margin-bottom:1rem; }
-    .iso-quote cite { display:block; font-family:var(--font-mono); font-size:.68rem;
-      font-style:normal; color:var(--text-muted); letter-spacing:.1em; margin-top:.6rem; }
-
-    /* ─── CLASSIFICATION BANNER ─── */
-    .classification-banner { font-family:var(--font-mono); font-size:.68rem; letter-spacing:.18em;
-      text-transform:uppercase; color:var(--gold); margin-bottom:1.25rem; display:flex; align-items:center; gap:.6rem; }
-    .classification-banner::before { content:''; display:inline-block; width:24px; height:1px; background:var(--gold); }
-    .classification-banner::after { content:''; display:inline-block; flex:1; height:1px;
-      background:linear-gradient(90deg,var(--gold-faded-2),transparent); }
-
-    /* ─── VAR TABLE ─── */
-    .var-table { width:100%; border-collapse:collapse; font-size:.875rem; margin-top:1rem; }
-    .var-table tr { border-bottom:1px solid var(--border); }
-    .var-table tr:last-child { border-bottom:none; }
-    .var-table td { padding:.65rem .75rem; vertical-align:top; line-height:1.55; }
-    .var-sym { font-family:var(--font-mono); color:var(--gold); font-size:.95rem; white-space:nowrap; }
-    .var-domain { font-family:var(--font-display); font-size:.6rem; letter-spacing:.12em;
-      text-transform:uppercase; padding:.15rem .45rem; border-radius:2px; white-space:nowrap; }
-    .var-domain.epi { color:var(--info); background:rgba(121,192,255,.08); border:1px solid rgba(121,192,255,.2); }
-    .var-domain.theo { color:var(--purple); background:rgba(192,132,252,.08); border:1px solid rgba(192,132,252,.2); }
-    .var-desc { color:var(--text); font-size:.875rem; }
-
-    /* ─── EVIDENCE BOXES ─── */
-    .evidence-box { background:var(--surface); border:1px solid var(--border); border-radius:8px;
-      padding:1.5rem; margin-bottom:1.25rem; }
-    .evidence-box-header { display:flex; align-items:center; gap:.75rem; margin-bottom:.85rem; }
-    .evidence-num { font-family:var(--font-mono); font-size:.65rem; color:var(--text-dim); letter-spacing:.1em; }
-    .evidence-title { font-family:var(--font-display); font-size:.88rem; font-weight:600;
-      letter-spacing:.1em; text-transform:uppercase; color:#fff; }
-    .evidence-badge { font-family:var(--font-display); font-size:.58rem; font-weight:600;
-      letter-spacing:.15em; text-transform:uppercase; padding:.2rem .55rem; border-radius:2px; margin-left:auto; }
-    .evidence-badge.pass { color:var(--success); background:rgba(63,185,80,.1);
-      border:1px solid rgba(63,185,80,.3); }
-    .evidence-badge.pending { color:var(--warn); background:rgba(245,158,11,.1);
-      border:1px solid rgba(245,158,11,.3); }
-    .evidence-body { font-size:.9rem; line-height:1.7; color:var(--text); }
-    .evidence-body ul { padding-left:1.4rem; margin-top:.5rem; }
-    .evidence-body li { margin-bottom:.45rem; }
-
-    /* ─── CASE STUDY ─── */
-    .case-study { background:linear-gradient(135deg,var(--surface) 0%,rgba(212,175,55,.04) 100%);
-      border:1px solid var(--border-gold); border-radius:8px; padding:1.75rem; margin-top:2rem; }
-    .case-study-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; }
-    .case-study-icon { width:40px; height:40px; background:var(--gold-faded-2);
-      border:1px solid var(--border-gold); border-radius:50%; display:flex; align-items:center;
-      justify-content:center; color:var(--gold); font-size:.85rem; flex-shrink:0; }
-    .case-study-label { font-family:var(--font-mono); font-size:.58rem; color:var(--text-dim);
-      letter-spacing:.14em; text-transform:uppercase; margin-bottom:.15rem; }
-    .case-study-title { font-family:var(--font-display); font-size:1.1rem; font-weight:600;
-      color:var(--gold); letter-spacing:.05em; text-transform:uppercase; }
-    .case-study-body { font-size:.9rem; line-height:1.72; }
-    .case-study-body p { margin-bottom:.85rem; }
-    .case-study-body p:last-child { margin-bottom:0; }
-    .case-study-stat { display:inline-flex; align-items:baseline; gap:.35rem;
-      font-family:var(--font-mono); font-size:.78rem; color:var(--gold); margin-right:.75rem; }
-    .case-study-stat strong { font-size:1.25rem; }
-    .case-study-stats { background:rgba(0,0,0,.25); border-radius:5px; padding:.85rem 1rem;
-      margin:.85rem 0; display:flex; flex-wrap:wrap; gap:.5rem; }
-
-    /* ─── FOOTER ─── */
-    .page-footer { border-top:1px solid var(--border); padding:2.5rem 0; }
-    .footer-inner { display:flex; align-items:flex-start; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
-    .footer-meta { font-family:var(--font-mono); font-size:.68rem; color:var(--text-dim); line-height:1.9; }
-    .footer-meta span { color:var(--text-muted); }
-    .footer-back { display:inline-flex; align-items:center; gap:.5rem; font-family:var(--font-mono);
-      font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted);
-      text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:4px; transition:all .2s; }
-    .footer-back:hover { color:var(--gold); border-color:var(--border-gold); }
-
-    /* ─── BACK LINK ─── */
-    .back-link { display:inline-flex; align-items:center; gap:.5rem; font-family:var(--font-mono);
-      font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted);
-      text-decoration:none; margin-bottom:2rem; transition:color .2s; }
-    .back-link:hover { color:var(--gold); }
-
-    /* ─── SCROLL TOP ─── */
-    .scroll-top { position:fixed; bottom:1.75rem; right:1.75rem; width:38px; height:38px;
-      background:var(--surface); border:1px solid var(--border); border-radius:50%;
-      display:flex; align-items:center; justify-content:center; color:var(--text-muted);
-      cursor:pointer; opacity:0; visibility:hidden; transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
-      font-size:.75rem; z-index:50; }
-    .scroll-top.visible { opacity:1; visibility:visible; }
-    .scroll-top:hover { border-color:var(--border-gold); color:var(--gold); }
-
-    /* ─── INLINE MONO ─── */
-    code { font-family:var(--font-mono); font-size:.88em; color:var(--gold);
-      background:rgba(212,175,55,.08); padding:.1em .35em; border-radius:3px; }
-
-    /* ─── CONNECTION CARDS ─── */
-    .connection-card { background:var(--surface); border:1px solid var(--border); border-radius:6px;
-      padding:1.25rem; transition:border-color .2s; display:flex; flex-direction:column; gap:.5rem; }
-    .connection-card:hover { border-color:var(--border-gold); }
-    .conn-iso-id { font-family:var(--font-mono); font-size:.62rem; color:var(--gold);
-      letter-spacing:.15em; }
-    .conn-title { font-family:var(--font-display); font-size:.9rem; font-weight:600;
-      color:#fff; letter-spacing:.04em; text-transform:uppercase; }
-    .conn-desc { font-size:.8rem; color:var(--text-muted); line-height:1.55; }
-
-    /* ─── RESPONSIVE ─── */
-    @media(max-width:768px) {
-      .container { padding:0 1.1rem; }
-      .hero { padding:3rem 0 2.5rem; }
-      :root { --section-gap:3.5rem; }
-      .section-header { grid-template-columns:1fr; gap:.4rem; }
-      .section-num { font-size:3.8rem; text-align:left; min-width:auto; line-height:1; }
-      .card-grid { grid-template-columns:1fr; }
-    }
-    @media(max-width:520px) {
-      .hero-title { font-size:1.9rem; }
-      .status-grid { grid-template-columns:1fr 1fr; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       STICKY HEADER
-  ═══════════════════════════════════════════════════════════════════ -->
-  <header class="site-header">
-    <div class="container">
-      <a href="../isomorphism/index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
-      <div class="iso-badge">ISO-027</div>
-    </div>
-  </header>
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       HERO
-  ═══════════════════════════════════════════════════════════════════ -->
-  <section class="hero">
-    <div class="container">
-      <a href="../isomorphism/index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
-      <div aria-hidden="true" class="hero-bg-number">027</div>
-      <div class="hero-iso-id"><i class="fas fa-virus"></i> ISO-027 &middot; Epidemiology &harr; Theology</div>
-      <h1 class="hero-title">The SIR Model of<br>Hamartiology</h1>
-      <p class="hero-subtitle">Epidemiology &harr; Sin Propagation</p>
-
-      <div class="hero-tags">
-        <span class="tag tag-blue"><i class="fas fa-flask"></i> Epidemiology</span>
-        <span class="tag tag-purple"><i class="fas fa-cross"></i> Theology</span>
-        <span class="tag tag-gold"><i class="fas fa-project-diagram"></i> Process Isomorphism</span>
-        <span class="tag tag-warn"><i class="fas fa-microscope"></i> Status: Testing</span>
-        <span class="tag tag-green"><i class="fas fa-signal"></i> Confidence: High</span>
-        <span class="tag tag-blue"><i class="fas fa-biohazard"></i> Hamartiology</span>
-        <span class="tag tag-gold"><i class="fas fa-chart-line"></i> R&sub0; &gt; 1</span>
-      </div>
-
-      <div class="hero-meta">
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">ISO ID</div>
-          <div class="hero-meta-value gold">ISO-027</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Type</div>
-          <div class="hero-meta-value">Process Isomorphism</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain A</div>
-          <div class="hero-meta-value blue">Epidemiology</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain B</div>
-          <div class="hero-meta-value" style="color:var(--purple);">Theology</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Confidence</div>
-          <div class="hero-meta-value green">High</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Status</div>
-          <div class="hero-meta-value warn">Testing</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Created</div>
-          <div class="hero-meta-value">2026-04-04</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       MAIN CONTENT
-  ═══════════════════════════════════════════════════════════════════ -->
-  <main class="main-content">
-    <div class="container">
-
-      <!-- ══════════════════════════════════════
-           SECTION 01: THE CLAIM
-      ══════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">01</div>
-          <div class="section-title-group">
-            <h2 class="section-title">The Claim</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Sin spreads like disease — a little leaven leavens the whole lump</div>
-          </div>
-        </div>
-
-        <div class="classification-banner">
-          <i class="fas fa-virus"></i>&nbsp;Process Isomorphism &middot; ISO-027 &middot; Testing / High Confidence
-        </div>
-
-        <div class="iso-quote">
-          "A little leaven leavens the whole lump."
-          <cite>&mdash; 1 Corinthians 5:6 &amp; Galatians 5:9 (ESV)</cite>
-        </div>
-
-        <div class="claim-block">
-          <p>
-            The <strong>SIR epidemiological model</strong> &mdash; which describes how diseases propagate through
-            a susceptible population via contact with infected individuals &mdash; maps structurally and
-            quantitatively onto <strong>sin propagation through communities</strong>. The isomorphism is not
-            merely metaphorical: it is a formal process isomorphism in which every mechanistic feature of
-            epidemic dynamics has a precise theological counterpart, and vice versa.
-          </p>
-          <p>
-            At its core: <strong>R&sub0; &gt; 1</strong> means exponential spread in both domains.
-            Sin is contagious. It spreads through social contact, influence, imitation, and normalization.
-            Church discipline is quarantine. The righteous remnant functions as herd immunity.
-            Super-spreaders exist (Jeroboam son of Nebat). The Judges cycle is damped epidemic oscillation.
-            Vaccination has a theological analog in temptation-resistance built through controlled encounter.
-          </p>
-          <p>
-            The key result: <strong>sin propagation follows contact-network topology, not random distribution</strong>.
-            This is independently predicted by epidemiological theory and independently attested in Scripture.
-            The most extensively documented transmission chain in the Bible &mdash; Jeroboam son of Nebat,
-            referenced <strong>21 times</strong> in Kings as "who caused Israel to sin" &mdash; is explicable
-            in epidemiological terms: he lowered the barrier to infection (&beta;&uarr;) and removed recovery
-            mechanisms (&gamma;&darr;), thereby maximizing R&sub0; for northern-kingdom idolatry.
-          </p>
-        </div>
-
-        <div class="kill-condition">
-          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
-          <p>
-            This isomorphism is falsified if any of the following are demonstrated:
-            <br><br>
-            <strong>(1)</strong> Sin propagation follows <em>random</em> rather than <em>contact-network</em> patterns
-            &mdash; i.e., individuals who are socially isolated from sinning communities sin at the same rate
-            as those embedded in them.
-            <br><br>
-            <strong>(2)</strong> Moral collapse in communities shows <em>no threshold effects</em> &mdash; i.e.,
-            there is no "herd immunity" phenomenon, no critical mass of the faithful below which societal
-            moral collapse becomes inevitable.
-            <br><br>
-            <strong>(3)</strong> Isolated individuals are <em>equally</em> likely to sin as those in
-            highly socially connected peer groups &mdash; which would falsify the contact-rate term &beta;SI
-            as the driver of spread.
-          </p>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════
-           SECTION 02: MATHEMATICAL FORM
-      ══════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">02</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Mathematical Form</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">SIR differential equations &amp; the basic reproduction number</div>
-          </div>
-        </div>
-
-        <div class="prose">
-          The SIR model partitions a population of size <code>N</code> into three compartments:
-          <strong>Susceptible (S)</strong>, <strong>Infected (I)</strong>, and <strong>Recovered/Removed (R)</strong>.
-          The dynamics are governed by three coupled ordinary differential equations parameterized by
-          the transmission rate &beta; and the recovery rate &gamma;.
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">SIR System — Epidemiological Form</div>
-          <div class="equation">dS/dt = &minus;&beta;SI
-
-dI/dt = &beta;SI &minus; &gamma;I
-
-dR/dt = &gamma;I</div>
-          <div class="eq-note">
-            Population is conserved: S(t) + I(t) + R(t) = N for all t. The system is nonlinear due to
-            the product term &beta;SI representing the contact process.
-          </div>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Basic Reproduction Number</div>
-          <div class="equation">R&sub0; = &beta; / &gamma;</div>
-          <div class="eq-note">
-            R&sub0; is the average number of secondary infections produced by one infected individual in a
-            fully susceptible population. If R&sub0; &gt; 1, the epidemic grows; if R&sub0; &lt; 1, it dies out.
-            R&sub0; is the central control parameter of the system.
-          </div>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Epidemic Threshold Condition</div>
-          <div class="equation">Epidemic grows    iff    R&sub0; = &beta;/&gamma; &gt; 1
-
-Epidemic dies out  iff    R&sub0; = &beta;/&gamma; &lt; 1
-
-Herd immunity threshold: p&sub;c = 1 &minus; 1/R&sub0;</div>
-          <div class="eq-note">
-            The herd immunity threshold p&sub;c gives the minimum fraction of the population that must be
-            immune (recovered or resistant) to prevent epidemic growth. This maps to the <strong>righteous
-            remnant threshold</strong> in theological terms.
-          </div>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Theological Mapping of Parameters</div>
-          <div class="equation">R&sub0;(sin) = &beta;(sin) / &gamma;(sin)
-
-where:
-  &beta;(sin)  = contact rate &times; probability of moral transmission per contact
-  &gamma;(sin) = rate of repentance / accountability / recovery from sin
-  S           = individuals susceptible to this particular sin
-  I           = individuals actively propagating this sin in community
-  R           = individuals who have repented / become resistant</div>
-          <div class="eq-note">
-            Jeroboam maximized R&sub0;(idolatry) by: (1) increasing &beta; &mdash; institutionalizing idolatry
-            at Dan and Bethel, making contact with idolatrous practice unavoidable; and (2) decreasing &gamma;
-            &mdash; removing Levitical priests and changing the festival calendar, eliminating recovery mechanisms.
-          </div>
-        </div>
-
-        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin:2rem 0 1rem;">Variable Definitions</h3>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
-          <table class="var-table">
-            <thead>
-              <tr style="background:var(--surface-2);border-bottom:1px solid var(--border-gold);">
-                <th style="font-family:var(--font-display);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);padding:.75rem 1rem;text-align:left;">Symbol</th>
-                <th style="font-family:var(--font-display);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--info);padding:.75rem 1rem;text-align:left;">Epidemiology</th>
-                <th style="font-family:var(--font-display);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--purple);padding:.75rem 1rem;text-align:left;">Theological Analog</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="var-sym">&beta;</td>
-                <td class="td-physics">Transmission rate (contacts per time &times; probability of infection per contact)</td>
-                <td class="td-theology">Rate of moral contagion per social contact; influenced by cultural normalization, peer pressure, institutional structures</td>
-              </tr>
-              <tr>
-                <td class="var-sym">&gamma;</td>
-                <td class="td-physics">Recovery rate (fraction of infected who recover per unit time)</td>
-                <td class="td-theology">Rate of repentance, accountability, or moral recovery; provided by preaching, confession, church discipline</td>
-              </tr>
-              <tr>
-                <td class="var-sym">R&sub0;</td>
-                <td class="td-physics">Basic reproduction number = &beta;/&gamma;</td>
-                <td class="td-theology">Virulence of a sin pattern in a given community — how many it spreads to per active case</td>
-              </tr>
-              <tr>
-                <td class="var-sym">S(t)</td>
-                <td class="td-physics">Susceptible population — not yet infected</td>
-                <td class="td-theology">Individuals vulnerable to this sin; not yet entangled</td>
-              </tr>
-              <tr>
-                <td class="var-sym">I(t)</td>
-                <td class="td-physics">Infected population — actively spreading disease</td>
-                <td class="td-theology">Individuals actively practicing and propagating sin in community</td>
-              </tr>
-              <tr>
-                <td class="var-sym">R(t)</td>
-                <td class="td-physics">Recovered/Removed — immune or removed from dynamics</td>
-                <td class="td-theology">Repentant, restored, or resistant individuals; also those removed via discipline</td>
-              </tr>
-              <tr>
-                <td class="var-sym">N</td>
-                <td class="td-physics">Total population (conserved: S+I+R = N)</td>
-                <td class="td-theology">Total community under consideration</td>
-              </tr>
-              <tr>
-                <td class="var-sym">p&sub;c</td>
-                <td class="td-physics">Herd immunity threshold = 1 &minus; 1/R&sub0;</td>
-                <td class="td-theology">Critical fraction of faithful required to prevent moral epidemic; the "righteous remnant threshold"</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════
-           SECTION 03: THE MAPPING
-      ══════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">03</div>
-          <div class="section-title-group">
-            <h2 class="section-title">The Mapping</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Structural correspondence between epidemiological mechanisms and theological concepts</div>
-          </div>
-        </div>
-
-        <div class="prose">
-          Every mechanistic feature of epidemic dynamics has a precise theological counterpart. The table below
-          presents the full 10-element structural correspondence. Each entry is independently attested in both
-          domains &mdash; none are reverse-engineered from the analogy; both sides were known independently
-          before the mapping was drawn.
-        </div>
-
-        <div class="iso-table-wrap">
-          <table class="iso-table">
-            <thead>
-              <tr>
-                <th class="col-label" style="width:3rem;">#</th>
-                <th class="col-physics">Epidemiological Concept</th>
-                <th class="col-theology">Theological Concept</th>
-                <th class="col-property" style="width:10rem;">Mechanism</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="td-label">01</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">R&sub0; &gt; 1</strong> &mdash; exponential spread; each
-                  infected individual infects more than one susceptible on average, leading to epidemic growth
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">"A little leaven leavens the whole lump"</strong>
-                  (1 Cor 5:6, Gal 5:9) &mdash; sin spreads through a community faster than it can be
-                  contained without deliberate intervention
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Threshold control parameter
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">02</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Herd immunity</strong> &mdash; when a sufficient fraction
-                  p &ge; p&sub;c = 1 &minus; 1/R&sub0; of the population is immune, epidemic growth cannot occur
-                  even without universal immunity
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Righteous remnant</strong> &mdash; a critical mass of
-                  faithful people stabilizes a community; Abraham's negotiation for Sodom (Gen 18:22-33)
-                  explicitly probes this threshold (10 righteous would have saved the city)
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Threshold protection
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">03</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Quarantine</strong> &mdash; isolation of infected
-                  individuals from susceptible population to reduce transmission; removes them from the
-                  &beta;SI contact term
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Church discipline</strong> &mdash; removal of an
-                  unrepentant member from the community (1 Cor 5:1-5, Matt 18:15-17). Paul explicitly
-                  uses epidemic logic: "Don't you know that a little yeast leavens the whole batch?" (1 Cor 5:6-7)
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Isolation of infected
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">04</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Asymptomatic carriers</strong> &mdash; individuals who are
-                  infected and transmitting but show no outward symptoms; often responsible for significant
-                  silent spread before detection
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Hidden sin</strong> &mdash; "whitewashed tombs" (Matt 23:27);
-                  outward righteousness masking inward corruption; false teachers who appear godly while
-                  spreading error (2 Pet 2:1)
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Silent transmission
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">05</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Vaccination</strong> &mdash; controlled exposure to
-                  an attenuated pathogen induces immune response, creating resistance to future full-strength
-                  infection without causing disease
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Temptation resistance</strong> &mdash; trials build
-                  endurance and resistance: "the testing of your faith produces steadfastness" (James 1:2-4);
-                  encounter with temptation under discipleship conditions builds moral immunity
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Controlled exposure &rarr; immunity
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">06</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Super-spreaders</strong> &mdash; individuals responsible
-                  for disproportionately high secondary transmission due to high contact rates, high
-                  infectiousness, or both; drive epidemic dynamics non-linearly
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">False teachers / Jeroboam</strong> &mdash; Jeroboam
-                  son of Nebat appears 21 times in Kings as "who caused Israel to sin"; false teachers who
-                  "lead many astray" (Matt 24:11); institutional sin-infrastructure maximizes R&sub0;
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  High-transmission individuals
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">07</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Mutation</strong> &mdash; pathogens adapt to evade
-                  immune responses; the same pathogen reappears in new forms that bypass existing resistance
-                  mechanisms
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Sin adaptation</strong> &mdash; the same underlying
-                  sin (pride, lust, idolatry) manifests in new cultural forms; each generation faces familiar
-                  temptations in novel packaging that bypasses the immunity built by prior generations
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Pathogen adaptation
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">08</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Epidemic curve</strong> &mdash; characteristic rise,
-                  peak, and decline pattern; in endemic disease, damped oscillations around an equilibrium;
-                  SIR model predicts these oscillations analytically
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Revival/apostasy cycles</strong> &mdash; the Judges
-                  pattern: sin &rarr; oppression &rarr; cry &rarr; deliverance &rarr; sin; cyclical moral
-                  oscillation that SIR dynamics predict exactly (damped oscillations in endemic disease)
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Cyclical dynamics
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">09</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Contact tracing</strong> &mdash; identifying and
-                  notifying individuals who have been in contact with an infected person; breaks transmission
-                  chains before full infection develops
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Accountability structures</strong> &mdash; "Confess your
-                  sins to one another and pray for one another, that you may be healed" (James 5:16);
-                  spiritual direction; mentorship; small-group confession — all trace and interrupt transmission
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Chain interruption
-                </td>
-              </tr>
-              <tr>
-                <td class="td-label">10</td>
-                <td class="td-physics">
-                  <strong style="color:var(--info);">Eradication</strong> &mdash; requires sustained,
-                  coordinated global effort; never "done" until every reservoir is eliminated; the only
-                  fully eradicated human disease (smallpox) required 200+ years of sustained effort
-                </td>
-                <td class="td-theology">
-                  <strong style="color:var(--purple);">Great Commission</strong> &mdash; the mission is ongoing
-                  and never "done" until the eschaton; requires coordinated global effort; the reservoir of
-                  sin is not eliminated until the new creation (Rev 21:27)
-                </td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
-                  Sustained effort to completion
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:1.5rem;" class="accent-block blue">
-          <div class="accent-label"><i class="fas fa-info-circle"></i>&nbsp;Structural Note</div>
-          <p>
-            None of the 10 entries above were reverse-engineered from the isomorphism. Each epidemiological
-            mechanism was known independently from public-health science; each theological concept was known
-            independently from Scripture and church history. The mapping was discovered by structural comparison,
-            not constructed by analogy-hunting. This is the mark of a genuine process isomorphism rather than
-            a forced metaphor.
-          </p>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════
-           SECTION 04: EVIDENCE & VERIFICATION
-      ══════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">04</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Evidence &amp; Verification</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Swap test, bidirectional prediction, and empirical confirmation</div>
-          </div>
-        </div>
-
-        <!-- Swap Test -->
-        <div class="evidence-box">
-          <div class="evidence-box-header">
-            <span class="evidence-num">TEST-01</span>
-            <span class="evidence-title">Swap Test</span>
-            <span class="evidence-badge pass"><i class="fas fa-check"></i>&nbsp;Passed</span>
-          </div>
-          <div class="evidence-body">
-            <p>
-              The swap test requires that substituting domain-A concepts into domain-B statements (and vice versa)
-              generates <em>non-trivial, independently testable</em> predictions &mdash; not mere tautologies.
-              Three substitutions were performed:
-            </p>
-            <ul>
-              <li>
-                <strong>"Jeroboam was a super-spreader with R&sub0; &gt;&gt; 1"</strong> &mdash; predicts that
-                his influence should show <em>exponential</em>, not linear, propagation through the northern kingdom.
-                The biblical record confirms: <strong>every single northern king</strong> is described as
-                continuing his sins. This is not linear diffusion &mdash; it is the reproductive cascade pattern
-                of a high-R&sub0; pathogen in a susceptible population with no effective quarantine.
-              </li>
-              <li>
-                <strong>"Church discipline is quarantine"</strong> &mdash; predicts that <em>failure</em> to
-                practice discipline should result in infection spread. Paul explicitly argues this in 1 Cor 5:6-7:
-                "Don't you know that a little yeast leavens the whole batch of dough? Get rid of the old yeast."
-                Paul's reasoning is epidemiological: leaving the infected individual in the community threatens
-                the whole community. The prediction is confirmed by explicit apostolic argument.
-              </li>
-              <li>
-                <strong>"The righteous remnant functions as herd immunity"</strong> &mdash; predicts a critical
-                threshold below which societal moral collapse becomes inevitable. Abraham's negotiation for Sodom
-                (Gen 18:22-33) explicitly and quantitatively explores this threshold: Would 50 righteous save it?
-                45? 30? 20? 10? The text treats the threshold as real, negotiable, and consequential &mdash;
-                exactly as epidemiologists treat the herd immunity threshold.
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Bidirectional Prediction -->
-        <div class="evidence-box">
-          <div class="evidence-box-header">
-            <span class="evidence-num">TEST-02</span>
-            <span class="evidence-title">Bidirectional Prediction</span>
-            <span class="evidence-badge pass"><i class="fas fa-check"></i>&nbsp;Passed</span>
-          </div>
-          <div class="evidence-body">
-            <p>
-              A genuine isomorphism should generate predictions in <em>both</em> directions: from Domain A into
-              Domain B, and from Domain B into Domain A.
-            </p>
-            <ul>
-              <li>
-                <strong>Forward (Epidemiology &rarr; Theology):</strong> SIR dynamics predict that sin
-                propagation should follow <em>contact-network topology</em>, not random distribution. This is
-                testable: sin patterns in communities should correlate with social network structure. Individuals
-                with high-degree connectivity in social networks should show higher sin-exposure rates than
-                socially isolated individuals &mdash; not because they are inherently weaker, but because
-                &beta;SI requires <em>contact</em>.
-              </li>
-              <li>
-                <strong>Reverse (Theology &rarr; Epidemiology):</strong> The Judges cycle (sin &rarr; oppression
-                &rarr; cry &rarr; deliverance &rarr; sin) predicts <em>epidemic oscillation</em>. This is exactly
-                what SIR models produce: damped oscillations in endemic disease around an equilibrium prevalence.
-                The Judges cycle is not arbitrary narrative structure &mdash; it is the expected dynamical behavior
-                of a system with R&sub0; near 1 where recovery mechanisms are imperfectly sustained.
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Quotes -->
-        <div class="iso-quote">
-          "Do not be misled: 'Bad company corrupts good character.'"
-          <cite>&mdash; 1 Corinthians 15:33 (NIV) — explicit contact-network transmission statement</cite>
-        </div>
-
-        <div class="iso-quote">
-          "He who walks with the wise grows wise, but a companion of fools suffers harm."
-          <cite>&mdash; Proverbs 13:20 (NIV) — differential transmission rate by contact type</cite>
-        </div>
-
-        <div class="iso-quote">
-          "Confess your sins to one another and pray for one another, that you may be healed."
-          <cite>&mdash; James 5:16 (ESV) — contact tracing + gamma (recovery rate) intervention</cite>
-        </div>
-
-        <!-- Jeroboam Case Study -->
-        <div class="case-study">
-          <div class="case-study-header">
-            <div class="case-study-icon"><i class="fas fa-dna"></i></div>
-            <div>
-              <div class="case-study-label">Primary Case Study</div>
-              <div class="case-study-title">Jeroboam Son of Nebat &mdash; The Biblical Super-Spreader</div>
-            </div>
-          </div>
-          <div class="case-study-body">
-            <div class="case-study-stats">
-              <span class="case-study-stat"><strong>21&times;</strong> referenced in 1-2 Kings</span>
-              <span class="case-study-stat"><strong>19</strong> northern kings after him</span>
-              <span class="case-study-stat"><strong>19/19</strong> followed his sin pattern</span>
-              <span class="case-study-stat"><strong>R&sub0; &gt;&gt; 1</strong> estimated</span>
-            </div>
-            <p>
-              The phrase <em>"the sins of Jeroboam son of Nebat, who caused Israel to sin"</em> appears
-              <strong>21 times</strong> in 1-2 Kings. This is the most extensively documented transmission
-              chain in Scripture. The epidemiological framework does not merely describe what happened &mdash;
-              it explains <em>why</em> the transmission was so complete and persistent.
-            </p>
-            <p>
-              Jeroboam did not merely sin. He created <strong>infrastructure for transmission</strong>:
-            </p>
-            <ul style="padding-left:1.4rem;margin:.5rem 0 .85rem;">
-              <li>Set up golden calves at <strong>Dan and Bethel</strong> (permanent transmission nodes at population centers)</li>
-              <li>Appointed <strong>non-Levitical priests</strong> (removed qualified recovery agents; &gamma;&darr;)</li>
-              <li>Changed the <strong>festival calendar</strong> (replaced recovery rituals with transmission-amplifying ones)</li>
-              <li>Made idolatrous practice <strong>institutionally mandatory</strong> (&beta;&uarr; for the entire population)</li>
-            </ul>
-            <p>
-              In epidemiological terms, he simultaneously <strong>increased &beta;</strong> (transmission rate)
-              by making contact with idolatrous practice unavoidable, and <strong>decreased &gamma;</strong>
-              (recovery rate) by dismantling the mechanisms of return. The result is the highest possible R&sub0;
-              for northern-kingdom idolatry &mdash; and the biblical record shows 100% transmission to all
-              subsequent northern kings, exactly as high-R&sub0; epidemic dynamics predict in a population with
-              no effective quarantine or recovery mechanism.
-            </p>
-            <p>
-              The 21-times repetition of the formula in Kings is not literary redundancy &mdash; it is the
-              author marking every node in the transmission chain back to patient zero.
-            </p>
-          </div>
-        </div>
-
-        <div style="margin-top:1.5rem;">
-          <div class="accent-block green">
-            <div class="accent-label"><i class="fas fa-check-circle"></i>&nbsp;Strongest Confirmation</div>
-            <p>
-              The Abraham / Sodom negotiation (Gen 18:22-33) independently and explicitly models the herd
-              immunity threshold concept: a small number of righteous individuals can protect a large population
-              from moral-epidemic collapse. Abraham negotiates the threshold downward from 50 to 10 &mdash;
-              exactly the kind of threshold sensitivity analysis that epidemiologists perform. The text treats
-              this threshold as mathematically real and morally consequential.
-            </p>
-          </div>
-
-          <div class="accent-block warn">
-            <div class="accent-label"><i class="fas fa-exclamation-triangle"></i>&nbsp;Caveat — Non-Biological Mechanism</div>
-            <p>
-              The biological SIR model assumes physical pathogen transmission via contact. The theological domain
-              operates via social, psychological, and spiritual mechanisms &mdash; imitation, normalization,
-              influence, temptation. The isomorphism is at the <em>process</em> level (identical mathematical
-              structure), not at the <em>mechanism</em> level (the how of transmission differs). This does not
-              weaken the isomorphism &mdash; many physical systems share SIR-type dynamics without shared
-              mechanisms &mdash; but it must be noted.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════
-           SECTION 05: IMPLICATIONS & CONNECTIONS
-      ══════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">05</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Implications &amp; Connections</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Theological consequences, related isomorphisms, and broader POF context</div>
-          </div>
-        </div>
-
-        <div class="prose">
-          ISO-027 has several significant theological and practical implications, and connects to multiple
-          other isomorphisms in the registry.
-        </div>
-
-        <!-- Theological Implications -->
-        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin:0 0 1.25rem;">Theological Implications</h3>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-church"></i>&nbsp;Implication 1 — Church Discipline is Not Optional</div>
-          <p>
-            If sin propagates via SIR dynamics with R&sub0; &gt; 1, then <strong>failure to exercise church
-            discipline is not merely permissive — it is epidemiologically catastrophic</strong>. The tolerant
-            community that refuses to quarantine an actively sinning member does not thereby maintain peace; it
-            allows the epidemic to grow. Paul's reasoning in 1 Cor 5 is not harsh; it is simply correct. The
-            model vindicates the apostolic practice.
-          </p>
-        </div>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-users"></i>&nbsp;Implication 2 — Community Size Matters</div>
-          <p>
-            Below the righteous-remnant threshold p&sub;c = 1 &minus; 1/R&sub0;, even a community that is mostly
-            faithful cannot prevent moral-epidemic spread if the faithful fraction falls below critical mass. This
-            has direct implications for church health metrics: percentage of the congregation in active discipleship,
-            accountability, and sacramental practice is not merely a spiritual concern &mdash; it determines
-            whether the community is above or below its herd-immunity threshold.
-          </p>
-        </div>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-network-wired"></i>&nbsp;Implication 3 — Network Structure Matters</div>
-          <p>
-            SIR dynamics on networks show that hub nodes (highly connected individuals) are both higher-risk
-            for infection and disproportionately responsible for spread if infected. This predicts that
-            <strong>leaders who sin spread sin exponentially faster</strong> than laypeople who sin. The
-            consistent biblical emphasis on stricter judgment for teachers and leaders (James 3:1, Luke 12:48)
-            is not arbitrary &mdash; it reflects correct network epidemiology.
-          </p>
-        </div>
-
-        <div class="accent-block blue">
-          <div class="accent-label"><i class="fas fa-flask"></i>&nbsp;Implication 4 — Quantitative Hamartiology</div>
-          <p>
-            ISO-027 opens the possibility of a <strong>quantitative hamartiology</strong>: estimating R&sub0;
-            for specific sins in specific communities from observable data (rates of spread, recovery, relapse).
-            This is not currently done in either church practice or academic theology, but the SIR framework
-            makes it mathematically tractable. Different sins in different cultural contexts would have
-            different R&sub0; values — and different intervention strategies would be optimal for each.
-          </p>
-        </div>
-
-        <!-- Connection Cards -->
-        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin:2rem 0 1.25rem;">Related Isomorphisms</h3>
-        <div class="card-grid">
-          <div class="connection-card">
-            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-000</div>
-            <div class="conn-title">The Logos Isomorphism</div>
-            <div class="conn-desc">
-              ISO-027 is a specific instantiation of the general POF claim that mathematical structure reveals
-              theological reality. The SIR model is a mathematical structure that reveals something true about
-              sin, not merely an analogy. The Logos undergirds both.
-            </div>
-          </div>
-          <div class="connection-card">
-            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-008</div>
-            <div class="conn-title">Entropy &amp; The Fall</div>
-            <div class="conn-desc">
-              Like entropy, sin propagation is thermodynamically favored in the direction of disorder.
-              The Fall introduced not merely personal sin but a second-law dynamic in the moral domain.
-              ISO-027 specifies the mechanism (SIR contact dynamics) where ISO-008 describes the directionality.
-            </div>
-          </div>
-          <div class="connection-card">
-            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-014</div>
-            <div class="conn-title">Phase Transitions &amp; Revival</div>
-            <div class="conn-desc">
-              Herd immunity threshold p&sub;c is a phase transition point: below it, epidemic growth; above it,
-              epidemic decay. Revival as phase transition maps onto the same mathematics. The two isomorphisms
-              describe the same threshold from different perspectives.
-            </div>
-          </div>
-          <div class="connection-card">
-            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-019</div>
-            <div class="conn-title">Information Theory &amp; Testimony</div>
-            <div class="conn-desc">
-              The Great Commission maps to ISO-027 Entry 10 (eradication requires sustained effort). It also
-              maps to information propagation with noise: the Gospel is signal; sin is noise; the transmission
-              model is Shannon-type. ISO-019 provides the complementary framework.
-            </div>
-          </div>
-          <div class="connection-card">
-            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;Judges Cycle</div>
-            <div class="conn-title">Endemic Oscillation Pattern</div>
-            <div class="conn-desc">
-              The Judges pattern (sin &rarr; oppression &rarr; cry &rarr; deliverance &rarr; sin) maps to the
-              SIR endemic oscillation: the system doesn't eradicate the pathogen, it oscillates around an
-              endemic equilibrium. Both predict the same dynamical signature.
-            </div>
-          </div>
-          <div class="connection-card">
-            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;Sodom Negotiation</div>
-            <div class="conn-title">Herd Immunity Threshold Exploration</div>
-            <div class="conn-desc">
-              Genesis 18:22-33 is an explicit threshold-sensitivity analysis: how low can the righteous remnant
-              go before the city is beyond protection? Abraham negotiates from 50 to 10 — exploring the shape
-              of the p&sub;c curve for Sodom's specific moral-epidemic parameters.
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:2rem;" class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-lightbulb"></i>&nbsp;POF 2828 Connection</div>
-          <p>
-            Within the Theophysics framework, ISO-027 supports the broader claim that <strong>Scripture's
-            descriptions of sin, judgment, and restoration are not primitive moralizing but accurate descriptions
-            of real system dynamics</strong>. The biblical authors did not have the SIR model, but they
-            observed the same dynamics it describes and encoded them faithfully. This is consistent with the
-            POF thesis that Scripture reflects the rational structure of a world designed by the Logos
-            (John 1:1-3), and that physics and mathematics reveal rather than replace that structure.
-          </p>
-        </div>
-      </section>
-
-      <!-- ══════════════════════════════════════
-           SECTION 06: STATUS
-      ══════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">06</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Status</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Current registration state, confidence, and open questions</div>
-          </div>
-        </div>
-
-        <div class="status-grid">
-          <div class="status-card">
-            <div class="status-label">Confidence</div>
-            <div class="status-value green">High</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Status</div>
-            <div class="status-value warn">Testing</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">ISO Type</div>
-            <div class="status-value gold">Process</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Domain A</div>
-            <div class="status-value blue">Epidemiology</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Domain B</div>
-            <div class="status-value" style="color:var(--purple);">Theology</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Swap Test</div>
-            <div class="status-value green">Passed</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Kill Attempts</div>
-            <div class="status-value gold">3 Survived</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Registered</div>
-            <div class="status-value">2026-04-04</div>
-          </div>
-        </div>
-
-        <div class="accent-block warn">
-          <div class="accent-label"><i class="fas fa-exclamation-triangle"></i>&nbsp;Weakest Link</div>
-          <p>
-            The quantitative R&sub0; for specific sins in specific communities has not been empirically estimated.
-            The isomorphism is structurally confirmed but the <strong>quantitative parameters remain unmeasured</strong>.
-            It is not yet possible to say, for instance, what the R&sub0; for pornography addiction is in a
-            given congregation, or what the herd immunity threshold is for a community of 200. Estimating these
-            would require longitudinal social network data on sin transmission patterns &mdash; methodologically
-            difficult and ethically complex. Until such estimates exist, the isomorphism operates at the
-            <em>qualitative-structural</em> level rather than the full quantitative level that the mathematics supports.
-          </p>
-        </div>
-
-        <div class="accent-block green">
-          <div class="accent-label"><i class="fas fa-check-double"></i>&nbsp;Strongest Link</div>
-          <p>
-            The <strong>Jeroboam super-spreader case</strong> and the <strong>Sodom herd-immunity-threshold
-            negotiation</strong> are both extensively documented in Scripture, both independently predicted by
-            epidemiological theory, and both show the precise quantitative signatures that the SIR model predicts
-            &mdash; exponential cascade in the Jeroboam case (100% transmission to all 19 subsequent northern
-            kings), and threshold-sensitivity analysis in the Sodom case (Abraham's step-by-step negotiation
-            of the minimum righteous-remnant size). These two examples are sufficient to establish the structural
-            validity of the isomorphism at high confidence.
-          </p>
-        </div>
-
-        <div class="accent-block blue">
-          <div class="accent-label"><i class="fas fa-road"></i>&nbsp;Open Research Questions</div>
-          <p>
-            <strong>(1)</strong> Can R&sub0;(sin) be empirically estimated for specific sins in historically
-            documented communities (e.g., the spread of specific heresies through early church records)?
-            <br><br>
-            <strong>(2)</strong> Does the SIR model's prediction of damped oscillations around an endemic
-            equilibrium match observed revival/apostasy cycle frequencies in documented church history?
-            <br><br>
-            <strong>(3)</strong> Do the SEIR, SIRV, or network-SIR extensions (which add Exposed, Vaccinated,
-            or heterogeneous network topology) map onto additional theological mechanisms not captured in the
-            basic 10-element table above?
-            <br><br>
-            <strong>(4)</strong> Does accountability group structure (small groups, confession, spiritual
-            direction) empirically increase &gamma; (recovery rate) in measurable ways, consistent with
-            the isomorphism's predictions?
-          </p>
-        </div>
-
-        <div style="margin-top:1.5rem;" class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-star"></i>&nbsp;Registry Note</div>
-          <p>
-            ISO-027 is rated <strong>Testing / High Confidence</strong> rather than <strong>Confirmed</strong>
-            because the quantitative predictions have not yet been tested against empirical data. The structural
-            isomorphism is solid and the kill conditions have been examined without being triggered. Promotion
-            to <strong>Confirmed</strong> requires either: (a) empirical measurement of transmission-network
-            effects in sin propagation consistent with SIR predictions, or (b) demonstration that biblical
-            epidemic-oscillation frequencies match SIR endemic-equilibrium predictions for plausible parameter
-            ranges.
-          </p>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       FOOTER
-  ═══════════════════════════════════════════════════════════════════ -->
-  <footer class="page-footer">
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-meta">
-          <span>Theophysics Research Program</span> &middot; POF 2828<br>
-          ISO-027 &middot; <span>Registered 2026-04-04 &middot; Status: Testing / High Confidence</span>
-        </div>
-        <a href="../isomorphism/index.html" class="footer-back"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
-      </div>
-    </div>
-  </footer>
-
-  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <i class="fas fa-chevron-up"></i>
-  </button>
-  <script>
-    const btn = document.getElementById('scrollTop');
-    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400), { passive: true });
-  </script>
-
-</body>
-</html>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The SIR epidemiological model maps structurally onto sin propagation through communities: R₀ &gt; 1 means exponential spread, church discipline is quarantine, and the righteous remnant functions as herd immunity.">
+  <title>ISO-027 · SIR Model of Hamartiology · Theophysics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    /* ─── ROOT VARIABLES ─── */
+    :root {
+      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
+      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
+      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
+      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
+      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
+      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
+      --max-width:1100px; --section-gap:5rem;
+    }
+
+    /* ─── RESET & BASE ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:16px; line-height:1.65; }
+    .container { max-width:1100px; margin:0 auto; padding:0 2rem; }
+    p { margin-bottom:1rem; }
+    p:last-child { margin-bottom:0; }
+    strong { color:#e6edf3; font-weight:600; }
+    .prose { font-size:.95rem; line-height:1.75; color:var(--text); margin-bottom:1.5rem; }
+
+    /* ─── STICKY HEADER ─── */
+    .site-header { border-bottom:1px solid var(--border); padding:.9rem 0; position:sticky; top:0;
+      background:rgba(10,10,10,.96); backdrop-filter:blur(14px); z-index:100; }
+    .site-header .container { display:flex; align-items:center; justify-content:space-between; }
+    .site-brand { font-family:var(--font-display); font-size:.72rem; font-weight:500; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--text-muted); text-decoration:none; }
+    .site-brand span { color:var(--gold); }
+    .iso-badge { font-family:var(--font-mono); font-size:.7rem; color:var(--gold);
+      border:1px solid var(--border-gold); padding:.22rem .65rem; border-radius:3px; letter-spacing:.12em; }
+
+    /* ─── HERO ─── */
+    .hero { padding:5rem 0 4rem; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+    .hero-bg-number { position:absolute; right:-1rem; top:50%; transform:translateY(-50%);
+      font-family:var(--font-display); font-size:clamp(12rem,28vw,26rem); font-weight:700;
+      color:var(--gold-faded); line-height:1; pointer-events:none; user-select:none; letter-spacing:-.05em; }
+    .hero-iso-id { font-family:var(--font-mono); font-size:.8rem; color:var(--gold);
+      letter-spacing:.3em; text-transform:uppercase; margin-bottom:1.25rem; display:flex; align-items:center; gap:.75rem; }
+    .hero-iso-id::after { content:''; display:inline-block; width:80px; height:1px;
+      background:linear-gradient(90deg,var(--gold),transparent); }
+    .hero-title { font-family:var(--font-display); font-size:clamp(2rem,5.5vw,3.8rem); font-weight:700;
+      text-transform:uppercase; letter-spacing:.04em; color:#fff; line-height:1.08; margin-bottom:1rem; }
+    .hero-subtitle { font-family:var(--font-mono); font-size:clamp(.85rem,2vw,1.05rem);
+      color:var(--gold); margin-bottom:2rem; letter-spacing:.06em; }
+    .hero-tags { display:flex; flex-wrap:wrap; gap:.45rem; margin-bottom:2.5rem; }
+    .tag { font-family:var(--font-display); font-size:.62rem; font-weight:500; letter-spacing:.14em;
+      text-transform:uppercase; padding:.28rem .7rem; border-radius:2px; border:1px solid;
+      display:inline-flex; align-items:center; gap:.35rem; }
+    .tag-gold { color:var(--gold); border-color:var(--border-gold); background:var(--gold-faded); }
+    .tag-green { color:var(--success); border-color:rgba(63,185,80,.25); background:rgba(63,185,80,.05); }
+    .tag-blue { color:var(--info); border-color:rgba(121,192,255,.25); background:rgba(121,192,255,.05); }
+    .tag-purple { color:var(--purple); border-color:rgba(192,132,252,.25); background:rgba(192,132,252,.05); }
+    .tag-warn { color:var(--warn); border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.05); }
+    .hero-meta { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+      background:var(--surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; max-width:780px; }
+    .hero-meta-item { padding:1rem 1.25rem; border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .hero-meta-label { font-family:var(--font-mono); font-size:.52rem; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--text-dim); margin-bottom:.25rem; }
+    .hero-meta-value { font-family:var(--font-display); font-size:.82rem; font-weight:500;
+      color:var(--text); letter-spacing:.04em; }
+    .hero-meta-value.gold { color:var(--gold); }
+    .hero-meta-value.green { color:var(--success); }
+    .hero-meta-value.blue { color:var(--info); }
+    .hero-meta-value.warn { color:var(--warn); }
+
+    /* ─── SECTIONS ─── */
+    .main-content { padding:0 0 7rem; }
+    .iso-section { padding:var(--section-gap) 0; border-bottom:1px solid var(--border); }
+    .iso-section:last-child { border-bottom:none; }
+    .section-header { display:grid; grid-template-columns:auto 1fr; gap:1.5rem; align-items:start; margin-bottom:2.5rem; }
+    .section-num { font-family:var(--font-display); font-size:6rem; font-weight:700; line-height:.85;
+      color:var(--gold-faded-2); letter-spacing:-.03em; user-select:none; min-width:100px;
+      text-align:right; padding-top:.1em; }
+    .section-title-group { padding-top:.3rem; }
+    .section-title { font-family:var(--font-display); font-size:clamp(1.3rem,3vw,1.85rem);
+      font-weight:600; text-transform:uppercase; letter-spacing:.1em; color:#fff; margin-bottom:.5rem; }
+    .section-divider { height:2px; background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
+      border-radius:1px; margin-bottom:.5rem; }
+    .section-subtitle { font-family:var(--font-mono); font-size:.7rem; color:var(--text-muted);
+      letter-spacing:.1em; text-transform:uppercase; }
+
+    /* ─── CONTENT BLOCKS ─── */
+    .claim-block { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--gold);
+      padding:1.75rem 2rem; border-radius:0 6px 6px 0; margin-bottom:1.5rem; font-size:1.03rem; line-height:1.75; }
+    .kill-condition { background:var(--surface-2); border:1px solid rgba(248,81,73,.25);
+      border-left:3px solid var(--danger); padding:1.25rem 1.75rem; border-radius:0 6px 6px 0; }
+    .kill-label { font-family:var(--font-display); font-size:.65rem; font-weight:600; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--danger); margin-bottom:.5rem; display:flex; align-items:center; gap:.5rem; }
+
+    /* ─── TABLES ─── */
+    .iso-table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:8px; }
+    .iso-table { width:100%; border-collapse:collapse; font-size:.875rem; min-width:580px; }
+    .iso-table thead tr { background:var(--surface-2); border-bottom:1px solid var(--border-gold); }
+    .iso-table thead th { font-family:var(--font-display); font-size:.62rem; font-weight:600;
+      letter-spacing:.16em; text-transform:uppercase; padding:.9rem 1.1rem; text-align:left; }
+    .iso-table thead th.col-physics { color:var(--info); }
+    .iso-table thead th.col-theology { color:var(--purple); }
+    .iso-table thead th.col-moral { color:var(--success); }
+    .iso-table thead th.col-property { color:var(--gold); }
+    .iso-table thead th.col-label { color:var(--text-muted); }
+    .iso-table tbody tr { border-bottom:1px solid var(--border); transition:background .12s; }
+    .iso-table tbody tr:last-child { border-bottom:none; }
+    .iso-table tbody tr:hover { background:rgba(212,175,55,.04); }
+    .iso-table td { padding:.9rem 1.1rem; vertical-align:top; line-height:1.58; }
+    .td-label { font-family:var(--font-display); font-size:.85rem; font-weight:600; color:var(--gold);
+      text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; }
+    .td-physics { color:var(--info); }
+    .td-theology { color:var(--purple); }
+    .td-moral { color:var(--success); }
+
+    /* ─── EQUATION BLOCKS ─── */
+    .equation-block { background:var(--surface); border:1px solid var(--border); border-radius:6px;
+      padding:1.25rem 1.5rem; margin-bottom:1rem; overflow-x:auto; }
+    .equation-block .eq-label { font-family:var(--font-mono); font-size:.58rem; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--text-muted); margin-bottom:.5rem; }
+    .equation { font-family:var(--font-mono); font-size:1rem; color:var(--gold); line-height:1.8; white-space:pre-wrap; }
+    .eq-note { font-size:.82rem; color:var(--text-muted); margin-top:.5rem; line-height:1.55; }
+
+    /* ─── INFO CARDS ─── */
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; }
+    .info-card { background:var(--surface); border:1px solid var(--border); border-radius:6px;
+      padding:1.25rem; transition:border-color .2s; }
+    .info-card:hover { border-color:var(--border-gold); }
+    .info-card-label { font-family:var(--font-display); font-size:.65rem; font-weight:600;
+      letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:.4rem; }
+    .info-card-value { font-family:var(--font-display); font-size:1.5rem; font-weight:700;
+      color:var(--gold); line-height:1; margin-bottom:.3rem; }
+    .info-card-text { font-size:.82rem; color:var(--text-muted); line-height:1.55; }
+
+    /* ─── STATUS GRID ─── */
+    .status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+      border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:1.75rem; }
+    .status-card { padding:1.1rem 1.2rem; border-right:1px solid var(--border);
+      border-bottom:1px solid var(--border); background:var(--surface); }
+    .status-label { font-family:var(--font-mono); font-size:.52rem; letter-spacing:.15em;
+      text-transform:uppercase; color:var(--text-dim); margin-bottom:.35rem; }
+    .status-value { font-family:var(--font-display); font-size:.95rem; font-weight:600; letter-spacing:.04em; }
+    .status-value.green { color:var(--success); }
+    .status-value.gold { color:var(--gold); }
+    .status-value.blue { color:var(--info); }
+    .status-value.warn { color:var(--warn); }
+
+    /* ─── ACCENT BLOCKS ─── */
+    .accent-block { background:var(--surface); border:1px solid var(--border); padding:1.25rem 1.5rem;
+      border-radius:0 6px 6px 0; margin-bottom:1rem; }
+    .accent-block.gold { border-left:3px solid var(--gold); }
+    .accent-block.green { border-left:3px solid var(--success); }
+    .accent-block.warn { border-left:3px solid var(--warn); }
+    .accent-block.blue { border-left:3px solid var(--info); }
+    .accent-block.danger { border-left:3px solid var(--danger); }
+    .accent-label { font-family:var(--font-display); font-size:.63rem; font-weight:600;
+      letter-spacing:.2em; text-transform:uppercase; margin-bottom:.4rem; display:flex; align-items:center; gap:.5rem; }
+    .accent-block.gold .accent-label { color:var(--gold); }
+    .accent-block.green .accent-label { color:var(--success); }
+    .accent-block.warn .accent-label { color:var(--warn); }
+    .accent-block.blue .accent-label { color:var(--info); }
+    .accent-block.danger .accent-label { color:var(--danger); }
+    .accent-block p { font-size:.9rem; line-height:1.65; }
+
+    /* ─── QUOTE ─── */
+    .iso-quote { font-family:var(--font-quote); font-style:italic; font-size:1.05rem; color:var(--text);
+      padding:1.25rem 1.5rem; background:var(--gold-faded-2); border:1px solid var(--border-gold);
+      border-radius:6px; line-height:1.75; margin-bottom:1rem; }
+    .iso-quote cite { display:block; font-family:var(--font-mono); font-size:.68rem;
+      font-style:normal; color:var(--text-muted); letter-spacing:.1em; margin-top:.6rem; }
+
+    /* ─── CLASSIFICATION BANNER ─── */
+    .classification-banner { font-family:var(--font-mono); font-size:.68rem; letter-spacing:.18em;
+      text-transform:uppercase; color:var(--gold); margin-bottom:1.25rem; display:flex; align-items:center; gap:.6rem; }
+    .classification-banner::before { content:''; display:inline-block; width:24px; height:1px; background:var(--gold); }
+    .classification-banner::after { content:''; display:inline-block; flex:1; height:1px;
+      background:linear-gradient(90deg,var(--gold-faded-2),transparent); }
+
+    /* ─── VAR TABLE ─── */
+    .var-table { width:100%; border-collapse:collapse; font-size:.875rem; margin-top:1rem; }
+    .var-table tr { border-bottom:1px solid var(--border); }
+    .var-table tr:last-child { border-bottom:none; }
+    .var-table td { padding:.65rem .75rem; vertical-align:top; line-height:1.55; }
+    .var-sym { font-family:var(--font-mono); color:var(--gold); font-size:.95rem; white-space:nowrap; }
+    .var-domain { font-family:var(--font-display); font-size:.6rem; letter-spacing:.12em;
+      text-transform:uppercase; padding:.15rem .45rem; border-radius:2px; white-space:nowrap; }
+    .var-domain.epi { color:var(--info); background:rgba(121,192,255,.08); border:1px solid rgba(121,192,255,.2); }
+    .var-domain.theo { color:var(--purple); background:rgba(192,132,252,.08); border:1px solid rgba(192,132,252,.2); }
+    .var-desc { color:var(--text); font-size:.875rem; }
+
+    /* ─── EVIDENCE BOXES ─── */
+    .evidence-box { background:var(--surface); border:1px solid var(--border); border-radius:8px;
+      padding:1.5rem; margin-bottom:1.25rem; }
+    .evidence-box-header { display:flex; align-items:center; gap:.75rem; margin-bottom:.85rem; }
+    .evidence-num { font-family:var(--font-mono); font-size:.65rem; color:var(--text-dim); letter-spacing:.1em; }
+    .evidence-title { font-family:var(--font-display); font-size:.88rem; font-weight:600;
+      letter-spacing:.1em; text-transform:uppercase; color:#fff; }
+    .evidence-badge { font-family:var(--font-display); font-size:.58rem; font-weight:600;
+      letter-spacing:.15em; text-transform:uppercase; padding:.2rem .55rem; border-radius:2px; margin-left:auto; }
+    .evidence-badge.pass { color:var(--success); background:rgba(63,185,80,.1);
+      border:1px solid rgba(63,185,80,.3); }
+    .evidence-badge.pending { color:var(--warn); background:rgba(245,158,11,.1);
+      border:1px solid rgba(245,158,11,.3); }
+    .evidence-body { font-size:.9rem; line-height:1.7; color:var(--text); }
+    .evidence-body ul { padding-left:1.4rem; margin-top:.5rem; }
+    .evidence-body li { margin-bottom:.45rem; }
+
+    /* ─── CASE STUDY ─── */
+    .case-study { background:linear-gradient(135deg,var(--surface) 0%,rgba(212,175,55,.04) 100%);
+      border:1px solid var(--border-gold); border-radius:8px; padding:1.75rem; margin-top:2rem; }
+    .case-study-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; }
+    .case-study-icon { width:40px; height:40px; background:var(--gold-faded-2);
+      border:1px solid var(--border-gold); border-radius:50%; display:flex; align-items:center;
+      justify-content:center; color:var(--gold); font-size:.85rem; flex-shrink:0; }
+    .case-study-label { font-family:var(--font-mono); font-size:.58rem; color:var(--text-dim);
+      letter-spacing:.14em; text-transform:uppercase; margin-bottom:.15rem; }
+    .case-study-title { font-family:var(--font-display); font-size:1.1rem; font-weight:600;
+      color:var(--gold); letter-spacing:.05em; text-transform:uppercase; }
+    .case-study-body { font-size:.9rem; line-height:1.72; }
+    .case-study-body p { margin-bottom:.85rem; }
+    .case-study-body p:last-child { margin-bottom:0; }
+    .case-study-stat { display:inline-flex; align-items:baseline; gap:.35rem;
+      font-family:var(--font-mono); font-size:.78rem; color:var(--gold); margin-right:.75rem; }
+    .case-study-stat strong { font-size:1.25rem; }
+    .case-study-stats { background:rgba(0,0,0,.25); border-radius:5px; padding:.85rem 1rem;
+      margin:.85rem 0; display:flex; flex-wrap:wrap; gap:.5rem; }
+
+    /* ─── FOOTER ─── */
+    .page-footer { border-top:1px solid var(--border); padding:2.5rem 0; }
+    .footer-inner { display:flex; align-items:flex-start; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
+    .footer-meta { font-family:var(--font-mono); font-size:.68rem; color:var(--text-dim); line-height:1.9; }
+    .footer-meta span { color:var(--text-muted); }
+    .footer-back { display:inline-flex; align-items:center; gap:.5rem; font-family:var(--font-mono);
+      font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted);
+      text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:4px; transition:all .2s; }
+    .footer-back:hover { color:var(--gold); border-color:var(--border-gold); }
+
+    /* ─── BACK LINK ─── */
+    .back-link { display:inline-flex; align-items:center; gap:.5rem; font-family:var(--font-mono);
+      font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted);
+      text-decoration:none; margin-bottom:2rem; transition:color .2s; }
+    .back-link:hover { color:var(--gold); }
+
+    /* ─── SCROLL TOP ─── */
+    .scroll-top { position:fixed; bottom:1.75rem; right:1.75rem; width:38px; height:38px;
+      background:var(--surface); border:1px solid var(--border); border-radius:50%;
+      display:flex; align-items:center; justify-content:center; color:var(--text-muted);
+      cursor:pointer; opacity:0; visibility:hidden; transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
+      font-size:.75rem; z-index:50; }
+    .scroll-top.visible { opacity:1; visibility:visible; }
+    .scroll-top:hover { border-color:var(--border-gold); color:var(--gold); }
+
+    /* ─── INLINE MONO ─── */
+    code { font-family:var(--font-mono); font-size:.88em; color:var(--gold);
+      background:rgba(212,175,55,.08); padding:.1em .35em; border-radius:3px; }
+
+    /* ─── CONNECTION CARDS ─── */
+    .connection-card { background:var(--surface); border:1px solid var(--border); border-radius:6px;
+      padding:1.25rem; transition:border-color .2s; display:flex; flex-direction:column; gap:.5rem; }
+    .connection-card:hover { border-color:var(--border-gold); }
+    .conn-iso-id { font-family:var(--font-mono); font-size:.62rem; color:var(--gold);
+      letter-spacing:.15em; }
+    .conn-title { font-family:var(--font-display); font-size:.9rem; font-weight:600;
+      color:#fff; letter-spacing:.04em; text-transform:uppercase; }
+    .conn-desc { font-size:.8rem; color:var(--text-muted); line-height:1.55; }
+
+    /* ─── RESPONSIVE ─── */
+    @media(max-width:768px) {
+      .container { padding:0 1.1rem; }
+      .hero { padding:3rem 0 2.5rem; }
+      :root { --section-gap:3.5rem; }
+      .section-header { grid-template-columns:1fr; gap:.4rem; }
+      .section-num { font-size:3.8rem; text-align:left; min-width:auto; line-height:1; }
+      .card-grid { grid-template-columns:1fr; }
+    }
+    @media(max-width:520px) {
+      .hero-title { font-size:1.9rem; }
+      .status-grid { grid-template-columns:1fr 1fr; }
+    }
+  
+/* ═══ TP-HEADING-CLEANUP-v1 ═══ */
+
+/* H1: big, white, serif — page anchor */
+.tp-article h1, .ftp-article h1 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: .8rem;
+  margin-top: 2rem;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+
+/* H2: GOLD — section markers */
+.tp-article h2, .ftp-article h2 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.6rem;
+  color: #d4af37;
+  font-weight: 400;
+  margin: 3rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  letter-spacing: -.01em;
+}
+
+/* H3: clean subordinate */
+.tp-article h3, .ftp-article h3 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.2rem;
+  color: #9a9a9a;
+  font-weight: 600;
+  margin: 2rem 0 .6rem;
+}
+
+/* Tables: gold header, dark rows, hover */
+.tp-article table, .ftp-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: .9rem;
+}
+.tp-article th, .ftp-article th {
+  background: rgba(212, 175, 55, 0.08);
+  color: #d4af37;
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  font-size: .8rem;
+  letter-spacing: .03em;
+}
+.tp-article td, .ftp-article td {
+  padding: .5rem .8rem;
+  border-bottom: 1px solid #222;
+  color: #e5e3df;
+}
+.tp-article tr:hover td, .ftp-article tr:hover td {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+/* Lists: proper spacing */
+.tp-article ul, .tp-article ol,
+.ftp-article ul, .ftp-article ol {
+  margin: 1rem 0 1rem 1.5rem;
+  line-height: 1.8;
+}
+.tp-article li, .ftp-article li {
+  margin-bottom: .3rem;
+}
+
+/* Blockquotes: gold accent */
+.tp-article blockquote, .ftp-article blockquote {
+  border-left: 3px solid #d4af37;
+  margin: 1.5rem 0;
+  padding: .8rem 1.2rem;
+  background: rgba(212, 175, 55, 0.04);
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-style: italic;
+  color: #9a9a9a;
+}
+
+/* Drop cap on first paragraph */
+.tp-article > p:first-of-type::first-letter,
+.ftp-article > p:first-of-type::first-letter,
+.tp-level-panel > p:first-of-type::first-letter {
+  font-size: 3.2rem;
+  float: left;
+  color: #d4af37;
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-weight: 600;
+  line-height: .8;
+  margin: .1rem .4rem 0 0;
+  padding-top: .1rem;
+}
+
+/* Code/mono blocks */
+.tp-article pre, .tp-article code,
+.ftp-article pre, .ftp-article code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .85rem;
+}
+.tp-article pre, .ftp-article pre {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* ═══ END TP-HEADING-CLEANUP-v1 ═══ */
+</style>
+<link href="../components/audio-dock.css" rel="stylesheet"/>
+<link href="../components/tp-header-lip.css" rel="stylesheet"/>
+<link href="../components/verification-bar.css" rel="stylesheet"/>
+<link href="../components/top-bar-bottom-bar.css" rel="stylesheet"/>
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
+
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       STICKY HEADER
+  ═══════════════════════════════════════════════════════════════════ -->
+  <header class="site-header">
+    <div class="container">
+      <a href="../isomorphism/index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
+      <div class="iso-badge">ISO-027</div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+      <a href="../isomorphism/index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      <div aria-hidden="true" class="hero-bg-number">027</div>
+      <div class="hero-iso-id"><i class="fas fa-virus"></i> ISO-027 &middot; Epidemiology &harr; Theology</div>
+      <h1 class="hero-title">The SIR Model of<br>Hamartiology</h1>
+      <p class="hero-subtitle drop-cap">Epidemiology &harr; Sin Propagation</p>
+
+      <div class="hero-tags">
+        <span class="tag tag-blue"><i class="fas fa-flask"></i> Epidemiology</span>
+        <span class="tag tag-purple"><i class="fas fa-cross"></i> Theology</span>
+        <span class="tag tag-gold"><i class="fas fa-project-diagram"></i> Process Isomorphism</span>
+        <span class="tag tag-warn"><i class="fas fa-microscope"></i> Status: Testing</span>
+        <span class="tag tag-green"><i class="fas fa-signal"></i> Confidence: High</span>
+        <span class="tag tag-blue"><i class="fas fa-biohazard"></i> Hamartiology</span>
+        <span class="tag tag-gold"><i class="fas fa-chart-line"></i> R&sub0; &gt; 1</span>
+      </div>
+
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">ISO ID</div>
+          <div class="hero-meta-value gold">ISO-027</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Type</div>
+          <div class="hero-meta-value">Process Isomorphism</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain A</div>
+          <div class="hero-meta-value blue">Epidemiology</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain B</div>
+          <div class="hero-meta-value" style="color:var(--purple);">Theology</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Confidence</div>
+          <div class="hero-meta-value green">High</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Status</div>
+          <div class="hero-meta-value warn">Testing</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Created</div>
+          <div class="hero-meta-value">2026-04-04</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════════════════ -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- ══════════════════════════════════════
+           SECTION 01: THE CLAIM
+      ══════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">01</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Claim</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Sin spreads like disease — a little leaven leavens the whole lump</div>
+          </div>
+        </div>
+
+        <div class="classification-banner">
+          <i class="fas fa-virus"></i>&nbsp;Process Isomorphism &middot; ISO-027 &middot; Testing / High Confidence
+        </div>
+
+        <div class="iso-quote">
+          "A little leaven leavens the whole lump."
+          <cite>&mdash; 1 Corinthians 5:6 &amp; Galatians 5:9 (ESV)</cite>
+        </div>
+
+        <div class="claim-block">
+          <p>
+            The <strong>SIR epidemiological model</strong> &mdash; which describes how diseases propagate through
+            a susceptible population via contact with infected individuals &mdash; maps structurally and
+            quantitatively onto <strong>sin propagation through communities</strong>. The isomorphism is not
+            merely metaphorical: it is a formal process isomorphism in which every mechanistic feature of
+            epidemic dynamics has a precise theological counterpart, and vice versa.
+          </p>
+          <p>
+            At its core: <strong>R&sub0; &gt; 1</strong> means exponential spread in both domains.
+            Sin is contagious. It spreads through social contact, influence, imitation, and normalization.
+            Church discipline is quarantine. The righteous remnant functions as herd immunity.
+            Super-spreaders exist (Jeroboam son of Nebat). The Judges cycle is damped epidemic oscillation.
+            Vaccination has a theological analog in temptation-resistance built through controlled encounter.
+          </p>
+          <p>
+            The key result: <strong>sin propagation follows contact-network topology, not random distribution</strong>.
+            This is independently predicted by epidemiological theory and independently attested in Scripture.
+            The most extensively documented transmission chain in the Bible &mdash; Jeroboam son of Nebat,
+            referenced <strong>21 times</strong> in Kings as "who caused Israel to sin" &mdash; is explicable
+            in epidemiological terms: he lowered the barrier to infection (&beta;&uarr;) and removed recovery
+            mechanisms (&gamma;&darr;), thereby maximizing R&sub0; for northern-kingdom idolatry.
+          </p>
+        </div>
+
+        <div class="kill-condition">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
+          <p>
+            This isomorphism is falsified if any of the following are demonstrated:
+            <br><br>
+            <strong>(1)</strong> Sin propagation follows <em>random</em> rather than <em>contact-network</em> patterns
+            &mdash; i.e., individuals who are socially isolated from sinning communities sin at the same rate
+            as those embedded in them.
+            <br><br>
+            <strong>(2)</strong> Moral collapse in communities shows <em>no threshold effects</em> &mdash; i.e.,
+            there is no "herd immunity" phenomenon, no critical mass of the faithful below which societal
+            moral collapse becomes inevitable.
+            <br><br>
+            <strong>(3)</strong> Isolated individuals are <em>equally</em> likely to sin as those in
+            highly socially connected peer groups &mdash; which would falsify the contact-rate term &beta;SI
+            as the driver of spread.
+          </p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           SECTION 02: MATHEMATICAL FORM
+      ══════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">02</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Mathematical Form</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">SIR differential equations &amp; the basic reproduction number</div>
+          </div>
+        </div>
+
+        <div class="prose">
+          The SIR model partitions a population of size <code>N</code> into three compartments:
+          <strong>Susceptible (S)</strong>, <strong>Infected (I)</strong>, and <strong>Recovered/Removed (R)</strong>.
+          The dynamics are governed by three coupled ordinary differential equations parameterized by
+          the transmission rate &beta; and the recovery rate &gamma;.
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">SIR System — Epidemiological Form</div>
+          <div class="equation">dS/dt = &minus;&beta;SI
+
+dI/dt = &beta;SI &minus; &gamma;I
+
+dR/dt = &gamma;I</div>
+          <div class="eq-note">
+            Population is conserved: S(t) + I(t) + R(t) = N for all t. The system is nonlinear due to
+            the product term &beta;SI representing the contact process.
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Basic Reproduction Number</div>
+          <div class="equation">R&sub0; = &beta; / &gamma;</div>
+          <div class="eq-note">
+            R&sub0; is the average number of secondary infections produced by one infected individual in a
+            fully susceptible population. If R&sub0; &gt; 1, the epidemic grows; if R&sub0; &lt; 1, it dies out.
+            R&sub0; is the central control parameter of the system.
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Epidemic Threshold Condition</div>
+          <div class="equation">Epidemic grows    iff    R&sub0; = &beta;/&gamma; &gt; 1
+
+Epidemic dies out  iff    R&sub0; = &beta;/&gamma; &lt; 1
+
+Herd immunity threshold: p&sub;c = 1 &minus; 1/R&sub0;</div>
+          <div class="eq-note">
+            The herd immunity threshold p&sub;c gives the minimum fraction of the population that must be
+            immune (recovered or resistant) to prevent epidemic growth. This maps to the <strong>righteous
+            remnant threshold</strong> in theological terms.
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Theological Mapping of Parameters</div>
+          <div class="equation">R&sub0;(sin) = &beta;(sin) / &gamma;(sin)
+
+where:
+  &beta;(sin)  = contact rate &times; probability of moral transmission per contact
+  &gamma;(sin) = rate of repentance / accountability / recovery from sin
+  S           = individuals susceptible to this particular sin
+  I           = individuals actively propagating this sin in community
+  R           = individuals who have repented / become resistant</div>
+          <div class="eq-note">
+            Jeroboam maximized R&sub0;(idolatry) by: (1) increasing &beta; &mdash; institutionalizing idolatry
+            at Dan and Bethel, making contact with idolatrous practice unavoidable; and (2) decreasing &gamma;
+            &mdash; removing Levitical priests and changing the festival calendar, eliminating recovery mechanisms.
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin:2rem 0 1rem;">Variable Definitions</h3>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+          <table class="var-table">
+            <thead>
+              <tr style="background:var(--surface-2);border-bottom:1px solid var(--border-gold);">
+                <th style="font-family:var(--font-display);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);padding:.75rem 1rem;text-align:left;">Symbol</th>
+                <th style="font-family:var(--font-display);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--info);padding:.75rem 1rem;text-align:left;">Epidemiology</th>
+                <th style="font-family:var(--font-display);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--purple);padding:.75rem 1rem;text-align:left;">Theological Analog</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="var-sym">&beta;</td>
+                <td class="td-physics">Transmission rate (contacts per time &times; probability of infection per contact)</td>
+                <td class="td-theology">Rate of moral contagion per social contact; influenced by cultural normalization, peer pressure, institutional structures</td>
+              </tr>
+              <tr>
+                <td class="var-sym">&gamma;</td>
+                <td class="td-physics">Recovery rate (fraction of infected who recover per unit time)</td>
+                <td class="td-theology">Rate of repentance, accountability, or moral recovery; provided by preaching, confession, church discipline</td>
+              </tr>
+              <tr>
+                <td class="var-sym">R&sub0;</td>
+                <td class="td-physics">Basic reproduction number = &beta;/&gamma;</td>
+                <td class="td-theology">Virulence of a sin pattern in a given community — how many it spreads to per active case</td>
+              </tr>
+              <tr>
+                <td class="var-sym">S(t)</td>
+                <td class="td-physics">Susceptible population — not yet infected</td>
+                <td class="td-theology">Individuals vulnerable to this sin; not yet entangled</td>
+              </tr>
+              <tr>
+                <td class="var-sym">I(t)</td>
+                <td class="td-physics">Infected population — actively spreading disease</td>
+                <td class="td-theology">Individuals actively practicing and propagating sin in community</td>
+              </tr>
+              <tr>
+                <td class="var-sym">R(t)</td>
+                <td class="td-physics">Recovered/Removed — immune or removed from dynamics</td>
+                <td class="td-theology">Repentant, restored, or resistant individuals; also those removed via discipline</td>
+              </tr>
+              <tr>
+                <td class="var-sym">N</td>
+                <td class="td-physics">Total population (conserved: S+I+R = N)</td>
+                <td class="td-theology">Total community under consideration</td>
+              </tr>
+              <tr>
+                <td class="var-sym">p&sub;c</td>
+                <td class="td-physics">Herd immunity threshold = 1 &minus; 1/R&sub0;</td>
+                <td class="td-theology">Critical fraction of faithful required to prevent moral epidemic; the "righteous remnant threshold"</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           SECTION 03: THE MAPPING
+      ══════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">03</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Mapping</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Structural correspondence between epidemiological mechanisms and theological concepts</div>
+          </div>
+        </div>
+
+        <div class="prose">
+          Every mechanistic feature of epidemic dynamics has a precise theological counterpart. The table below
+          presents the full 10-element structural correspondence. Each entry is independently attested in both
+          domains &mdash; none are reverse-engineered from the analogy; both sides were known independently
+          before the mapping was drawn.
+        </div>
+
+        <div class="iso-table-wrap">
+          <table class="iso-table">
+            <thead>
+              <tr>
+                <th class="col-label" style="width:3rem;">#</th>
+                <th class="col-physics">Epidemiological Concept</th>
+                <th class="col-theology">Theological Concept</th>
+                <th class="col-property" style="width:10rem;">Mechanism</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">01</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">R&sub0; &gt; 1</strong> &mdash; exponential spread; each
+                  infected individual infects more than one susceptible on average, leading to epidemic growth
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">"A little leaven leavens the whole lump"</strong>
+                  (1 Cor 5:6, Gal 5:9) &mdash; sin spreads through a community faster than it can be
+                  contained without deliberate intervention
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Threshold control parameter
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">02</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Herd immunity</strong> &mdash; when a sufficient fraction
+                  p &ge; p&sub;c = 1 &minus; 1/R&sub0; of the population is immune, epidemic growth cannot occur
+                  even without universal immunity
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Righteous remnant</strong> &mdash; a critical mass of
+                  faithful people stabilizes a community; Abraham's negotiation for Sodom (Gen 18:22-33)
+                  explicitly probes this threshold (10 righteous would have saved the city)
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Threshold protection
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">03</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Quarantine</strong> &mdash; isolation of infected
+                  individuals from susceptible population to reduce transmission; removes them from the
+                  &beta;SI contact term
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Church discipline</strong> &mdash; removal of an
+                  unrepentant member from the community (1 Cor 5:1-5, Matt 18:15-17). Paul explicitly
+                  uses epidemic logic: "Don't you know that a little yeast leavens the whole batch?" (1 Cor 5:6-7)
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Isolation of infected
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">04</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Asymptomatic carriers</strong> &mdash; individuals who are
+                  infected and transmitting but show no outward symptoms; often responsible for significant
+                  silent spread before detection
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Hidden sin</strong> &mdash; "whitewashed tombs" (Matt 23:27);
+                  outward righteousness masking inward corruption; false teachers who appear godly while
+                  spreading error (2 Pet 2:1)
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Silent transmission
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">05</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Vaccination</strong> &mdash; controlled exposure to
+                  an attenuated pathogen induces immune response, creating resistance to future full-strength
+                  infection without causing disease
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Temptation resistance</strong> &mdash; trials build
+                  endurance and resistance: "the testing of your faith produces steadfastness" (James 1:2-4);
+                  encounter with temptation under discipleship conditions builds moral immunity
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Controlled exposure &rarr; immunity
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">06</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Super-spreaders</strong> &mdash; individuals responsible
+                  for disproportionately high secondary transmission due to high contact rates, high
+                  infectiousness, or both; drive epidemic dynamics non-linearly
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">False teachers / Jeroboam</strong> &mdash; Jeroboam
+                  son of Nebat appears 21 times in Kings as "who caused Israel to sin"; false teachers who
+                  "lead many astray" (Matt 24:11); institutional sin-infrastructure maximizes R&sub0;
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  High-transmission individuals
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">07</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Mutation</strong> &mdash; pathogens adapt to evade
+                  immune responses; the same pathogen reappears in new forms that bypass existing resistance
+                  mechanisms
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Sin adaptation</strong> &mdash; the same underlying
+                  sin (pride, lust, idolatry) manifests in new cultural forms; each generation faces familiar
+                  temptations in novel packaging that bypasses the immunity built by prior generations
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Pathogen adaptation
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">08</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Epidemic curve</strong> &mdash; characteristic rise,
+                  peak, and decline pattern; in endemic disease, damped oscillations around an equilibrium;
+                  SIR model predicts these oscillations analytically
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Revival/apostasy cycles</strong> &mdash; the Judges
+                  pattern: sin &rarr; oppression &rarr; cry &rarr; deliverance &rarr; sin; cyclical moral
+                  oscillation that SIR dynamics predict exactly (damped oscillations in endemic disease)
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Cyclical dynamics
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">09</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Contact tracing</strong> &mdash; identifying and
+                  notifying individuals who have been in contact with an infected person; breaks transmission
+                  chains before full infection develops
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Accountability structures</strong> &mdash; "Confess your
+                  sins to one another and pray for one another, that you may be healed" (James 5:16);
+                  spiritual direction; mentorship; small-group confession — all trace and interrupt transmission
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Chain interruption
+                </td>
+              </tr>
+              <tr>
+                <td class="td-label">10</td>
+                <td class="td-physics">
+                  <strong style="color:var(--info);">Eradication</strong> &mdash; requires sustained,
+                  coordinated global effort; never "done" until every reservoir is eliminated; the only
+                  fully eradicated human disease (smallpox) required 200+ years of sustained effort
+                </td>
+                <td class="td-theology">
+                  <strong style="color:var(--purple);">Great Commission</strong> &mdash; the mission is ongoing
+                  and never "done" until the eschaton; requires coordinated global effort; the reservoir of
+                  sin is not eliminated until the new creation (Rev 21:27)
+                </td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.78rem;">
+                  Sustained effort to completion
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:1.5rem;" class="accent-block blue">
+          <div class="accent-label"><i class="fas fa-info-circle"></i>&nbsp;Structural Note</div>
+          <p>
+            None of the 10 entries above were reverse-engineered from the isomorphism. Each epidemiological
+            mechanism was known independently from public-health science; each theological concept was known
+            independently from Scripture and church history. The mapping was discovered by structural comparison,
+            not constructed by analogy-hunting. This is the mark of a genuine process isomorphism rather than
+            a forced metaphor.
+          </p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           SECTION 04: EVIDENCE & VERIFICATION
+      ══════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">04</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Evidence &amp; Verification</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Swap test, bidirectional prediction, and empirical confirmation</div>
+          </div>
+        </div>
+
+        <!-- Swap Test -->
+        <div class="evidence-box">
+          <div class="evidence-box-header">
+            <span class="evidence-num">TEST-01</span>
+            <span class="evidence-title">Swap Test</span>
+            <span class="evidence-badge pass"><i class="fas fa-check"></i>&nbsp;Passed</span>
+          </div>
+          <div class="evidence-body">
+            <p>
+              The swap test requires that substituting domain-A concepts into domain-B statements (and vice versa)
+              generates <em>non-trivial, independently testable</em> predictions &mdash; not mere tautologies.
+              Three substitutions were performed:
+            </p>
+            <ul>
+              <li>
+                <strong>"Jeroboam was a super-spreader with R&sub0; &gt;&gt; 1"</strong> &mdash; predicts that
+                his influence should show <em>exponential</em>, not linear, propagation through the northern kingdom.
+                The biblical record confirms: <strong>every single northern king</strong> is described as
+                continuing his sins. This is not linear diffusion &mdash; it is the reproductive cascade pattern
+                of a high-R&sub0; pathogen in a susceptible population with no effective quarantine.
+              </li>
+              <li>
+                <strong>"Church discipline is quarantine"</strong> &mdash; predicts that <em>failure</em> to
+                practice discipline should result in infection spread. Paul explicitly argues this in 1 Cor 5:6-7:
+                "Don't you know that a little yeast leavens the whole batch of dough? Get rid of the old yeast."
+                Paul's reasoning is epidemiological: leaving the infected individual in the community threatens
+                the whole community. The prediction is confirmed by explicit apostolic argument.
+              </li>
+              <li>
+                <strong>"The righteous remnant functions as herd immunity"</strong> &mdash; predicts a critical
+                threshold below which societal moral collapse becomes inevitable. Abraham's negotiation for Sodom
+                (Gen 18:22-33) explicitly and quantitatively explores this threshold: Would 50 righteous save it?
+                45? 30? 20? 10? The text treats the threshold as real, negotiable, and consequential &mdash;
+                exactly as epidemiologists treat the herd immunity threshold.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bidirectional Prediction -->
+        <div class="evidence-box">
+          <div class="evidence-box-header">
+            <span class="evidence-num">TEST-02</span>
+            <span class="evidence-title">Bidirectional Prediction</span>
+            <span class="evidence-badge pass"><i class="fas fa-check"></i>&nbsp;Passed</span>
+          </div>
+          <div class="evidence-body">
+            <p>
+              A genuine isomorphism should generate predictions in <em>both</em> directions: from Domain A into
+              Domain B, and from Domain B into Domain A.
+            </p>
+            <ul>
+              <li>
+                <strong>Forward (Epidemiology &rarr; Theology):</strong> SIR dynamics predict that sin
+                propagation should follow <em>contact-network topology</em>, not random distribution. This is
+                testable: sin patterns in communities should correlate with social network structure. Individuals
+                with high-degree connectivity in social networks should show higher sin-exposure rates than
+                socially isolated individuals &mdash; not because they are inherently weaker, but because
+                &beta;SI requires <em>contact</em>.
+              </li>
+              <li>
+                <strong>Reverse (Theology &rarr; Epidemiology):</strong> The Judges cycle (sin &rarr; oppression
+                &rarr; cry &rarr; deliverance &rarr; sin) predicts <em>epidemic oscillation</em>. This is exactly
+                what SIR models produce: damped oscillations in endemic disease around an equilibrium prevalence.
+                The Judges cycle is not arbitrary narrative structure &mdash; it is the expected dynamical behavior
+                of a system with R&sub0; near 1 where recovery mechanisms are imperfectly sustained.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Quotes -->
+        <div class="iso-quote">
+          "Do not be misled: 'Bad company corrupts good character.'"
+          <cite>&mdash; 1 Corinthians 15:33 (NIV) — explicit contact-network transmission statement</cite>
+        </div>
+
+        <div class="iso-quote">
+          "He who walks with the wise grows wise, but a companion of fools suffers harm."
+          <cite>&mdash; Proverbs 13:20 (NIV) — differential transmission rate by contact type</cite>
+        </div>
+
+        <div class="iso-quote">
+          "Confess your sins to one another and pray for one another, that you may be healed."
+          <cite>&mdash; James 5:16 (ESV) — contact tracing + gamma (recovery rate) intervention</cite>
+        </div>
+
+        <!-- Jeroboam Case Study -->
+        <div class="case-study">
+          <div class="case-study-header">
+            <div class="case-study-icon"><i class="fas fa-dna"></i></div>
+            <div>
+              <div class="case-study-label">Primary Case Study</div>
+              <div class="case-study-title">Jeroboam Son of Nebat &mdash; The Biblical Super-Spreader</div>
+            </div>
+          </div>
+          <div class="case-study-body">
+            <div class="case-study-stats">
+              <span class="case-study-stat"><strong>21&times;</strong> referenced in 1-2 Kings</span>
+              <span class="case-study-stat"><strong>19</strong> northern kings after him</span>
+              <span class="case-study-stat"><strong>19/19</strong> followed his sin pattern</span>
+              <span class="case-study-stat"><strong>R&sub0; &gt;&gt; 1</strong> estimated</span>
+            </div>
+            <p>
+              The phrase <em>"the sins of Jeroboam son of Nebat, who caused Israel to sin"</em> appears
+              <strong>21 times</strong> in 1-2 Kings. This is the most extensively documented transmission
+              chain in Scripture. The epidemiological framework does not merely describe what happened &mdash;
+              it explains <em>why</em> the transmission was so complete and persistent.
+            </p>
+            <p>
+              Jeroboam did not merely sin. He created <strong>infrastructure for transmission</strong>:
+            </p>
+            <ul style="padding-left:1.4rem;margin:.5rem 0 .85rem;">
+              <li>Set up golden calves at <strong>Dan and Bethel</strong> (permanent transmission nodes at population centers)</li>
+              <li>Appointed <strong>non-Levitical priests</strong> (removed qualified recovery agents; &gamma;&darr;)</li>
+              <li>Changed the <strong>festival calendar</strong> (replaced recovery rituals with transmission-amplifying ones)</li>
+              <li>Made idolatrous practice <strong>institutionally mandatory</strong> (&beta;&uarr; for the entire population)</li>
+            </ul>
+            <p>
+              In epidemiological terms, he simultaneously <strong>increased &beta;</strong> (transmission rate)
+              by making contact with idolatrous practice unavoidable, and <strong>decreased &gamma;</strong>
+              (recovery rate) by dismantling the mechanisms of return. The result is the highest possible R&sub0;
+              for northern-kingdom idolatry &mdash; and the biblical record shows 100% transmission to all
+              subsequent northern kings, exactly as high-R&sub0; epidemic dynamics predict in a population with
+              no effective quarantine or recovery mechanism.
+            </p>
+            <p>
+              The 21-times repetition of the formula in Kings is not literary redundancy &mdash; it is the
+              author marking every node in the transmission chain back to patient zero.
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <div class="accent-block green">
+            <div class="accent-label"><i class="fas fa-check-circle"></i>&nbsp;Strongest Confirmation</div>
+            <p>
+              The Abraham / Sodom negotiation (Gen 18:22-33) independently and explicitly models the herd
+              immunity threshold concept: a small number of righteous individuals can protect a large population
+              from moral-epidemic collapse. Abraham negotiates the threshold downward from 50 to 10 &mdash;
+              exactly the kind of threshold sensitivity analysis that epidemiologists perform. The text treats
+              this threshold as mathematically real and morally consequential.
+            </p>
+          </div>
+
+          <div class="accent-block warn">
+            <div class="accent-label"><i class="fas fa-exclamation-triangle"></i>&nbsp;Caveat — Non-Biological Mechanism</div>
+            <p>
+              The biological SIR model assumes physical pathogen transmission via contact. The theological domain
+              operates via social, psychological, and spiritual mechanisms &mdash; imitation, normalization,
+              influence, temptation. The isomorphism is at the <em>process</em> level (identical mathematical
+              structure), not at the <em>mechanism</em> level (the how of transmission differs). This does not
+              weaken the isomorphism &mdash; many physical systems share SIR-type dynamics without shared
+              mechanisms &mdash; but it must be noted.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           SECTION 05: IMPLICATIONS & CONNECTIONS
+      ══════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">05</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Implications &amp; Connections</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Theological consequences, related isomorphisms, and broader POF context</div>
+          </div>
+        </div>
+
+        <div class="prose">
+          ISO-027 has several significant theological and practical implications, and connects to multiple
+          other isomorphisms in the registry.
+        </div>
+
+        <!-- Theological Implications -->
+        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin:0 0 1.25rem;">Theological Implications</h3>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-church"></i>&nbsp;Implication 1 — Church Discipline is Not Optional</div>
+          <p>
+            If sin propagates via SIR dynamics with R&sub0; &gt; 1, then <strong>failure to exercise church
+            discipline is not merely permissive — it is epidemiologically catastrophic</strong>. The tolerant
+            community that refuses to quarantine an actively sinning member does not thereby maintain peace; it
+            allows the epidemic to grow. Paul's reasoning in 1 Cor 5 is not harsh; it is simply correct. The
+            model vindicates the apostolic practice.
+          </p>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-users"></i>&nbsp;Implication 2 — Community Size Matters</div>
+          <p>
+            Below the righteous-remnant threshold p&sub;c = 1 &minus; 1/R&sub0;, even a community that is mostly
+            faithful cannot prevent moral-epidemic spread if the faithful fraction falls below critical mass. This
+            has direct implications for church health metrics: percentage of the congregation in active discipleship,
+            accountability, and sacramental practice is not merely a spiritual concern &mdash; it determines
+            whether the community is above or below its herd-immunity threshold.
+          </p>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-network-wired"></i>&nbsp;Implication 3 — Network Structure Matters</div>
+          <p>
+            SIR dynamics on networks show that hub nodes (highly connected individuals) are both higher-risk
+            for infection and disproportionately responsible for spread if infected. This predicts that
+            <strong>leaders who sin spread sin exponentially faster</strong> than laypeople who sin. The
+            consistent biblical emphasis on stricter judgment for teachers and leaders (James 3:1, Luke 12:48)
+            is not arbitrary &mdash; it reflects correct network epidemiology.
+          </p>
+        </div>
+
+        <div class="accent-block blue">
+          <div class="accent-label"><i class="fas fa-flask"></i>&nbsp;Implication 4 — Quantitative Hamartiology</div>
+          <p>
+            ISO-027 opens the possibility of a <strong>quantitative hamartiology</strong>: estimating R&sub0;
+            for specific sins in specific communities from observable data (rates of spread, recovery, relapse).
+            This is not currently done in either church practice or academic theology, but the SIR framework
+            makes it mathematically tractable. Different sins in different cultural contexts would have
+            different R&sub0; values — and different intervention strategies would be optimal for each.
+          </p>
+        </div>
+
+        <!-- Connection Cards -->
+        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin:2rem 0 1.25rem;">Related Isomorphisms</h3>
+        <div class="card-grid">
+          <div class="connection-card">
+            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-000</div>
+            <div class="conn-title">The Logos Isomorphism</div>
+            <div class="conn-desc">
+              ISO-027 is a specific instantiation of the general POF claim that mathematical structure reveals
+              theological reality. The SIR model is a mathematical structure that reveals something true about
+              sin, not merely an analogy. The Logos undergirds both.
+            </div>
+          </div>
+          <div class="connection-card">
+            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-008</div>
+            <div class="conn-title">Entropy &amp; The Fall</div>
+            <div class="conn-desc">
+              Like entropy, sin propagation is thermodynamically favored in the direction of disorder.
+              The Fall introduced not merely personal sin but a second-law dynamic in the moral domain.
+              ISO-027 specifies the mechanism (SIR contact dynamics) where ISO-008 describes the directionality.
+            </div>
+          </div>
+          <div class="connection-card">
+            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-014</div>
+            <div class="conn-title">Phase Transitions &amp; Revival</div>
+            <div class="conn-desc">
+              Herd immunity threshold p&sub;c is a phase transition point: below it, epidemic growth; above it,
+              epidemic decay. Revival as phase transition maps onto the same mathematics. The two isomorphisms
+              describe the same threshold from different perspectives.
+            </div>
+          </div>
+          <div class="connection-card">
+            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;ISO-019</div>
+            <div class="conn-title">Information Theory &amp; Testimony</div>
+            <div class="conn-desc">
+              The Great Commission maps to ISO-027 Entry 10 (eradication requires sustained effort). It also
+              maps to information propagation with noise: the Gospel is signal; sin is noise; the transmission
+              model is Shannon-type. ISO-019 provides the complementary framework.
+            </div>
+          </div>
+          <div class="connection-card">
+            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;Judges Cycle</div>
+            <div class="conn-title">Endemic Oscillation Pattern</div>
+            <div class="conn-desc">
+              The Judges pattern (sin &rarr; oppression &rarr; cry &rarr; deliverance &rarr; sin) maps to the
+              SIR endemic oscillation: the system doesn't eradicate the pathogen, it oscillates around an
+              endemic equilibrium. Both predict the same dynamical signature.
+            </div>
+          </div>
+          <div class="connection-card">
+            <div class="conn-iso-id"><i class="fas fa-link"></i>&nbsp;Sodom Negotiation</div>
+            <div class="conn-title">Herd Immunity Threshold Exploration</div>
+            <div class="conn-desc">
+              Genesis 18:22-33 is an explicit threshold-sensitivity analysis: how low can the righteous remnant
+              go before the city is beyond protection? Abraham negotiates from 50 to 10 — exploring the shape
+              of the p&sub;c curve for Sodom's specific moral-epidemic parameters.
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:2rem;" class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-lightbulb"></i>&nbsp;POF 2828 Connection</div>
+          <p>
+            Within the Theophysics framework, ISO-027 supports the broader claim that <strong>Scripture's
+            descriptions of sin, judgment, and restoration are not primitive moralizing but accurate descriptions
+            of real system dynamics</strong>. The biblical authors did not have the SIR model, but they
+            observed the same dynamics it describes and encoded them faithfully. This is consistent with the
+            POF thesis that Scripture reflects the rational structure of a world designed by the Logos
+            (John 1:1-3), and that physics and mathematics reveal rather than replace that structure.
+          </p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           SECTION 06: STATUS
+      ══════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">06</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Status</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Current registration state, confidence, and open questions</div>
+          </div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-label">Confidence</div>
+            <div class="status-value green">High</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Status</div>
+            <div class="status-value warn">Testing</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">ISO Type</div>
+            <div class="status-value gold">Process</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Domain A</div>
+            <div class="status-value blue">Epidemiology</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Domain B</div>
+            <div class="status-value" style="color:var(--purple);">Theology</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Swap Test</div>
+            <div class="status-value green">Passed</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Kill Attempts</div>
+            <div class="status-value gold">3 Survived</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Registered</div>
+            <div class="status-value">2026-04-04</div>
+          </div>
+        </div>
+
+        <div class="accent-block warn">
+          <div class="accent-label"><i class="fas fa-exclamation-triangle"></i>&nbsp;Weakest Link</div>
+          <p>
+            The quantitative R&sub0; for specific sins in specific communities has not been empirically estimated.
+            The isomorphism is structurally confirmed but the <strong>quantitative parameters remain unmeasured</strong>.
+            It is not yet possible to say, for instance, what the R&sub0; for pornography addiction is in a
+            given congregation, or what the herd immunity threshold is for a community of 200. Estimating these
+            would require longitudinal social network data on sin transmission patterns &mdash; methodologically
+            difficult and ethically complex. Until such estimates exist, the isomorphism operates at the
+            <em>qualitative-structural</em> level rather than the full quantitative level that the mathematics supports.
+          </p>
+        </div>
+
+        <div class="accent-block green">
+          <div class="accent-label"><i class="fas fa-check-double"></i>&nbsp;Strongest Link</div>
+          <p>
+            The <strong>Jeroboam super-spreader case</strong> and the <strong>Sodom herd-immunity-threshold
+            negotiation</strong> are both extensively documented in Scripture, both independently predicted by
+            epidemiological theory, and both show the precise quantitative signatures that the SIR model predicts
+            &mdash; exponential cascade in the Jeroboam case (100% transmission to all 19 subsequent northern
+            kings), and threshold-sensitivity analysis in the Sodom case (Abraham's step-by-step negotiation
+            of the minimum righteous-remnant size). These two examples are sufficient to establish the structural
+            validity of the isomorphism at high confidence.
+          </p>
+        </div>
+
+        <div class="accent-block blue">
+          <div class="accent-label"><i class="fas fa-road"></i>&nbsp;Open Research Questions</div>
+          <p>
+            <strong>(1)</strong> Can R&sub0;(sin) be empirically estimated for specific sins in historically
+            documented communities (e.g., the spread of specific heresies through early church records)?
+            <br><br>
+            <strong>(2)</strong> Does the SIR model's prediction of damped oscillations around an endemic
+            equilibrium match observed revival/apostasy cycle frequencies in documented church history?
+            <br><br>
+            <strong>(3)</strong> Do the SEIR, SIRV, or network-SIR extensions (which add Exposed, Vaccinated,
+            or heterogeneous network topology) map onto additional theological mechanisms not captured in the
+            basic 10-element table above?
+            <br><br>
+            <strong>(4)</strong> Does accountability group structure (small groups, confession, spiritual
+            direction) empirically increase &gamma; (recovery rate) in measurable ways, consistent with
+            the isomorphism's predictions?
+          </p>
+        </div>
+
+        <div style="margin-top:1.5rem;" class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-star"></i>&nbsp;Registry Note</div>
+          <p>
+            ISO-027 is rated <strong>Testing / High Confidence</strong> rather than <strong>Confirmed</strong>
+            because the quantitative predictions have not yet been tested against empirical data. The structural
+            isomorphism is solid and the kill conditions have been examined without being triggered. Promotion
+            to <strong>Confirmed</strong> requires either: (a) empirical measurement of transmission-network
+            effects in sin propagation consistent with SIR predictions, or (b) demonstration that biblical
+            epidemic-oscillation frequencies match SIR endemic-equilibrium predictions for plausible parameter
+            ranges.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="page-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          <span>Theophysics Research Program</span> &middot; POF 2828<br>
+          ISO-027 &middot; <span>Registered 2026-04-04 &middot; Status: Testing / High Confidence</span>
+        </div>
+        <a href="../isomorphism/index.html" class="footer-back"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+  <script>
+    const btn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400), { passive: true });
+  </script>
+
+<script src="../components/tp-header-lip.js"></script>
+<script src="../components/audio-dock.js"></script>
+<script src="../components/verification-bar.js"></script>
+<script src="../components/reading-levels.js"></script>
+<script src="../components/tp-scroll-chrome.js"></script>
+<script defer src="/shared/js/mtl-worker-client.js"></script>
+</body>
+</html>

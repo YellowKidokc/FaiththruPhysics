@@ -1,960 +1,1086 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ISO-016 demonstrates that logistic-type dynamical systems with two stable attractors and one unstable saddle point are structurally isomorphic to the eschatological binary of Heaven, Hell, and the unstable lukewarm middle state found in Christian theology.">
-  <title>ISO-016 &middot; Eschatological Attractors &middot; Theophysics</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0a0a0a;
-      --surface: #111111;
-      --surface-2: #141414;
-      --border: rgba(255,255,255,0.06);
-      --border-gold: rgba(212,175,55,0.22);
-      --text: #c9d1d9;
-      --text-muted: #6e7681;
-      --text-dim: #3d444d;
-      --gold: #d4af37;
-      --gold-faded: rgba(212,175,55,0.06);
-      --gold-faded-2: rgba(212,175,55,0.10);
-      --danger: #f85149;
-      --success: #3fb950;
-      --info: #79c0ff;
-      --purple: #c084fc;
-      --warn: #f59e0b;
-      --font-display: 'Oswald', sans-serif;
-      --font-body: 'Inter', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --font-quote: 'Crimson Text', serif;
-      --max-width: 1100px;
-      --section-gap: 5rem;
-    }
-
-    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.65; }
-
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
-
-    /* ── STICKY HEADER ─────────────────────────────────────────────── */
-    .site-header { border-bottom: 1px solid var(--border); padding: .9rem 0; position: sticky; top: 0;
-      background: rgba(10,10,10,.96); backdrop-filter: blur(14px); z-index: 100; }
-    .site-header .container { display: flex; align-items: center; justify-content: space-between; }
-    .site-brand { font-family: var(--font-display); font-size: .72rem; font-weight: 500;
-      letter-spacing: .2em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; }
-    .site-brand span { color: var(--gold); }
-    .iso-badge { font-family: var(--font-mono); font-size: .7rem; color: var(--gold);
-      border: 1px solid var(--border-gold); padding: .22rem .65rem; border-radius: 3px; letter-spacing: .12em; }
-
-    /* ── HERO ──────────────────────────────────────────────────────── */
-    .hero { padding: 5rem 0 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
-    .hero-bg-number { position: absolute; right: -1rem; top: 50%; transform: translateY(-50%);
-      font-family: var(--font-display); font-size: clamp(12rem,28vw,26rem); font-weight: 700;
-      color: var(--gold-faded); line-height: 1; pointer-events: none; user-select: none; letter-spacing: -.05em; }
-    .hero-iso-id { font-family: var(--font-mono); font-size: .8rem; color: var(--gold);
-      letter-spacing: .3em; text-transform: uppercase; margin-bottom: 1.25rem; display: flex; align-items: center; gap: .75rem; }
-    .hero-iso-id::after { content: ''; display: inline-block; width: 80px; height: 1px;
-      background: linear-gradient(90deg,var(--gold),transparent); }
-    .hero-title { font-family: var(--font-display); font-size: clamp(2rem,5.5vw,3.8rem); font-weight: 700;
-      text-transform: uppercase; letter-spacing: .04em; color: #fff; line-height: 1.08; margin-bottom: 1rem; }
-    .hero-subtitle { font-family: var(--font-mono); font-size: clamp(.85rem,2vw,1.05rem);
-      color: var(--gold); margin-bottom: 2rem; letter-spacing: .06em; }
-    .hero-tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 2.5rem; }
-    .tag { font-family: var(--font-display); font-size: .62rem; font-weight: 500; letter-spacing: .14em;
-      text-transform: uppercase; padding: .28rem .7rem; border-radius: 2px; border: 1px solid;
-      display: inline-flex; align-items: center; gap: .35rem; }
-    .tag-gold   { color: var(--gold);    border-color: var(--border-gold);          background: var(--gold-faded); }
-    .tag-green  { color: var(--success); border-color: rgba(63,185,80,.25);          background: rgba(63,185,80,.05); }
-    .tag-blue   { color: var(--info);    border-color: rgba(121,192,255,.25);         background: rgba(121,192,255,.05); }
-    .tag-purple { color: var(--purple);  border-color: rgba(192,132,252,.25);         background: rgba(192,132,252,.05); }
-    .tag-warn   { color: var(--warn);    border-color: rgba(245,158,11,.25);          background: rgba(245,158,11,.05); }
-    .hero-meta { display: grid; grid-template-columns: repeat(auto-fit,minmax(145px,1fr));
-      background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; max-width: 780px; }
-    .hero-meta-item { padding: 1rem 1.25rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .hero-meta-label { font-family: var(--font-mono); font-size: .52rem; letter-spacing: .16em;
-      text-transform: uppercase; color: var(--text-dim); margin-bottom: .25rem; }
-    .hero-meta-value { font-family: var(--font-display); font-size: .82rem; font-weight: 500;
-      color: var(--text); letter-spacing: .04em; }
-    .hero-meta-value.gold   { color: var(--gold); }
-    .hero-meta-value.green  { color: var(--success); }
-    .hero-meta-value.warn   { color: var(--warn); }
-    .hero-meta-value.blue   { color: var(--info); }
-    .hero-meta-value.purple { color: var(--purple); }
-
-    /* ── SECTIONS ──────────────────────────────────────────────────── */
-    .main-content { padding: 0 0 7rem; }
-    .iso-section { padding: var(--section-gap) 0; border-bottom: 1px solid var(--border); }
-    .iso-section:last-child { border-bottom: none; }
-    .section-header { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2.5rem; }
-    .section-num { font-family: var(--font-display); font-size: 6rem; font-weight: 700; line-height: .85;
-      color: var(--gold-faded-2); letter-spacing: -.03em; user-select: none; min-width: 100px;
-      text-align: right; padding-top: .1em; }
-    .section-title-group { padding-top: .3rem; }
-    .section-title { font-family: var(--font-display); font-size: clamp(1.3rem,3vw,1.85rem);
-      font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: #fff; margin-bottom: .5rem; }
-    .section-divider { height: 2px; background: linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
-      border-radius: 1px; margin-bottom: .5rem; }
-    .section-subtitle { font-family: var(--font-mono); font-size: .7rem; color: var(--text-muted);
-      letter-spacing: .1em; text-transform: uppercase; }
-
-    /* ── CLAIM ─────────────────────────────────────────────────────── */
-    .claim-block { background: var(--surface); border: 1px solid var(--border);
-      border-left: 3px solid var(--gold); padding: 1.75rem 2rem; border-radius: 0 6px 6px 0;
-      margin-bottom: 1.5rem; font-size: 1.03rem; line-height: 1.75; }
-    .kill-condition { background: var(--surface-2); border: 1px solid rgba(248,81,73,.25);
-      border-left: 3px solid var(--danger); padding: 1.25rem 1.75rem; border-radius: 0 6px 6px 0; }
-    .kill-label { font-family: var(--font-display); font-size: .65rem; font-weight: 600;
-      letter-spacing: .2em; text-transform: uppercase; color: var(--danger); margin-bottom: .5rem;
-      display: flex; align-items: center; gap: .5rem; }
-
-    /* ── TABLES ────────────────────────────────────────────────────── */
-    .iso-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-    .iso-table { width: 100%; border-collapse: collapse; font-size: .875rem; min-width: 580px; }
-    .iso-table thead tr { background: var(--surface-2); border-bottom: 1px solid var(--border-gold); }
-    .iso-table thead th { font-family: var(--font-display); font-size: .62rem; font-weight: 600;
-      letter-spacing: .16em; text-transform: uppercase; padding: .9rem 1.1rem; text-align: left; }
-    .iso-table thead th.col-physics   { color: var(--info); }
-    .iso-table thead th.col-theology  { color: var(--purple); }
-    .iso-table thead th.col-moral     { color: var(--success); }
-    .iso-table thead th.col-property  { color: var(--gold); }
-    .iso-table thead th.col-label     { color: var(--text-muted); }
-    .iso-table tbody tr { border-bottom: 1px solid var(--border); transition: background .12s; }
-    .iso-table tbody tr:last-child { border-bottom: none; }
-    .iso-table tbody tr:hover { background: rgba(212,175,55,.04); }
-    .iso-table td { padding: .9rem 1.1rem; vertical-align: top; line-height: 1.58; }
-    .td-label    { font-family: var(--font-display); font-size: .85rem; font-weight: 600;
-      color: var(--gold); text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; }
-    .td-physics  { color: var(--info); }
-    .td-theology { color: var(--purple); }
-
-    /* ── EQUATION BLOCKS ───────────────────────────────────────────── */
-    .equation-block { background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-      padding: 1.25rem 1.5rem; margin-bottom: 1rem; overflow-x: auto; }
-    .equation-block .eq-label { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .16em;
-      text-transform: uppercase; color: var(--text-muted); margin-bottom: .5rem; }
-    .equation { font-family: var(--font-mono); font-size: 1rem; color: var(--gold); line-height: 1.8; white-space: pre-wrap; }
-    .eq-note { font-size: .82rem; color: var(--text-muted); margin-top: .5rem; line-height: 1.55; }
-
-    /* ── VAR TABLE ─────────────────────────────────────────────────── */
-    .var-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-top: 1rem; }
-    .var-table td { padding: .55rem 0; border-bottom: 1px solid var(--border); vertical-align: top; }
-    .var-table td:first-child { font-family: var(--font-mono); color: var(--gold); width: 145px; white-space: nowrap; padding-right: 1rem; }
-    .var-table tr:last-child td { border-bottom: none; }
-
-    /* ── INFO CARDS ────────────────────────────────────────────────── */
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 1rem; }
-    .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-      padding: 1.25rem; transition: border-color .2s; }
-    .info-card:hover { border-color: var(--border-gold); }
-    .info-card-label { font-family: var(--font-display); font-size: .65rem; font-weight: 600;
-      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .4rem; }
-    .info-card-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
-      color: var(--gold); line-height: 1; margin-bottom: .3rem; }
-    .info-card-text { font-size: .82rem; color: var(--text-muted); line-height: 1.55; }
-
-    /* ── STATUS ────────────────────────────────────────────────────── */
-    .status-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(175px,1fr));
-      border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.75rem; }
-    .status-card { padding: 1.1rem 1.2rem; border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border); background: var(--surface); }
-    .status-label { font-family: var(--font-mono); font-size: .52rem; letter-spacing: .15em;
-      text-transform: uppercase; color: var(--text-dim); margin-bottom: .35rem; }
-    .status-value { font-family: var(--font-display); font-size: .95rem; font-weight: 600; letter-spacing: .04em; }
-    .status-value.green  { color: var(--success); }
-    .status-value.gold   { color: var(--gold); }
-    .status-value.blue   { color: var(--info); }
-    .status-value.warn   { color: var(--warn); }
-    .status-value.purple { color: var(--purple); }
-
-    /* ── ACCENT BLOCKS ─────────────────────────────────────────────── */
-    .accent-block { background: var(--surface); border: 1px solid var(--border); padding: 1.25rem 1.5rem;
-      border-radius: 0 6px 6px 0; margin-bottom: 1rem; }
-    .accent-block.gold   { border-left: 3px solid var(--gold); }
-    .accent-block.green  { border-left: 3px solid var(--success); }
-    .accent-block.warn   { border-left: 3px solid var(--warn); }
-    .accent-block.blue   { border-left: 3px solid var(--info); }
-    .accent-block.danger { border-left: 3px solid var(--danger); }
-    .accent-label { font-family: var(--font-display); font-size: .63rem; font-weight: 600;
-      letter-spacing: .2em; text-transform: uppercase; margin-bottom: .4rem; display: flex; align-items: center; gap: .5rem; }
-    .accent-block.gold   .accent-label { color: var(--gold); }
-    .accent-block.green  .accent-label { color: var(--success); }
-    .accent-block.warn   .accent-label { color: var(--warn); }
-    .accent-block.blue   .accent-label { color: var(--info); }
-    .accent-block.danger .accent-label { color: var(--danger); }
-    .accent-block p { font-size: .9rem; line-height: 1.65; }
-
-    /* ── QUOTE ─────────────────────────────────────────────────────── */
-    .iso-quote { font-family: var(--font-quote); font-style: italic; font-size: 1.05rem; color: var(--text);
-      padding: 1.25rem 1.5rem; background: var(--gold-faded-2); border: 1px solid var(--border-gold);
-      border-radius: 6px; line-height: 1.75; margin-bottom: 1rem; }
-    .iso-quote cite { display: block; margin-top: .65rem; font-style: normal; font-family: var(--font-mono);
-      font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
-
-    /* ── CLASSIFICATION BANNER ─────────────────────────────────────── */
-    .classification-banner { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; display: flex; align-items: center; gap: .6rem; }
-    .classification-banner::before { content: ''; display: inline-block; width: 6px; height: 6px;
-      background: var(--gold); border-radius: 50%; }
-
-    /* ── PHASE DIAGRAM ─────────────────────────────────────────────── */
-    .phase-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-      padding: 2rem; margin-bottom: 1.5rem; overflow-x: auto; }
-    .phase-diagram-label { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .16em;
-      text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.25rem; }
-    .phase-line { display: flex; align-items: center; gap: 0; margin-bottom: 1.25rem; min-width: 540px; }
-    .phase-node { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-family: var(--font-mono); font-size: .72rem; font-weight: 600; flex-shrink: 0; }
-    .phase-node.hell   { background: rgba(248,81,73,.12); border: 2px solid var(--danger); color: var(--danger); }
-    .phase-node.saddle { background: rgba(245,158,11,.08); border: 2px dashed var(--warn); color: var(--warn); }
-    .phase-node.heaven { background: rgba(63,185,80,.12); border: 2px solid var(--success); color: var(--success); }
-    .phase-seg { flex: 1; height: 3px; position: relative; }
-    .phase-seg.left  { background: linear-gradient(90deg,rgba(248,81,73,.5),rgba(245,158,11,.5)); }
-    .phase-seg.right { background: linear-gradient(90deg,rgba(245,158,11,.5),rgba(63,185,80,.5)); }
-    .phase-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 0; height: 0; }
-    .phase-arrow.left-arrow  { left: 28%; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-right: 9px solid rgba(248,81,73,.7); }
-    .phase-arrow.right-arrow { right: 28%; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 9px solid rgba(63,185,80,.7); }
-    .phase-labels { display: flex; justify-content: space-between; font-family: var(--font-mono);
-      font-size: .65rem; color: var(--text-muted); min-width: 540px; padding: 0 .5rem; }
-    .phase-label-item { text-align: center; }
-    .phase-label-item span { display: block; }
-    .phase-label-item .pl-val { color: var(--gold); font-size: .72rem; font-weight: 600; }
-
-    /* ── FIXED POINT CARDS ─────────────────────────────────────────── */
-    .fp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .fp-card { border-radius: 8px; padding: 1.35rem; border: 1px solid; position: relative; overflow: hidden; }
-    .fp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-    .fp-card.hell   { background: rgba(248,81,73,.04);  border-color: rgba(248,81,73,.2); }
-    .fp-card.saddle { background: rgba(245,158,11,.04); border-color: rgba(245,158,11,.2); }
-    .fp-card.heaven { background: rgba(63,185,80,.04);  border-color: rgba(63,185,80,.2); }
-    .fp-card.hell::before   { background: var(--danger); }
-    .fp-card.saddle::before { background: var(--warn); }
-    .fp-card.heaven::before { background: var(--success); }
-    .fp-val { font-family: var(--font-display); font-size: 2.3rem; font-weight: 700; line-height: 1; margin-bottom: .3rem; }
-    .fp-card.hell   .fp-val { color: var(--danger); }
-    .fp-card.saddle .fp-val { color: var(--warn); }
-    .fp-card.heaven .fp-val { color: var(--success); }
-    .fp-type { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .7rem; }
-    .fp-card.hell   .fp-type { color: rgba(248,81,73,.7); }
-    .fp-card.saddle .fp-type { color: rgba(245,158,11,.7); }
-    .fp-card.heaven .fp-type { color: rgba(63,185,80,.7); }
-    .fp-name { font-family: var(--font-display); font-size: .95rem; font-weight: 600; letter-spacing: .04em; color: #e6edf3; margin-bottom: .3rem; }
-    .fp-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.55; }
-
-    /* ── SCRIPTURE LIST ────────────────────────────────────────────── */
-    .scripture-list { list-style: none; display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1.75rem; }
-    .scripture-list li { display: flex; align-items: flex-start; gap: .85rem; padding: .75rem 1rem;
-      background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: .9rem; }
-    .scripture-ref { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em;
-      color: var(--gold); white-space: nowrap; min-width: 115px; padding-top: .05rem; }
-    .scripture-desc { color: var(--text); line-height: 1.55; }
-
-    /* ── ISO LINK LIST ─────────────────────────────────────────────── */
-    .iso-link-list { display: flex; flex-direction: column; gap: .75rem; }
-    .iso-link-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem;
-      background: var(--surface); border: 1px solid var(--border); border-radius: 6px; transition: border-color .2s; }
-    .iso-link-item:hover { border-color: var(--border-gold); }
-    .iso-link-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em;
-      color: var(--gold); white-space: nowrap; min-width: 72px; padding-top: .05rem; }
-    .iso-link-body { flex: 1; }
-    .iso-link-title { font-family: var(--font-display); font-size: .9rem; font-weight: 600;
-      letter-spacing: .04em; color: #e6edf3; margin-bottom: .25rem; }
-    .iso-link-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.5; }
-
-    /* ── PROSE ─────────────────────────────────────────────────────── */
-    p { margin-bottom: 1rem; }
-    p:last-child { margin-bottom: 0; }
-    strong { color: #e6edf3; font-weight: 600; }
-    .prose { font-size: .95rem; line-height: 1.75; color: var(--text); margin-bottom: 1.5rem; }
-
-    /* ── FOOTER ────────────────────────────────────────────────────── */
-    .page-footer { border-top: 1px solid var(--border); padding: 2.5rem 0; }
-    .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
-    .footer-meta { font-family: var(--font-mono); font-size: .68rem; color: var(--text-dim); line-height: 1.9; }
-    .footer-meta span { color: var(--text-muted); }
-    .footer-back { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono);
-      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted);
-      text-decoration: none; padding: .5rem .8rem; border: 1px solid var(--border); border-radius: 4px; transition: all .2s; }
-    .footer-back:hover { color: var(--gold); border-color: var(--border-gold); }
-
-    /* ── BACK LINK ─────────────────────────────────────────────────── */
-    .back-link { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono);
-      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted);
-      text-decoration: none; margin-bottom: 2rem; transition: color .2s; }
-    .back-link:hover { color: var(--gold); }
-
-    /* ── SCROLL TOP ────────────────────────────────────────────────── */
-    .scroll-top { position: fixed; bottom: 1.75rem; right: 1.75rem; width: 38px; height: 38px;
-      background: var(--surface); border: 1px solid var(--border); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; color: var(--text-muted);
-      cursor: pointer; opacity: 0; visibility: hidden;
-      transition: opacity .25s,visibility .25s,border-color .2s,color .2s; font-size: .75rem; z-index: 50; }
-    .scroll-top.visible { opacity: 1; visibility: visible; }
-    .scroll-top:hover { border-color: var(--border-gold); color: var(--gold); }
-
-    /* ── RESPONSIVE ────────────────────────────────────────────────── */
-    @media(max-width:768px) {
-      .container { padding: 0 1.1rem; } .hero { padding: 3rem 0 2.5rem; }
-      :root { --section-gap: 3.5rem; }
-      .section-header { grid-template-columns: 1fr; gap: .4rem; }
-      .section-num { font-size: 3.8rem; text-align: left; min-width: auto; line-height: 1; }
-      .card-grid { grid-template-columns: 1fr; } .fp-grid { grid-template-columns: 1fr; }
-    }
-    @media(max-width:520px) {
-      .hero-title { font-size: 1.9rem; }
-      .status-grid { grid-template-columns: 1fr 1fr; } .fp-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- STICKY HEADER -->
-  <header class="site-header">
-    <div class="container">
-      <a href="../isomorphism/index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
-      <div class="iso-badge">ISO-016</div>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <a href="../isomorphism/index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
-      <div aria-hidden="true" class="hero-bg-number">016</div>
-      <div class="hero-iso-id"><i class="fas fa-circle-nodes"></i> ISO-016 &middot; Dynamical Systems &#8596; Theology</div>
-      <h1 class="hero-title">Eschatological Attractors</h1>
-      <p class="hero-subtitle">Logistic Dynamics &#8596; Heaven &sol; Hell &sol; Lukewarmness</p>
-      <div class="hero-tags">
-        <span class="tag tag-blue"><i class="fas fa-atom"></i> Dynamical Systems</span>
-        <span class="tag tag-purple"><i class="fas fa-cross"></i> Theology</span>
-        <span class="tag tag-gold"><i class="fas fa-diagram-project"></i> Structural Isomorphism</span>
-        <span class="tag tag-warn"><i class="fas fa-flask"></i> Status: Testing</span>
-        <span class="tag tag-green"><i class="fas fa-shield-halved"></i> Swap: Passed</span>
-      </div>
-      <div class="hero-meta">
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">ID</div>
-          <div class="hero-meta-value gold">ISO-016</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Type</div>
-          <div class="hero-meta-value">Structural</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain A</div>
-          <div class="hero-meta-value blue">Dynamical Systems</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain B</div>
-          <div class="hero-meta-value purple">Theology</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Confidence</div>
-          <div class="hero-meta-value warn">Medium</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Registered</div>
-          <div class="hero-meta-value">2026-04-04</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MAIN -->
-  <main class="main-content">
-    <div class="container">
-
-      <!-- ══ 01 THE CLAIM ════════════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">01</div>
-          <div class="section-title-group">
-            <h2 class="section-title">The Claim</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Structural isomorphism &middot; binary terminus &middot; no neutral equilibrium</div>
-          </div>
-        </div>
-
-        <div class="classification-banner">
-          <i class="fas fa-circle-nodes"></i>
-          ISO-016 &middot; Structural Isomorphism &middot; Dynamical Systems &#8596; Theology
-        </div>
-
-        <div class="claim-block">
-          <p><strong>Logistic-type dynamical systems with two stable fixed-point attractors and one unstable
-          saddle point are structurally isomorphic to the Christian eschatological schema.</strong> The system
-          variable &#934; &isin; [0,&nbsp;1] evolves toward exactly one of two stable endpoints &mdash;
-          &#934;&nbsp;=&nbsp;0 or &#934;&nbsp;=&nbsp;1 &mdash; with an unstable critical threshold at
-          &#934;&nbsp;=&nbsp;0.5 that can never serve as a permanent terminus. The theological mapping is
-          exact: &#934;&nbsp;=&nbsp;1 corresponds to Heaven (full communion with God, complete coherence);
-          &#934;&nbsp;=&nbsp;0 corresponds to Hell (total separation from God, complete decoherence); and
-          &#934;&nbsp;=&nbsp;0.5 corresponds to the lukewarm middle state &mdash; theologically unstable and
-          explicitly rejected in scripture.</p>
-          <p>Both domains share the same topological structure: <strong>binary basin partitioning</strong> by
-          a saddle point that cannot be occupied indefinitely. The dynamical systems framework predicts exactly
-          the eschatological structure found in theology &mdash; no third stable state, no neutral terminus,
-          and an unstable middle that must eventually resolve into one of the two attractors.</p>
-        </div>
-
-        <div class="kill-condition">
-          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
-          <p>If a genuine <strong>third stable state</strong> were discovered in either domain &mdash; a stable
-          neutral equilibrium in the dynamical system, or a scriptural third eschatological category that is
-          neither Heaven nor Hell &mdash; the mapping breaks. Purgatory (Catholic theology) functions as a
-          <em>transient state</em>, not a stable attractor; souls pass through Purgatory and converge to
-          &#934;&nbsp;=&nbsp;1. Purgatory therefore does not falsify the mapping. The kill condition requires
-          a <em>permanent</em>, scripturally grounded third terminus.</p>
-        </div>
-      </section>
-
-      <!-- ══ 02 MATHEMATICAL FORM ════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">02</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Mathematical Form</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Logistic dynamics &middot; fixed-point analysis &middot; phase portrait</div>
-          </div>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Governing Dynamics &mdash; Primary Equation</div>
-          <div class="equation">d&#934;/dt = &#945; &#934; (1 &minus; &#934;) (&#934; &minus; &#934;<sub>c</sub>)</div>
-          <div class="eq-note">The logistic cubic governing the evolution of coherence variable &#934; over time.
-          &#945;&nbsp;&gt;&nbsp;0 sets the convergence rate; &#934;<sub>c</sub>&nbsp;=&nbsp;0.5 is the critical
-          threshold partitioning the two basins of attraction. &#934; &isin; [0,&nbsp;1] throughout.</div>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Fixed Points &mdash; Where d&#934;/dt = 0</div>
-          <div class="equation">&#934;* = 0    &rarr;  Stable attractor   [Hell / decoherence]
-&#934;* = 0.5  &rarr;  Unstable saddle    [Lukewarmness / indecision]
-&#934;* = 1    &rarr;  Stable attractor   [Heaven / full coherence]</div>
-          <div class="eq-note">The cubic has exactly three real roots in [0,&nbsp;1]. Stability is determined
-          by the sign of f&prime;(&#934;*): negative eigenvalue = stable attractor; positive eigenvalue = unstable saddle.</div>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Stability Analysis &mdash; Linearization at Each Fixed Point</div>
-          <div class="equation">f(&#934;) = &#945; &#934; (1 &minus; &#934;) (&#934; &minus; &#934;<sub>c</sub>)
-
-f&prime;(&#934;* = 0)   = &#945; (0 &minus; &#934;<sub>c</sub>)  = &minus;0.5&#945;  &lt; 0   [STABLE for &#945; &gt; 0]
-f&prime;(&#934;* = 0.5)  full cubic expansion            &gt; 0   [UNSTABLE]
-f&prime;(&#934;* = 1)   = &#945; (1)(1 &minus; &#934;<sub>c</sub>) cubic form  &lt; 0   [STABLE for &#945; &gt; 0]</div>
-          <div class="eq-note">For &#945;&nbsp;&gt;&nbsp;0, both outer fixed points are stable attractors. The
-          inner fixed point is an unstable repeller. Any &#934;<sub>0</sub>&nbsp;&ne;&nbsp;0.5 converges to
-          exactly one attractor.</div>
-        </div>
-
-        <div class="equation-block">
-          <div class="eq-label">Basin of Attraction &mdash; Phase Space Partition</div>
-          <div class="equation">Basin(&#934; = 0): &#123; &#934;<sub>0</sub> &isin; [0, 1) : &#934;<sub>0</sub> &lt; 0.5 &#125;  &rarr;  converges to Hell
-Basin(&#934; = 1): &#123; &#934;<sub>0</sub> &isin; (0, 1] : &#934;<sub>0</sub> &gt; 0.5 &#125;  &rarr;  converges to Heaven
-Boundary:     &#123; &#934;<sub>0</sub> = 0.5 &#125;  (measure zero &mdash; never realized in practice)</div>
-          <div class="eq-note">The saddle at &#934;&nbsp;=&nbsp;0.5 has measure zero in phase space. Any
-          perturbation drives the system into one basin or the other, mirroring the theological claim that
-          lukewarmness cannot be maintained indefinitely.</div>
-        </div>
-
-        <p class="prose" style="margin-top:1.5rem;">Variable definitions:</p>
-        <table class="var-table">
-          <tr>
-            <td>&#934; &isin; [0,&nbsp;1]</td>
-            <td>Coherence variable. &#934;&nbsp;=&nbsp;1 is complete coherence with God (Heaven); &#934;&nbsp;=&nbsp;0 is complete decoherence (Hell).</td>
-          </tr>
-          <tr>
-            <td>&#945; &gt; 0</td>
-            <td>Rate constant governing the speed of convergence to the attractors. Does not affect which attractor is reached.</td>
-          </tr>
-          <tr>
-            <td>&#934;<sub>c</sub> = 0.5</td>
-            <td>Critical threshold &mdash; the unstable saddle partitioning phase space. Corresponds to the lukewarm state of Revelation 3:16.</td>
-          </tr>
-          <tr>
-            <td>d&#934;/dt</td>
-            <td>Rate of change of coherence. Positive when moving toward Heaven; negative when moving toward Hell.</td>
-          </tr>
-          <tr>
-            <td>f&prime;(&#934;*)</td>
-            <td>Linearized eigenvalue at each fixed point. Negative = stable; positive = unstable saddle.</td>
-          </tr>
-          <tr>
-            <td>&#934;<sub>0</sub></td>
-            <td>Initial condition &mdash; the soul's starting coherence. Determines which basin it falls into and therefore which attractor it converges toward.</td>
-          </tr>
-        </table>
-
-        <p class="prose" style="margin-top:1.75rem;">Phase portrait &mdash; qualitative flow on [0,&nbsp;1]:</p>
-
-        <div class="phase-diagram">
-          <div class="phase-diagram-label">Phase Portrait &mdash; Arrows Indicate Direction of Flow (Sign of d&#934;/dt)</div>
-          <div class="phase-line">
-            <div class="phase-node hell">&#934;=0</div>
-            <div class="phase-seg left">
-              <div class="phase-arrow left-arrow"></div>
-            </div>
-            <div class="phase-node saddle">0.5</div>
-            <div class="phase-seg right">
-              <div class="phase-arrow right-arrow"></div>
-            </div>
-            <div class="phase-node heaven">&#934;=1</div>
-          </div>
-          <div class="phase-labels">
-            <div class="phase-label-item">
-              <span class="pl-val">&#934; = 0</span>
-              <span>Stable Attractor</span>
-              <span style="color:var(--danger);">Hell</span>
-            </div>
-            <div class="phase-label-item">
-              <span class="pl-val">&#934; = 0.5</span>
-              <span>Unstable Saddle</span>
-              <span style="color:var(--warn);">Lukewarmness</span>
-            </div>
-            <div class="phase-label-item">
-              <span class="pl-val">&#934; = 1</span>
-              <span>Stable Attractor</span>
-              <span style="color:var(--success);">Heaven</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="fp-grid">
-          <div class="fp-card hell">
-            <div class="fp-val">&#934;&nbsp;=&nbsp;0</div>
-            <div class="fp-type">Stable Attractor &middot; Eigenvalue &lt; 0</div>
-            <div class="fp-name">Hell &sol; Final Separation</div>
-            <div class="fp-desc">Complete decoherence from God. Basin: all &#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5. Once entered, the trajectory converges inevitably to zero communion. Irreversible at the eschatological terminus.</div>
-          </div>
-          <div class="fp-card saddle">
-            <div class="fp-val">&#934;&nbsp;=&nbsp;0.5</div>
-            <div class="fp-type">Unstable Saddle &middot; Eigenvalue &gt; 0</div>
-            <div class="fp-name">Lukewarmness &sol; Indecision</div>
-            <div class="fp-desc">The unstable equilibrium. Measure-zero probability of remaining here. Any perturbation &mdash; a life event, a choice, a crisis of faith &mdash; drives the system away toward one of the two attractors.</div>
-          </div>
-          <div class="fp-card heaven">
-            <div class="fp-val">&#934;&nbsp;=&nbsp;1</div>
-            <div class="fp-type">Stable Attractor &middot; Eigenvalue &lt; 0</div>
-            <div class="fp-name">Heaven &sol; Glorification</div>
-            <div class="fp-desc">Complete coherence with God. Basin: all &#934;<sub>0</sub>&nbsp;&gt;&nbsp;0.5. Full communion, realized eschatologically as glorification. The teleological goal toward which grace-enabled trajectories converge.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ 03 STRUCTURAL CORRESPONDENCE ═══════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">03</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Structural Correspondence</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Point-for-point mapping &middot; dynamical systems &#8596; eschatology</div>
-          </div>
-        </div>
-
-        <p class="prose">The following table maps each structural element of the dynamical system to its
-        theological counterpart. Every feature of the mathematical system has an exact theological analog, and
-        vice versa. The swap test (reversing the mapping direction) holds without modification.</p>
-
-        <div class="iso-table-wrap">
-          <table class="iso-table">
-            <thead>
-              <tr>
-                <th class="col-label">Element</th>
-                <th class="col-physics">Dynamical Systems (Domain A)</th>
-                <th class="col-theology">Theology (Domain B)</th>
-                <th class="col-property">Shared Structural Property</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="td-label">Attractor 1</td>
-                <td class="td-physics">&#934;&nbsp;=&nbsp;1 &mdash; stable fixed point; basin&nbsp;=&nbsp;{&#934;<sub>0</sub>&nbsp;&gt;&nbsp;0.5}; eigenvalue&nbsp;&lt;&nbsp;0; monotonic convergence</td>
-                <td class="td-theology">Heaven &mdash; full communion with God; complete coherence; glorification; the eschatological terminus toward which grace-enabled souls converge</td>
-                <td>Stable terminus: once entered, system and soul remain; convergence is irreversible; no exit dynamics</td>
-              </tr>
-              <tr>
-                <td class="td-label">Attractor 2</td>
-                <td class="td-physics">&#934;&nbsp;=&nbsp;0 &mdash; stable fixed point; basin&nbsp;=&nbsp;{&#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5}; eigenvalue&nbsp;&lt;&nbsp;0; monotonic convergence</td>
-                <td class="td-theology">Hell &mdash; total separation from God; complete decoherence; final judgment; the eschatological consequence for trajectories that remain below the saddle</td>
-                <td>Stable terminus: once entered, system and soul remain; irreversible; complementary to Attractor 1</td>
-              </tr>
-              <tr>
-                <td class="td-label">Saddle Point</td>
-                <td class="td-physics">&#934;&nbsp;=&nbsp;0.5 &mdash; unstable fixed point; eigenvalue&nbsp;&gt;&nbsp;0; measure-zero basin boundary; perturbations grow rather than decay</td>
-                <td class="td-theology">Lukewarmness &mdash; spiritual indecision; actively rejected, not merely bypassed (Rev&nbsp;3:16); cannot be maintained permanently; theologically unstable by structure</td>
-                <td>Unstable equilibrium: the structure itself rejects the middle state; perturbations amplify; cannot be occupied indefinitely</td>
-              </tr>
-              <tr>
-                <td class="td-label">Basin Structure</td>
-                <td class="td-physics">Phase space partitioned into exactly two basins by the saddle; no third basin; partition is exhaustive and exclusive</td>
-                <td class="td-theology">The sheep and the goats (Matt&nbsp;25:31-46) &mdash; exactly two eschatological outcomes; no third category; the partition is theologically exhaustive</td>
-                <td>Binary partition: exactly two terminal categories; no middle ground; all trajectories end in one or the other</td>
-              </tr>
-              <tr>
-                <td class="td-label">Perturbation Effect</td>
-                <td class="td-physics">Perturbations to the saddle grow exponentially; small fluctuations in &#934;<sub>0</sub> near 0.5 determine which attractor is reached; sensitivity maximized at the threshold</td>
-                <td class="td-theology">Life events, choices, grace, and sin are perturbations that progressively align or misalign the soul; decisions near the threshold carry maximal eschatological weight</td>
-                <td>Saddle sensitivity: small inputs near the critical point have large long-term consequences; the threshold is the point of maximal moral leverage</td>
-              </tr>
-              <tr>
-                <td class="td-label">No Neutral Equilibrium</td>
-                <td class="td-physics">The saddle has a positive eigenvalue &mdash; it is unstable; there is no third stable state in the cubic system</td>
-                <td class="td-theology">"I will spit you out of my mouth" (Rev&nbsp;3:16) &mdash; lukewarmness is actively expelled, not merely avoided; theology has no stable neutral ground</td>
-                <td>Active rejection of neutral ground: both structures resist neutral equilibrium by construction, not merely by absence</td>
-              </tr>
-              <tr>
-                <td class="td-label">Binary Terminus</td>
-                <td class="td-physics">All trajectories from &#934;<sub>0</sub>&nbsp;&ne;&nbsp;0.5 converge to exactly {0,&nbsp;1}; the system is closed; no fourth state exists</td>
-                <td class="td-theology">Every soul reaches exactly one of {Heaven, Hell}; Deut&nbsp;30:19 presents life and death as the two and only options; the eschatological binary is exhaustive</td>
-                <td>Completeness: the phase space is closed; every trajectory has a definite terminal destination; no escapes</td>
-              </tr>
-              <tr>
-                <td class="td-label">Grace Operator</td>
-                <td class="td-physics">External operator that shifts &#934;<sub>0</sub> from the &#934;&nbsp;=&nbsp;0 basin across the saddle to the &#934;&nbsp;=&nbsp;1 basin; cannot be self-generated by the system</td>
-                <td class="td-theology">Divine grace &mdash; soteriological action moving the soul from the Hell basin to the Heaven basin; cannot be self-generated (ISO-012); requires supernatural intervention</td>
-                <td>Basin-shifting: the only mechanism for changing the terminal attractor; impossible through self-operation within the system's own dynamics</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="accent-block blue" style="margin-top:1.5rem;">
-          <div class="accent-label"><i class="fas fa-rotate"></i> Swap Test &mdash; Passed</div>
-          <p>The structural mapping holds in both directions. Starting from dynamical systems theory, one
-          predicts exactly the eschatological structure found in theology: two stable termini, one unstable
-          middle, no third option, binary basin partition. Conversely, starting from the theological claims,
-          the required mathematical structure is precisely the logistic-cubic with &#934;<sub>c</sub>&nbsp;=&nbsp;0.5.
-          The isomorphism is bidirectional and survives reversal without modification.</p>
-        </div>
-      </section>
-
-      <!-- ══ 04 EVIDENCE ════════════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">04</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Evidence &amp; Verification</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Scriptural grounding &middot; mathematical verification &middot; caveats</div>
-          </div>
-        </div>
-
-        <p class="prose">The theological domain is grounded in explicit scriptural claims that directly encode
-        the binary attractor structure. Three primary texts provide the evidence base, each mapping to a
-        distinct feature of the dynamical system.</p>
-
-        <div class="iso-quote">
-          "When the Son of Man comes in his glory, and all the angels with him, he will sit on his glorious
-          throne. All the nations will be gathered before him, and he will separate the people one from
-          another as a shepherd separates the sheep from the goats."
-          <cite>Matthew 25:31&ndash;32 &mdash; The canonical eschatological binary: two groups, two outcomes, no third category</cite>
-        </div>
-
-        <div class="iso-quote">
-          "So, because you are lukewarm &mdash; neither hot nor cold &mdash; I am about to spit you out of
-          my mouth."
-          <cite>Revelation 3:16 &mdash; Direct rejection of the stable middle state; the saddle is not merely unstable but actively expelled</cite>
-        </div>
-
-        <div class="iso-quote">
-          "This day I call the heavens and the earth as witnesses against you that I have set before you life
-          and death, blessings and curses. Now choose life, so that you and your children may live."
-          <cite>Deuteronomy 30:19 &mdash; Binary choice structure; two basins; volitional initial-condition selection</cite>
-        </div>
-
-        <ul class="scripture-list">
-          <li>
-            <span class="scripture-ref">Matt 25:31&ndash;46</span>
-            <span class="scripture-desc">The Sheep and Goats judgment &mdash; canonical binary. Two groups, two outcomes. No third category. The text explicitly places sheep on the right (Heaven, &#934;&nbsp;=&nbsp;1 basin) and goats on the left (Hell, &#934;&nbsp;=&nbsp;0 basin). Maps directly to the two-basin partition.</span>
-          </li>
-          <li>
-            <span class="scripture-ref">Rev 3:16</span>
-            <span class="scripture-desc">Lukewarmness explicitly rejected &mdash; "I am about to spit you out of my mouth." This is a description of an <em>active, structural instability</em>, not merely a suboptimal state. The theological claim is that the middle state cannot be maintained. Maps to the positive eigenvalue at &#934;&nbsp;=&nbsp;0.5.</span>
-          </li>
-          <li>
-            <span class="scripture-ref">Deut 30:19</span>
-            <span class="scripture-desc">"I have set before you life and death&hellip; choose life." The binary structure is presented as the fundamental eschatological choice. The volitional element maps to initial-condition selection: which basin does &#934;<sub>0</sub> fall into? Two options, one selection, permanent consequence &mdash; mirrors the basin structure exactly.</span>
-          </li>
-        </ul>
-
-        <div class="accent-block green">
-          <div class="accent-label"><i class="fas fa-check-circle"></i> Mathematical Verification &mdash; Rigorous Theorem</div>
-          <p>The dynamical systems claim is mathematically rigorous. A cubic polynomial f(&#934;)&nbsp;=&nbsp;&#945;&#934;(1&minus;&#934;)(&#934;&minus;&#934;<sub>c</sub>) with 0&nbsp;&lt;&nbsp;&#934;<sub>c</sub>&nbsp;&lt;&nbsp;1 and &#945;&nbsp;&gt;&nbsp;0 necessarily has exactly three real roots in [0,&nbsp;1], with the two outer roots stable and the inner root unstable. This is not an approximation &mdash; it is an exact property of this class of equations.</p>
-        </div>
-
-        <div class="accent-block green" style="margin-top:.5rem;">
-          <div class="accent-label"><i class="fas fa-check-circle"></i> No Third Attractor Found</div>
-          <p>A systematic search for a third stable eschatological state in Christian theology has not yielded
-          a candidate satisfying the kill condition. Purgatory is a transient process state within the Heaven
-          basin. Annihilationism preserves the binary topology by redefining &#934;&nbsp;=&nbsp;0 as
-          non-existence rather than torment. The two-terminus partition holds across major Christian traditions.</p>
-        </div>
-
-        <div class="accent-block warn" style="margin-top:.5rem;">
-          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Caveat &mdash; Location of &#934;<sub>c</sub></div>
-          <p>&#934;<sub>c</sub>&nbsp;=&nbsp;0.5 is chosen on grounds of maximal symmetry, not derived from
-          first principles. Scripture indicates that a binary separation exists but does not specify the
-          exact proportions of humanity in each basin. The existence of the saddle is well-grounded; its
-          precise location is not yet derivable from deeper principles.</p>
-        </div>
-
-        <div class="accent-block warn" style="margin-top:.5rem;">
-          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Caveat &mdash; Static Grace Model</div>
-          <p>The model treats grace as a discrete basin-shifting event (ISO-013). In reality, grace acts
-          continuously over a lifetime. A complete model would require coupling ISO-016 to ISO-013 explicitly,
-          producing a time-varying &#934;<sub>c</sub>(t) or an additional driving term. The current model
-          captures the topology of grace but not its dynamics.</p>
-        </div>
-
-        <div class="accent-block warn" style="margin-top:.5rem;">
-          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Honest Assessment &mdash; Imposed or Emergent?</div>
-          <p>The binary attractor structure is partly <em>imposed</em> through the choice of dynamics. The
-          logistic cubic produces two stable fixed points because it is a product of &#934; and (1&minus;&#934;),
-          which naturally creates zeros at the endpoints. A different dynamical equation could produce the
-          same topology with different basin geometry. The bimodal structure emerges from the dynamics, but
-          the dynamics were chosen to produce it. This is why the ISO remains at <strong>Testing</strong>:
-          the dynamics should be derived from first principles rather than postulated.</p>
-        </div>
-      </section>
-
-      <!-- ══ 05 IMPLICATIONS ════════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">05</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Implications &amp; Connections</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Grace as basin-shifting &middot; connected ISOs &middot; theological implications</div>
-          </div>
-        </div>
-
-        <p class="prose">The most significant implication of ISO-016 is its account of <strong>grace as a
-        basin-shifting operator</strong>. Without external intervention, a trajectory with
-        &#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5 will inevitably converge to &#934;&nbsp;=&nbsp;0. The only
-        mechanism for reaching &#934;&nbsp;=&nbsp;1 from a below-threshold initial condition is an operator
-        that moves the trajectory across the saddle boundary. This is precisely the function of divine grace
-        in Christian soteriology.</p>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-star"></i> Key Implication &mdash; Grace as Topological Intervention</div>
-          <p>The grace operator (ISO-013) acts by shifting the effective initial condition from
-          &#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5 to &#934;<sub>0</sub>&prime;&nbsp;&gt;&nbsp;0.5. Without this
-          external intervention, self-evolution cannot change the basin &mdash; a result consistent with
-          ISO-012 (self-evolution cannot alter the eigenvalue structure). Grace is not merely a force that
-          accelerates convergence to &#934;&nbsp;=&nbsp;1; it is a <em>topological intervention</em> that
-          changes which attractor the trajectory converges to. This gives a precise mathematical meaning to
-          the theological claim that salvation cannot be self-generated.</p>
-        </div>
-
-        <p class="prose" style="margin-top:1.5rem;">ISO-016 also provides a precise account of why lukewarmness
-        is not a stable spiritual state. The Revelation 3:16 passage describes an <em>active rejection</em>
-        of the lukewarm state, mapping to the positive eigenvalue at &#934;&nbsp;=&nbsp;0.5: the system
-        itself provides a force that drives the trajectory away from the saddle. This is not metaphor &mdash;
-        the mathematical structure literally cannot sustain the middle state, just as theology cannot sustain
-        spiritual indecision as a permanent condition.</p>
-
-        <p class="prose">The model also predicts <strong>critical slowing down</strong> near the saddle: trajectories
-        near &#934;&nbsp;=&nbsp;0.5 evolve very slowly before accelerating toward one attractor. This maps to
-        the theological intuition that conversion decisions are often preceded by extended periods of agonizing
-        indecision &mdash; the experiential signature of saddle-point dynamics.</p>
-
-        <p class="prose">Connected isomorphisms in the registry:</p>
-
-        <div class="iso-link-list" style="margin-bottom:2rem;">
-          <div class="iso-link-item">
-            <div class="iso-link-id">ISO-012</div>
-            <div class="iso-link-body">
-              <div class="iso-link-title">Self-Evolution Cannot Change the Eigenvalue</div>
-              <div class="iso-link-desc">Establishes that a system operating within its own eigenvalue structure
-              cannot alter that structure through self-operation. Applied to ISO-016: a soul in the &#934;&nbsp;=&nbsp;0
-              basin cannot self-generate sufficient coherence to cross the saddle boundary. External intervention
-              is required. ISO-016's basin model depends directly on ISO-012's eigenvalue constraint.</div>
-            </div>
-          </div>
-          <div class="iso-link-item">
-            <div class="iso-link-id">ISO-013</div>
-            <div class="iso-link-body">
-              <div class="iso-link-title">Grace as External Operator &sol; Basin-Shifting</div>
-              <div class="iso-link-desc">Provides the formal description of the grace operator that shifts
-              trajectories across the saddle boundary. ISO-016 establishes the basin structure that ISO-013's
-              operator must cross. The two isomorphisms form a coupled system: ISO-016 describes the topology;
-              ISO-013 describes the intervention mechanism. Neither is complete without the other.</div>
-            </div>
-          </div>
-          <div class="iso-link-item">
-            <div class="iso-link-id">ISO-000</div>
-            <div class="iso-link-body">
-              <div class="iso-link-title">Foundational Theophysics Axioms (POF 2828)</div>
-              <div class="iso-link-desc">ISO-016 instantiates the POF 2828 core claim at the eschatological
-              level. The binary attractor structure, with grace as the basin-shifting operator, is a direct
-              application of the foundational principle that reality has a coherence-maximizing telos
-              (&#934;&nbsp;&rarr;&nbsp;1) and a decoherence terminus (&#934;&nbsp;&rarr;&nbsp;0), with a
-              critical threshold at the midpoint.</div>
-            </div>
-          </div>
-        </div>
-
-        <p class="prose">Broader theological implications:</p>
-
-        <div class="card-grid">
-          <div class="info-card">
-            <div class="info-card-label">Annihilationism</div>
-            <div class="info-card-value" style="font-size:.95rem; color:var(--success);">Compatible</div>
-            <div class="info-card-text">Annihilationism redefines &#934;&nbsp;=&nbsp;0 as non-existence rather
-            than eternal conscious torment. This is a reinterpretation of the attractor's meaning, not a change
-            to the topology. The two-basin partition survives.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Purgatory</div>
-            <div class="info-card-value" style="font-size:.95rem; color:var(--info);">Transient State</div>
-            <div class="info-card-text">Purgatory is a process state <em>within</em> the &#934;&nbsp;&gt;&nbsp;0.5 basin,
-            not a third attractor. Souls in Purgatory are already in the Heaven basin; they converge to
-            &#934;&nbsp;=&nbsp;1. The trajectory passes through Purgatory; it is not a destination.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Universalism</div>
-            <div class="info-card-value" style="font-size:.95rem; color:var(--danger);">Breaks Mapping</div>
-            <div class="info-card-text">Universal salvation (all reach &#934;&nbsp;=&nbsp;1) would require
-            &#934;&nbsp;=&nbsp;0 to be an unstable, not stable, fixed point. This is not compatible with
-            ISO-016 as stated. A revised model with time-varying &#934;<sub>c</sub> would be needed.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Free Will</div>
-            <div class="info-card-value" style="font-size:.95rem; color:var(--gold);">Initial Condition</div>
-            <div class="info-card-text">Free will maps to the selection of &#934;<sub>0</sub>. The deterministic
-            flow then operates once the initial condition is set. Compatible with both libertarian (genuine
-            choice of &#934;<sub>0</sub>) and compatibilist views.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Predestination</div>
-            <div class="info-card-value" style="font-size:.95rem; color:var(--gold);">Fixed &#934;<sub>0</sub></div>
-            <div class="info-card-text">Double predestination maps to a fixed &#934;<sub>0</sub> always above
-            or below &#934;<sub>c</sub>. The grace operator is then the mechanism of election &mdash;
-            sovereignly shifting the elect's initial condition above the threshold at the appointed moment.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Sanctification</div>
-            <div class="info-card-value" style="font-size:.95rem; color:var(--success);">Basin Dynamics</div>
-            <div class="info-card-text">Moral formation and sanctification correspond to movement <em>within</em>
-            the &#934;&nbsp;&gt;&nbsp;0.5 basin &mdash; increasing &#934; toward 1 without crossing the
-            boundary. This is consistent with the dynamics (d&#934;/dt&nbsp;&gt;&nbsp;0 for &#934;&nbsp;&gt;&nbsp;0.5)
-            and maps to growth in holiness.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ 06 STATUS ══════════════════════════════════════════════ -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">06</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Status</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Verification state &middot; confidence &middot; open questions</div>
-          </div>
-        </div>
-
-        <div class="status-grid">
-          <div class="status-card">
-            <div class="status-label">Registry ID</div>
-            <div class="status-value gold">ISO-016</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Status</div>
-            <div class="status-value warn">Testing</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Confidence</div>
-            <div class="status-value warn">Medium</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Type</div>
-            <div class="status-value gold">Structural</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Swap Test</div>
-            <div class="status-value green">Passed</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Kill Attempts</div>
-            <div class="status-value blue">1 Active</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Domain A</div>
-            <div class="status-value blue">Dynamical Sys.</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Domain B</div>
-            <div class="status-value purple">Theology</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Registered</div>
-            <div class="status-value">2026-04-04</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Connected ISOs</div>
-            <div class="status-value gold">000, 012, 013</div>
-          </div>
-        </div>
-
-        <div class="accent-block warn">
-          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Weakest Link</div>
-          <p>The value &#934;<sub>c</sub>&nbsp;=&nbsp;0.5 is assumed on grounds of maximal symmetry rather
-          than derived from first principles. Additionally, the model does not account for the temporal dynamics
-          of &#934;(t) during a human lifetime &mdash; only the terminal basin is identified, not the trajectory
-          shape. The ISO should remain at Testing until the governing dynamics are derived from deeper
-          principles (e.g., from the coherence action functional) rather than postulated.</p>
-        </div>
-
-        <div class="accent-block green">
-          <div class="accent-label"><i class="fas fa-check-circle"></i> Strongest Link</div>
-          <p>The binary terminus structure is a rigorous mathematical theorem: the logistic cubic on
-          [0,&nbsp;1] with &#934;<sub>c</sub>&nbsp;&isin;&nbsp;(0,&nbsp;1) has exactly two stable fixed
-          points and one unstable fixed point. The theological claim (Matt 25:31-46) is among the most
-          consistently attested themes in the New Testament. The structural correspondence between these two
-          claims is direct and precise. The swap test passes without modification.</p>
-        </div>
-
-        <div class="accent-block blue">
-          <div class="accent-label"><i class="fas fa-info-circle"></i> Open Questions for Future Research</div>
-          <p>(1) Can the location of &#934;<sub>c</sub> be derived from first principles rather than assumed
-          at 0.5? (2) What is the distribution of human &#934;<sub>0</sub> values prior to the grace operator?
-          (3) How does ISO-016 interact with the continuous action of grace over a lifetime, rather than a
-          single basin-crossing event? (4) Does the model survive modification to a Langevin equation
-          formulation (stochastic perturbations), and does noise-induced crossing of the saddle have a
-          theological interpretation?</p>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="page-footer">
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-meta">
-          <span>Theophysics Research Program</span> &middot; POF 2828<br>
-          ISO-016 &middot; <span>Registered 2026-04-04 &middot; Status: Testing &middot; Confidence: Medium</span><br>
-          Domain A: Dynamical Systems &middot; Domain B: Theology
-        </div>
-        <a href="../isomorphism/index.html" class="footer-back"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
-      </div>
-    </div>
-  </footer>
-
-  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <i class="fas fa-chevron-up"></i>
-  </button>
-  <script>
-    const btn = document.getElementById('scrollTop');
-    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400), {passive: true});
-  </script>
-
-</body>
-</html>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ISO-016 demonstrates that logistic-type dynamical systems with two stable attractors and one unstable saddle point are structurally isomorphic to the eschatological binary of Heaven, Hell, and the unstable lukewarm middle state found in Christian theology.">
+  <title>ISO-016 &middot; Eschatological Attractors &middot; Theophysics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface-2: #141414;
+      --border: rgba(255,255,255,0.06);
+      --border-gold: rgba(212,175,55,0.22);
+      --text: #c9d1d9;
+      --text-muted: #6e7681;
+      --text-dim: #3d444d;
+      --gold: #d4af37;
+      --gold-faded: rgba(212,175,55,0.06);
+      --gold-faded-2: rgba(212,175,55,0.10);
+      --danger: #f85149;
+      --success: #3fb950;
+      --info: #79c0ff;
+      --purple: #c084fc;
+      --warn: #f59e0b;
+      --font-display: 'Oswald', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-quote: 'Crimson Text', serif;
+      --max-width: 1100px;
+      --section-gap: 5rem;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.65; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+    /* ── STICKY HEADER ─────────────────────────────────────────────── */
+    .site-header { border-bottom: 1px solid var(--border); padding: .9rem 0; position: sticky; top: 0;
+      background: rgba(10,10,10,.96); backdrop-filter: blur(14px); z-index: 100; }
+    .site-header .container { display: flex; align-items: center; justify-content: space-between; }
+    .site-brand { font-family: var(--font-display); font-size: .72rem; font-weight: 500;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; }
+    .site-brand span { color: var(--gold); }
+    .iso-badge { font-family: var(--font-mono); font-size: .7rem; color: var(--gold);
+      border: 1px solid var(--border-gold); padding: .22rem .65rem; border-radius: 3px; letter-spacing: .12em; }
+
+    /* ── HERO ──────────────────────────────────────────────────────── */
+    .hero { padding: 5rem 0 4rem; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero-bg-number { position: absolute; right: -1rem; top: 50%; transform: translateY(-50%);
+      font-family: var(--font-display); font-size: clamp(12rem,28vw,26rem); font-weight: 700;
+      color: var(--gold-faded); line-height: 1; pointer-events: none; user-select: none; letter-spacing: -.05em; }
+    .hero-iso-id { font-family: var(--font-mono); font-size: .8rem; color: var(--gold);
+      letter-spacing: .3em; text-transform: uppercase; margin-bottom: 1.25rem; display: flex; align-items: center; gap: .75rem; }
+    .hero-iso-id::after { content: ''; display: inline-block; width: 80px; height: 1px;
+      background: linear-gradient(90deg,var(--gold),transparent); }
+    .hero-title { font-family: var(--font-display); font-size: clamp(2rem,5.5vw,3.8rem); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .04em; color: #fff; line-height: 1.08; margin-bottom: 1rem; }
+    .hero-subtitle { font-family: var(--font-mono); font-size: clamp(.85rem,2vw,1.05rem);
+      color: var(--gold); margin-bottom: 2rem; letter-spacing: .06em; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 2.5rem; }
+    .tag { font-family: var(--font-display); font-size: .62rem; font-weight: 500; letter-spacing: .14em;
+      text-transform: uppercase; padding: .28rem .7rem; border-radius: 2px; border: 1px solid;
+      display: inline-flex; align-items: center; gap: .35rem; }
+    .tag-gold   { color: var(--gold);    border-color: var(--border-gold);          background: var(--gold-faded); }
+    .tag-green  { color: var(--success); border-color: rgba(63,185,80,.25);          background: rgba(63,185,80,.05); }
+    .tag-blue   { color: var(--info);    border-color: rgba(121,192,255,.25);         background: rgba(121,192,255,.05); }
+    .tag-purple { color: var(--purple);  border-color: rgba(192,132,252,.25);         background: rgba(192,132,252,.05); }
+    .tag-warn   { color: var(--warn);    border-color: rgba(245,158,11,.25);          background: rgba(245,158,11,.05); }
+    .hero-meta { display: grid; grid-template-columns: repeat(auto-fit,minmax(145px,1fr));
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; max-width: 780px; }
+    .hero-meta-item { padding: 1rem 1.25rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .hero-meta-label { font-family: var(--font-mono); font-size: .52rem; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--text-dim); margin-bottom: .25rem; }
+    .hero-meta-value { font-family: var(--font-display); font-size: .82rem; font-weight: 500;
+      color: var(--text); letter-spacing: .04em; }
+    .hero-meta-value.gold   { color: var(--gold); }
+    .hero-meta-value.green  { color: var(--success); }
+    .hero-meta-value.warn   { color: var(--warn); }
+    .hero-meta-value.blue   { color: var(--info); }
+    .hero-meta-value.purple { color: var(--purple); }
+
+    /* ── SECTIONS ──────────────────────────────────────────────────── */
+    .main-content { padding: 0 0 7rem; }
+    .iso-section { padding: var(--section-gap) 0; border-bottom: 1px solid var(--border); }
+    .iso-section:last-child { border-bottom: none; }
+    .section-header { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start; margin-bottom: 2.5rem; }
+    .section-num { font-family: var(--font-display); font-size: 6rem; font-weight: 700; line-height: .85;
+      color: var(--gold-faded-2); letter-spacing: -.03em; user-select: none; min-width: 100px;
+      text-align: right; padding-top: .1em; }
+    .section-title-group { padding-top: .3rem; }
+    .section-title { font-family: var(--font-display); font-size: clamp(1.3rem,3vw,1.85rem);
+      font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: #fff; margin-bottom: .5rem; }
+    .section-divider { height: 2px; background: linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
+      border-radius: 1px; margin-bottom: .5rem; }
+    .section-subtitle { font-family: var(--font-mono); font-size: .7rem; color: var(--text-muted);
+      letter-spacing: .1em; text-transform: uppercase; }
+
+    /* ── CLAIM ─────────────────────────────────────────────────────── */
+    .claim-block { background: var(--surface); border: 1px solid var(--border);
+      border-left: 3px solid var(--gold); padding: 1.75rem 2rem; border-radius: 0 6px 6px 0;
+      margin-bottom: 1.5rem; font-size: 1.03rem; line-height: 1.75; }
+    .kill-condition { background: var(--surface-2); border: 1px solid rgba(248,81,73,.25);
+      border-left: 3px solid var(--danger); padding: 1.25rem 1.75rem; border-radius: 0 6px 6px 0; }
+    .kill-label { font-family: var(--font-display); font-size: .65rem; font-weight: 600;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--danger); margin-bottom: .5rem;
+      display: flex; align-items: center; gap: .5rem; }
+
+    /* ── TABLES ────────────────────────────────────────────────────── */
+    .iso-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+    .iso-table { width: 100%; border-collapse: collapse; font-size: .875rem; min-width: 580px; }
+    .iso-table thead tr { background: var(--surface-2); border-bottom: 1px solid var(--border-gold); }
+    .iso-table thead th { font-family: var(--font-display); font-size: .62rem; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase; padding: .9rem 1.1rem; text-align: left; }
+    .iso-table thead th.col-physics   { color: var(--info); }
+    .iso-table thead th.col-theology  { color: var(--purple); }
+    .iso-table thead th.col-moral     { color: var(--success); }
+    .iso-table thead th.col-property  { color: var(--gold); }
+    .iso-table thead th.col-label     { color: var(--text-muted); }
+    .iso-table tbody tr { border-bottom: 1px solid var(--border); transition: background .12s; }
+    .iso-table tbody tr:last-child { border-bottom: none; }
+    .iso-table tbody tr:hover { background: rgba(212,175,55,.04); }
+    .iso-table td { padding: .9rem 1.1rem; vertical-align: top; line-height: 1.58; }
+    .td-label    { font-family: var(--font-display); font-size: .85rem; font-weight: 600;
+      color: var(--gold); text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; }
+    .td-physics  { color: var(--info); }
+    .td-theology { color: var(--purple); }
+
+    /* ── EQUATION BLOCKS ───────────────────────────────────────────── */
+    .equation-block { background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      padding: 1.25rem 1.5rem; margin-bottom: 1rem; overflow-x: auto; }
+    .equation-block .eq-label { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: .5rem; }
+    .equation { font-family: var(--font-mono); font-size: 1rem; color: var(--gold); line-height: 1.8; white-space: pre-wrap; }
+    .eq-note { font-size: .82rem; color: var(--text-muted); margin-top: .5rem; line-height: 1.55; }
+
+    /* ── VAR TABLE ─────────────────────────────────────────────────── */
+    .var-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-top: 1rem; }
+    .var-table td { padding: .55rem 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .var-table td:first-child { font-family: var(--font-mono); color: var(--gold); width: 145px; white-space: nowrap; padding-right: 1rem; }
+    .var-table tr:last-child td { border-bottom: none; }
+
+    /* ── INFO CARDS ────────────────────────────────────────────────── */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 1rem; }
+    .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      padding: 1.25rem; transition: border-color .2s; }
+    .info-card:hover { border-color: var(--border-gold); }
+    .info-card-label { font-family: var(--font-display); font-size: .65rem; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .4rem; }
+    .info-card-value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+      color: var(--gold); line-height: 1; margin-bottom: .3rem; }
+    .info-card-text { font-size: .82rem; color: var(--text-muted); line-height: 1.55; }
+
+    /* ── STATUS ────────────────────────────────────────────────────── */
+    .status-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(175px,1fr));
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.75rem; }
+    .status-card { padding: 1.1rem 1.2rem; border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border); background: var(--surface); }
+    .status-label { font-family: var(--font-mono); font-size: .52rem; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--text-dim); margin-bottom: .35rem; }
+    .status-value { font-family: var(--font-display); font-size: .95rem; font-weight: 600; letter-spacing: .04em; }
+    .status-value.green  { color: var(--success); }
+    .status-value.gold   { color: var(--gold); }
+    .status-value.blue   { color: var(--info); }
+    .status-value.warn   { color: var(--warn); }
+    .status-value.purple { color: var(--purple); }
+
+    /* ── ACCENT BLOCKS ─────────────────────────────────────────────── */
+    .accent-block { background: var(--surface); border: 1px solid var(--border); padding: 1.25rem 1.5rem;
+      border-radius: 0 6px 6px 0; margin-bottom: 1rem; }
+    .accent-block.gold   { border-left: 3px solid var(--gold); }
+    .accent-block.green  { border-left: 3px solid var(--success); }
+    .accent-block.warn   { border-left: 3px solid var(--warn); }
+    .accent-block.blue   { border-left: 3px solid var(--info); }
+    .accent-block.danger { border-left: 3px solid var(--danger); }
+    .accent-label { font-family: var(--font-display); font-size: .63rem; font-weight: 600;
+      letter-spacing: .2em; text-transform: uppercase; margin-bottom: .4rem; display: flex; align-items: center; gap: .5rem; }
+    .accent-block.gold   .accent-label { color: var(--gold); }
+    .accent-block.green  .accent-label { color: var(--success); }
+    .accent-block.warn   .accent-label { color: var(--warn); }
+    .accent-block.blue   .accent-label { color: var(--info); }
+    .accent-block.danger .accent-label { color: var(--danger); }
+    .accent-block p { font-size: .9rem; line-height: 1.65; }
+
+    /* ── QUOTE ─────────────────────────────────────────────────────── */
+    .iso-quote { font-family: var(--font-quote); font-style: italic; font-size: 1.05rem; color: var(--text);
+      padding: 1.25rem 1.5rem; background: var(--gold-faded-2); border: 1px solid var(--border-gold);
+      border-radius: 6px; line-height: 1.75; margin-bottom: 1rem; }
+    .iso-quote cite { display: block; margin-top: .65rem; font-style: normal; font-family: var(--font-mono);
+      font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+
+    /* ── CLASSIFICATION BANNER ─────────────────────────────────────── */
+    .classification-banner { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 1.25rem; display: flex; align-items: center; gap: .6rem; }
+    .classification-banner::before { content: ''; display: inline-block; width: 6px; height: 6px;
+      background: var(--gold); border-radius: 50%; }
+
+    /* ── PHASE DIAGRAM ─────────────────────────────────────────────── */
+    .phase-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 2rem; margin-bottom: 1.5rem; overflow-x: auto; }
+    .phase-diagram-label { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.25rem; }
+    .phase-line { display: flex; align-items: center; gap: 0; margin-bottom: 1.25rem; min-width: 540px; }
+    .phase-node { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-family: var(--font-mono); font-size: .72rem; font-weight: 600; flex-shrink: 0; }
+    .phase-node.hell   { background: rgba(248,81,73,.12); border: 2px solid var(--danger); color: var(--danger); }
+    .phase-node.saddle { background: rgba(245,158,11,.08); border: 2px dashed var(--warn); color: var(--warn); }
+    .phase-node.heaven { background: rgba(63,185,80,.12); border: 2px solid var(--success); color: var(--success); }
+    .phase-seg { flex: 1; height: 3px; position: relative; }
+    .phase-seg.left  { background: linear-gradient(90deg,rgba(248,81,73,.5),rgba(245,158,11,.5)); }
+    .phase-seg.right { background: linear-gradient(90deg,rgba(245,158,11,.5),rgba(63,185,80,.5)); }
+    .phase-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 0; height: 0; }
+    .phase-arrow.left-arrow  { left: 28%; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-right: 9px solid rgba(248,81,73,.7); }
+    .phase-arrow.right-arrow { right: 28%; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 9px solid rgba(63,185,80,.7); }
+    .phase-labels { display: flex; justify-content: space-between; font-family: var(--font-mono);
+      font-size: .65rem; color: var(--text-muted); min-width: 540px; padding: 0 .5rem; }
+    .phase-label-item { text-align: center; }
+    .phase-label-item span { display: block; }
+    .phase-label-item .pl-val { color: var(--gold); font-size: .72rem; font-weight: 600; }
+
+    /* ── FIXED POINT CARDS ─────────────────────────────────────────── */
+    .fp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .fp-card { border-radius: 8px; padding: 1.35rem; border: 1px solid; position: relative; overflow: hidden; }
+    .fp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .fp-card.hell   { background: rgba(248,81,73,.04);  border-color: rgba(248,81,73,.2); }
+    .fp-card.saddle { background: rgba(245,158,11,.04); border-color: rgba(245,158,11,.2); }
+    .fp-card.heaven { background: rgba(63,185,80,.04);  border-color: rgba(63,185,80,.2); }
+    .fp-card.hell::before   { background: var(--danger); }
+    .fp-card.saddle::before { background: var(--warn); }
+    .fp-card.heaven::before { background: var(--success); }
+    .fp-val { font-family: var(--font-display); font-size: 2.3rem; font-weight: 700; line-height: 1; margin-bottom: .3rem; }
+    .fp-card.hell   .fp-val { color: var(--danger); }
+    .fp-card.saddle .fp-val { color: var(--warn); }
+    .fp-card.heaven .fp-val { color: var(--success); }
+    .fp-type { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .7rem; }
+    .fp-card.hell   .fp-type { color: rgba(248,81,73,.7); }
+    .fp-card.saddle .fp-type { color: rgba(245,158,11,.7); }
+    .fp-card.heaven .fp-type { color: rgba(63,185,80,.7); }
+    .fp-name { font-family: var(--font-display); font-size: .95rem; font-weight: 600; letter-spacing: .04em; color: #e6edf3; margin-bottom: .3rem; }
+    .fp-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.55; }
+
+    /* ── SCRIPTURE LIST ────────────────────────────────────────────── */
+    .scripture-list { list-style: none; display: flex; flex-direction: column; gap: .65rem; margin-bottom: 1.75rem; }
+    .scripture-list li { display: flex; align-items: flex-start; gap: .85rem; padding: .75rem 1rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: .9rem; }
+    .scripture-ref { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em;
+      color: var(--gold); white-space: nowrap; min-width: 115px; padding-top: .05rem; }
+    .scripture-desc { color: var(--text); line-height: 1.55; }
+
+    /* ── ISO LINK LIST ─────────────────────────────────────────────── */
+    .iso-link-list { display: flex; flex-direction: column; gap: .75rem; }
+    .iso-link-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px; transition: border-color .2s; }
+    .iso-link-item:hover { border-color: var(--border-gold); }
+    .iso-link-id { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em;
+      color: var(--gold); white-space: nowrap; min-width: 72px; padding-top: .05rem; }
+    .iso-link-body { flex: 1; }
+    .iso-link-title { font-family: var(--font-display); font-size: .9rem; font-weight: 600;
+      letter-spacing: .04em; color: #e6edf3; margin-bottom: .25rem; }
+    .iso-link-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── PROSE ─────────────────────────────────────────────────────── */
+    p { margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: #e6edf3; font-weight: 600; }
+    .prose { font-size: .95rem; line-height: 1.75; color: var(--text); margin-bottom: 1.5rem; }
+
+    /* ── FOOTER ────────────────────────────────────────────────────── */
+    .page-footer { border-top: 1px solid var(--border); padding: 2.5rem 0; }
+    .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+    .footer-meta { font-family: var(--font-mono); font-size: .68rem; color: var(--text-dim); line-height: 1.9; }
+    .footer-meta span { color: var(--text-muted); }
+    .footer-back { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono);
+      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted);
+      text-decoration: none; padding: .5rem .8rem; border: 1px solid var(--border); border-radius: 4px; transition: all .2s; }
+    .footer-back:hover { color: var(--gold); border-color: var(--border-gold); }
+
+    /* ── BACK LINK ─────────────────────────────────────────────────── */
+    .back-link { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-mono);
+      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted);
+      text-decoration: none; margin-bottom: 2rem; transition: color .2s; }
+    .back-link:hover { color: var(--gold); }
+
+    /* ── SCROLL TOP ────────────────────────────────────────────────── */
+    .scroll-top { position: fixed; bottom: 1.75rem; right: 1.75rem; width: 38px; height: 38px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: var(--text-muted);
+      cursor: pointer; opacity: 0; visibility: hidden;
+      transition: opacity .25s,visibility .25s,border-color .2s,color .2s; font-size: .75rem; z-index: 50; }
+    .scroll-top.visible { opacity: 1; visibility: visible; }
+    .scroll-top:hover { border-color: var(--border-gold); color: var(--gold); }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────────── */
+    @media(max-width:768px) {
+      .container { padding: 0 1.1rem; } .hero { padding: 3rem 0 2.5rem; }
+      :root { --section-gap: 3.5rem; }
+      .section-header { grid-template-columns: 1fr; gap: .4rem; }
+      .section-num { font-size: 3.8rem; text-align: left; min-width: auto; line-height: 1; }
+      .card-grid { grid-template-columns: 1fr; } .fp-grid { grid-template-columns: 1fr; }
+    }
+    @media(max-width:520px) {
+      .hero-title { font-size: 1.9rem; }
+      .status-grid { grid-template-columns: 1fr 1fr; } .fp-grid { grid-template-columns: 1fr; }
+    }
+  
+/* ═══ TP-HEADING-CLEANUP-v1 ═══ */
+
+/* H1: big, white, serif — page anchor */
+.tp-article h1, .ftp-article h1 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: .8rem;
+  margin-top: 2rem;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+
+/* H2: GOLD — section markers */
+.tp-article h2, .ftp-article h2 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.6rem;
+  color: #d4af37;
+  font-weight: 400;
+  margin: 3rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  letter-spacing: -.01em;
+}
+
+/* H3: clean subordinate */
+.tp-article h3, .ftp-article h3 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.2rem;
+  color: #9a9a9a;
+  font-weight: 600;
+  margin: 2rem 0 .6rem;
+}
+
+/* Tables: gold header, dark rows, hover */
+.tp-article table, .ftp-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: .9rem;
+}
+.tp-article th, .ftp-article th {
+  background: rgba(212, 175, 55, 0.08);
+  color: #d4af37;
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  font-size: .8rem;
+  letter-spacing: .03em;
+}
+.tp-article td, .ftp-article td {
+  padding: .5rem .8rem;
+  border-bottom: 1px solid #222;
+  color: #e5e3df;
+}
+.tp-article tr:hover td, .ftp-article tr:hover td {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+/* Lists: proper spacing */
+.tp-article ul, .tp-article ol,
+.ftp-article ul, .ftp-article ol {
+  margin: 1rem 0 1rem 1.5rem;
+  line-height: 1.8;
+}
+.tp-article li, .ftp-article li {
+  margin-bottom: .3rem;
+}
+
+/* Blockquotes: gold accent */
+.tp-article blockquote, .ftp-article blockquote {
+  border-left: 3px solid #d4af37;
+  margin: 1.5rem 0;
+  padding: .8rem 1.2rem;
+  background: rgba(212, 175, 55, 0.04);
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-style: italic;
+  color: #9a9a9a;
+}
+
+/* Drop cap on first paragraph */
+.tp-article > p:first-of-type::first-letter,
+.ftp-article > p:first-of-type::first-letter,
+.tp-level-panel > p:first-of-type::first-letter {
+  font-size: 3.2rem;
+  float: left;
+  color: #d4af37;
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-weight: 600;
+  line-height: .8;
+  margin: .1rem .4rem 0 0;
+  padding-top: .1rem;
+}
+
+/* Code/mono blocks */
+.tp-article pre, .tp-article code,
+.ftp-article pre, .ftp-article code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .85rem;
+}
+.tp-article pre, .ftp-article pre {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* ═══ END TP-HEADING-CLEANUP-v1 ═══ */
+</style>
+<link href="../components/audio-dock.css" rel="stylesheet"/>
+<link href="../components/tp-header-lip.css" rel="stylesheet"/>
+<link href="../components/verification-bar.css" rel="stylesheet"/>
+<link href="../components/top-bar-bottom-bar.css" rel="stylesheet"/>
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
+
+</head>
+<body>
+
+  <!-- STICKY HEADER -->
+  <header class="site-header">
+    <div class="container">
+      <a href="../isomorphism/index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
+      <div class="iso-badge">ISO-016</div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <a href="../isomorphism/index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      <div aria-hidden="true" class="hero-bg-number">016</div>
+      <div class="hero-iso-id"><i class="fas fa-circle-nodes"></i> ISO-016 &middot; Dynamical Systems &#8596; Theology</div>
+      <h1 class="hero-title">Eschatological Attractors</h1>
+      <p class="hero-subtitle drop-cap">Logistic Dynamics &#8596; Heaven &sol; Hell &sol; Lukewarmness</p>
+      <div class="hero-tags">
+        <span class="tag tag-blue"><i class="fas fa-atom"></i> Dynamical Systems</span>
+        <span class="tag tag-purple"><i class="fas fa-cross"></i> Theology</span>
+        <span class="tag tag-gold"><i class="fas fa-diagram-project"></i> Structural Isomorphism</span>
+        <span class="tag tag-warn"><i class="fas fa-flask"></i> Status: Testing</span>
+        <span class="tag tag-green"><i class="fas fa-shield-halved"></i> Swap: Passed</span>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">ID</div>
+          <div class="hero-meta-value gold">ISO-016</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Type</div>
+          <div class="hero-meta-value">Structural</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain A</div>
+          <div class="hero-meta-value blue">Dynamical Systems</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain B</div>
+          <div class="hero-meta-value purple">Theology</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Confidence</div>
+          <div class="hero-meta-value warn">Medium</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Registered</div>
+          <div class="hero-meta-value">2026-04-04</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- ══ 01 THE CLAIM ════════════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">01</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Claim</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Structural isomorphism &middot; binary terminus &middot; no neutral equilibrium</div>
+          </div>
+        </div>
+
+        <div class="classification-banner">
+          <i class="fas fa-circle-nodes"></i>
+          ISO-016 &middot; Structural Isomorphism &middot; Dynamical Systems &#8596; Theology
+        </div>
+
+        <div class="claim-block">
+          <p><strong>Logistic-type dynamical systems with two stable fixed-point attractors and one unstable
+          saddle point are structurally isomorphic to the Christian eschatological schema.</strong> The system
+          variable &#934; &isin; [0,&nbsp;1] evolves toward exactly one of two stable endpoints &mdash;
+          &#934;&nbsp;=&nbsp;0 or &#934;&nbsp;=&nbsp;1 &mdash; with an unstable critical threshold at
+          &#934;&nbsp;=&nbsp;0.5 that can never serve as a permanent terminus. The theological mapping is
+          exact: &#934;&nbsp;=&nbsp;1 corresponds to Heaven (full communion with God, complete coherence);
+          &#934;&nbsp;=&nbsp;0 corresponds to Hell (total separation from God, complete decoherence); and
+          &#934;&nbsp;=&nbsp;0.5 corresponds to the lukewarm middle state &mdash; theologically unstable and
+          explicitly rejected in scripture.</p>
+          <p>Both domains share the same topological structure: <strong>binary basin partitioning</strong> by
+          a saddle point that cannot be occupied indefinitely. The dynamical systems framework predicts exactly
+          the eschatological structure found in theology &mdash; no third stable state, no neutral terminus,
+          and an unstable middle that must eventually resolve into one of the two attractors.</p>
+        </div>
+
+        <div class="kill-condition">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
+          <p>If a genuine <strong>third stable state</strong> were discovered in either domain &mdash; a stable
+          neutral equilibrium in the dynamical system, or a scriptural third eschatological category that is
+          neither Heaven nor Hell &mdash; the mapping breaks. Purgatory (Catholic theology) functions as a
+          <em>transient state</em>, not a stable attractor; souls pass through Purgatory and converge to
+          &#934;&nbsp;=&nbsp;1. Purgatory therefore does not falsify the mapping. The kill condition requires
+          a <em>permanent</em>, scripturally grounded third terminus.</p>
+        </div>
+      </section>
+
+      <!-- ══ 02 MATHEMATICAL FORM ════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">02</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Mathematical Form</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Logistic dynamics &middot; fixed-point analysis &middot; phase portrait</div>
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Governing Dynamics &mdash; Primary Equation</div>
+          <div class="equation">d&#934;/dt = &#945; &#934; (1 &minus; &#934;) (&#934; &minus; &#934;<sub>c</sub>)</div>
+          <div class="eq-note">The logistic cubic governing the evolution of coherence variable &#934; over time.
+          &#945;&nbsp;&gt;&nbsp;0 sets the convergence rate; &#934;<sub>c</sub>&nbsp;=&nbsp;0.5 is the critical
+          threshold partitioning the two basins of attraction. &#934; &isin; [0,&nbsp;1] throughout.</div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Fixed Points &mdash; Where d&#934;/dt = 0</div>
+          <div class="equation">&#934;* = 0    &rarr;  Stable attractor   [Hell / decoherence]
+&#934;* = 0.5  &rarr;  Unstable saddle    [Lukewarmness / indecision]
+&#934;* = 1    &rarr;  Stable attractor   [Heaven / full coherence]</div>
+          <div class="eq-note">The cubic has exactly three real roots in [0,&nbsp;1]. Stability is determined
+          by the sign of f&prime;(&#934;*): negative eigenvalue = stable attractor; positive eigenvalue = unstable saddle.</div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Stability Analysis &mdash; Linearization at Each Fixed Point</div>
+          <div class="equation">f(&#934;) = &#945; &#934; (1 &minus; &#934;) (&#934; &minus; &#934;<sub>c</sub>)
+
+f&prime;(&#934;* = 0)   = &#945; (0 &minus; &#934;<sub>c</sub>)  = &minus;0.5&#945;  &lt; 0   [STABLE for &#945; &gt; 0]
+f&prime;(&#934;* = 0.5)  full cubic expansion            &gt; 0   [UNSTABLE]
+f&prime;(&#934;* = 1)   = &#945; (1)(1 &minus; &#934;<sub>c</sub>) cubic form  &lt; 0   [STABLE for &#945; &gt; 0]</div>
+          <div class="eq-note">For &#945;&nbsp;&gt;&nbsp;0, both outer fixed points are stable attractors. The
+          inner fixed point is an unstable repeller. Any &#934;<sub>0</sub>&nbsp;&ne;&nbsp;0.5 converges to
+          exactly one attractor.</div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-label">Basin of Attraction &mdash; Phase Space Partition</div>
+          <div class="equation">Basin(&#934; = 0): &#123; &#934;<sub>0</sub> &isin; [0, 1) : &#934;<sub>0</sub> &lt; 0.5 &#125;  &rarr;  converges to Hell
+Basin(&#934; = 1): &#123; &#934;<sub>0</sub> &isin; (0, 1] : &#934;<sub>0</sub> &gt; 0.5 &#125;  &rarr;  converges to Heaven
+Boundary:     &#123; &#934;<sub>0</sub> = 0.5 &#125;  (measure zero &mdash; never realized in practice)</div>
+          <div class="eq-note">The saddle at &#934;&nbsp;=&nbsp;0.5 has measure zero in phase space. Any
+          perturbation drives the system into one basin or the other, mirroring the theological claim that
+          lukewarmness cannot be maintained indefinitely.</div>
+        </div>
+
+        <p class="prose" style="margin-top:1.5rem;">Variable definitions:</p>
+        <table class="var-table">
+          <tr>
+            <td>&#934; &isin; [0,&nbsp;1]</td>
+            <td>Coherence variable. &#934;&nbsp;=&nbsp;1 is complete coherence with God (Heaven); &#934;&nbsp;=&nbsp;0 is complete decoherence (Hell).</td>
+          </tr>
+          <tr>
+            <td>&#945; &gt; 0</td>
+            <td>Rate constant governing the speed of convergence to the attractors. Does not affect which attractor is reached.</td>
+          </tr>
+          <tr>
+            <td>&#934;<sub>c</sub> = 0.5</td>
+            <td>Critical threshold &mdash; the unstable saddle partitioning phase space. Corresponds to the lukewarm state of Revelation 3:16.</td>
+          </tr>
+          <tr>
+            <td>d&#934;/dt</td>
+            <td>Rate of change of coherence. Positive when moving toward Heaven; negative when moving toward Hell.</td>
+          </tr>
+          <tr>
+            <td>f&prime;(&#934;*)</td>
+            <td>Linearized eigenvalue at each fixed point. Negative = stable; positive = unstable saddle.</td>
+          </tr>
+          <tr>
+            <td>&#934;<sub>0</sub></td>
+            <td>Initial condition &mdash; the soul's starting coherence. Determines which basin it falls into and therefore which attractor it converges toward.</td>
+          </tr>
+        </table>
+
+        <p class="prose" style="margin-top:1.75rem;">Phase portrait &mdash; qualitative flow on [0,&nbsp;1]:</p>
+
+        <div class="phase-diagram">
+          <div class="phase-diagram-label">Phase Portrait &mdash; Arrows Indicate Direction of Flow (Sign of d&#934;/dt)</div>
+          <div class="phase-line">
+            <div class="phase-node hell">&#934;=0</div>
+            <div class="phase-seg left">
+              <div class="phase-arrow left-arrow"></div>
+            </div>
+            <div class="phase-node saddle">0.5</div>
+            <div class="phase-seg right">
+              <div class="phase-arrow right-arrow"></div>
+            </div>
+            <div class="phase-node heaven">&#934;=1</div>
+          </div>
+          <div class="phase-labels">
+            <div class="phase-label-item">
+              <span class="pl-val">&#934; = 0</span>
+              <span>Stable Attractor</span>
+              <span style="color:var(--danger);">Hell</span>
+            </div>
+            <div class="phase-label-item">
+              <span class="pl-val">&#934; = 0.5</span>
+              <span>Unstable Saddle</span>
+              <span style="color:var(--warn);">Lukewarmness</span>
+            </div>
+            <div class="phase-label-item">
+              <span class="pl-val">&#934; = 1</span>
+              <span>Stable Attractor</span>
+              <span style="color:var(--success);">Heaven</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fp-grid">
+          <div class="fp-card hell">
+            <div class="fp-val">&#934;&nbsp;=&nbsp;0</div>
+            <div class="fp-type">Stable Attractor &middot; Eigenvalue &lt; 0</div>
+            <div class="fp-name">Hell &sol; Final Separation</div>
+            <div class="fp-desc">Complete decoherence from God. Basin: all &#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5. Once entered, the trajectory converges inevitably to zero communion. Irreversible at the eschatological terminus.</div>
+          </div>
+          <div class="fp-card saddle">
+            <div class="fp-val">&#934;&nbsp;=&nbsp;0.5</div>
+            <div class="fp-type">Unstable Saddle &middot; Eigenvalue &gt; 0</div>
+            <div class="fp-name">Lukewarmness &sol; Indecision</div>
+            <div class="fp-desc">The unstable equilibrium. Measure-zero probability of remaining here. Any perturbation &mdash; a life event, a choice, a crisis of faith &mdash; drives the system away toward one of the two attractors.</div>
+          </div>
+          <div class="fp-card heaven">
+            <div class="fp-val">&#934;&nbsp;=&nbsp;1</div>
+            <div class="fp-type">Stable Attractor &middot; Eigenvalue &lt; 0</div>
+            <div class="fp-name">Heaven &sol; Glorification</div>
+            <div class="fp-desc">Complete coherence with God. Basin: all &#934;<sub>0</sub>&nbsp;&gt;&nbsp;0.5. Full communion, realized eschatologically as glorification. The teleological goal toward which grace-enabled trajectories converge.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ 03 STRUCTURAL CORRESPONDENCE ═══════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">03</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Structural Correspondence</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Point-for-point mapping &middot; dynamical systems &#8596; eschatology</div>
+          </div>
+        </div>
+
+        <p class="prose">The following table maps each structural element of the dynamical system to its
+        theological counterpart. Every feature of the mathematical system has an exact theological analog, and
+        vice versa. The swap test (reversing the mapping direction) holds without modification.</p>
+
+        <div class="iso-table-wrap">
+          <table class="iso-table">
+            <thead>
+              <tr>
+                <th class="col-label">Element</th>
+                <th class="col-physics">Dynamical Systems (Domain A)</th>
+                <th class="col-theology">Theology (Domain B)</th>
+                <th class="col-property">Shared Structural Property</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">Attractor 1</td>
+                <td class="td-physics">&#934;&nbsp;=&nbsp;1 &mdash; stable fixed point; basin&nbsp;=&nbsp;{&#934;<sub>0</sub>&nbsp;&gt;&nbsp;0.5}; eigenvalue&nbsp;&lt;&nbsp;0; monotonic convergence</td>
+                <td class="td-theology">Heaven &mdash; full communion with God; complete coherence; glorification; the eschatological terminus toward which grace-enabled souls converge</td>
+                <td>Stable terminus: once entered, system and soul remain; convergence is irreversible; no exit dynamics</td>
+              </tr>
+              <tr>
+                <td class="td-label">Attractor 2</td>
+                <td class="td-physics">&#934;&nbsp;=&nbsp;0 &mdash; stable fixed point; basin&nbsp;=&nbsp;{&#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5}; eigenvalue&nbsp;&lt;&nbsp;0; monotonic convergence</td>
+                <td class="td-theology">Hell &mdash; total separation from God; complete decoherence; final judgment; the eschatological consequence for trajectories that remain below the saddle</td>
+                <td>Stable terminus: once entered, system and soul remain; irreversible; complementary to Attractor 1</td>
+              </tr>
+              <tr>
+                <td class="td-label">Saddle Point</td>
+                <td class="td-physics">&#934;&nbsp;=&nbsp;0.5 &mdash; unstable fixed point; eigenvalue&nbsp;&gt;&nbsp;0; measure-zero basin boundary; perturbations grow rather than decay</td>
+                <td class="td-theology">Lukewarmness &mdash; spiritual indecision; actively rejected, not merely bypassed (Rev&nbsp;3:16); cannot be maintained permanently; theologically unstable by structure</td>
+                <td>Unstable equilibrium: the structure itself rejects the middle state; perturbations amplify; cannot be occupied indefinitely</td>
+              </tr>
+              <tr>
+                <td class="td-label">Basin Structure</td>
+                <td class="td-physics">Phase space partitioned into exactly two basins by the saddle; no third basin; partition is exhaustive and exclusive</td>
+                <td class="td-theology">The sheep and the goats (Matt&nbsp;25:31-46) &mdash; exactly two eschatological outcomes; no third category; the partition is theologically exhaustive</td>
+                <td>Binary partition: exactly two terminal categories; no middle ground; all trajectories end in one or the other</td>
+              </tr>
+              <tr>
+                <td class="td-label">Perturbation Effect</td>
+                <td class="td-physics">Perturbations to the saddle grow exponentially; small fluctuations in &#934;<sub>0</sub> near 0.5 determine which attractor is reached; sensitivity maximized at the threshold</td>
+                <td class="td-theology">Life events, choices, grace, and sin are perturbations that progressively align or misalign the soul; decisions near the threshold carry maximal eschatological weight</td>
+                <td>Saddle sensitivity: small inputs near the critical point have large long-term consequences; the threshold is the point of maximal moral leverage</td>
+              </tr>
+              <tr>
+                <td class="td-label">No Neutral Equilibrium</td>
+                <td class="td-physics">The saddle has a positive eigenvalue &mdash; it is unstable; there is no third stable state in the cubic system</td>
+                <td class="td-theology">"I will spit you out of my mouth" (Rev&nbsp;3:16) &mdash; lukewarmness is actively expelled, not merely avoided; theology has no stable neutral ground</td>
+                <td>Active rejection of neutral ground: both structures resist neutral equilibrium by construction, not merely by absence</td>
+              </tr>
+              <tr>
+                <td class="td-label">Binary Terminus</td>
+                <td class="td-physics">All trajectories from &#934;<sub>0</sub>&nbsp;&ne;&nbsp;0.5 converge to exactly {0,&nbsp;1}; the system is closed; no fourth state exists</td>
+                <td class="td-theology">Every soul reaches exactly one of {Heaven, Hell}; Deut&nbsp;30:19 presents life and death as the two and only options; the eschatological binary is exhaustive</td>
+                <td>Completeness: the phase space is closed; every trajectory has a definite terminal destination; no escapes</td>
+              </tr>
+              <tr>
+                <td class="td-label">Grace Operator</td>
+                <td class="td-physics">External operator that shifts &#934;<sub>0</sub> from the &#934;&nbsp;=&nbsp;0 basin across the saddle to the &#934;&nbsp;=&nbsp;1 basin; cannot be self-generated by the system</td>
+                <td class="td-theology">Divine grace &mdash; soteriological action moving the soul from the Hell basin to the Heaven basin; cannot be self-generated (ISO-012); requires supernatural intervention</td>
+                <td>Basin-shifting: the only mechanism for changing the terminal attractor; impossible through self-operation within the system's own dynamics</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="accent-block blue" style="margin-top:1.5rem;">
+          <div class="accent-label"><i class="fas fa-rotate"></i> Swap Test &mdash; Passed</div>
+          <p>The structural mapping holds in both directions. Starting from dynamical systems theory, one
+          predicts exactly the eschatological structure found in theology: two stable termini, one unstable
+          middle, no third option, binary basin partition. Conversely, starting from the theological claims,
+          the required mathematical structure is precisely the logistic-cubic with &#934;<sub>c</sub>&nbsp;=&nbsp;0.5.
+          The isomorphism is bidirectional and survives reversal without modification.</p>
+        </div>
+      </section>
+
+      <!-- ══ 04 EVIDENCE ════════════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">04</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Evidence &amp; Verification</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Scriptural grounding &middot; mathematical verification &middot; caveats</div>
+          </div>
+        </div>
+
+        <p class="prose">The theological domain is grounded in explicit scriptural claims that directly encode
+        the binary attractor structure. Three primary texts provide the evidence base, each mapping to a
+        distinct feature of the dynamical system.</p>
+
+        <div class="iso-quote">
+          "When the Son of Man comes in his glory, and all the angels with him, he will sit on his glorious
+          throne. All the nations will be gathered before him, and he will separate the people one from
+          another as a shepherd separates the sheep from the goats."
+          <cite>Matthew 25:31&ndash;32 &mdash; The canonical eschatological binary: two groups, two outcomes, no third category</cite>
+        </div>
+
+        <div class="iso-quote">
+          "So, because you are lukewarm &mdash; neither hot nor cold &mdash; I am about to spit you out of
+          my mouth."
+          <cite>Revelation 3:16 &mdash; Direct rejection of the stable middle state; the saddle is not merely unstable but actively expelled</cite>
+        </div>
+
+        <div class="iso-quote">
+          "This day I call the heavens and the earth as witnesses against you that I have set before you life
+          and death, blessings and curses. Now choose life, so that you and your children may live."
+          <cite>Deuteronomy 30:19 &mdash; Binary choice structure; two basins; volitional initial-condition selection</cite>
+        </div>
+
+        <ul class="scripture-list">
+          <li>
+            <span class="scripture-ref">Matt 25:31&ndash;46</span>
+            <span class="scripture-desc">The Sheep and Goats judgment &mdash; canonical binary. Two groups, two outcomes. No third category. The text explicitly places sheep on the right (Heaven, &#934;&nbsp;=&nbsp;1 basin) and goats on the left (Hell, &#934;&nbsp;=&nbsp;0 basin). Maps directly to the two-basin partition.</span>
+          </li>
+          <li>
+            <span class="scripture-ref">Rev 3:16</span>
+            <span class="scripture-desc">Lukewarmness explicitly rejected &mdash; "I am about to spit you out of my mouth." This is a description of an <em>active, structural instability</em>, not merely a suboptimal state. The theological claim is that the middle state cannot be maintained. Maps to the positive eigenvalue at &#934;&nbsp;=&nbsp;0.5.</span>
+          </li>
+          <li>
+            <span class="scripture-ref">Deut 30:19</span>
+            <span class="scripture-desc">"I have set before you life and death&hellip; choose life." The binary structure is presented as the fundamental eschatological choice. The volitional element maps to initial-condition selection: which basin does &#934;<sub>0</sub> fall into? Two options, one selection, permanent consequence &mdash; mirrors the basin structure exactly.</span>
+          </li>
+        </ul>
+
+        <div class="accent-block green">
+          <div class="accent-label"><i class="fas fa-check-circle"></i> Mathematical Verification &mdash; Rigorous Theorem</div>
+          <p>The dynamical systems claim is mathematically rigorous. A cubic polynomial f(&#934;)&nbsp;=&nbsp;&#945;&#934;(1&minus;&#934;)(&#934;&minus;&#934;<sub>c</sub>) with 0&nbsp;&lt;&nbsp;&#934;<sub>c</sub>&nbsp;&lt;&nbsp;1 and &#945;&nbsp;&gt;&nbsp;0 necessarily has exactly three real roots in [0,&nbsp;1], with the two outer roots stable and the inner root unstable. This is not an approximation &mdash; it is an exact property of this class of equations.</p>
+        </div>
+
+        <div class="accent-block green" style="margin-top:.5rem;">
+          <div class="accent-label"><i class="fas fa-check-circle"></i> No Third Attractor Found</div>
+          <p>A systematic search for a third stable eschatological state in Christian theology has not yielded
+          a candidate satisfying the kill condition. Purgatory is a transient process state within the Heaven
+          basin. Annihilationism preserves the binary topology by redefining &#934;&nbsp;=&nbsp;0 as
+          non-existence rather than torment. The two-terminus partition holds across major Christian traditions.</p>
+        </div>
+
+        <div class="accent-block warn" style="margin-top:.5rem;">
+          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Caveat &mdash; Location of &#934;<sub>c</sub></div>
+          <p>&#934;<sub>c</sub>&nbsp;=&nbsp;0.5 is chosen on grounds of maximal symmetry, not derived from
+          first principles. Scripture indicates that a binary separation exists but does not specify the
+          exact proportions of humanity in each basin. The existence of the saddle is well-grounded; its
+          precise location is not yet derivable from deeper principles.</p>
+        </div>
+
+        <div class="accent-block warn" style="margin-top:.5rem;">
+          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Caveat &mdash; Static Grace Model</div>
+          <p>The model treats grace as a discrete basin-shifting event (ISO-013). In reality, grace acts
+          continuously over a lifetime. A complete model would require coupling ISO-016 to ISO-013 explicitly,
+          producing a time-varying &#934;<sub>c</sub>(t) or an additional driving term. The current model
+          captures the topology of grace but not its dynamics.</p>
+        </div>
+
+        <div class="accent-block warn" style="margin-top:.5rem;">
+          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Honest Assessment &mdash; Imposed or Emergent?</div>
+          <p>The binary attractor structure is partly <em>imposed</em> through the choice of dynamics. The
+          logistic cubic produces two stable fixed points because it is a product of &#934; and (1&minus;&#934;),
+          which naturally creates zeros at the endpoints. A different dynamical equation could produce the
+          same topology with different basin geometry. The bimodal structure emerges from the dynamics, but
+          the dynamics were chosen to produce it. This is why the ISO remains at <strong>Testing</strong>:
+          the dynamics should be derived from first principles rather than postulated.</p>
+        </div>
+      </section>
+
+      <!-- ══ 05 IMPLICATIONS ════════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">05</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Implications &amp; Connections</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Grace as basin-shifting &middot; connected ISOs &middot; theological implications</div>
+          </div>
+        </div>
+
+        <p class="prose">The most significant implication of ISO-016 is its account of <strong>grace as a
+        basin-shifting operator</strong>. Without external intervention, a trajectory with
+        &#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5 will inevitably converge to &#934;&nbsp;=&nbsp;0. The only
+        mechanism for reaching &#934;&nbsp;=&nbsp;1 from a below-threshold initial condition is an operator
+        that moves the trajectory across the saddle boundary. This is precisely the function of divine grace
+        in Christian soteriology.</p>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-star"></i> Key Implication &mdash; Grace as Topological Intervention</div>
+          <p>The grace operator (ISO-013) acts by shifting the effective initial condition from
+          &#934;<sub>0</sub>&nbsp;&lt;&nbsp;0.5 to &#934;<sub>0</sub>&prime;&nbsp;&gt;&nbsp;0.5. Without this
+          external intervention, self-evolution cannot change the basin &mdash; a result consistent with
+          ISO-012 (self-evolution cannot alter the eigenvalue structure). Grace is not merely a force that
+          accelerates convergence to &#934;&nbsp;=&nbsp;1; it is a <em>topological intervention</em> that
+          changes which attractor the trajectory converges to. This gives a precise mathematical meaning to
+          the theological claim that salvation cannot be self-generated.</p>
+        </div>
+
+        <p class="prose" style="margin-top:1.5rem;">ISO-016 also provides a precise account of why lukewarmness
+        is not a stable spiritual state. The Revelation 3:16 passage describes an <em>active rejection</em>
+        of the lukewarm state, mapping to the positive eigenvalue at &#934;&nbsp;=&nbsp;0.5: the system
+        itself provides a force that drives the trajectory away from the saddle. This is not metaphor &mdash;
+        the mathematical structure literally cannot sustain the middle state, just as theology cannot sustain
+        spiritual indecision as a permanent condition.</p>
+
+        <p class="prose">The model also predicts <strong>critical slowing down</strong> near the saddle: trajectories
+        near &#934;&nbsp;=&nbsp;0.5 evolve very slowly before accelerating toward one attractor. This maps to
+        the theological intuition that conversion decisions are often preceded by extended periods of agonizing
+        indecision &mdash; the experiential signature of saddle-point dynamics.</p>
+
+        <p class="prose">Connected isomorphisms in the registry:</p>
+
+        <div class="iso-link-list" style="margin-bottom:2rem;">
+          <div class="iso-link-item">
+            <div class="iso-link-id">ISO-012</div>
+            <div class="iso-link-body">
+              <div class="iso-link-title">Self-Evolution Cannot Change the Eigenvalue</div>
+              <div class="iso-link-desc">Establishes that a system operating within its own eigenvalue structure
+              cannot alter that structure through self-operation. Applied to ISO-016: a soul in the &#934;&nbsp;=&nbsp;0
+              basin cannot self-generate sufficient coherence to cross the saddle boundary. External intervention
+              is required. ISO-016's basin model depends directly on ISO-012's eigenvalue constraint.</div>
+            </div>
+          </div>
+          <div class="iso-link-item">
+            <div class="iso-link-id">ISO-013</div>
+            <div class="iso-link-body">
+              <div class="iso-link-title">Grace as External Operator &sol; Basin-Shifting</div>
+              <div class="iso-link-desc">Provides the formal description of the grace operator that shifts
+              trajectories across the saddle boundary. ISO-016 establishes the basin structure that ISO-013's
+              operator must cross. The two isomorphisms form a coupled system: ISO-016 describes the topology;
+              ISO-013 describes the intervention mechanism. Neither is complete without the other.</div>
+            </div>
+          </div>
+          <div class="iso-link-item">
+            <div class="iso-link-id">ISO-000</div>
+            <div class="iso-link-body">
+              <div class="iso-link-title">Foundational Theophysics Axioms (POF 2828)</div>
+              <div class="iso-link-desc">ISO-016 instantiates the POF 2828 core claim at the eschatological
+              level. The binary attractor structure, with grace as the basin-shifting operator, is a direct
+              application of the foundational principle that reality has a coherence-maximizing telos
+              (&#934;&nbsp;&rarr;&nbsp;1) and a decoherence terminus (&#934;&nbsp;&rarr;&nbsp;0), with a
+              critical threshold at the midpoint.</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="prose">Broader theological implications:</p>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-label">Annihilationism</div>
+            <div class="info-card-value" style="font-size:.95rem; color:var(--success);">Compatible</div>
+            <div class="info-card-text">Annihilationism redefines &#934;&nbsp;=&nbsp;0 as non-existence rather
+            than eternal conscious torment. This is a reinterpretation of the attractor's meaning, not a change
+            to the topology. The two-basin partition survives.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Purgatory</div>
+            <div class="info-card-value" style="font-size:.95rem; color:var(--info);">Transient State</div>
+            <div class="info-card-text">Purgatory is a process state <em>within</em> the &#934;&nbsp;&gt;&nbsp;0.5 basin,
+            not a third attractor. Souls in Purgatory are already in the Heaven basin; they converge to
+            &#934;&nbsp;=&nbsp;1. The trajectory passes through Purgatory; it is not a destination.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Universalism</div>
+            <div class="info-card-value" style="font-size:.95rem; color:var(--danger);">Breaks Mapping</div>
+            <div class="info-card-text">Universal salvation (all reach &#934;&nbsp;=&nbsp;1) would require
+            &#934;&nbsp;=&nbsp;0 to be an unstable, not stable, fixed point. This is not compatible with
+            ISO-016 as stated. A revised model with time-varying &#934;<sub>c</sub> would be needed.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Free Will</div>
+            <div class="info-card-value" style="font-size:.95rem; color:var(--gold);">Initial Condition</div>
+            <div class="info-card-text">Free will maps to the selection of &#934;<sub>0</sub>. The deterministic
+            flow then operates once the initial condition is set. Compatible with both libertarian (genuine
+            choice of &#934;<sub>0</sub>) and compatibilist views.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Predestination</div>
+            <div class="info-card-value" style="font-size:.95rem; color:var(--gold);">Fixed &#934;<sub>0</sub></div>
+            <div class="info-card-text">Double predestination maps to a fixed &#934;<sub>0</sub> always above
+            or below &#934;<sub>c</sub>. The grace operator is then the mechanism of election &mdash;
+            sovereignly shifting the elect's initial condition above the threshold at the appointed moment.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Sanctification</div>
+            <div class="info-card-value" style="font-size:.95rem; color:var(--success);">Basin Dynamics</div>
+            <div class="info-card-text">Moral formation and sanctification correspond to movement <em>within</em>
+            the &#934;&nbsp;&gt;&nbsp;0.5 basin &mdash; increasing &#934; toward 1 without crossing the
+            boundary. This is consistent with the dynamics (d&#934;/dt&nbsp;&gt;&nbsp;0 for &#934;&nbsp;&gt;&nbsp;0.5)
+            and maps to growth in holiness.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ 06 STATUS ══════════════════════════════════════════════ -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">06</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Status</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Verification state &middot; confidence &middot; open questions</div>
+          </div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-label">Registry ID</div>
+            <div class="status-value gold">ISO-016</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Status</div>
+            <div class="status-value warn">Testing</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Confidence</div>
+            <div class="status-value warn">Medium</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Type</div>
+            <div class="status-value gold">Structural</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Swap Test</div>
+            <div class="status-value green">Passed</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Kill Attempts</div>
+            <div class="status-value blue">1 Active</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Domain A</div>
+            <div class="status-value blue">Dynamical Sys.</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Domain B</div>
+            <div class="status-value purple">Theology</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Registered</div>
+            <div class="status-value">2026-04-04</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Connected ISOs</div>
+            <div class="status-value gold">000, 012, 013</div>
+          </div>
+        </div>
+
+        <div class="accent-block warn">
+          <div class="accent-label"><i class="fas fa-triangle-exclamation"></i> Weakest Link</div>
+          <p>The value &#934;<sub>c</sub>&nbsp;=&nbsp;0.5 is assumed on grounds of maximal symmetry rather
+          than derived from first principles. Additionally, the model does not account for the temporal dynamics
+          of &#934;(t) during a human lifetime &mdash; only the terminal basin is identified, not the trajectory
+          shape. The ISO should remain at Testing until the governing dynamics are derived from deeper
+          principles (e.g., from the coherence action functional) rather than postulated.</p>
+        </div>
+
+        <div class="accent-block green">
+          <div class="accent-label"><i class="fas fa-check-circle"></i> Strongest Link</div>
+          <p>The binary terminus structure is a rigorous mathematical theorem: the logistic cubic on
+          [0,&nbsp;1] with &#934;<sub>c</sub>&nbsp;&isin;&nbsp;(0,&nbsp;1) has exactly two stable fixed
+          points and one unstable fixed point. The theological claim (Matt 25:31-46) is among the most
+          consistently attested themes in the New Testament. The structural correspondence between these two
+          claims is direct and precise. The swap test passes without modification.</p>
+        </div>
+
+        <div class="accent-block blue">
+          <div class="accent-label"><i class="fas fa-info-circle"></i> Open Questions for Future Research</div>
+          <p>(1) Can the location of &#934;<sub>c</sub> be derived from first principles rather than assumed
+          at 0.5? (2) What is the distribution of human &#934;<sub>0</sub> values prior to the grace operator?
+          (3) How does ISO-016 interact with the continuous action of grace over a lifetime, rather than a
+          single basin-crossing event? (4) Does the model survive modification to a Langevin equation
+          formulation (stochastic perturbations), and does noise-induced crossing of the saddle have a
+          theological interpretation?</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          <span>Theophysics Research Program</span> &middot; POF 2828<br>
+          ISO-016 &middot; <span>Registered 2026-04-04 &middot; Status: Testing &middot; Confidence: Medium</span><br>
+          Domain A: Dynamical Systems &middot; Domain B: Theology
+        </div>
+        <a href="../isomorphism/index.html" class="footer-back"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+  <script>
+    const btn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400), {passive: true});
+  </script>
+
+<script src="../components/tp-header-lip.js"></script>
+<script src="../components/audio-dock.js"></script>
+<script src="../components/verification-bar.js"></script>
+<script src="../components/reading-levels.js"></script>
+<script src="../components/tp-scroll-chrome.js"></script>
+<script defer src="/shared/js/mtl-worker-client.js"></script>
+</body>
+</html>

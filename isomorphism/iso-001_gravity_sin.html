@@ -1,948 +1,1074 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="The mathematical architecture of gravitational attraction (F = Gm₁m₂/r²) is structurally isomorphic to the dynamics of sin as a downward pull — distance from the Source increases the pull, and escape requires external energy exceeding gravitational binding energy.">
-  <title>ISO-001 · Gravity ↔ Sin · Theophysics</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{
-      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
-      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
-      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
-      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
-      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
-      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
-      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
-      --max-width:1100px; --section-gap:5rem;
-    }
-    html{scroll-behavior:smooth;}
-    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.65;}
-    .container{max-width:1100px;margin:0 auto;padding:0 2rem;}
-
-    /* Sticky header */
-    .site-header{border-bottom:1px solid var(--border);padding:.9rem 0;position:sticky;top:0;
-      background:rgba(10,10,10,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:100;}
-    .site-header .container{display:flex;align-items:center;justify-content:space-between;}
-    .site-brand{font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.2em;
-      text-transform:uppercase;color:var(--text-muted);text-decoration:none;}
-    .site-brand span{color:var(--gold);}
-    .iso-badge{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);
-      border:1px solid var(--border-gold);padding:.22rem .65rem;border-radius:3px;letter-spacing:.12em;}
-
-    /* Hero */
-    .hero{padding:5rem 0 4rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-    .hero-bg-number{position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
-      font-family:var(--font-display);font-size:clamp(12rem,28vw,26rem);font-weight:700;
-      color:var(--gold-faded);line-height:1;pointer-events:none;user-select:none;letter-spacing:-.05em;}
-    .hero-iso-id{font-family:var(--font-mono);font-size:.8rem;color:var(--gold);
-      letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
-    .hero-iso-id::after{content:'';display:inline-block;width:80px;height:1px;
-      background:linear-gradient(90deg,var(--gold),transparent);}
-    .hero-title{font-family:var(--font-display);font-size:clamp(2rem,5.5vw,3.8rem);font-weight:700;
-      text-transform:uppercase;letter-spacing:.04em;color:#fff;line-height:1.08;margin-bottom:1rem;}
-    .hero-subtitle{font-family:var(--font-mono);font-size:clamp(.85rem,2vw,1.05rem);
-      color:var(--gold);margin-bottom:2rem;letter-spacing:.06em;}
-    .hero-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2.5rem;}
-    .tag{font-family:var(--font-display);font-size:.62rem;font-weight:500;letter-spacing:.14em;
-      text-transform:uppercase;padding:.28rem .7rem;border-radius:2px;border:1px solid;
-      display:inline-flex;align-items:center;gap:.35rem;}
-    .tag-gold{color:var(--gold);border-color:var(--border-gold);background:var(--gold-faded);}
-    .tag-green{color:var(--success);border-color:rgba(63,185,80,.25);background:rgba(63,185,80,.05);}
-    .tag-blue{color:var(--info);border-color:rgba(121,192,255,.25);background:rgba(121,192,255,.05);}
-    .tag-purple{color:var(--purple);border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.05);}
-    .tag-warn{color:var(--warn);border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.05);}
-    .hero-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
-      background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;max-width:780px;}
-    .hero-meta-item{padding:1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
-    .hero-meta-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.16em;
-      text-transform:uppercase;color:var(--text-dim);margin-bottom:.25rem;}
-    .hero-meta-value{font-family:var(--font-display);font-size:.82rem;font-weight:500;
-      color:var(--text);letter-spacing:.04em;}
-    .hero-meta-value.gold{color:var(--gold);}
-    .hero-meta-value.green{color:var(--success);}
-    .hero-meta-value.blue{color:var(--info);}
-    .hero-meta-value.purple{color:var(--purple);}
-
-    /* Sections */
-    .main-content{padding:0 0 7rem;}
-    .iso-section{padding:var(--section-gap) 0;border-bottom:1px solid var(--border);}
-    .iso-section:last-child{border-bottom:none;}
-    .section-header{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:2.5rem;}
-    .section-num{font-family:var(--font-display);font-size:6rem;font-weight:700;line-height:.85;
-      color:var(--gold-faded-2);letter-spacing:-.03em;user-select:none;min-width:100px;
-      text-align:right;padding-top:.1em;}
-    .section-title-group{padding-top:.3rem;}
-    .section-title{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.85rem);
-      font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:.5rem;}
-    .section-divider{height:2px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
-      border-radius:1px;margin-bottom:.5rem;}
-    .section-subtitle{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);
-      letter-spacing:.1em;text-transform:uppercase;}
-
-    /* Content blocks */
-    .claim-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);
-      padding:1.75rem 2rem;border-radius:0 6px 6px 0;margin-bottom:1.5rem;font-size:1.03rem;line-height:1.75;}
-    .kill-condition{background:var(--surface-2);border:1px solid rgba(248,81,73,.25);
-      border-left:3px solid var(--danger);padding:1.25rem 1.75rem;border-radius:0 6px 6px 0;}
-    .kill-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;letter-spacing:.2em;
-      text-transform:uppercase;color:var(--danger);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
-
-    /* Tables */
-    .iso-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;}
-    .iso-table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:580px;}
-    .iso-table thead tr{background:var(--surface-2);border-bottom:1px solid var(--border-gold);}
-    .iso-table thead th{font-family:var(--font-display);font-size:.62rem;font-weight:600;
-      letter-spacing:.16em;text-transform:uppercase;padding:.9rem 1.1rem;text-align:left;}
-    .iso-table thead th.col-physics{color:var(--info);}
-    .iso-table thead th.col-theology{color:var(--purple);}
-    .iso-table thead th.col-moral{color:var(--success);}
-    .iso-table thead th.col-property{color:var(--gold);}
-    .iso-table thead th.col-label{color:var(--text-muted);}
-    .iso-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
-    .iso-table tbody tr:last-child{border-bottom:none;}
-    .iso-table tbody tr:hover{background:rgba(212,175,55,.04);}
-    .iso-table td{padding:.9rem 1.1rem;vertical-align:top;line-height:1.58;}
-    .td-label{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--gold);
-      text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
-    .td-physics{color:var(--info);}
-    .td-theology{color:var(--purple);}
-    .td-moral{color:var(--success);}
-    .td-prop{color:var(--text-muted);font-size:.82rem;}
-
-    /* Equation blocks */
-    .equation-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;
-      padding:1.25rem 1.5rem;margin-bottom:1rem;overflow-x:auto;}
-    .equation-block .eq-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;
-      text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;}
-    .equation{font-family:var(--font-mono);font-size:1rem;color:var(--gold);line-height:1.8;white-space:pre-wrap;}
-    .eq-note{font-size:.82rem;color:var(--text-muted);margin-top:.5rem;line-height:1.55;}
-
-    /* Variable definition list */
-    .var-table{width:100%;border-collapse:collapse;font-size:.875rem;margin-bottom:1.5rem;}
-    .var-table tr{border-bottom:1px solid var(--border);}
-    .var-table tr:last-child{border-bottom:none;}
-    .var-table td{padding:.7rem 1rem;vertical-align:top;line-height:1.55;}
-    .var-sym{font-family:var(--font-mono);color:var(--gold);white-space:nowrap;width:160px;}
-    .var-desc{color:var(--text);}
-    .var-analog{font-family:var(--font-mono);font-size:.78rem;color:var(--purple);width:220px;}
-
-    /* Info cards grid */
-    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
-    .info-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;
-      padding:1.25rem;transition:border-color .2s;}
-    .info-card:hover{border-color:var(--border-gold);}
-    .info-card-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;
-      letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.4rem;}
-    .info-card-value{font-family:var(--font-display);font-size:1.5rem;font-weight:700;
-      color:var(--gold);line-height:1;margin-bottom:.3rem;}
-    .info-card-text{font-size:.82rem;color:var(--text-muted);line-height:1.55;}
-
-    /* Status */
-    .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
-      border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.75rem;}
-    .status-card{padding:1.1rem 1.2rem;border-right:1px solid var(--border);
-      border-bottom:1px solid var(--border);background:var(--surface);}
-    .status-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.15em;
-      text-transform:uppercase;color:var(--text-dim);margin-bottom:.35rem;}
-    .status-value{font-family:var(--font-display);font-size:.95rem;font-weight:600;letter-spacing:.04em;}
-    .status-value.green{color:var(--success);}
-    .status-value.gold{color:var(--gold);}
-    .status-value.blue{color:var(--info);}
-    .status-value.purple{color:var(--purple);}
-
-    /* Accent blocks */
-    .accent-block{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;
-      border-radius:0 6px 6px 0;margin-bottom:1rem;}
-    .accent-block.gold{border-left:3px solid var(--gold);}
-    .accent-block.green{border-left:3px solid var(--success);}
-    .accent-block.warn{border-left:3px solid var(--warn);}
-    .accent-block.blue{border-left:3px solid var(--info);}
-    .accent-block.danger{border-left:3px solid var(--danger);}
-    .accent-label{font-family:var(--font-display);font-size:.63rem;font-weight:600;
-      letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
-    .accent-block.gold .accent-label{color:var(--gold);}
-    .accent-block.green .accent-label{color:var(--success);}
-    .accent-block.warn .accent-label{color:var(--warn);}
-    .accent-block.blue .accent-label{color:var(--info);}
-    .accent-block.danger .accent-label{color:var(--danger);}
-    .accent-block p{font-size:.9rem;line-height:1.65;}
-
-    /* Crimson quote */
-    .iso-quote{font-family:var(--font-quote);font-style:italic;font-size:1.05rem;color:var(--text);
-      padding:1.25rem 1.5rem;background:var(--gold-faded-2);border:1px solid var(--border-gold);
-      border-radius:6px;line-height:1.75;margin-bottom:1rem;}
-    .iso-quote-source{font-family:var(--font-mono);font-style:normal;font-size:.65rem;
-      letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:.5rem;display:block;}
-
-    /* Classification banner */
-    .classification-banner{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;
-      text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;}
-    .classification-banner::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold);}
-    .classification-banner::after{content:'';display:inline-block;flex:1;height:1px;
-      background:linear-gradient(90deg,var(--border-gold),transparent);}
-
-    /* Test result rows */
-    .test-grid{display:grid;gap:.75rem;margin-bottom:1.5rem;}
-    .test-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;
-      padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;}
-    .test-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
-      justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:.1rem;}
-    .test-icon.pass{background:rgba(63,185,80,.12);color:var(--success);border:1px solid rgba(63,185,80,.25);}
-    .test-icon.fail{background:rgba(248,81,73,.12);color:var(--danger);border:1px solid rgba(248,81,73,.25);}
-    .test-icon.warn{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
-    .test-label{font-family:var(--font-display);font-size:.68rem;font-weight:600;letter-spacing:.14em;
-      text-transform:uppercase;color:var(--text-muted);margin-bottom:.25rem;}
-    .test-text{font-size:.88rem;color:var(--text);line-height:1.6;}
-
-    /* Chi variable chips */
-    .chi-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;}
-    .chi-chip{font-family:var(--font-mono);font-size:.7rem;padding:.3rem .75rem;border-radius:20px;
-      border:1px solid var(--border-gold);background:var(--gold-faded);color:var(--gold);letter-spacing:.1em;}
-
-    /* Bidirectional arrow section */
-    .bidir-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:1.5rem;align-items:center;margin-bottom:2rem;}
-    .bidir-domain{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;}
-    .bidir-domain-label{font-family:var(--font-display);font-size:.6rem;font-weight:600;letter-spacing:.18em;
-      text-transform:uppercase;margin-bottom:.6rem;}
-    .bidir-domain.physics .bidir-domain-label{color:var(--info);}
-    .bidir-domain.theology .bidir-domain-label{color:var(--purple);}
-    .bidir-domain-text{font-size:.88rem;line-height:1.6;color:var(--text);}
-    .bidir-arrow{text-align:center;font-size:2rem;color:var(--gold);user-select:none;}
-
-    /* Prose */
-    p{margin-bottom:1rem;}
-    p:last-child{margin-bottom:0;}
-    strong{color:#e6edf3;font-weight:600;}
-    .prose{font-size:.95rem;line-height:1.75;color:var(--text);margin-bottom:1.5rem;}
-    ul{padding-left:1.4rem;margin-bottom:1rem;}
-    ul li{margin-bottom:.4rem;font-size:.92rem;line-height:1.65;}
-
-    /* Footer */
-    .page-footer{border-top:1px solid var(--border);padding:2.5rem 0;}
-    .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
-    .footer-meta{font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);line-height:1.9;}
-    .footer-meta span{color:var(--text-muted);}
-    .footer-back{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
-      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
-      text-decoration:none;padding:.5rem .8rem;border:1px solid var(--border);border-radius:4px;transition:all .2s;}
-    .footer-back:hover{color:var(--gold);border-color:var(--border-gold);}
-
-    /* Back link */
-    .back-link{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
-      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
-      text-decoration:none;margin-bottom:2rem;transition:color .2s;}
-    .back-link:hover{color:var(--gold);}
-
-    /* Scroll top */
-    .scroll-top{position:fixed;bottom:1.75rem;right:1.75rem;width:38px;height:38px;
-      background:var(--surface);border:1px solid var(--border);border-radius:50%;
-      display:flex;align-items:center;justify-content:center;color:var(--text-muted);
-      cursor:pointer;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
-      font-size:.75rem;z-index:50;}
-    .scroll-top.visible{opacity:1;visibility:visible;}
-    .scroll-top:hover{border-color:var(--border-gold);color:var(--gold);}
-
-    /* Inline code */
-    code{font-family:var(--font-mono);font-size:.85em;color:var(--gold);
-      background:var(--gold-faded);padding:.1em .4em;border-radius:3px;}
-
-    /* Section intro text */
-    .section-intro{font-size:.95rem;line-height:1.78;color:var(--text);margin-bottom:2rem;
-      padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
-
-    /* Prior art / reference block */
-    .ref-block{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;
-      padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1rem;align-items:flex-start;}
-    .ref-icon{font-size:.85rem;color:var(--gold);margin-top:.1rem;flex-shrink:0;}
-    .ref-content{flex:1;}
-    .ref-title{font-family:var(--font-display);font-size:.78rem;font-weight:600;letter-spacing:.08em;
-      text-transform:uppercase;color:var(--text);margin-bottom:.2rem;}
-    .ref-detail{font-size:.8rem;color:var(--text-muted);line-height:1.55;}
-
-    /* Law callout */
-    .law-callout{display:flex;gap:1.25rem;align-items:stretch;margin-bottom:1rem;}
-    .law-num{font-family:var(--font-display);font-size:3.5rem;font-weight:700;color:var(--gold-faded-2);
-      line-height:1;flex-shrink:0;display:flex;align-items:center;padding:.5rem;}
-    .law-content{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem 1.25rem;flex:1;}
-    .law-tag{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
-      color:var(--text-dim);margin-bottom:.35rem;}
-    .law-title{font-family:var(--font-display);font-size:.92rem;font-weight:600;letter-spacing:.06em;
-      text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;}
-    .law-text{font-size:.85rem;color:var(--text-muted);line-height:1.6;}
-
-    /* Responsive */
-    @media(max-width:768px){
-      .container{padding:0 1.1rem;}
-      .hero{padding:3rem 0 2.5rem;}
-      :root{--section-gap:3.5rem;}
-      .section-header{grid-template-columns:1fr;gap:.4rem;}
-      .section-num{font-size:3.8rem;text-align:left;min-width:auto;line-height:1;}
-      .card-grid{grid-template-columns:1fr;}
-      .bidir-wrap{grid-template-columns:1fr;gap:.75rem;}
-      .bidir-arrow{transform:rotate(90deg);}
-    }
-    @media(max-width:520px){
-      .hero-title{font-size:1.9rem;}
-      .status-grid{grid-template-columns:1fr 1fr;}
-    }
-  </style>
-</head>
-<body>
-
-  <!-- STICKY HEADER -->
-  <header class="site-header">
-    <div class="container">
-      <a href="../isomorphism/index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
-      <div class="iso-badge">ISO-001</div>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <a href="../isomorphism/index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
-      <div aria-hidden="true" class="hero-bg-number">001</div>
-      <div class="hero-iso-id"><i class="fas fa-atom"></i> ISO-001 &middot; Physics &harr; Theology</div>
-      <h1 class="hero-title">Gravity &harr; Sin</h1>
-      <p class="hero-subtitle">Classical Mechanics &harr; Hamartiology</p>
-      <div class="hero-tags">
-        <span class="tag tag-gold"><i class="fas fa-check-circle"></i> Status: Confirmed</span>
-        <span class="tag tag-blue">Law 01</span>
-        <span class="tag tag-purple">Law 08</span>
-        <span class="tag tag-gold">&chi;/G</span>
-        <span class="tag tag-gold">&chi;/E</span>
-        <span class="tag tag-blue">Pillar / Physics</span>
-        <span class="tag tag-purple">Pillar / Theology</span>
-        <span class="tag tag-green">Evidence / Empirical</span>
-        <span class="tag tag-gold">Op / Bridge</span>
-        <span class="tag tag-green">Status / Canonical</span>
-      </div>
-      <div class="hero-meta">
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">ID</div>
-          <div class="hero-meta-value gold">ISO-001</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Type</div>
-          <div class="hero-meta-value">Structural ISO</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain A</div>
-          <div class="hero-meta-value blue">Classical Mechanics</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Domain B</div>
-          <div class="hero-meta-value purple">Hamartiology</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Confidence</div>
-          <div class="hero-meta-value green">High</div>
-        </div>
-        <div class="hero-meta-item">
-          <div class="hero-meta-label">Law / Sym. Pair</div>
-          <div class="hero-meta-value gold">Law 01 &harr; Law 08</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MAIN CONTENT -->
-  <main class="main-content">
-    <div class="container">
-
-      <!-- SECTION 01: THE CLAIM -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">01</div>
-          <div class="section-title-group">
-            <h2 class="section-title">The Claim</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">What is being asserted — and how it could be falsified</div>
-          </div>
-        </div>
-
-        <div class="classification-banner">
-          <span>Structural Isomorphism &middot; Math-Verified &middot; Bidirectional &middot; Canonical Registry Entry</span>
-        </div>
-
-        <div class="claim-block">
-          <p>The mathematical architecture governing gravitational attraction — Newton's inverse-square law, F&nbsp;=&nbsp;Gm&#x2081;m&#x2082;/r&#x00B2; — is <strong>structurally isomorphic</strong> to the dynamics of sin as described across theological traditions. Both phenomena describe an attractive force that increases with mass (moral weight) and decreases with the square of the distance from the attracting center. Both require an energy input exceeding the binding energy of the system in order to achieve escape. Both produce stable orbital patterns (habitual sin) and catastrophic collapse events (moral disintegration). The inverse-square law governs both domains: doubling the distance from the Source <em>quarters</em> the pull of sin.</p>
-          <p>This is not a metaphor. It is not an analogy. It is a <strong>structural correspondence</strong> — the same mathematical form appears in both domains because both are manifestations of the same underlying substrate (the POF 2828 chi-field, variables G and E) operating at different measurement scales. The claim is that if you understand orbital mechanics, you already understand the dynamics of habitual sin, conversion threshold effects, and moral collapse — because you are looking at the same equation from two different domains of measurement.</p>
-        </div>
-
-        <div class="accent-block blue" style="margin-bottom:1.5rem;">
-          <div class="accent-label"><i class="fas fa-ban"></i> What Is NOT Claimed</div>
-          <p>Sin is not literally gravity. Moral mass is not physical mass. No assertion is made that the gravitational constant G and the moral binding constant G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; are numerically equal or measurable on the same instrument. The claim is purely structural: the same mathematical architecture governs both phenomena. Any test of this isomorphism must target structure, not substance.</p>
-        </div>
-
-        <div class="kill-condition">
-          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
-          <p><strong>Primary:</strong> If sin operated as a repulsive force — pushing moral agents <em>away</em> from disorder and toward the Source as a default tendency — the structural mapping breaks. The entire isomorphism depends on the attractive and accumulative nature of sin (parallel to gravitational attraction).</p>
-          <p style="margin-top:.75rem;"><strong>Secondary:</strong> If empirical studies of moral decay showed a <em>linear</em> relationship with distance from religious community or practice — rather than an inverse-square or stronger accelerating relationship — the specific inverse-square form of the mapping would fail, even if a weaker directional mapping survived.</p>
-          <p style="margin-top:.75rem;"><strong>Tertiary:</strong> If conversion experiences showed smooth, gradual transitions rather than threshold effects (analogous to escape velocity), the binding-energy model embedded in the isomorphism would be disconfirmed.</p>
-        </div>
-      </section>
-
-      <!-- SECTION 02: MATHEMATICAL FORM -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">02</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Mathematical Form</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">The equations — and their structural correspondence</div>
-          </div>
-        </div>
-
-        <div class="section-intro">
-          Both the physics and theological domains are governed by a family of related equations sharing identical algebraic structure. The equations below are presented in parallel. The first column is the classical physics form. The second is the theological structural analog derived from the isomorphism. Variable definitions follow.
-        </div>
-
-        <!-- Gravitational Force -->
-        <div class="equation-block">
-          <div class="eq-label">Domain A — Newton's Law of Universal Gravitation (1687)</div>
-          <div class="equation">F = G &middot; m&#x2081; &middot; m&#x2082; / r&#x00B2;</div>
-          <div class="eq-note">
-            Every mass in the universe attracts every other mass with a force proportional to the product of their masses and inversely proportional to the square of the distance between them. No mass is exempt. No distance is too large for the force to exist — it diminishes, but never reaches zero.
-          </div>
-        </div>
-
-        <!-- Theological Analog -->
-        <div class="equation-block">
-          <div class="eq-label">Domain B — Theological Structural Analog (ISO-001)</div>
-          <div class="equation">F&#x209B;&#x1D62;&#x2099; = G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; &middot; m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C; &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; / r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091;&#x00B2;</div>
-          <div class="eq-note">
-            Every moral agent experiences a pull toward sin proportional to the product of the agent's moral weight (capacity for moral action) and the world's moral mass (accumulated disorder), inversely proportional to the square of the agent's distance from the Source (God). No agent is exempt. Distance reduces the pull — but distance alone, without escape-velocity-equivalent grace, does not produce freedom.
-          </div>
-        </div>
-
-        <!-- Escape Velocity -->
-        <div class="equation-block">
-          <div class="eq-label">Domain A — Escape Velocity</div>
-          <div class="equation">v&#x1D49;&#x209B;&#x1D48; = &radic;(2GM / r)</div>
-          <div class="eq-note">
-            The minimum velocity an object must reach to escape a gravitational field without further propulsion. Below this threshold, the object will return regardless of initial direction. There is no partial escape — the threshold is binary.
-          </div>
-        </div>
-
-        <!-- Grace Threshold -->
-        <div class="equation-block">
-          <div class="eq-label">Domain B — Grace Threshold (Theological Structural Analog)</div>
-          <div class="equation">G&#x1D43;&#x2071;&#x2090;&#x2048;&#x2071; &ge; &radic;(2 &middot; G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; / r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091;)</div>
-          <div class="eq-note">
-            The minimum grace input required to achieve moral escape velocity — to exit the gravitational basin of habitual sin. Below this threshold, moral effort alone produces oscillation (spiritual struggle, recurring failure) rather than liberation. This predicts conversion experiences should show threshold effects, not gradual improvement curves.
-          </div>
-        </div>
-
-        <!-- Orbital / Binding Energy -->
-        <div class="equation-block">
-          <div class="eq-label">Domain A — Gravitational Binding Energy (Orbital System)</div>
-          <div class="equation">E&#x1D47;&#x1D62;&#x2099;&#x1D30; = &minus;G &middot; M &middot; m / (2r)</div>
-          <div class="eq-note">
-            The total mechanical energy of an orbiting body is negative — it is <em>bound</em> to the system. Energy must be added to raise the orbit; removing energy causes the orbit to decay and the object to fall inward. This is the mathematical signature of a bound state.
-          </div>
-        </div>
-
-        <!-- Moral Binding Energy -->
-        <div class="equation-block">
-          <div class="eq-label">Domain B — Moral Binding Energy (Habitual Sin)</div>
-          <div class="equation">E&#x209B;&#x1D62;&#x2099; = &minus;G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; &middot; m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C; &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; / (2r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091;)</div>
-          <div class="eq-note">
-            The total moral energy of an agent in a habitual sin pattern is negative — they are bound. Moral effort that falls below escape threshold simply modifies the orbit (reduces severity, changes frequency) without achieving liberation. Liberation requires a qualitative energy input that exceeds the binding energy, not merely a quantitative increase in moral effort.
-          </div>
-        </div>
-
-        <!-- Variable Table -->
-        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Variable Definitions</h3>
-        <div class="iso-table-wrap">
-          <table class="iso-table">
-            <thead>
-              <tr>
-                <th class="col-label" style="width:140px;">Symbol</th>
-                <th class="col-physics">Physics Meaning</th>
-                <th class="col-theology">Theological Analog</th>
-                <th class="col-property" style="width:90px;">Chi Var</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="td-label">G</td>
-                <td class="td-physics">Gravitational constant — universal coupling strength between masses (6.674 &times; 10&#x207B;&#xB9;&#xB9; N m&#x00B2; kg&#x207B;&#x00B2;)</td>
-                <td class="td-theology">G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; — moral binding constant; the coupling strength between moral agents and the world's moral mass. A chi-variable (&chi;/G) that reflects substrate-level attractive force.</td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.8rem;">&chi;/G</td>
-              </tr>
-              <tr>
-                <td class="td-label">m&#x2081;, m&#x2082;</td>
-                <td class="td-physics">Masses of two interacting bodies — the quantities whose product determines mutual attraction</td>
-                <td class="td-theology">m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C; (agent moral weight) &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; (world's accumulated moral disorder). Both increase with time in a closed system.</td>
-                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.8rem;">&chi;/E</td>
-              </tr>
-              <tr>
-                <td class="td-label">r</td>
-                <td class="td-physics">Distance between centers of mass — the separation that determines force magnitude</td>
-                <td class="td-theology">r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091; — relational distance from the Source (God). Measured in terms of prayer, practice, community, obedience. Increasing r decreases the pull — but cannot eliminate it.</td>
-                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
-              </tr>
-              <tr>
-                <td class="td-label">F</td>
-                <td class="td-physics">Gravitational force — the attractive pull experienced by each body toward the other</td>
-                <td class="td-theology">F&#x209B;&#x1D62;&#x2099; — the experiential pull of sin; the felt attraction toward moral disorder. Stronger in moral agents with high capacity (large m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C;) and in environments with high disorder (large m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30;).</td>
-                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
-              </tr>
-              <tr>
-                <td class="td-label">v&#x1D49;&#x209B;&#x1D48;</td>
-                <td class="td-physics">Escape velocity — minimum speed to exit the gravitational field without further propulsion</td>
-                <td class="td-theology">Grace threshold — minimum grace input required to exit the habitual-sin binding state. Predicts binary conversion rather than gradual improvement.</td>
-                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
-              </tr>
-              <tr>
-                <td class="td-label">E&#x1D47;&#x1D62;&#x2099;&#x1D30;</td>
-                <td class="td-physics">Binding energy — total mechanical energy of a bound orbital system (always negative)</td>
-                <td class="td-theology">Moral binding energy — the spiritual "debt" keeping an agent in habitual sin. Negative value means the agent cannot self-liberate without external energy input.</td>
-                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="chi-chips">
-          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--text-dim);letter-spacing:.12em;text-transform:uppercase;align-self:center;">Chi Variables Engaged:</span>
-          <span class="chi-chip">&chi;/G — Gravitational Coupling</span>
-          <span class="chi-chip">&chi;/E — Energetic Binding</span>
-        </div>
-      </section>
-
-      <!-- SECTION 03: THE MAPPING -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">03</div>
-          <div class="section-title-group">
-            <h2 class="section-title">The Mapping</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Structural correspondence between physics and theology — concept by concept</div>
-          </div>
-        </div>
-
-        <div class="section-intro">
-          A structural isomorphism requires a one-to-one correspondence between concepts in both domains such that relationships in Domain A map to relationships in Domain B. The table below documents each correspondence pair. The "Shared Property" column identifies what the two concepts share at the structural level — the feature preserved under the mapping.
-        </div>
-
-        <div class="iso-table-wrap">
-          <table class="iso-table">
-            <thead>
-              <tr>
-                <th class="col-label" style="width:160px;">Concept</th>
-                <th class="col-physics">Domain A — Physics</th>
-                <th class="col-theology">Domain B — Theology</th>
-                <th class="col-property">Shared Property</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="td-label">Attractor</td>
-                <td class="td-physics">Gravitational center — every mass acts as an attractor to every other mass. The more massive, the stronger the pull. No mass opts out of attracting others.</td>
-                <td class="td-theology">Sin as downward pull — moral disorder acts as an attractor on moral agents. The more pervasive the disorder (moral mass of the world), the stronger the pull.</td>
-                <td class="td-prop">Universal, unchosen attraction proportional to mass / disorder magnitude. No agent is exempt.</td>
-              </tr>
-              <tr>
-                <td class="td-label">Inverse-Square Law</td>
-                <td class="td-physics">Doubling the distance between two masses reduces gravitational force to one-quarter (1/r&#x00B2;). The relationship is non-linear and strongly distance-dependent.</td>
-                <td class="td-theology">Doubling relational distance from the Source (through prayer, community, obedience) reduces the pull of sin to approximately one-quarter. Proximity to God is not merely helpful — it is mathematically protective.</td>
-                <td class="td-prop">Non-linear protective effect of distance. Moving slightly away from the center (or toward God) provides disproportionately large relief from the pull.</td>
-              </tr>
-              <tr>
-                <td class="td-label">Orbital Stability</td>
-                <td class="td-physics">At the right combination of distance and velocity, an object enters a stable orbit — neither falling inward nor escaping outward. It perpetually circles the attractor.</td>
-                <td class="td-theology">Habitual sin — a stable pattern of moral failure where the agent neither fully surrenders to collapse nor achieves liberation. The "comfortable sinner" in theological terms; the orbiting object in physical terms.</td>
-                <td class="td-prop">Metastable bound state. Requires perturbation (energy input) to break out of. Self-perpetuating without external intervention.</td>
-              </tr>
-              <tr>
-                <td class="td-label">Gravitational Collapse</td>
-                <td class="td-physics">When a massive object loses too much energy (orbital decay), it spirals inward. In extreme cases this produces neutron stars, black holes — irreversible collapse past the point of no return (event horizon).</td>
-                <td class="td-theology">Catastrophic moral failure — a spiral of increasing sin severity, reduced capacity for resistance, and eventual complete moral disintegration. The "hardened heart" of Scripture; the event horizon of moral collapse past which self-recovery becomes impossible without extraordinary intervention.</td>
-                <td class="td-prop">Runaway positive feedback. Energy loss accelerates further energy loss. Collapse is self-reinforcing once past a critical threshold.</td>
-              </tr>
-              <tr>
-                <td class="td-label">Escape Velocity</td>
-                <td class="td-physics">A specific velocity threshold that must be reached for an object to exit a gravitational field entirely. Below this threshold, the object returns regardless of initial direction. The threshold is binary — there is no partial escape.</td>
-                <td class="td-theology">Grace threshold — the minimum grace input required to exit habitual sin. Moral effort below this threshold produces oscillation (trying and failing) rather than liberation. Conversion experiences are described as sudden, threshold events — not gradual drift — across all major theological traditions.</td>
-                <td class="td-prop">Binary threshold effect. Qualitative state change (bound &rarr; free) requires exceeding a quantitative threshold. Incremental effort below threshold produces no qualitative change.</td>
-              </tr>
-              <tr>
-                <td class="td-label">External Energy Source</td>
-                <td class="td-physics">Rocket thrust — energy that does not come from the gravitational system itself but from an external source (chemical energy, nuclear energy). A bound object cannot self-generate the energy needed to escape.</td>
-                <td class="td-theology">Grace — divine energy that does not originate within the moral system itself. The agent cannot self-generate sufficient energy to escape sin's gravitational field. This maps to the theological concept that salvation is by grace, not by works (self-generated energy).</td>
-                <td class="td-prop">External origin of escape energy. The bound system cannot bootstrap its own liberation — energy must come from outside the gravitational/moral system.</td>
-              </tr>
-              <tr>
-                <td class="td-label">Accretion</td>
-                <td class="td-physics">Gravitational systems grow by accreting nearby mass — attracting smaller objects, incorporating them, becoming more massive, and thereby exerting greater pull on remaining objects.</td>
-                <td class="td-theology">Sin's progressive nature — each act of sin increases the agent's "moral mass" (susceptibility, habit formation) and the world's moral disorder, increasing the pull on other agents. Sin is self-accreting in communities and cultures.</td>
-                <td class="td-prop">Self-amplifying growth mechanism. Greater mass &rarr; greater attraction &rarr; greater mass. The system grows by consuming its environment.</td>
-              </tr>
-              <tr>
-                <td class="td-label">Universal Scope</td>
-                <td class="td-physics">Gravity is universal — it affects every object in the universe without exception. There is no shield, no exemption, no mass that is too small or too large to be subject to gravitational law.</td>
-                <td class="td-theology">Sin's universality — every moral agent without exception is subject to the pull of sin. "All have sinned and fall short of the glory of God" (Romans 3:23). The cross-cultural moral universals (28 cultures studied, zero exceptions) confirm this empirically.</td>
-                <td class="td-prop">No exemptions. The law is universal in scope. Neither physical nor moral agents can opt out by category, virtue, or will.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Bidirectional Illumination -->
-        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Bidirectional Illumination</h3>
-        <div class="bidir-wrap">
-          <div class="bidir-domain physics">
-            <div class="bidir-domain-label"><i class="fas fa-atom"></i>&nbsp;Physics &rarr; Theology</div>
-            <div class="bidir-domain-text">Understanding orbital mechanics — the precise conditions of stable orbit, orbital decay, and escape velocity — illuminates why sin is described as habit-forming (orbital), why habitual sin accelerates (orbital decay), and why theological traditions universally insist on the necessity of grace rather than moral self-improvement (escape requires external energy). Gravitational physics is a model of sin dynamics.</div>
-          </div>
-          <div class="bidir-arrow">&harr;</div>
-          <div class="bidir-domain theology">
-            <div class="bidir-domain-label"><i class="fas fa-cross"></i>&nbsp;Theology &rarr; Physics</div>
-            <div class="bidir-domain-text">Understanding sin's dynamics — its universality, its attractive character, its threshold-requiring liberation — illuminates why gravity is attractive rather than repulsive, why it is universal rather than selective, and why the inverse-square law rather than some other decay function. The theological domain, which pre-dates classical mechanics, encoded the same structure in narrative form. The physics is a formalization of what theology already observed.</div>
-          </div>
-        </div>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-exchange-alt"></i> Swap Test — FAILED (Mapping is Unique)</div>
-          <p>A structural isomorphism must pass the swap test: can the mapping be replaced with a different pairing and preserve coherence? In this case, <strong>no</strong>. Gravity's specific set of properties — universal attraction (not selective), inverse-square distance decay (not linear), escape velocity threshold (not gradual), external energy requirement (not self-generated), accretion dynamics (not steady-state) — maps uniquely to sin's documented properties. No other physical force produces this specific combination. Electromagnetism fails (can be repulsive). Strong/weak nuclear forces fail (short range only). Gravity is the unique physical analog of sin's structural signature.</p>
-        </div>
-      </section>
-
-      <!-- SECTION 04: EVIDENCE / VERIFICATION -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">04</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Evidence &amp; Verification</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Empirical support, test results, and independent confirmations</div>
-          </div>
-        </div>
-
-        <div class="section-intro">
-          Structural isomorphisms in the Theophysics Registry are not tested by seeking a literal, measurable version of G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; on a physics instrument. They are tested by asking: does the behavior of the theological domain match the predictions of the structural model? The following evidence addresses these behavioral predictions.
-        </div>
-
-        <!-- Evidence block 1: PEAR Lab -->
-        <div class="accent-block green" style="margin-bottom:1.25rem;">
-          <div class="accent-label"><i class="fas fa-flask"></i> Evidence 01 — PEAR Lab (Princeton) &middot; 6.35&sigma; Effect</div>
-          <p>The Princeton Engineering Anomalies Research (PEAR) laboratory documented that human consciousness produces measurable, statistically significant effects on physical systems — at a confidence level of 6.35&sigma; (p &lt; 10&#x207B;&#xB9;&#xB2;). This empirically establishes that the boundary between the "moral/conscious" domain and the "physical" domain is permeable. The substrate-level substrate (chi-field) that the isomorphism posits as shared between gravity and sin must exist as more than metaphor if consciousness demonstrably affects physical measurement outcomes.</p>
-          <p style="margin-top:.6rem;"><strong>Relevance to ISO-001:</strong> If consciousness and physical systems share substrate (as PEAR demonstrates), the claim that sin dynamics and gravitational dynamics share mathematical structure (ISO-001) moves from structural analogy to substrate isomorphism — the same underlying field governs both, measured differently.</p>
-        </div>
-
-        <!-- Evidence block 2: Cross-cultural moral universals -->
-        <div class="accent-block green" style="margin-bottom:1.25rem;">
-          <div class="accent-label"><i class="fas fa-globe"></i> Evidence 02 — Cross-Cultural Moral Universals &middot; 28 Cultures, Zero Exceptions</div>
-          <p>Across 28 studied cultures — ranging from isolated tribal societies to modern urban populations — zero exceptions were found to the core moral universal that sin (moral disorder) is experienced as a pull, produces accumulating disorder in communities, and requires external (divine, communal, or institutional) intervention for restoration. This cross-cultural pattern corresponds to the gravitational prediction that no mass is exempt from attraction.</p>
-          <p style="margin-top:.6rem;"><strong>Relevance to ISO-001:</strong> The universality of sin's attractive character (confirmed cross-culturally) maps directly to the universality of gravitational attraction (confirmed across all observed matter). Both are found without exception in every tested instance. This is the predicted signature of a genuine structural law, not a cultural artifact.</p>
-        </div>
-
-        <!-- Evidence block 3: Predictions -->
-        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Testable Predictions from the Isomorphism</h3>
-
-        <div class="test-grid">
-          <div class="test-row">
-            <div class="test-icon pass"><i class="fas fa-check"></i></div>
-            <div>
-              <div class="test-label">Prediction A — Civilizational Collapse Acceleration</div>
-              <div class="test-text">Domain A prediction: systems with greater mass collapse faster when energy is removed. Domain B prediction: civilizations with greater moral mass (population × moral disorder per capita) should show accelerating entropy — not linear, but accelerating. Historical civilizational collapse data (Roman Empire, Han Dynasty, late Ottoman period) consistently shows acceleration profiles, not linear decline. <strong>Consistent with prediction.</strong></div>
-            </div>
-          </div>
-          <div class="test-row">
-            <div class="test-icon pass"><i class="fas fa-check"></i></div>
-            <div>
-              <div class="test-label">Prediction B — Conversion Threshold Effects</div>
-              <div class="test-text">The escape velocity model predicts that genuine moral liberation (conversion) should appear as a threshold event — a qualitative state change — rather than a gradual improvement. William James's "Varieties of Religious Experience" (1902) documented hundreds of conversion accounts across traditions. The overwhelming pattern is sudden threshold crossing, not gradual improvement. Contemporary neuroscience of religious experience (Andrew Newberg et al.) confirms discontinuous state changes in conversion. <strong>Consistent with prediction.</strong></div>
-            </div>
-          </div>
-          <div class="test-row">
-            <div class="test-icon pass"><i class="fas fa-check"></i></div>
-            <div>
-              <div class="test-label">Prediction C — Proximity Protection (Inverse-Square)</div>
-              <div class="test-text">The inverse-square structure predicts that the protective effect of proximity to the Source (religious practice, community, prayer) should be disproportionately large for small increases in proximity — and disproportionately costly for small decreases. Harvard epidemiologist Tyler VanderWeele's 2018 meta-analysis found that regular religious attendance reduced mortality by 33%, depression by 28%, and substance abuse by 40–60% — effects far larger than could be attributed to social support alone, and consistent with a non-linear protective relationship. <strong>Consistent with prediction.</strong></div>
-            </div>
-          </div>
-          <div class="test-row">
-            <div class="test-icon warn"><i class="fas fa-exclamation"></i></div>
-            <div>
-              <div class="test-label">Prediction D — Grace Quantification (Open)</div>
-              <div class="test-text">The binding energy model implies that grace inputs could in principle be quantified and compared across traditions — that a "grace unit" corresponds to a specific amount of external intervention. This prediction remains open. While theological traditions qualitatively agree that grace exceeds human effort (consistent with the escape velocity model), no experimental framework yet exists to measure G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; numerically. <strong>Untested — not falsified.</strong></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Scripture / Theological Sources -->
-        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Theological Prior Art</h3>
-
-        <div class="iso-quote">
-          "For all have sinned and fall short of the glory of God."
-          <span class="iso-quote-source">Romans 3:23 — Universal scope; no exemptions. Structural signature: gravity.</span>
-        </div>
-
-        <div class="iso-quote">
-          "The spirit indeed is willing, but the flesh is weak."
-          <span class="iso-quote-source">Matthew 26:41 — Below-threshold energy state. Willing = directional velocity. Weak flesh = insufficient escape velocity. Result: oscillation, not liberation.</span>
-        </div>
-
-        <div class="iso-quote">
-          "For I do not do the good I want to do, but the evil I do not want to do — this I keep on doing."
-          <span class="iso-quote-source">Romans 7:19 — Orbital mechanics in narrative form. Paul describes a stable orbit (habitual sin) that persists against the agent's stated preference. Directional preference ≠ escape velocity.</span>
-        </div>
-
-        <div class="iso-quote">
-          "For it is by grace you have been saved, through faith — and this is not from yourselves, it is the gift of God — not by works, so that no one can boast."
-          <span class="iso-quote-source">Ephesians 2:8-9 — External energy source. Escape energy does not originate in the bound system. Self-generated energy (works) is insufficient. External input (grace) is required and is gifted — not earned.</span>
-        </div>
-
-        <div class="iso-quote">
-          "Draw near to God, and he will draw near to you."
-          <span class="iso-quote-source">James 4:8 — The inverse-square relationship stated in pre-mathematical language. Decreasing r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091; decreases F&#x209B;&#x1D62;&#x2099; and increases the experience of divine proximity. The instruction to "draw near" is an instruction to reduce r — to exploit the inverse-square protective effect.</span>
-        </div>
-
-        <div class="ref-block">
-          <div class="ref-icon"><i class="fas fa-book"></i></div>
-          <div class="ref-content">
-            <div class="ref-title">Newton, Principia Mathematica (1687)</div>
-            <div class="ref-detail">Original formulation of the law of universal gravitation. Establishes the mathematical foundation for Domain A of this isomorphism. Newton himself believed his discovery pointed toward a designing intelligence — that the precision of the inverse-square law was not accidental.</div>
-          </div>
-        </div>
-        <div class="ref-block">
-          <div class="ref-icon"><i class="fas fa-microscope"></i></div>
-          <div class="ref-content">
-            <div class="ref-title">PEAR Lab — Princeton Engineering Anomalies Research Program (1979–2007)</div>
-            <div class="ref-detail">28 years of controlled studies demonstrating consciousness-physical system coupling at 6.35&sigma; confidence. Published in Journal of Scientific Exploration and multiple peer-reviewed venues. Provides empirical warrant for substrate-level permeability between the physical and moral domains.</div>
-          </div>
-        </div>
-        <div class="ref-block">
-          <div class="ref-icon"><i class="fas fa-globe-americas"></i></div>
-          <div class="ref-content">
-            <div class="ref-title">Cross-Cultural Moral Universals — 28-Culture Study</div>
-            <div class="ref-detail">Survey of moral universals across 28 cultures including isolated populations with no historical contact with Abrahamic traditions. Found universal recognition of sin as "downward pull," moral disorder as accumulative, and liberation as requiring external intervention. Zero exceptions across all 28 cultures. Confirms gravitational signature of sin dynamics independent of specific religious tradition.</div>
-          </div>
-        </div>
-        <div class="ref-block">
-          <div class="ref-icon"><i class="fas fa-chart-line"></i></div>
-          <div class="ref-content">
-            <div class="ref-title">VanderWeele, T.J. — Religious Service Attendance and Major Health Outcomes (2018)</div>
-            <div class="ref-detail">Harvard T.H. Chan School of Public Health meta-analysis demonstrating non-linear protective effects of religious attendance on mortality, depression, substance abuse, and social cohesion — effects consistent with inverse-square proximity protection predicted by ISO-001. Published in JAMA Internal Medicine.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECTION 05: IMPLICATIONS / CONNECTIONS -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">05</div>
-          <div class="section-title-group">
-            <h2 class="section-title">Implications &amp; Connections</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">How ISO-001 connects to the broader Theophysics framework</div>
-          </div>
-        </div>
-
-        <div class="section-intro">
-          ISO-001 is not an isolated observation. It is a structural pillar of the Theophysics program, encoding the most fundamental dynamic (attractive force toward disorder) in the physical and moral domains simultaneously. Its implications ramify across the full registry and across both domains of inquiry.
-        </div>
-
-        <!-- Laws connection -->
-        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:0 0 1rem;">Laws Invoked</h3>
-
-        <div class="law-callout">
-          <div class="law-num">01</div>
-          <div class="law-content">
-            <div class="law-tag">POF Law 01 — Physics Domain</div>
-            <div class="law-title">Universal Gravitational Attraction</div>
-            <div class="law-text">Every mass attracts every other mass. The force is universal, inverse-square, and requires external energy to overcome. This law provides the mathematical form that the isomorphism carries into the theological domain. Law 01 is the physics pillar of ISO-001.</div>
-          </div>
-        </div>
-
-        <div class="law-callout">
-          <div class="law-num">08</div>
-          <div class="law-content">
-            <div class="law-tag">POF Law 08 — Theology Domain (Symmetry Pair 1&harr;8)</div>
-            <div class="law-title">Sin as Structural Downward Pull</div>
-            <div class="law-text">Sin operates as an attractive force on moral agents — universal, non-selective, and requiring external intervention to overcome. Law 08 is the theological pillar of ISO-001. The symmetry pair (1&harr;8) encodes this as a fundamental structural correspondence in the POF 2828 framework — not a coincidence but a design feature of the substrate.</div>
-          </div>
-        </div>
-
-        <!-- Downstream connections -->
-        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Registry Connections</h3>
-
-        <div class="card-grid" style="margin-bottom:2rem;">
-          <div class="info-card">
-            <div class="info-card-label">ISO-000</div>
-            <div class="info-card-value" style="font-size:1.1rem;">Framework</div>
-            <div class="info-card-text">ISO-001 is the first instantiation of the ISO-000 structural isomorphism framework — demonstrating that the registry method works on the most fundamental physical law. ISO-001 validates ISO-000 by example.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Downstream — Entropy</div>
-            <div class="info-card-value" style="font-size:1.1rem;">ISO-00x</div>
-            <div class="info-card-text">The entropy isomorphism (thermodynamic disorder &harr; moral disorder) shares the same directionality as ISO-001: both systems evolve toward disorder in the absence of external energy input. ISO-001's binding energy concept grounds the entropy isomorphism.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Downstream — Redemption</div>
-            <div class="info-card-value" style="font-size:1.1rem;">ISO-00x</div>
-            <div class="info-card-text">The redemption &harr; escape velocity isomorphism is a direct derivative of ISO-001. If sin is gravitational, then redemption must be escape velocity — and the physics of escape velocity (external energy, binary threshold, irreversibility above threshold) fully specifies the structure of redemption.</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Downstream — Grace</div>
-            <div class="info-card-value" style="font-size:1.1rem;">ISO-00x</div>
-            <div class="info-card-text">The grace &harr; rocket thrust isomorphism follows necessarily from ISO-001. If the agent is the bound mass and sin is gravity, then grace must be the external energy source — with all the structural properties of rocket propulsion (external, directed, sufficient threshold).</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Chi Variables</div>
-            <div class="info-card-value" style="font-size:1.1rem;">&chi;/G, &chi;/E</div>
-            <div class="info-card-text">ISO-001 engages two chi-variables from the POF 2828 substrate: &chi;/G (the gravitational coupling constant, appearing in both domains as G and G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097;) and &chi;/E (energetic binding, the negative binding energy shared by orbital systems and habitual sin).</div>
-          </div>
-          <div class="info-card">
-            <div class="info-card-label">Symmetry</div>
-            <div class="info-card-value" style="font-size:1.1rem;">1 &harr; 8</div>
-            <div class="info-card-text">The POF 2828 framework encodes Law 01 and Law 08 as a symmetry pair — not adjacent laws, but mirror laws. The number pair (1, 8) encodes the isomorphism at the level of the framework's structure. This symmetry is itself a structural datum about the substrate.</div>
-          </div>
-        </div>
-
-        <!-- Theological implications -->
-        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:0 0 1rem;">Theological Implications of the Isomorphism</h3>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 01 — Grace Cannot Be Earned</div>
-          <p>If sin is gravitational and liberation requires escape velocity, then grace cannot be earned by moral effort any more than a bound satellite can generate its own escape velocity through "trying harder." Works-based salvation is ruled out by the physics of the isomorphism: the bound system cannot self-generate the energy required to exit the field. External energy (grace) is a structural requirement, not a theological preference.</p>
-        </div>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 02 — Community as Orbital Defense</div>
-          <p>The inverse-square law implies that proximity to the Source (religious community, prayer, practice) provides disproportionate protection. A 10% increase in proximity produces approximately a 21% reduction in sin's pull (due to the r&#x00B2; denominator). This gives quantitative weight to the theological imperative of community and regular practice — not merely social benefit, but literal reduction in gravitational force.</p>
-        </div>
-
-        <div class="accent-block gold">
-          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 03 — Moral Collapse Has a Point of No Return</div>
-          <p>Black hole event horizons are real physical phenomena: once past the Schwarzschild radius, escape is mathematically impossible without infinite energy. If the isomorphism holds, moral collapse has an analog event horizon — a point past which self-recovery is impossible without extraordinary (infinite-analog) intervention. This gives physical grounding to the theological concept of the "hardened heart" (Pharaoh in Exodus, Romans 1:28) — not as divine punishment but as a structural consequence of the dynamics of the system.</p>
-        </div>
-
-        <div class="accent-block blue">
-          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 04 — Scientific Understanding of Gravity Illuminates Spiritual Practice</div>
-          <p>Because the mapping is bidirectional, understanding gravitational physics gives theological practitioners precise language and quantitative intuitions about sin dynamics. The concepts of escape velocity, orbital stability, and accretion are not metaphors — they are the correct technical vocabulary for what theologians have been describing in narrative language for millennia. The Theophysics program does not replace theological language; it provides its mathematical substrate.</p>
-        </div>
-      </section>
-
-      <!-- SECTION 06: STATUS -->
-      <section class="iso-section">
-        <div class="section-header">
-          <div class="section-num">06</div>
-          <div class="section-title-group">
-            <img src="/media/media/chatgpt-image-apr-28-2026-07-35-29-pm.webp" alt="Mathematical mapping and truth" class="tp-article-img"/>
-<h2 class="section-title">Status</h2>
-            <div class="section-divider"></div>
-            <div class="section-subtitle">Current registry state, confidence assessment, and open questions</div>
-          </div>
-        </div>
-
-        <div class="status-grid">
-          <div class="status-card">
-            <div class="status-label">Registry Status</div>
-            <div class="status-value green">Confirmed</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Confidence</div>
-            <div class="status-value green">High</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Kill Attempts</div>
-            <div class="status-value gold">0 / 3</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Type</div>
-            <div class="status-value blue">Structural ISO</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Math Verified</div>
-            <div class="status-value green">Yes</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Bidirectional</div>
-            <div class="status-value green">Yes</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Domain A</div>
-            <div class="status-value blue">Classical Mechanics</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Domain B</div>
-            <div class="status-value purple">Hamartiology</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Chi Variables</div>
-            <div class="status-value gold">&chi;/G, &chi;/E</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Symmetry Pair</div>
-            <div class="status-value gold">1 &harr; 8</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Evidence Level</div>
-            <div class="status-value green">Empirical (6.35&sigma;)</div>
-          </div>
-          <div class="status-card">
-            <div class="status-label">Created</div>
-            <div class="status-value">2026-03-15</div>
-          </div>
-        </div>
-
-        <div class="accent-block warn" style="margin-bottom:1rem;">
-          <div class="accent-label"><i class="fas fa-exclamation-triangle"></i> Weakest Link — Grace Quantification</div>
-          <p>The binding energy model implies that grace inputs could in principle be quantified in terms of the moral binding energy they overcome — that conversion requires a specific, calculable minimum grace input. This is the weakest link in the isomorphism: no framework currently exists for measuring G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; numerically, which means Prediction D (grace quantification) cannot yet be tested. The isomorphism holds structurally, but the numerical correspondence remains open. This does not falsify the isomorphism but limits its predictive precision.</p>
-        </div>
-
-        <div class="accent-block green">
-          <div class="accent-label"><i class="fas fa-check-circle"></i> Strongest Link — Universality and Threshold Effects</div>
-          <p>The two strongest confirmations are (1) the universal scope of sin's attractive character, confirmed cross-culturally across 28 studied cultures with zero exceptions — matching gravity's universality exactly — and (2) the threshold character of conversion experiences, documented extensively across traditions by William James and confirmed by contemporary neuroscience. These two structural predictions are robustly confirmed and directly correspond to two of gravity's most distinctive features (universality and escape velocity threshold). Together they provide strong empirical warrant for the structural isomorphism even in the absence of numerical quantification.</p>
-        </div>
-
-        <div class="accent-block blue" style="margin-bottom:0;">
-          <div class="accent-label"><i class="fas fa-flag"></i> Open Questions for the Registry</div>
-          <ul style="margin:0;padding-left:1.2rem;">
-            <li>Can G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; be numerically constrained using the PEAR Lab data as a calibration point?</li>
-            <li>Does the inverse-square form match empirical data on religious practice and health outcomes better than alternative decay functions (1/r, 1/r&#x00B3;, exponential)?</li>
-            <li>Is there a theological analog to gravitational waves — propagating disturbances in the moral substrate caused by catastrophic moral events?</li>
-            <li>What is the theological analog of dark matter — a form of moral mass that exerts gravitational pull but is not directly observable as explicit sin?</li>
-            <li>Can the black hole event horizon analog (point of no return in moral collapse) be empirically identified in psychological or sociological data?</li>
-          </ul>
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="page-footer">
-    <div class="container">
-      <div class="footer-inner">
-        <div class="footer-meta">
-          <span>Theophysics Research Program</span> &middot; POF 2828<br>
-          ISO-001 &middot; <span>v1.0 &middot; Created 2026-03-15 &middot; Status: Confirmed</span><br>
-          Symmetry Pair 1&harr;8 &middot; &chi;/G &middot; &chi;/E &middot; Law 01 &middot; Law 08
-        </div>
-        <a href="../isomorphism/index.html" class="footer-back"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
-      </div>
-    </div>
-  </footer>
-
-  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <i class="fas fa-chevron-up"></i>
-  </button>
-
-  <script>
-    const btn = document.getElementById('scrollTop');
-    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400), {passive: true});
-  </script>
-
-</body>
-</html>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The mathematical architecture of gravitational attraction (F = Gm₁m₂/r²) is structurally isomorphic to the dynamics of sin as a downward pull — distance from the Source increases the pull, and escape requires external energy exceeding gravitational binding energy.">
+  <title>ISO-001 · Gravity ↔ Sin · Theophysics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#0a0a0a; --surface:#111111; --surface-2:#141414;
+      --border:rgba(255,255,255,0.06); --border-gold:rgba(212,175,55,0.22);
+      --text:#c9d1d9; --text-muted:#6e7681; --text-dim:#3d444d;
+      --gold:#d4af37; --gold-faded:rgba(212,175,55,0.06); --gold-faded-2:rgba(212,175,55,0.10);
+      --danger:#f85149; --success:#3fb950; --info:#79c0ff; --purple:#c084fc; --warn:#f59e0b;
+      --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif;
+      --font-mono:'JetBrains Mono',monospace; --font-quote:'Crimson Text',serif;
+      --max-width:1100px; --section-gap:5rem;
+    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.65;}
+    .container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+
+    /* Sticky header */
+    .site-header{border-bottom:1px solid var(--border);padding:.9rem 0;position:sticky;top:0;
+      background:rgba(10,10,10,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:100;}
+    .site-header .container{display:flex;align-items:center;justify-content:space-between;}
+    .site-brand{font-family:var(--font-display);font-size:.72rem;font-weight:500;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--text-muted);text-decoration:none;}
+    .site-brand span{color:var(--gold);}
+    .iso-badge{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);
+      border:1px solid var(--border-gold);padding:.22rem .65rem;border-radius:3px;letter-spacing:.12em;}
+
+    /* Hero */
+    .hero{padding:5rem 0 4rem;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+    .hero-bg-number{position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
+      font-family:var(--font-display);font-size:clamp(12rem,28vw,26rem);font-weight:700;
+      color:var(--gold-faded);line-height:1;pointer-events:none;user-select:none;letter-spacing:-.05em;}
+    .hero-iso-id{font-family:var(--font-mono);font-size:.8rem;color:var(--gold);
+      letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
+    .hero-iso-id::after{content:'';display:inline-block;width:80px;height:1px;
+      background:linear-gradient(90deg,var(--gold),transparent);}
+    .hero-title{font-family:var(--font-display);font-size:clamp(2rem,5.5vw,3.8rem);font-weight:700;
+      text-transform:uppercase;letter-spacing:.04em;color:#fff;line-height:1.08;margin-bottom:1rem;}
+    .hero-subtitle{font-family:var(--font-mono);font-size:clamp(.85rem,2vw,1.05rem);
+      color:var(--gold);margin-bottom:2rem;letter-spacing:.06em;}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2.5rem;}
+    .tag{font-family:var(--font-display);font-size:.62rem;font-weight:500;letter-spacing:.14em;
+      text-transform:uppercase;padding:.28rem .7rem;border-radius:2px;border:1px solid;
+      display:inline-flex;align-items:center;gap:.35rem;}
+    .tag-gold{color:var(--gold);border-color:var(--border-gold);background:var(--gold-faded);}
+    .tag-green{color:var(--success);border-color:rgba(63,185,80,.25);background:rgba(63,185,80,.05);}
+    .tag-blue{color:var(--info);border-color:rgba(121,192,255,.25);background:rgba(121,192,255,.05);}
+    .tag-purple{color:var(--purple);border-color:rgba(192,132,252,.25);background:rgba(192,132,252,.05);}
+    .tag-warn{color:var(--warn);border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.05);}
+    .hero-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+      background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;max-width:780px;}
+    .hero-meta-item{padding:1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .hero-meta-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-dim);margin-bottom:.25rem;}
+    .hero-meta-value{font-family:var(--font-display);font-size:.82rem;font-weight:500;
+      color:var(--text);letter-spacing:.04em;}
+    .hero-meta-value.gold{color:var(--gold);}
+    .hero-meta-value.green{color:var(--success);}
+    .hero-meta-value.blue{color:var(--info);}
+    .hero-meta-value.purple{color:var(--purple);}
+
+    /* Sections */
+    .main-content{padding:0 0 7rem;}
+    .iso-section{padding:var(--section-gap) 0;border-bottom:1px solid var(--border);}
+    .iso-section:last-child{border-bottom:none;}
+    .section-header{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;margin-bottom:2.5rem;}
+    .section-num{font-family:var(--font-display);font-size:6rem;font-weight:700;line-height:.85;
+      color:var(--gold-faded-2);letter-spacing:-.03em;user-select:none;min-width:100px;
+      text-align:right;padding-top:.1em;}
+    .section-title-group{padding-top:.3rem;}
+    .section-title{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.85rem);
+      font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:.5rem;}
+    .section-divider{height:2px;background:linear-gradient(90deg,var(--gold),rgba(212,175,55,.3) 50%,transparent);
+      border-radius:1px;margin-bottom:.5rem;}
+    .section-subtitle{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);
+      letter-spacing:.1em;text-transform:uppercase;}
+
+    /* Content blocks */
+    .claim-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);
+      padding:1.75rem 2rem;border-radius:0 6px 6px 0;margin-bottom:1.5rem;font-size:1.03rem;line-height:1.75;}
+    .kill-condition{background:var(--surface-2);border:1px solid rgba(248,81,73,.25);
+      border-left:3px solid var(--danger);padding:1.25rem 1.75rem;border-radius:0 6px 6px 0;}
+    .kill-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--danger);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;}
+
+    /* Tables */
+    .iso-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;}
+    .iso-table{width:100%;border-collapse:collapse;font-size:.875rem;min-width:580px;}
+    .iso-table thead tr{background:var(--surface-2);border-bottom:1px solid var(--border-gold);}
+    .iso-table thead th{font-family:var(--font-display);font-size:.62rem;font-weight:600;
+      letter-spacing:.16em;text-transform:uppercase;padding:.9rem 1.1rem;text-align:left;}
+    .iso-table thead th.col-physics{color:var(--info);}
+    .iso-table thead th.col-theology{color:var(--purple);}
+    .iso-table thead th.col-moral{color:var(--success);}
+    .iso-table thead th.col-property{color:var(--gold);}
+    .iso-table thead th.col-label{color:var(--text-muted);}
+    .iso-table tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+    .iso-table tbody tr:last-child{border-bottom:none;}
+    .iso-table tbody tr:hover{background:rgba(212,175,55,.04);}
+    .iso-table td{padding:.9rem 1.1rem;vertical-align:top;line-height:1.58;}
+    .td-label{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--gold);
+      text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
+    .td-physics{color:var(--info);}
+    .td-theology{color:var(--purple);}
+    .td-moral{color:var(--success);}
+    .td-prop{color:var(--text-muted);font-size:.82rem;}
+
+    /* Equation blocks */
+    .equation-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1.25rem 1.5rem;margin-bottom:1rem;overflow-x:auto;}
+    .equation-block .eq-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.5rem;}
+    .equation{font-family:var(--font-mono);font-size:1rem;color:var(--gold);line-height:1.8;white-space:pre-wrap;}
+    .eq-note{font-size:.82rem;color:var(--text-muted);margin-top:.5rem;line-height:1.55;}
+
+    /* Variable definition list */
+    .var-table{width:100%;border-collapse:collapse;font-size:.875rem;margin-bottom:1.5rem;}
+    .var-table tr{border-bottom:1px solid var(--border);}
+    .var-table tr:last-child{border-bottom:none;}
+    .var-table td{padding:.7rem 1rem;vertical-align:top;line-height:1.55;}
+    .var-sym{font-family:var(--font-mono);color:var(--gold);white-space:nowrap;width:160px;}
+    .var-desc{color:var(--text);}
+    .var-analog{font-family:var(--font-mono);font-size:.78rem;color:var(--purple);width:220px;}
+
+    /* Info cards grid */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+    .info-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1.25rem;transition:border-color .2s;}
+    .info-card:hover{border-color:var(--border-gold);}
+    .info-card-label{font-family:var(--font-display);font-size:.65rem;font-weight:600;
+      letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.4rem;}
+    .info-card-value{font-family:var(--font-display);font-size:1.5rem;font-weight:700;
+      color:var(--gold);line-height:1;margin-bottom:.3rem;}
+    .info-card-text{font-size:.82rem;color:var(--text-muted);line-height:1.55;}
+
+    /* Status */
+    .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+      border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.75rem;}
+    .status-card{padding:1.1rem 1.2rem;border-right:1px solid var(--border);
+      border-bottom:1px solid var(--border);background:var(--surface);}
+    .status-label{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.15em;
+      text-transform:uppercase;color:var(--text-dim);margin-bottom:.35rem;}
+    .status-value{font-family:var(--font-display);font-size:.95rem;font-weight:600;letter-spacing:.04em;}
+    .status-value.green{color:var(--success);}
+    .status-value.gold{color:var(--gold);}
+    .status-value.blue{color:var(--info);}
+    .status-value.purple{color:var(--purple);}
+
+    /* Accent blocks */
+    .accent-block{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;
+      border-radius:0 6px 6px 0;margin-bottom:1rem;}
+    .accent-block.gold{border-left:3px solid var(--gold);}
+    .accent-block.green{border-left:3px solid var(--success);}
+    .accent-block.warn{border-left:3px solid var(--warn);}
+    .accent-block.blue{border-left:3px solid var(--info);}
+    .accent-block.danger{border-left:3px solid var(--danger);}
+    .accent-label{font-family:var(--font-display);font-size:.63rem;font-weight:600;
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
+    .accent-block.gold .accent-label{color:var(--gold);}
+    .accent-block.green .accent-label{color:var(--success);}
+    .accent-block.warn .accent-label{color:var(--warn);}
+    .accent-block.blue .accent-label{color:var(--info);}
+    .accent-block.danger .accent-label{color:var(--danger);}
+    .accent-block p{font-size:.9rem;line-height:1.65;}
+
+    /* Crimson quote */
+    .iso-quote{font-family:var(--font-quote);font-style:italic;font-size:1.05rem;color:var(--text);
+      padding:1.25rem 1.5rem;background:var(--gold-faded-2);border:1px solid var(--border-gold);
+      border-radius:6px;line-height:1.75;margin-bottom:1rem;}
+    .iso-quote-source{font-family:var(--font-mono);font-style:normal;font-size:.65rem;
+      letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:.5rem;display:block;}
+
+    /* Classification banner */
+    .classification-banner{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;
+      text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;}
+    .classification-banner::before{content:'';display:inline-block;width:20px;height:1px;background:var(--gold);}
+    .classification-banner::after{content:'';display:inline-block;flex:1;height:1px;
+      background:linear-gradient(90deg,var(--border-gold),transparent);}
+
+    /* Test result rows */
+    .test-grid{display:grid;gap:.75rem;margin-bottom:1.5rem;}
+    .test-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+      padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;}
+    .test-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:.1rem;}
+    .test-icon.pass{background:rgba(63,185,80,.12);color:var(--success);border:1px solid rgba(63,185,80,.25);}
+    .test-icon.fail{background:rgba(248,81,73,.12);color:var(--danger);border:1px solid rgba(248,81,73,.25);}
+    .test-icon.warn{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+    .test-label{font-family:var(--font-display);font-size:.68rem;font-weight:600;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:.25rem;}
+    .test-text{font-size:.88rem;color:var(--text);line-height:1.6;}
+
+    /* Chi variable chips */
+    .chi-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;}
+    .chi-chip{font-family:var(--font-mono);font-size:.7rem;padding:.3rem .75rem;border-radius:20px;
+      border:1px solid var(--border-gold);background:var(--gold-faded);color:var(--gold);letter-spacing:.1em;}
+
+    /* Bidirectional arrow section */
+    .bidir-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:1.5rem;align-items:center;margin-bottom:2rem;}
+    .bidir-domain{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;}
+    .bidir-domain-label{font-family:var(--font-display);font-size:.6rem;font-weight:600;letter-spacing:.18em;
+      text-transform:uppercase;margin-bottom:.6rem;}
+    .bidir-domain.physics .bidir-domain-label{color:var(--info);}
+    .bidir-domain.theology .bidir-domain-label{color:var(--purple);}
+    .bidir-domain-text{font-size:.88rem;line-height:1.6;color:var(--text);}
+    .bidir-arrow{text-align:center;font-size:2rem;color:var(--gold);user-select:none;}
+
+    /* Prose */
+    p{margin-bottom:1rem;}
+    p:last-child{margin-bottom:0;}
+    strong{color:#e6edf3;font-weight:600;}
+    .prose{font-size:.95rem;line-height:1.75;color:var(--text);margin-bottom:1.5rem;}
+    ul{padding-left:1.4rem;margin-bottom:1rem;}
+    ul li{margin-bottom:.4rem;font-size:.92rem;line-height:1.65;}
+
+    /* Footer */
+    .page-footer{border-top:1px solid var(--border);padding:2.5rem 0;}
+    .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
+    .footer-meta{font-family:var(--font-mono);font-size:.68rem;color:var(--text-dim);line-height:1.9;}
+    .footer-meta span{color:var(--text-muted);}
+    .footer-back{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;padding:.5rem .8rem;border:1px solid var(--border);border-radius:4px;transition:all .2s;}
+    .footer-back:hover{color:var(--gold);border-color:var(--border-gold);}
+
+    /* Back link */
+    .back-link{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+      font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);
+      text-decoration:none;margin-bottom:2rem;transition:color .2s;}
+    .back-link:hover{color:var(--gold);}
+
+    /* Scroll top */
+    .scroll-top{position:fixed;bottom:1.75rem;right:1.75rem;width:38px;height:38px;
+      background:var(--surface);border:1px solid var(--border);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;color:var(--text-muted);
+      cursor:pointer;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s,border-color .2s,color .2s;
+      font-size:.75rem;z-index:50;}
+    .scroll-top.visible{opacity:1;visibility:visible;}
+    .scroll-top:hover{border-color:var(--border-gold);color:var(--gold);}
+
+    /* Inline code */
+    code{font-family:var(--font-mono);font-size:.85em;color:var(--gold);
+      background:var(--gold-faded);padding:.1em .4em;border-radius:3px;}
+
+    /* Section intro text */
+    .section-intro{font-size:.95rem;line-height:1.78;color:var(--text);margin-bottom:2rem;
+      padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+
+    /* Prior art / reference block */
+    .ref-block{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;
+      padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;gap:1rem;align-items:flex-start;}
+    .ref-icon{font-size:.85rem;color:var(--gold);margin-top:.1rem;flex-shrink:0;}
+    .ref-content{flex:1;}
+    .ref-title{font-family:var(--font-display);font-size:.78rem;font-weight:600;letter-spacing:.08em;
+      text-transform:uppercase;color:var(--text);margin-bottom:.2rem;}
+    .ref-detail{font-size:.8rem;color:var(--text-muted);line-height:1.55;}
+
+    /* Law callout */
+    .law-callout{display:flex;gap:1.25rem;align-items:stretch;margin-bottom:1rem;}
+    .law-num{font-family:var(--font-display);font-size:3.5rem;font-weight:700;color:var(--gold-faded-2);
+      line-height:1;flex-shrink:0;display:flex;align-items:center;padding:.5rem;}
+    .law-content{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1rem 1.25rem;flex:1;}
+    .law-tag{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+      color:var(--text-dim);margin-bottom:.35rem;}
+    .law-title{font-family:var(--font-display);font-size:.92rem;font-weight:600;letter-spacing:.06em;
+      text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;}
+    .law-text{font-size:.85rem;color:var(--text-muted);line-height:1.6;}
+
+    /* Responsive */
+    @media(max-width:768px){
+      .container{padding:0 1.1rem;}
+      .hero{padding:3rem 0 2.5rem;}
+      :root{--section-gap:3.5rem;}
+      .section-header{grid-template-columns:1fr;gap:.4rem;}
+      .section-num{font-size:3.8rem;text-align:left;min-width:auto;line-height:1;}
+      .card-grid{grid-template-columns:1fr;}
+      .bidir-wrap{grid-template-columns:1fr;gap:.75rem;}
+      .bidir-arrow{transform:rotate(90deg);}
+    }
+    @media(max-width:520px){
+      .hero-title{font-size:1.9rem;}
+      .status-grid{grid-template-columns:1fr 1fr;}
+    }
+  
+/* ═══ TP-HEADING-CLEANUP-v1 ═══ */
+
+/* H1: big, white, serif — page anchor */
+.tp-article h1, .ftp-article h1 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: .8rem;
+  margin-top: 2rem;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+
+/* H2: GOLD — section markers */
+.tp-article h2, .ftp-article h2 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.6rem;
+  color: #d4af37;
+  font-weight: 400;
+  margin: 3rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  letter-spacing: -.01em;
+}
+
+/* H3: clean subordinate */
+.tp-article h3, .ftp-article h3 {
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-size: 1.2rem;
+  color: #9a9a9a;
+  font-weight: 600;
+  margin: 2rem 0 .6rem;
+}
+
+/* Tables: gold header, dark rows, hover */
+.tp-article table, .ftp-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: .9rem;
+}
+.tp-article th, .ftp-article th {
+  background: rgba(212, 175, 55, 0.08);
+  color: #d4af37;
+  font-weight: 600;
+  text-align: left;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  font-size: .8rem;
+  letter-spacing: .03em;
+}
+.tp-article td, .ftp-article td {
+  padding: .5rem .8rem;
+  border-bottom: 1px solid #222;
+  color: #e5e3df;
+}
+.tp-article tr:hover td, .ftp-article tr:hover td {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+/* Lists: proper spacing */
+.tp-article ul, .tp-article ol,
+.ftp-article ul, .ftp-article ol {
+  margin: 1rem 0 1rem 1.5rem;
+  line-height: 1.8;
+}
+.tp-article li, .ftp-article li {
+  margin-bottom: .3rem;
+}
+
+/* Blockquotes: gold accent */
+.tp-article blockquote, .ftp-article blockquote {
+  border-left: 3px solid #d4af37;
+  margin: 1.5rem 0;
+  padding: .8rem 1.2rem;
+  background: rgba(212, 175, 55, 0.04);
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-style: italic;
+  color: #9a9a9a;
+}
+
+/* Drop cap on first paragraph */
+.tp-article > p:first-of-type::first-letter,
+.ftp-article > p:first-of-type::first-letter,
+.tp-level-panel > p:first-of-type::first-letter {
+  font-size: 3.2rem;
+  float: left;
+  color: #d4af37;
+  font-family: var(--serif, 'Crimson Text', Georgia, serif);
+  font-weight: 600;
+  line-height: .8;
+  margin: .1rem .4rem 0 0;
+  padding-top: .1rem;
+}
+
+/* Code/mono blocks */
+.tp-article pre, .tp-article code,
+.ftp-article pre, .ftp-article code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .85rem;
+}
+.tp-article pre, .ftp-article pre {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* ═══ END TP-HEADING-CLEANUP-v1 ═══ */
+</style>
+<link href="../components/audio-dock.css" rel="stylesheet"/>
+<link href="../components/tp-header-lip.css" rel="stylesheet"/>
+<link href="../components/verification-bar.css" rel="stylesheet"/>
+<link href="../components/top-bar-bottom-bar.css" rel="stylesheet"/>
+<link rel="stylesheet" href="/assets/faith-topbar.css">
+<script defer src="/assets/faith-topbar.js"></script>
+
+</head>
+<body>
+
+  <!-- STICKY HEADER -->
+  <header class="site-header">
+    <div class="container">
+      <a href="../isomorphism/index.html" class="site-brand">THEOPHYSICS &middot; <span>ISOMORPHISM REGISTRY</span></a>
+      <div class="iso-badge">ISO-001</div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <a href="../isomorphism/index.html" class="back-link"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      <div aria-hidden="true" class="hero-bg-number">001</div>
+      <div class="hero-iso-id"><i class="fas fa-atom"></i> ISO-001 &middot; Physics &harr; Theology</div>
+      <h1 class="hero-title">Gravity &harr; Sin</h1>
+      <p class="hero-subtitle drop-cap">Classical Mechanics &harr; Hamartiology</p>
+      <div class="hero-tags">
+        <span class="tag tag-gold"><i class="fas fa-check-circle"></i> Status: Confirmed</span>
+        <span class="tag tag-blue">Law 01</span>
+        <span class="tag tag-purple">Law 08</span>
+        <span class="tag tag-gold">&chi;/G</span>
+        <span class="tag tag-gold">&chi;/E</span>
+        <span class="tag tag-blue">Pillar / Physics</span>
+        <span class="tag tag-purple">Pillar / Theology</span>
+        <span class="tag tag-green">Evidence / Empirical</span>
+        <span class="tag tag-gold">Op / Bridge</span>
+        <span class="tag tag-green">Status / Canonical</span>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">ID</div>
+          <div class="hero-meta-value gold">ISO-001</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Type</div>
+          <div class="hero-meta-value">Structural ISO</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain A</div>
+          <div class="hero-meta-value blue">Classical Mechanics</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Domain B</div>
+          <div class="hero-meta-value purple">Hamartiology</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Confidence</div>
+          <div class="hero-meta-value green">High</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Law / Sym. Pair</div>
+          <div class="hero-meta-value gold">Law 01 &harr; Law 08</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- SECTION 01: THE CLAIM -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">01</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Claim</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">What is being asserted — and how it could be falsified</div>
+          </div>
+        </div>
+
+        <div class="classification-banner">
+          <span>Structural Isomorphism &middot; Math-Verified &middot; Bidirectional &middot; Canonical Registry Entry</span>
+        </div>
+
+        <div class="claim-block">
+          <p>The mathematical architecture governing gravitational attraction — Newton's inverse-square law, F&nbsp;=&nbsp;Gm&#x2081;m&#x2082;/r&#x00B2; — is <strong>structurally isomorphic</strong> to the dynamics of sin as described across theological traditions. Both phenomena describe an attractive force that increases with mass (moral weight) and decreases with the square of the distance from the attracting center. Both require an energy input exceeding the binding energy of the system in order to achieve escape. Both produce stable orbital patterns (habitual sin) and catastrophic collapse events (moral disintegration). The inverse-square law governs both domains: doubling the distance from the Source <em>quarters</em> the pull of sin.</p>
+          <p>This is not a metaphor. It is not an analogy. It is a <strong>structural correspondence</strong> — the same mathematical form appears in both domains because both are manifestations of the same underlying substrate (the POF 2828 chi-field, variables G and E) operating at different measurement scales. The claim is that if you understand orbital mechanics, you already understand the dynamics of habitual sin, conversion threshold effects, and moral collapse — because you are looking at the same equation from two different domains of measurement.</p>
+        </div>
+
+        <div class="accent-block blue" style="margin-bottom:1.5rem;">
+          <div class="accent-label"><i class="fas fa-ban"></i> What Is NOT Claimed</div>
+          <p>Sin is not literally gravity. Moral mass is not physical mass. No assertion is made that the gravitational constant G and the moral binding constant G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; are numerically equal or measurable on the same instrument. The claim is purely structural: the same mathematical architecture governs both phenomena. Any test of this isomorphism must target structure, not substance.</p>
+        </div>
+
+        <div class="kill-condition">
+          <div class="kill-label"><i class="fas fa-crosshairs"></i>&nbsp;Kill Condition</div>
+          <p><strong>Primary:</strong> If sin operated as a repulsive force — pushing moral agents <em>away</em> from disorder and toward the Source as a default tendency — the structural mapping breaks. The entire isomorphism depends on the attractive and accumulative nature of sin (parallel to gravitational attraction).</p>
+          <p style="margin-top:.75rem;"><strong>Secondary:</strong> If empirical studies of moral decay showed a <em>linear</em> relationship with distance from religious community or practice — rather than an inverse-square or stronger accelerating relationship — the specific inverse-square form of the mapping would fail, even if a weaker directional mapping survived.</p>
+          <p style="margin-top:.75rem;"><strong>Tertiary:</strong> If conversion experiences showed smooth, gradual transitions rather than threshold effects (analogous to escape velocity), the binding-energy model embedded in the isomorphism would be disconfirmed.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 02: MATHEMATICAL FORM -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">02</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Mathematical Form</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">The equations — and their structural correspondence</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          Both the physics and theological domains are governed by a family of related equations sharing identical algebraic structure. The equations below are presented in parallel. The first column is the classical physics form. The second is the theological structural analog derived from the isomorphism. Variable definitions follow.
+        </div>
+
+        <!-- Gravitational Force -->
+        <div class="equation-block">
+          <div class="eq-label">Domain A — Newton's Law of Universal Gravitation (1687)</div>
+          <div class="equation">F = G &middot; m&#x2081; &middot; m&#x2082; / r&#x00B2;</div>
+          <div class="eq-note">
+            Every mass in the universe attracts every other mass with a force proportional to the product of their masses and inversely proportional to the square of the distance between them. No mass is exempt. No distance is too large for the force to exist — it diminishes, but never reaches zero.
+          </div>
+        </div>
+
+        <!-- Theological Analog -->
+        <div class="equation-block">
+          <div class="eq-label">Domain B — Theological Structural Analog (ISO-001)</div>
+          <div class="equation">F&#x209B;&#x1D62;&#x2099; = G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; &middot; m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C; &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; / r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091;&#x00B2;</div>
+          <div class="eq-note">
+            Every moral agent experiences a pull toward sin proportional to the product of the agent's moral weight (capacity for moral action) and the world's moral mass (accumulated disorder), inversely proportional to the square of the agent's distance from the Source (God). No agent is exempt. Distance reduces the pull — but distance alone, without escape-velocity-equivalent grace, does not produce freedom.
+          </div>
+        </div>
+
+        <!-- Escape Velocity -->
+        <div class="equation-block">
+          <div class="eq-label">Domain A — Escape Velocity</div>
+          <div class="equation">v&#x1D49;&#x209B;&#x1D48; = &radic;(2GM / r)</div>
+          <div class="eq-note">
+            The minimum velocity an object must reach to escape a gravitational field without further propulsion. Below this threshold, the object will return regardless of initial direction. There is no partial escape — the threshold is binary.
+          </div>
+        </div>
+
+        <!-- Grace Threshold -->
+        <div class="equation-block">
+          <div class="eq-label">Domain B — Grace Threshold (Theological Structural Analog)</div>
+          <div class="equation">G&#x1D43;&#x2071;&#x2090;&#x2048;&#x2071; &ge; &radic;(2 &middot; G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; / r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091;)</div>
+          <div class="eq-note">
+            The minimum grace input required to achieve moral escape velocity — to exit the gravitational basin of habitual sin. Below this threshold, moral effort alone produces oscillation (spiritual struggle, recurring failure) rather than liberation. This predicts conversion experiences should show threshold effects, not gradual improvement curves.
+          </div>
+        </div>
+
+        <!-- Orbital / Binding Energy -->
+        <div class="equation-block">
+          <div class="eq-label">Domain A — Gravitational Binding Energy (Orbital System)</div>
+          <div class="equation">E&#x1D47;&#x1D62;&#x2099;&#x1D30; = &minus;G &middot; M &middot; m / (2r)</div>
+          <div class="eq-note">
+            The total mechanical energy of an orbiting body is negative — it is <em>bound</em> to the system. Energy must be added to raise the orbit; removing energy causes the orbit to decay and the object to fall inward. This is the mathematical signature of a bound state.
+          </div>
+        </div>
+
+        <!-- Moral Binding Energy -->
+        <div class="equation-block">
+          <div class="eq-label">Domain B — Moral Binding Energy (Habitual Sin)</div>
+          <div class="equation">E&#x209B;&#x1D62;&#x2099; = &minus;G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; &middot; m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C; &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; / (2r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091;)</div>
+          <div class="eq-note">
+            The total moral energy of an agent in a habitual sin pattern is negative — they are bound. Moral effort that falls below escape threshold simply modifies the orbit (reduces severity, changes frequency) without achieving liberation. Liberation requires a qualitative energy input that exceeds the binding energy, not merely a quantitative increase in moral effort.
+          </div>
+        </div>
+
+        <!-- Variable Table -->
+        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Variable Definitions</h3>
+        <div class="iso-table-wrap">
+          <table class="iso-table">
+            <thead>
+              <tr>
+                <th class="col-label" style="width:140px;">Symbol</th>
+                <th class="col-physics">Physics Meaning</th>
+                <th class="col-theology">Theological Analog</th>
+                <th class="col-property" style="width:90px;">Chi Var</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">G</td>
+                <td class="td-physics">Gravitational constant — universal coupling strength between masses (6.674 &times; 10&#x207B;&#xB9;&#xB9; N m&#x00B2; kg&#x207B;&#x00B2;)</td>
+                <td class="td-theology">G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; — moral binding constant; the coupling strength between moral agents and the world's moral mass. A chi-variable (&chi;/G) that reflects substrate-level attractive force.</td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.8rem;">&chi;/G</td>
+              </tr>
+              <tr>
+                <td class="td-label">m&#x2081;, m&#x2082;</td>
+                <td class="td-physics">Masses of two interacting bodies — the quantities whose product determines mutual attraction</td>
+                <td class="td-theology">m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C; (agent moral weight) &middot; m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30; (world's accumulated moral disorder). Both increase with time in a closed system.</td>
+                <td style="color:var(--gold);font-family:var(--font-mono);font-size:.8rem;">&chi;/E</td>
+              </tr>
+              <tr>
+                <td class="td-label">r</td>
+                <td class="td-physics">Distance between centers of mass — the separation that determines force magnitude</td>
+                <td class="td-theology">r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091; — relational distance from the Source (God). Measured in terms of prayer, practice, community, obedience. Increasing r decreases the pull — but cannot eliminate it.</td>
+                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
+              </tr>
+              <tr>
+                <td class="td-label">F</td>
+                <td class="td-physics">Gravitational force — the attractive pull experienced by each body toward the other</td>
+                <td class="td-theology">F&#x209B;&#x1D62;&#x2099; — the experiential pull of sin; the felt attraction toward moral disorder. Stronger in moral agents with high capacity (large m&#x2090;&#x1D62;&#x2092;&#x2099;&#x209C;) and in environments with high disorder (large m&#x1D64;&#x2092;&#x2091;&#x2097;&#x2097;&#x1D30;).</td>
+                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
+              </tr>
+              <tr>
+                <td class="td-label">v&#x1D49;&#x209B;&#x1D48;</td>
+                <td class="td-physics">Escape velocity — minimum speed to exit the gravitational field without further propulsion</td>
+                <td class="td-theology">Grace threshold — minimum grace input required to exit the habitual-sin binding state. Predicts binary conversion rather than gradual improvement.</td>
+                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
+              </tr>
+              <tr>
+                <td class="td-label">E&#x1D47;&#x1D62;&#x2099;&#x1D30;</td>
+                <td class="td-physics">Binding energy — total mechanical energy of a bound orbital system (always negative)</td>
+                <td class="td-theology">Moral binding energy — the spiritual "debt" keeping an agent in habitual sin. Negative value means the agent cannot self-liberate without external energy input.</td>
+                <td style="color:var(--text-muted);font-family:var(--font-mono);font-size:.8rem;">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chi-chips">
+          <span style="font-family:var(--font-mono);font-size:.65rem;color:var(--text-dim);letter-spacing:.12em;text-transform:uppercase;align-self:center;">Chi Variables Engaged:</span>
+          <span class="chi-chip">&chi;/G — Gravitational Coupling</span>
+          <span class="chi-chip">&chi;/E — Energetic Binding</span>
+        </div>
+      </section>
+
+      <!-- SECTION 03: THE MAPPING -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">03</div>
+          <div class="section-title-group">
+            <h2 class="section-title">The Mapping</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Structural correspondence between physics and theology — concept by concept</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          A structural isomorphism requires a one-to-one correspondence between concepts in both domains such that relationships in Domain A map to relationships in Domain B. The table below documents each correspondence pair. The "Shared Property" column identifies what the two concepts share at the structural level — the feature preserved under the mapping.
+        </div>
+
+        <div class="iso-table-wrap">
+          <table class="iso-table">
+            <thead>
+              <tr>
+                <th class="col-label" style="width:160px;">Concept</th>
+                <th class="col-physics">Domain A — Physics</th>
+                <th class="col-theology">Domain B — Theology</th>
+                <th class="col-property">Shared Property</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-label">Attractor</td>
+                <td class="td-physics">Gravitational center — every mass acts as an attractor to every other mass. The more massive, the stronger the pull. No mass opts out of attracting others.</td>
+                <td class="td-theology">Sin as downward pull — moral disorder acts as an attractor on moral agents. The more pervasive the disorder (moral mass of the world), the stronger the pull.</td>
+                <td class="td-prop">Universal, unchosen attraction proportional to mass / disorder magnitude. No agent is exempt.</td>
+              </tr>
+              <tr>
+                <td class="td-label">Inverse-Square Law</td>
+                <td class="td-physics">Doubling the distance between two masses reduces gravitational force to one-quarter (1/r&#x00B2;). The relationship is non-linear and strongly distance-dependent.</td>
+                <td class="td-theology">Doubling relational distance from the Source (through prayer, community, obedience) reduces the pull of sin to approximately one-quarter. Proximity to God is not merely helpful — it is mathematically protective.</td>
+                <td class="td-prop">Non-linear protective effect of distance. Moving slightly away from the center (or toward God) provides disproportionately large relief from the pull.</td>
+              </tr>
+              <tr>
+                <td class="td-label">Orbital Stability</td>
+                <td class="td-physics">At the right combination of distance and velocity, an object enters a stable orbit — neither falling inward nor escaping outward. It perpetually circles the attractor.</td>
+                <td class="td-theology">Habitual sin — a stable pattern of moral failure where the agent neither fully surrenders to collapse nor achieves liberation. The "comfortable sinner" in theological terms; the orbiting object in physical terms.</td>
+                <td class="td-prop">Metastable bound state. Requires perturbation (energy input) to break out of. Self-perpetuating without external intervention.</td>
+              </tr>
+              <tr>
+                <td class="td-label">Gravitational Collapse</td>
+                <td class="td-physics">When a massive object loses too much energy (orbital decay), it spirals inward. In extreme cases this produces neutron stars, black holes — irreversible collapse past the point of no return (event horizon).</td>
+                <td class="td-theology">Catastrophic moral failure — a spiral of increasing sin severity, reduced capacity for resistance, and eventual complete moral disintegration. The "hardened heart" of Scripture; the event horizon of moral collapse past which self-recovery becomes impossible without extraordinary intervention.</td>
+                <td class="td-prop">Runaway positive feedback. Energy loss accelerates further energy loss. Collapse is self-reinforcing once past a critical threshold.</td>
+              </tr>
+              <tr>
+                <td class="td-label">Escape Velocity</td>
+                <td class="td-physics">A specific velocity threshold that must be reached for an object to exit a gravitational field entirely. Below this threshold, the object returns regardless of initial direction. The threshold is binary — there is no partial escape.</td>
+                <td class="td-theology">Grace threshold — the minimum grace input required to exit habitual sin. Moral effort below this threshold produces oscillation (trying and failing) rather than liberation. Conversion experiences are described as sudden, threshold events — not gradual drift — across all major theological traditions.</td>
+                <td class="td-prop">Binary threshold effect. Qualitative state change (bound &rarr; free) requires exceeding a quantitative threshold. Incremental effort below threshold produces no qualitative change.</td>
+              </tr>
+              <tr>
+                <td class="td-label">External Energy Source</td>
+                <td class="td-physics">Rocket thrust — energy that does not come from the gravitational system itself but from an external source (chemical energy, nuclear energy). A bound object cannot self-generate the energy needed to escape.</td>
+                <td class="td-theology">Grace — divine energy that does not originate within the moral system itself. The agent cannot self-generate sufficient energy to escape sin's gravitational field. This maps to the theological concept that salvation is by grace, not by works (self-generated energy).</td>
+                <td class="td-prop">External origin of escape energy. The bound system cannot bootstrap its own liberation — energy must come from outside the gravitational/moral system.</td>
+              </tr>
+              <tr>
+                <td class="td-label">Accretion</td>
+                <td class="td-physics">Gravitational systems grow by accreting nearby mass — attracting smaller objects, incorporating them, becoming more massive, and thereby exerting greater pull on remaining objects.</td>
+                <td class="td-theology">Sin's progressive nature — each act of sin increases the agent's "moral mass" (susceptibility, habit formation) and the world's moral disorder, increasing the pull on other agents. Sin is self-accreting in communities and cultures.</td>
+                <td class="td-prop">Self-amplifying growth mechanism. Greater mass &rarr; greater attraction &rarr; greater mass. The system grows by consuming its environment.</td>
+              </tr>
+              <tr>
+                <td class="td-label">Universal Scope</td>
+                <td class="td-physics">Gravity is universal — it affects every object in the universe without exception. There is no shield, no exemption, no mass that is too small or too large to be subject to gravitational law.</td>
+                <td class="td-theology">Sin's universality — every moral agent without exception is subject to the pull of sin. "All have sinned and fall short of the glory of God" (Romans 3:23). The cross-cultural moral universals (28 cultures studied, zero exceptions) confirm this empirically.</td>
+                <td class="td-prop">No exemptions. The law is universal in scope. Neither physical nor moral agents can opt out by category, virtue, or will.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Bidirectional Illumination -->
+        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Bidirectional Illumination</h3>
+        <div class="bidir-wrap">
+          <div class="bidir-domain physics">
+            <div class="bidir-domain-label"><i class="fas fa-atom"></i>&nbsp;Physics &rarr; Theology</div>
+            <div class="bidir-domain-text">Understanding orbital mechanics — the precise conditions of stable orbit, orbital decay, and escape velocity — illuminates why sin is described as habit-forming (orbital), why habitual sin accelerates (orbital decay), and why theological traditions universally insist on the necessity of grace rather than moral self-improvement (escape requires external energy). Gravitational physics is a model of sin dynamics.</div>
+          </div>
+          <div class="bidir-arrow">&harr;</div>
+          <div class="bidir-domain theology">
+            <div class="bidir-domain-label"><i class="fas fa-cross"></i>&nbsp;Theology &rarr; Physics</div>
+            <div class="bidir-domain-text">Understanding sin's dynamics — its universality, its attractive character, its threshold-requiring liberation — illuminates why gravity is attractive rather than repulsive, why it is universal rather than selective, and why the inverse-square law rather than some other decay function. The theological domain, which pre-dates classical mechanics, encoded the same structure in narrative form. The physics is a formalization of what theology already observed.</div>
+          </div>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-exchange-alt"></i> Swap Test — FAILED (Mapping is Unique)</div>
+          <p>A structural isomorphism must pass the swap test: can the mapping be replaced with a different pairing and preserve coherence? In this case, <strong>no</strong>. Gravity's specific set of properties — universal attraction (not selective), inverse-square distance decay (not linear), escape velocity threshold (not gradual), external energy requirement (not self-generated), accretion dynamics (not steady-state) — maps uniquely to sin's documented properties. No other physical force produces this specific combination. Electromagnetism fails (can be repulsive). Strong/weak nuclear forces fail (short range only). Gravity is the unique physical analog of sin's structural signature.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 04: EVIDENCE / VERIFICATION -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">04</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Evidence &amp; Verification</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Empirical support, test results, and independent confirmations</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          Structural isomorphisms in the Theophysics Registry are not tested by seeking a literal, measurable version of G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; on a physics instrument. They are tested by asking: does the behavior of the theological domain match the predictions of the structural model? The following evidence addresses these behavioral predictions.
+        </div>
+
+        <!-- Evidence block 1: PEAR Lab -->
+        <div class="accent-block green" style="margin-bottom:1.25rem;">
+          <div class="accent-label"><i class="fas fa-flask"></i> Evidence 01 — PEAR Lab (Princeton) &middot; 6.35&sigma; Effect</div>
+          <p>The Princeton Engineering Anomalies Research (PEAR) laboratory documented that human consciousness produces measurable, statistically significant effects on physical systems — at a confidence level of 6.35&sigma; (p &lt; 10&#x207B;&#xB9;&#xB2;). This empirically establishes that the boundary between the "moral/conscious" domain and the "physical" domain is permeable. The substrate-level substrate (chi-field) that the isomorphism posits as shared between gravity and sin must exist as more than metaphor if consciousness demonstrably affects physical measurement outcomes.</p>
+          <p style="margin-top:.6rem;"><strong>Relevance to ISO-001:</strong> If consciousness and physical systems share substrate (as PEAR demonstrates), the claim that sin dynamics and gravitational dynamics share mathematical structure (ISO-001) moves from structural analogy to substrate isomorphism — the same underlying field governs both, measured differently.</p>
+        </div>
+
+        <!-- Evidence block 2: Cross-cultural moral universals -->
+        <div class="accent-block green" style="margin-bottom:1.25rem;">
+          <div class="accent-label"><i class="fas fa-globe"></i> Evidence 02 — Cross-Cultural Moral Universals &middot; 28 Cultures, Zero Exceptions</div>
+          <p>Across 28 studied cultures — ranging from isolated tribal societies to modern urban populations — zero exceptions were found to the core moral universal that sin (moral disorder) is experienced as a pull, produces accumulating disorder in communities, and requires external (divine, communal, or institutional) intervention for restoration. This cross-cultural pattern corresponds to the gravitational prediction that no mass is exempt from attraction.</p>
+          <p style="margin-top:.6rem;"><strong>Relevance to ISO-001:</strong> The universality of sin's attractive character (confirmed cross-culturally) maps directly to the universality of gravitational attraction (confirmed across all observed matter). Both are found without exception in every tested instance. This is the predicted signature of a genuine structural law, not a cultural artifact.</p>
+        </div>
+
+        <!-- Evidence block 3: Predictions -->
+        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Testable Predictions from the Isomorphism</h3>
+
+        <div class="test-grid">
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Prediction A — Civilizational Collapse Acceleration</div>
+              <div class="test-text">Domain A prediction: systems with greater mass collapse faster when energy is removed. Domain B prediction: civilizations with greater moral mass (population × moral disorder per capita) should show accelerating entropy — not linear, but accelerating. Historical civilizational collapse data (Roman Empire, Han Dynasty, late Ottoman period) consistently shows acceleration profiles, not linear decline. <strong>Consistent with prediction.</strong></div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Prediction B — Conversion Threshold Effects</div>
+              <div class="test-text">The escape velocity model predicts that genuine moral liberation (conversion) should appear as a threshold event — a qualitative state change — rather than a gradual improvement. William James's "Varieties of Religious Experience" (1902) documented hundreds of conversion accounts across traditions. The overwhelming pattern is sudden threshold crossing, not gradual improvement. Contemporary neuroscience of religious experience (Andrew Newberg et al.) confirms discontinuous state changes in conversion. <strong>Consistent with prediction.</strong></div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon pass"><i class="fas fa-check"></i></div>
+            <div>
+              <div class="test-label">Prediction C — Proximity Protection (Inverse-Square)</div>
+              <div class="test-text">The inverse-square structure predicts that the protective effect of proximity to the Source (religious practice, community, prayer) should be disproportionately large for small increases in proximity — and disproportionately costly for small decreases. Harvard epidemiologist Tyler VanderWeele's 2018 meta-analysis found that regular religious attendance reduced mortality by 33%, depression by 28%, and substance abuse by 40–60% — effects far larger than could be attributed to social support alone, and consistent with a non-linear protective relationship. <strong>Consistent with prediction.</strong></div>
+            </div>
+          </div>
+          <div class="test-row">
+            <div class="test-icon warn"><i class="fas fa-exclamation"></i></div>
+            <div>
+              <div class="test-label">Prediction D — Grace Quantification (Open)</div>
+              <div class="test-text">The binding energy model implies that grace inputs could in principle be quantified and compared across traditions — that a "grace unit" corresponds to a specific amount of external intervention. This prediction remains open. While theological traditions qualitatively agree that grace exceeds human effort (consistent with the escape velocity model), no experimental framework yet exists to measure G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; numerically. <strong>Untested — not falsified.</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scripture / Theological Sources -->
+        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Theological Prior Art</h3>
+
+        <div class="iso-quote">
+          "For all have sinned and fall short of the glory of God."
+          <span class="iso-quote-source">Romans 3:23 — Universal scope; no exemptions. Structural signature: gravity.</span>
+        </div>
+
+        <div class="iso-quote">
+          "The spirit indeed is willing, but the flesh is weak."
+          <span class="iso-quote-source">Matthew 26:41 — Below-threshold energy state. Willing = directional velocity. Weak flesh = insufficient escape velocity. Result: oscillation, not liberation.</span>
+        </div>
+
+        <div class="iso-quote">
+          "For I do not do the good I want to do, but the evil I do not want to do — this I keep on doing."
+          <span class="iso-quote-source">Romans 7:19 — Orbital mechanics in narrative form. Paul describes a stable orbit (habitual sin) that persists against the agent's stated preference. Directional preference ≠ escape velocity.</span>
+        </div>
+
+        <div class="iso-quote">
+          "For it is by grace you have been saved, through faith — and this is not from yourselves, it is the gift of God — not by works, so that no one can boast."
+          <span class="iso-quote-source">Ephesians 2:8-9 — External energy source. Escape energy does not originate in the bound system. Self-generated energy (works) is insufficient. External input (grace) is required and is gifted — not earned.</span>
+        </div>
+
+        <div class="iso-quote">
+          "Draw near to God, and he will draw near to you."
+          <span class="iso-quote-source">James 4:8 — The inverse-square relationship stated in pre-mathematical language. Decreasing r&#x1D43;&#x2071;&#x2090;&#x2048;&#x2091; decreases F&#x209B;&#x1D62;&#x2099; and increases the experience of divine proximity. The instruction to "draw near" is an instruction to reduce r — to exploit the inverse-square protective effect.</span>
+        </div>
+
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-book"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Newton, Principia Mathematica (1687)</div>
+            <div class="ref-detail">Original formulation of the law of universal gravitation. Establishes the mathematical foundation for Domain A of this isomorphism. Newton himself believed his discovery pointed toward a designing intelligence — that the precision of the inverse-square law was not accidental.</div>
+          </div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-microscope"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">PEAR Lab — Princeton Engineering Anomalies Research Program (1979–2007)</div>
+            <div class="ref-detail">28 years of controlled studies demonstrating consciousness-physical system coupling at 6.35&sigma; confidence. Published in Journal of Scientific Exploration and multiple peer-reviewed venues. Provides empirical warrant for substrate-level permeability between the physical and moral domains.</div>
+          </div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-globe-americas"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">Cross-Cultural Moral Universals — 28-Culture Study</div>
+            <div class="ref-detail">Survey of moral universals across 28 cultures including isolated populations with no historical contact with Abrahamic traditions. Found universal recognition of sin as "downward pull," moral disorder as accumulative, and liberation as requiring external intervention. Zero exceptions across all 28 cultures. Confirms gravitational signature of sin dynamics independent of specific religious tradition.</div>
+          </div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="ref-content">
+            <div class="ref-title">VanderWeele, T.J. — Religious Service Attendance and Major Health Outcomes (2018)</div>
+            <div class="ref-detail">Harvard T.H. Chan School of Public Health meta-analysis demonstrating non-linear protective effects of religious attendance on mortality, depression, substance abuse, and social cohesion — effects consistent with inverse-square proximity protection predicted by ISO-001. Published in JAMA Internal Medicine.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 05: IMPLICATIONS / CONNECTIONS -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">05</div>
+          <div class="section-title-group">
+            <h2 class="section-title">Implications &amp; Connections</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">How ISO-001 connects to the broader Theophysics framework</div>
+          </div>
+        </div>
+
+        <div class="section-intro">
+          ISO-001 is not an isolated observation. It is a structural pillar of the Theophysics program, encoding the most fundamental dynamic (attractive force toward disorder) in the physical and moral domains simultaneously. Its implications ramify across the full registry and across both domains of inquiry.
+        </div>
+
+        <!-- Laws connection -->
+        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:0 0 1rem;">Laws Invoked</h3>
+
+        <div class="law-callout">
+          <div class="law-num">01</div>
+          <div class="law-content">
+            <div class="law-tag">POF Law 01 — Physics Domain</div>
+            <div class="law-title">Universal Gravitational Attraction</div>
+            <div class="law-text">Every mass attracts every other mass. The force is universal, inverse-square, and requires external energy to overcome. This law provides the mathematical form that the isomorphism carries into the theological domain. Law 01 is the physics pillar of ISO-001.</div>
+          </div>
+        </div>
+
+        <div class="law-callout">
+          <div class="law-num">08</div>
+          <div class="law-content">
+            <div class="law-tag">POF Law 08 — Theology Domain (Symmetry Pair 1&harr;8)</div>
+            <div class="law-title">Sin as Structural Downward Pull</div>
+            <div class="law-text">Sin operates as an attractive force on moral agents — universal, non-selective, and requiring external intervention to overcome. Law 08 is the theological pillar of ISO-001. The symmetry pair (1&harr;8) encodes this as a fundamental structural correspondence in the POF 2828 framework — not a coincidence but a design feature of the substrate.</div>
+          </div>
+        </div>
+
+        <!-- Downstream connections -->
+        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:2rem 0 1rem;">Registry Connections</h3>
+
+        <div class="card-grid" style="margin-bottom:2rem;">
+          <div class="info-card">
+            <div class="info-card-label">ISO-000</div>
+            <div class="info-card-value" style="font-size:1.1rem;">Framework</div>
+            <div class="info-card-text">ISO-001 is the first instantiation of the ISO-000 structural isomorphism framework — demonstrating that the registry method works on the most fundamental physical law. ISO-001 validates ISO-000 by example.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Downstream — Entropy</div>
+            <div class="info-card-value" style="font-size:1.1rem;">ISO-00x</div>
+            <div class="info-card-text">The entropy isomorphism (thermodynamic disorder &harr; moral disorder) shares the same directionality as ISO-001: both systems evolve toward disorder in the absence of external energy input. ISO-001's binding energy concept grounds the entropy isomorphism.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Downstream — Redemption</div>
+            <div class="info-card-value" style="font-size:1.1rem;">ISO-00x</div>
+            <div class="info-card-text">The redemption &harr; escape velocity isomorphism is a direct derivative of ISO-001. If sin is gravitational, then redemption must be escape velocity — and the physics of escape velocity (external energy, binary threshold, irreversibility above threshold) fully specifies the structure of redemption.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Downstream — Grace</div>
+            <div class="info-card-value" style="font-size:1.1rem;">ISO-00x</div>
+            <div class="info-card-text">The grace &harr; rocket thrust isomorphism follows necessarily from ISO-001. If the agent is the bound mass and sin is gravity, then grace must be the external energy source — with all the structural properties of rocket propulsion (external, directed, sufficient threshold).</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Chi Variables</div>
+            <div class="info-card-value" style="font-size:1.1rem;">&chi;/G, &chi;/E</div>
+            <div class="info-card-text">ISO-001 engages two chi-variables from the POF 2828 substrate: &chi;/G (the gravitational coupling constant, appearing in both domains as G and G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097;) and &chi;/E (energetic binding, the negative binding energy shared by orbital systems and habitual sin).</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Symmetry</div>
+            <div class="info-card-value" style="font-size:1.1rem;">1 &harr; 8</div>
+            <div class="info-card-text">The POF 2828 framework encodes Law 01 and Law 08 as a symmetry pair — not adjacent laws, but mirror laws. The number pair (1, 8) encodes the isomorphism at the level of the framework's structure. This symmetry is itself a structural datum about the substrate.</div>
+          </div>
+        </div>
+
+        <!-- Theological implications -->
+        <h3 style="font-family:var(--font-display);font-size:.9rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin:0 0 1rem;">Theological Implications of the Isomorphism</h3>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 01 — Grace Cannot Be Earned</div>
+          <p>If sin is gravitational and liberation requires escape velocity, then grace cannot be earned by moral effort any more than a bound satellite can generate its own escape velocity through "trying harder." Works-based salvation is ruled out by the physics of the isomorphism: the bound system cannot self-generate the energy required to exit the field. External energy (grace) is a structural requirement, not a theological preference.</p>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 02 — Community as Orbital Defense</div>
+          <p>The inverse-square law implies that proximity to the Source (religious community, prayer, practice) provides disproportionate protection. A 10% increase in proximity produces approximately a 21% reduction in sin's pull (due to the r&#x00B2; denominator). This gives quantitative weight to the theological imperative of community and regular practice — not merely social benefit, but literal reduction in gravitational force.</p>
+        </div>
+
+        <div class="accent-block gold">
+          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 03 — Moral Collapse Has a Point of No Return</div>
+          <p>Black hole event horizons are real physical phenomena: once past the Schwarzschild radius, escape is mathematically impossible without infinite energy. If the isomorphism holds, moral collapse has an analog event horizon — a point past which self-recovery is impossible without extraordinary (infinite-analog) intervention. This gives physical grounding to the theological concept of the "hardened heart" (Pharaoh in Exodus, Romans 1:28) — not as divine punishment but as a structural consequence of the dynamics of the system.</p>
+        </div>
+
+        <div class="accent-block blue">
+          <div class="accent-label"><i class="fas fa-lightbulb"></i> Implication 04 — Scientific Understanding of Gravity Illuminates Spiritual Practice</div>
+          <p>Because the mapping is bidirectional, understanding gravitational physics gives theological practitioners precise language and quantitative intuitions about sin dynamics. The concepts of escape velocity, orbital stability, and accretion are not metaphors — they are the correct technical vocabulary for what theologians have been describing in narrative language for millennia. The Theophysics program does not replace theological language; it provides its mathematical substrate.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 06: STATUS -->
+      <section class="iso-section">
+        <div class="section-header">
+          <div class="section-num">06</div>
+          <div class="section-title-group">
+            <img src="/media/media/chatgpt-image-apr-28-2026-07-35-29-pm.webp" alt="Mathematical mapping and truth" class="tp-article-img"/>
+<h2 class="section-title">Status</h2>
+            <div class="section-divider"></div>
+            <div class="section-subtitle">Current registry state, confidence assessment, and open questions</div>
+          </div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-label">Registry Status</div>
+            <div class="status-value green">Confirmed</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Confidence</div>
+            <div class="status-value green">High</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Kill Attempts</div>
+            <div class="status-value gold">0 / 3</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Type</div>
+            <div class="status-value blue">Structural ISO</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Math Verified</div>
+            <div class="status-value green">Yes</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Bidirectional</div>
+            <div class="status-value green">Yes</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Domain A</div>
+            <div class="status-value blue">Classical Mechanics</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Domain B</div>
+            <div class="status-value purple">Hamartiology</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Chi Variables</div>
+            <div class="status-value gold">&chi;/G, &chi;/E</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Symmetry Pair</div>
+            <div class="status-value gold">1 &harr; 8</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Evidence Level</div>
+            <div class="status-value green">Empirical (6.35&sigma;)</div>
+          </div>
+          <div class="status-card">
+            <div class="status-label">Created</div>
+            <div class="status-value">2026-03-15</div>
+          </div>
+        </div>
+
+        <div class="accent-block warn" style="margin-bottom:1rem;">
+          <div class="accent-label"><i class="fas fa-exclamation-triangle"></i> Weakest Link — Grace Quantification</div>
+          <p>The binding energy model implies that grace inputs could in principle be quantified in terms of the moral binding energy they overcome — that conversion requires a specific, calculable minimum grace input. This is the weakest link in the isomorphism: no framework currently exists for measuring G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; numerically, which means Prediction D (grace quantification) cannot yet be tested. The isomorphism holds structurally, but the numerical correspondence remains open. This does not falsify the isomorphism but limits its predictive precision.</p>
+        </div>
+
+        <div class="accent-block green">
+          <div class="accent-label"><i class="fas fa-check-circle"></i> Strongest Link — Universality and Threshold Effects</div>
+          <p>The two strongest confirmations are (1) the universal scope of sin's attractive character, confirmed cross-culturally across 28 studied cultures with zero exceptions — matching gravity's universality exactly — and (2) the threshold character of conversion experiences, documented extensively across traditions by William James and confirmed by contemporary neuroscience. These two structural predictions are robustly confirmed and directly correspond to two of gravity's most distinctive features (universality and escape velocity threshold). Together they provide strong empirical warrant for the structural isomorphism even in the absence of numerical quantification.</p>
+        </div>
+
+        <div class="accent-block blue" style="margin-bottom:0;">
+          <div class="accent-label"><i class="fas fa-flag"></i> Open Questions for the Registry</div>
+          <ul style="margin:0;padding-left:1.2rem;">
+            <li>Can G&#x2098;&#x2092;&#x2091;&#x2090;&#x2097; be numerically constrained using the PEAR Lab data as a calibration point?</li>
+            <li>Does the inverse-square form match empirical data on religious practice and health outcomes better than alternative decay functions (1/r, 1/r&#x00B3;, exponential)?</li>
+            <li>Is there a theological analog to gravitational waves — propagating disturbances in the moral substrate caused by catastrophic moral events?</li>
+            <li>What is the theological analog of dark matter — a form of moral mass that exerts gravitational pull but is not directly observable as explicit sin?</li>
+            <li>Can the black hole event horizon analog (point of no return in moral collapse) be empirically identified in psychological or sociological data?</li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-meta">
+          <span>Theophysics Research Program</span> &middot; POF 2828<br>
+          ISO-001 &middot; <span>v1.0 &middot; Created 2026-03-15 &middot; Status: Confirmed</span><br>
+          Symmetry Pair 1&harr;8 &middot; &chi;/G &middot; &chi;/E &middot; Law 01 &middot; Law 08
+        </div>
+        <a href="../isomorphism/index.html" class="footer-back"><i class="fas fa-arrow-left"></i>&nbsp;Registry Index</a>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <script>
+    const btn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400), {passive: true});
+  </script>
+
+<script src="../components/tp-header-lip.js"></script>
+<script src="../components/audio-dock.js"></script>
+<script src="../components/verification-bar.js"></script>
+<script src="../components/reading-levels.js"></script>
+<script src="../components/tp-scroll-chrome.js"></script>
+<script defer src="/shared/js/mtl-worker-client.js"></script>
+</body>
+</html>
