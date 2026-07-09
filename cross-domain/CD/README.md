@@ -1,31 +1,36 @@
 # CD — Cross-Domain Coherence
 
+**Series prefix:** `CD` (Cross Domain)  
+**Package codes:** `CDCS`, `CDFR`, `CDPC`, etc.
+
 Working copy of `[TX_A5.1] Cross-Domain Coherence Project`.
 
-## Status: all 11 domains staged
+## All packages (11)
 
-Each domain has `sources/` markdown and a `notebooklm/manifest.json` with the required five outputs.
+| Code | Domain | Sources | Folder |
+|---|---|---|---|
+| `CDCS` | Canonical Synthesis | 3 | [CD-CDCS-Canonical-Synthesis](./CD-CDCS-Canonical-Synthesis/) |
+| `CDFR` | Federal Reserve | 3 | [CD-CDFR-Federal-Reserve](./CD-CDFR-Federal-Reserve/) |
+| `CDPC` | Psychology Crisis | 3 | [CD-CDPC-Psychology-Crisis](./CD-CDPC-Psychology-Crisis/) |
+| `CDED` | Education | 3 | [CD-CDED-Education](./CD-CDED-Education/) |
+| `CDSM` | Scientific Method | 3 | [CD-CDSM-Scientific-Method](./CD-CDSM-Scientific-Method/) |
+| `CDTE` | Theological Engineering | 3 | [CD-CDTE-Theological-Engineering](./CD-CDTE-Theological-Engineering/) |
+| `CDSE` | Semantic Entropy | 3 | [CD-CDSE-Semantic-Entropy](./CD-CDSE-Semantic-Entropy/) |
+| `CDCT` | Coherence Tools | 3 | [CD-CDCT-Coherence-Tools](./CD-CDCT-Coherence-Tools/) |
+| `CDDM` | Demographics | 3 | [CD-CDDM-Demographics](./CD-CDDM-Demographics/) |
+| `CDAR` | Architecture | 3 | [CD-CDAR-Architecture](./CD-CDAR-Architecture/) |
+| `CDAI` | AI Synthesis Final | 3 | [CD-CDAI-AI-Synthesis-Final](./CD-CDAI-AI-Synthesis-Final/) |
 
-| Folder | Sources | NotebookLM manifest |
-|---|---|---|
-| [Canonical Synthesis](./Canonical%20Synthesis/) | 3 | yes |
-| [Federal Reserve](./Federal%20Reserve/) | 3 | yes |
-| [Psychology Crisis](./Psychology%20Crisis/) | 3 | yes |
-| [Education](./Education/) | 3 | yes |
-| [Scientific Method](./Scientific%20Method/) | 3 | yes |
-| [Theological Engineering](./Theological%20Engineering/) | 3 | yes |
-| [Semantic Entropy](./Semantic%20Entropy/) | 3 | yes |
-| [Coherence Tools](./Coherence%20Tools/) | 3 | yes |
-| [Demographics](./Demographics/) | 3 | yes |
-| [Architecture](./Architecture/) | 3 | yes |
-| [AI Synthesis Final](./AI%20Synthesis%20Final/) | 3 | yes |
+## Standard NotebookLM set (every CD package)
 
-## Per-domain NotebookLM set
+1. 3 source markdown files in `sources/`
+2. Slideshow — **Black it out**
+3. Deep Dive audio — `DD Title`
+4. Debate audio — `D Title`
+5. Long-form video — no prefix
 
-1. slideshow — type **Black it out** (no prefix)
-2. deep dive audio — rename `DD Title`
-3. debate audio — rename `D Title`
-4. critique audio — rename `AC Title`
-5. one video — no prefix
+See [NOTEBOOKLM-WORKFLOW.md](./NOTEBOOKLM-WORKFLOW.md).
 
-See [NOTEBOOKLM-WORKFLOW.md](./NOTEBOOKLM-WORKFLOW.md) for full instructions.
+## Next package to produce
+
+Start with **[CDCS Canonical Synthesis](./CD-CDCS-Canonical-Synthesis/)**.

@@ -4,123 +4,95 @@ Source project on desktop:
 
 `\\192.168.2.50\h_hp\Desktop\[TX_A5.1] Cross-Domain Coherence Project`
 
-This repo folder mirrors that project under `cross-domain/CD/` with short human labels.
+This repo mirrors that project under `cross-domain/CD/` using the **CD package code** system.
 
 ---
 
-## Domain Map
+## Naming System
 
-| Desktop folder | CD folder |
-|---|---|
-| `00_CANONICAL_THEOPHYSICS_SYNTHESIS` | `Canonical Synthesis` |
-| `01_Federal_Reserve` | `Federal Reserve` |
-| `02_Psychology_Crisis` | `Psychology Crisis` |
-| `03_Education` | `Education` |
-| `04_Scientific_Method` | `Scientific Method` |
-| `05_Theological_Engineering` | `Theological Engineering` |
-| `07_Semantic_Entropy` | `Semantic Entropy` |
-| `08_Coherence_Tools` | `Coherence Tools` |
-| `12_Demographics` | `Demographics` |
-| `13_Architecture` | `Architecture` |
-| `14_AI_Synthesis_Final` | `AI Synthesis Final` |
+Every package in this series uses:
 
-Each domain folder has:
+1. **Series prefix:** `CD` = Cross Domain
+2. **Package code:** 4-letter code (example: `CDCS` = Canonical Synthesis)
+3. **Folder name:** `CD-{CODE}-{Domain-Name}`
+4. **Display name:** `CD {Domain Name}`
 
-- `sources/` — good markdown only (canonical article text)
-- `notebooklm/` — generated outputs + rename manifest
+Example:
+
+- Code: `CDCS`
+- Folder: `CD-CDCS-Canonical-Synthesis/`
+- Display: `CD Canonical Synthesis`
 
 ---
 
-## Per-Domain Pipeline
+## Package Map
 
-For each domain, run this order in NotebookLM:
-
-1. **Drop sources** — copy vetted `.md` files into `sources/`
-2. **Slideshow** — use the **Black It Out** prompt (no filename prefix)
-3. **Deep Dive** — long audio; prefix rename with `DD `
-4. **Debate** — prefix rename with `D `
-5. **Critique** — prefix rename with `AC `
-6. **Video** — one explainer only; no prefix
-7. **Reading level check** — flag words above 8th grade; add definitions; move on
-
----
-
-## NotebookLM Rename Rules (Audio)
-
-These prefixes go on the **NotebookLM output title**, not on source markdown.
-
-| Output type | Prefix | Example |
+| Code | CD folder | Desktop source |
 |---|---|---|
-| Debate audio | `D ` | `D How the Federal Reserve Devalues Your Dollar` |
-| Deep Dive audio | `DD ` | `DD Where Your Missing Sixty Four Percent Went` |
-| Critique audio | `AC ` | `AC The Physics of the Cantillon Effect` |
-| Explainer video | *(none)* | `The Chain of Paper` |
-| Slideshow | *(none)* | `MONETARY DECOHERENCE` |
+| `CDCS` | Canonical Synthesis | `00_CANONICAL_THEOPHYSICS_SYNTHESIS` |
+| `CDFR` | Federal Reserve | `01_Federal_Reserve` |
+| `CDPC` | Psychology Crisis | `02_Psychology_Crisis` |
+| `CDED` | Education | `03_Education` |
+| `CDSM` | Scientific Method | `04_Scientific_Method` |
+| `CDTE` | Theological Engineering | `05_Theological_Engineering` |
+| `CDSE` | Semantic Entropy | `07_Semantic_Entropy` |
+| `CDCT` | Coherence Tools | `08_Coherence_Tools` |
+| `CDDM` | Demographics | `12_Demographics` |
+| `CDAR` | Architecture | `13_Architecture` |
+| `CDAI` | AI Synthesis Final | `14_AI_Synthesis_Final` |
 
-Rules:
+Each package folder contains:
 
-- One leading `D` for debate — not `DD`, not `Debate`
-- Two Ds with a space for deep dive — `DD Title Here`
-- `AC` with a space for critique — `AC Title Here`
-- Video and slideshow keep clean titles — no prefix
+- `sources/` — 3 vetted markdown files
+- `notebooklm/manifest.json` — output plan + rename rules
+- `README.md` — quick reference
 
 ---
 
-## NotebookLM Prompts
+## Standard Pipeline (Every CD Package)
 
-### Slideshow — Black It Out
+Run in this order for **every** domain in the series:
 
-Use NotebookLM's slideshow generator with the blackout instruction:
+1. **Sources** — upload the 3 files from `sources/`
+2. **Slideshow** — type **Black it out** (no title prefix)
+3. **Deep Dive** — long audio; rename with `DD `
+4. **Debate** — rename with `D `
+5. **Video** — one long-form explainer; no prefix
+6. **Vocabulary pass** — list words above 8th-grade reading level
+
+---
+
+## NotebookLM Rename Rules
+
+Prefixes apply to **NotebookLM output titles**, not source markdown filenames.
+
+| Output | Prefix | Example |
+|---|---|---|
+| Deep Dive | `DD ` | `DD The Master Equation Across Every Domain` |
+| Debate | `D ` | `D Is Cross Domain Coherence Real or Retrofit` |
+| Slideshow | *(none)* | `THEOPHYSICS SYNTHESIS` |
+| Video (long form) | *(none)* | `One Framework, Seven Colors` |
+
+---
+
+## Slideshow Prompt — Black It Out
 
 > Black it out. Minimal text per slide. One claim per slide. No paragraph blocks. High contrast. Let the spoken audio carry the explanation.
 
-### Deep Dive (long audio)
+---
 
-Pick the **middle-length long-form** deep dive prompt from the project instructions. This is the main teaching pass.
+## Production Order
 
-Rename output: `DD [title]`
+Start with **CDCS** (Canonical Synthesis), then continue through the list in code order:
 
-### Debate
-
-Steel-man both sides. Adversarial but fair.
-
-Rename output: `D [title]`
-
-### Critique
-
-Audit claims, evidence gaps, kill conditions.
-
-Rename output: `AC [title]`
-
-### Video
-
-One explainer per domain. No prefix on the title.
+`CDCS → CDFR → CDPC → CDED → CDSM → CDTE → CDSE → CDCT → CDDM → CDAR → CDAI`
 
 ---
 
 ## 8th Grade Reading Level Pass
 
-After audio generation, ask NotebookLM (or run locally):
+After outputs are generated:
 
-> List every word or phrase in this material above an 8th-grade reading level. For each, give a one-sentence plain-English definition a 14-year-old would understand. Do not remove claims — only define terms.
+> List every word or phrase above an 8th-grade reading level. For each, give a one-sentence plain-English definition a 14-year-old would understand. Do not remove claims — only define terms.
 
-Save definitions in `notebooklm/vocabulary.md` for that domain.
-
----
-
-## Source Markdown Rules
-
-Only drop markdown into `sources/` when:
-
-- Claims are stated clearly
-- Evidence is cited
-- Voice matches Theophysics (direct, no hedging)
-- No duplicate/conflicting drafts
-
-Do **not** prefix source files with `D`, `DD`, or `AC`. Prefixes are for NotebookLM outputs only.
-
----
-
-## Federal Reserve Pilot (current)
-
-See `Federal Reserve/notebooklm/manifest.json` for the live rename map from the first completed notebook.
+Save to `notebooklm/vocabulary.md` inside that package folder.
