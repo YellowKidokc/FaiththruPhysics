@@ -21,13 +21,16 @@ Working copy of `[TX_A5.1] Cross-Domain Coherence Project`.
 | `CDAR` | Architecture | 3 | [CD-CDAR-Architecture](./CD-CDAR-Architecture/) |
 | `CDAI` | AI Synthesis Final | 3 | [CD-CDAI-AI-Synthesis-Final](./CD-CDAI-AI-Synthesis-Final/) |
 
-## Standard NotebookLM set (every CD package)
+## Standard Studio set (every CD package)
 
 1. 3 source markdown files in `sources/`
-2. Slideshow — **Black it out**
-3. Deep Dive audio — `DD Title`
-4. Debate audio — `D Title`
-5. Long-form video — no prefix
+2. Slideshow — **Black it out** (no prefix)
+3. Deep Dive — `DD Title`
+4. Critique — `AC Title`
+5. Debate — `D Title`
+6. Explainer video — long form (no prefix)
+
+**Visual cheat sheet:** [STUDIO-ROUTINE.md](./STUDIO-ROUTINE.md) · [cd-studio-routine-reference.png](./cd-studio-routine-reference.png)
 
 See [NOTEBOOKLM-WORKFLOW.md](./NOTEBOOKLM-WORKFLOW.md).
 
