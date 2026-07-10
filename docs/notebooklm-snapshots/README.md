@@ -39,3 +39,15 @@ Files land in a subfolder so they stay separate from your live NotebookLM work:
 ```
 \\192.168.2.50\h_hp\Desktop\Notebook LM\Cursor - NotebookLM\
 ```
+
+## Studio rename rules (pinned audio)
+
+See `RENAME-WORKFLOW.md` for the full steps. Short version:
+
+| Studio label | Rename prefix |
+| --- | --- |
+| Deep Dive | `DD` |
+| Debate | `AD` |
+| Critique | `AC` |
+
+Three dots → Rename → add prefix at front. Screenshot Studio after each notebook.
