@@ -1,6 +1,6 @@
-# NotebookLM Studio Snapshots (2026-06-22)
+# Cursor — NotebookLM Studio Snapshots (2026-06-22)
 
-Screenshots taken during the NotebookLM upload/download audit workflow. Each image captures the **Sources** (uploaded files), **Chat** summary, and **Studio** panel (generated outputs: Audio Overview, Slide Deck, Video Overview, etc.).
+Screenshots collected by **Cursor** during the NotebookLM upload/download audit workflow. Each image captures the **Sources** (uploaded files), **Chat** summary, and **Studio** panel (generated outputs: Audio Overview, Slide Deck, Video Overview, etc.).
 
 ## MDA notebooks
 
@@ -32,4 +32,10 @@ From a machine on your LAN that can reach `\\192.168.2.50\h_hp\Desktop\Notebook 
 
 ```powershell
 .\copy-to-notebook-lm-desktop.ps1
+```
+
+Files land in a subfolder so they stay separate from your live NotebookLM work:
+
+```
+\\192.168.2.50\h_hp\Desktop\Notebook LM\Cursor - NotebookLM\
 ```
