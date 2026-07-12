@@ -180,7 +180,7 @@
     loadSidecarClaims();
 
     // Auto-detect claim sentences in prose
-    const roots = document.querySelectorAll('main, article, .prose-body, [data-component="content"]');
+    const roots = Array.from(document.querySelectorAll('main, article, .prose-body, [data-component="content"]'));
     if(roots.length === 0) roots.push(document.body);
 
     roots.forEach(root => {
