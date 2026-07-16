@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Lowe Family Listening Room</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #10131a;
+    color: #e7e7ef;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; color: #f0d9a8; font-weight: normal; }
+  .sub { color: #8a8a9c; font-size: .95rem; margin-bottom: 2rem; }
+  .card {
+    background: #171b26;
+    border: 1px solid #262b3a;
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .card h2 { font-size: 1.05rem; margin: 0 0 .2rem; font-weight: normal; }
+  .card .meta { color: #8a8a9c; font-size: .8rem; margin-bottom: .7rem; }
+  audio { width: 100%; }
+  .status { font-size: .85rem; color: #8a8a9c; margin-top: 2rem; }
+  .status b { font-weight: normal; }
+  .ok { color: #37d67a; }
+  .bad { color: #ff5c5c; }
+  .note {
+    margin-top: 1.5rem; padding: .9rem 1.1rem;
+    border-left: 3px solid #f0d9a8; background: #171b26;
+    font-size: .85rem; color: #b9b9c9; border-radius: 0 8px 8px 0;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Lowe Family Listening Room</h1>
+  <div class="sub">A quiet corner of faiththruphysics — test page for the audio pipeline.</div>
+
+  <div class="card">
+    <h2>The Dictionary — deep dive</h2>
+    <div class="meta">One-Page Stories · deep-dive audio</div>
+    <audio controls preload="none"
+      src="https://faith-audio-pipeline.davidokc28.workers.dev/audio/one-page-stories/dictionary/deep.m4a"></audio>
+  </div>
+
+  <div class="card">
+    <h2>Starting Point — deep dive</h2>
+    <div class="meta">One-Page Stories · deep-dive audio</div>
+    <audio controls preload="none"
+      src="https://faith-audio-pipeline.davidokc28.workers.dev/audio/one-page-stories/starting-point/deep.m4a"></audio>
+  </div>
+
+  <div class="status">Audio worker: <b id="wstatus">checking…</b></div>
+
+  <div class="note">
+    This is a plumbing test: the page is served by Cloudflare Pages, the audio
+    streams from R2 through the <code>faith-audio-pipeline</code> Worker. If both
+    players above play, the whole chain works. The real family player from the
+    July 16 handoff replaces this page.
+  </div>
+</div>
+<script>
+  fetch('https://faith-audio-pipeline.davidokc28.workers.dev/health')
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      var el = document.getElementById('wstatus');
+      el.textContent = j.ok ? 'online' : 'error';
+      el.className = j.ok ? 'ok' : 'bad';
+    })
+    .catch(function () {
+      var el = document.getElementById('wstatus');
+      el.textContent = 'unreachable';
+      el.className = 'bad';
+    });
+</script>
+</body>
+</html>
