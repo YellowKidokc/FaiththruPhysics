@@ -1,0 +1,3357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Faith thru Physics — Universal Page Shell v2.0</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — v2.0 Wider, Claim-aware, MTL-ready
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --bg: #050505;
+  --surface: #0a0a0a;
+  --surface2: #111;
+  --surface3: #1a1a1a;
+  --surface4: #1e1e1e;
+  --surface-gold: rgba(212,175,55,.04);
+
+  --border: #222;
+  --border-2: #2a2a2a;
+  --border-hi: #3a3a3a;
+  --border-gold: rgba(212,175,55,.25);
+  --border-gold-hi: rgba(212,175,55,.4);
+
+  --text: #e5e3df;
+  --text-dim: #9a9a9a;
+  --text-muted: #5a5a5a;
+  --text-dark: #3a3a3a;
+
+  --gold: #d4af37;
+  --gold-dim: rgba(212,175,55,.08);
+  --gold-med: rgba(212,175,55,.15);
+  --gold-glow: rgba(212,175,55,.3);
+  --red: #c94040;
+  --red-dim: rgba(201,64,64,.1);
+  --teal: #3bb39a;
+  --teal-dim: rgba(59,179,154,.1);
+  --blue: #5b9bd5;
+  --blue-dim: rgba(91,155,213,.1);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,.1);
+  --green: #7fc77f;
+  --green-dim: rgba(127,199,127,.1);
+  --orange: #e8a040;
+
+  --serif: 'Crimson Text',Georgia,serif;
+  --mono: 'JetBrains Mono',ui-monospace,monospace;
+  --display: 'Oswald','Inter',sans-serif;
+  --sans: 'Inter',system-ui,sans-serif;
+
+  --max: 1400px;
+  --article-max: 900px;
+  --header-h: 46px;
+  --panel-h: 34px;
+  --dock-h: 112px;
+  --shell-boundary-h: 20px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; background: var(--bg); }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hi); }
+::selection { background: rgba(212,175,55,.2); color: var(--text); }
+
+/* Shell boundary rails: visible enough for operators, quiet enough for readers. */
+.ftp-shell-boundary {
+  width: min(100%, var(--article-max));
+  margin: .9rem auto;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: var(--shell-boundary-h);
+  color: var(--text-dark);
+  font-family: var(--mono);
+  font-size: .52rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  user-select: none;
+}
+.ftp-shell-boundary::before,
+.ftp-shell-boundary::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.22), transparent);
+}
+.ftp-shell-boundary strong {
+  font-weight: 500;
+  color: rgba(212,175,55,.55);
+}
+.ftp-shell-boundary[data-shell-critical="true"] strong {
+  color: var(--gold);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 1 — TOP BAR v2.0
+   Wider. Search moved to right-side tool cluster.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ftp-top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(5,5,5,.93);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: border-color .3s;
+}
+.ftp-top:hover { border-bottom-color: var(--border-2); }
+
+.ftp-top-inner {
+  max-width: var(--max); margin: 0 auto;
+  display: flex; align-items: center; height: var(--header-h);
+  padding: 0 1.25rem; gap: .5rem;
+}
+
+/* Brand */
+.ftp-brand {
+  display: flex; align-items: center; gap: .35rem;
+  flex-shrink: 0; padding: .2rem .4rem .2rem 0;
+  border-radius: 4px; transition: background .3s;
+  position: relative; overflow: hidden;
+}
+.ftp-brand-chi {
+  font-family: var(--serif); font-size: 1.35rem; color: var(--gold);
+  line-height: 1; transition: all .3s;
+}
+.ftp-brand-name {
+  font-family: var(--display); font-size: .58rem;
+  letter-spacing: .2em; color: var(--text-dim);
+  text-transform: uppercase; transition: color .3s;
+}
+.ftp-brand:hover .ftp-brand-chi { text-shadow: 0 0 14px var(--gold-glow); }
+.ftp-brand:hover .ftp-brand-name { color: var(--gold); }
+
+.ftp-vdiv {
+  width: 1px; height: 20px; background: var(--border-2);
+  flex-shrink: 0; margin: 0 .25rem;
+}
+
+/* Domain Pills */
+.ftp-domains {
+  display: flex; gap: 3px; align-items: center;
+  flex-shrink: 0;
+}
+.ftp-domain-pill {
+  font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .04em; padding: .25rem .5rem;
+  border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text-muted);
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+  position: relative;
+}
+.ftp-domain-pill:hover {
+  border-color: var(--border-hi); color: var(--text-dim);
+  background: var(--surface3);
+}
+.ftp-domain-pill .ddot {
+  display: inline-block; width: 5px; height: 5px;
+  border-radius: 50%; margin-right: .3rem;
+  background: var(--text-muted); transition: all .2s;
+}
+.ftp-domain-pill:hover .ddot { transform: scale(1.3); }
+.ftp-domain-pill[data-domain="theology"] .ddot { background: var(--gold); }
+.ftp-domain-pill[data-domain="physics"] .ddot { background: var(--blue); }
+.ftp-domain-pill[data-domain="mathematics"] .ddot { background: var(--red); }
+.ftp-domain-pill[data-domain="information"] .ddot { background: var(--teal); }
+.ftp-domain-pill[data-domain="consciousness"] .ddot { background: var(--purple); }
+.ftp-domain-pill[data-domain="evidence"] .ddot { background: var(--green); }
+
+/* Chi Badge */
+.ftp-chi-badge {
+  display: flex; align-items: center; gap: .3rem;
+  font-family: var(--mono); font-size: .6rem;
+  color: var(--gold); padding: .25rem .5rem;
+  border: 1px solid var(--border-gold);
+  border-radius: 10px; background: var(--gold-dim);
+  cursor: pointer; transition: all .2s; flex-shrink: 0;
+}
+.ftp-chi-badge:hover {
+  background: var(--gold-med); box-shadow: 0 0 10px rgba(212,175,55,.1);
+}
+.ftp-chi-badge i { font-size: .55rem; }
+
+/* Spacer */
+.ftp-spacer { flex: 1; min-width: .5rem; }
+
+/* Reading Levels — moved left of center */
+.ftp-levels {
+  display: flex; gap: 2px;
+  background: var(--surface2); padding: 2px;
+  border-radius: 6px; border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ftp-level {
+  font-family: var(--display); font-size: .55rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: .35rem .65rem; border-radius: 4px; border: 0;
+  background: transparent; color: var(--text-muted);
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.ftp-level:hover { color: var(--text); }
+.ftp-level.active {
+  background: var(--surface3); color: var(--gold);
+  box-shadow: 0 0 8px rgba(212,175,55,.15);
+  border: 1px solid var(--border-gold);
+}
+
+/* RIGHT CLUSTER: Tools + Search */
+.ftp-right-cluster {
+  display: flex; align-items: center; gap: 2px;
+  flex-shrink: 0;
+}
+.ftp-tool-link {
+  font-family: var(--mono); font-size: .6rem;
+  color: var(--text-muted); padding: .3rem .5rem;
+  border-radius: 4px; transition: all .2s;
+  white-space: nowrap; border: 1px solid transparent;
+  display: inline-flex; align-items: center; gap: .3rem;
+}
+.ftp-tool-link:hover {
+  color: var(--gold); background: var(--gold-dim);
+  border-color: var(--border-gold);
+}
+.ftp-tool-link i { font-size: .5rem; }
+
+.ftp-search-btn {
+  display: flex; align-items: center; gap: .35rem;
+  padding: .3rem .5rem; background: transparent;
+  border: 1px solid var(--border-2); border-radius: 4px;
+  color: var(--text-muted); font-size: .65rem;
+  cursor: pointer; transition: all .2s; flex-shrink: 0;
+}
+.ftp-search-btn:hover {
+  border-color: var(--gold); color: var(--gold);
+  box-shadow: 0 0 10px rgba(212,175,55,.1);
+}
+.ftp-search-btn kbd {
+  font-family: var(--mono); font-size: .52rem;
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 0 .25rem; border-radius: 2px;
+}
+
+/* Panel Toggle */
+.ftp-panel-toggle {
+  position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 999;
+  height: var(--panel-h);
+  background: rgba(8,8,8,.95);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; cursor: pointer;
+  transition: all .2s; font-family: var(--mono); font-size: .55rem;
+  color: var(--text-muted); letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ftp-panel-toggle:hover {
+  background: rgba(12,12,12,.97);
+  color: var(--text-dim);
+}
+.ftp-panel-toggle.open { border-bottom-color: var(--border-2); }
+.ftp-panel-toggle i { font-size: .5rem; transition: transform .3s; }
+.ftp-panel-toggle.open i { transform: rotate(180deg); }
+.ftp-panel-toggle .p-badge {
+  display: inline-flex; align-items: center; gap: .25rem;
+  padding: 1px 6px; border-radius: 8px;
+  font-size: .5rem; border: 1px solid var(--border-2);
+}
+.ftp-panel-toggle .p-badge.ok { border-color: rgba(59,179,154,.3); color: var(--teal); }
+.ftp-panel-toggle .p-badge.warn { border-color: var(--border-gold); color: var(--gold); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 2 — EXPANDABLE PANEL v2.0
+   Added Claims tab. Proof items link to article claims.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ftp-panel {
+  position: fixed; top: calc(var(--header-h) + var(--panel-h));
+  left: 0; right: 0; z-index: 998;
+  max-height: 0; overflow: hidden;
+  background: rgba(8,8,8,.97);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: max-height .4s ease, border-color .3s;
+}
+.ftp-panel.open {
+  max-height: 75vh;
+  border-bottom-color: var(--border);
+  overflow-y: auto;
+}
+.ftp-panel-inner {
+  max-width: var(--max); margin: 0 auto;
+  padding: 1.2rem 1rem 1.5rem;
+}
+
+.ftp-panel-tabs {
+  display: flex; gap: .25rem; margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border); padding-bottom: .5rem;
+  flex-wrap: wrap;
+}
+.ftp-panel-tab {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: .35rem .7rem; border-radius: 4px; border: 0;
+  background: transparent; color: var(--text-muted);
+  cursor: pointer; transition: all .2s;
+}
+.ftp-panel-tab:hover { color: var(--text-dim); background: var(--surface2); }
+.ftp-panel-tab.active {
+  color: var(--gold); background: var(--gold-dim);
+}
+
+.ftp-panel-section { display: none; }
+.ftp-panel-section.active { display: block; }
+
+/* Verification Grid */
+.ftp-vgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: .75rem;
+}
+.ftp-vcard {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1rem;
+  transition: border-color .2s;
+}
+.ftp-vcard:hover { border-color: var(--border-2); }
+.ftp-vcard-title {
+  font-family: var(--display); font-size: .6rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: .7rem;
+  display: flex; align-items: center; gap: .4rem;
+}
+.ftp-vcard-title i { font-size: .55rem; opacity: .6; }
+.ftp-vrow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .3rem 0; border-bottom: 1px solid rgba(255,255,255,.04);
+  font-family: var(--sans); font-size: .8rem;
+}
+.ftp-vrow:last-child { border-bottom: none; }
+.ftp-vrow-label { color: var(--text-muted); font-size: .75rem; }
+.ftp-vrow-value { color: var(--text); font-family: var(--mono); font-size: .75rem; }
+
+.ftp-law-list {
+  display: flex; flex-wrap: wrap; gap: .35rem;
+}
+.ftp-law-tag {
+  font-family: var(--mono); font-size: .55rem;
+  padding: .25rem .5rem; border-radius: 3px;
+  background: var(--surface3); border: 1px solid var(--border-2);
+  color: var(--text-muted); transition: all .2s;
+}
+.ftp-law-tag:hover { border-color: var(--border-hi); color: var(--text-dim); }
+.ftp-law-tag.active {
+  background: var(--gold-dim); border-color: var(--border-gold);
+  color: var(--gold);
+}
+
+.ftp-meter {
+  width: 100%; height: 5px;
+  background: var(--surface3); border-radius: 3px;
+  overflow: hidden; margin-top: .4rem;
+}
+.ftp-meter-fill {
+  height: 100%; border-radius: 3px;
+  transition: width .5s ease;
+}
+.ftp-meter-fill.high { background: var(--teal); }
+.ftp-meter-fill.mid { background: var(--gold); }
+.ftp-meter-fill.low { background: var(--red); }
+
+/* Proof Section */
+.ftp-proof-list { display: flex; flex-direction: column; gap: .5rem; }
+.ftp-proof-item {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.ftp-proof-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .6rem .8rem; cursor: pointer;
+  font-family: var(--sans); font-size: .82rem;
+  color: var(--text-dim); transition: all .2s;
+}
+.ftp-proof-header:hover { background: var(--surface3); color: var(--text); }
+.ftp-proof-header i { font-size: .55rem; color: var(--gold); transition: transform .2s; }
+.ftp-proof-item.open .ftp-proof-header i { transform: rotate(90deg); }
+.ftp-proof-body {
+  display: none; padding: 0 .8rem .8rem;
+  font-family: var(--serif); font-size: .88rem;
+  color: var(--text-dim); line-height: 1.6;
+  border-top: 1px solid var(--border); margin-top: 0; padding-top: .6rem;
+}
+.ftp-proof-item.open .ftp-proof-body { display: block; }
+.ftp-proof-body strong { color: var(--gold); font-weight: 500; }
+.ftp-proof-body a { color: var(--blue); text-decoration: underline; }
+
+/* ── Claims List (new tab) ── */
+.ftp-claims-list {
+  display: flex; flex-direction: column; gap: .4rem;
+}
+.ftp-claim-row {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .5rem .7rem;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; cursor: pointer;
+  transition: all .2s; font-family: var(--sans); font-size: .82rem;
+}
+.ftp-claim-row:hover {
+  border-color: var(--border-gold); background: var(--surface3);
+  transform: translateX(3px);
+}
+.ftp-claim-row .c-id {
+  font-family: var(--mono); font-size: .6rem; color: var(--gold);
+  min-width: 80px; flex-shrink: 0;
+}
+.ftp-claim-row .c-text {
+  color: var(--text-dim); flex: 1; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.ftp-claim-row .c-status {
+  font-family: var(--mono); font-size: .55rem;
+  padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.c-status.lean { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(59,179,154,.25); }
+.c-status.mapped { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(91,155,213,.25); }
+.c-status.open { background: var(--red-dim); color: var(--red); border: 1px solid rgba(201,64,64,.25); }
+.c-status.load { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--border-gold); }
+
+/* ── MTL Section ── */
+.ftp-mtl-callout {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem;
+  margin-bottom: .75rem;
+}
+.ftp-mtl-eq {
+  font-family: var(--serif); font-size: 1.1rem;
+  color: var(--text); margin-bottom: .5rem;
+  overflow-x: auto;
+}
+.ftp-mtl-named {
+  font-family: var(--mono); font-size: .78rem;
+  color: var(--gold); margin-bottom: .4rem;
+}
+.ftp-mtl-plain {
+  font-family: var(--serif); font-size: .85rem;
+  color: var(--text-dim); font-style: italic;
+  line-height: 1.55;
+}
+.ftp-mtl-feature {
+  margin-top: .5rem; padding: .4rem .6rem;
+  background: var(--gold-dim); border-radius: 4px;
+  font-family: var(--sans); font-size: .75rem;
+  color: var(--gold); border: 1px solid var(--border-gold);
+}
+.ftp-mtl-feature i { margin-right: .3rem; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CLAIM SENTENCES — Shimmering gold underline, inline drawer
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes ftp-shimmer-gold {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.ftp-claim-sentence {
+  position: relative;
+  cursor: pointer;
+  padding: 0 3px;
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(212,175,55,.04) 25%,
+    rgba(212,175,55,.08) 50%, rgba(212,175,55,.04) 75%, transparent 100%);
+  background-size: 200% 100%;
+  background-position: 0% 0;
+  transition: color .25s, border-bottom-color .25s, background-position .5s;
+}
+.ftp-claim-sentence:hover {
+  color: #fff;
+  border-bottom-color: var(--gold);
+  background-position: 100% 0;
+  animation: ftp-shimmer-gold 2.5s linear infinite;
+}
+.ftp-claim-sentence::before {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -2px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0; transition: opacity .3s;
+}
+.ftp-claim-sentence:hover::before { opacity: .6; }
+
+/* ── Claim Drawer (opens below sentence) ── */
+.ftp-claim-drawer {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .5s cubic-bezier(.4,0,.2,1),
+              opacity .35s ease,
+              padding .4s ease,
+              margin .4s ease;
+  background: linear-gradient(135deg, var(--surface2) 0%, var(--surface-gold) 100%);
+  border-left: 2px solid var(--gold);
+  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  border-radius: 0 10px 10px 0;
+  margin: .2rem 0 0 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,.35);
+}
+.ftp-claim-drawer.open {
+  max-height: 600px;
+  opacity: 1;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.ftp-claim-drawer .cd-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1rem; padding-bottom: .6rem;
+  border-bottom: 1px solid var(--border);
+}
+.ftp-claim-drawer .cd-id {
+  font-family: var(--mono); font-size: .6rem; color: var(--gold);
+  letter-spacing: .1em;
+}
+.ftp-claim-drawer .cd-status {
+  font-family: var(--mono); font-size: .55rem;
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 3px 8px; border-radius: 4px;
+}
+.ftp-claim-drawer .cd-formal {
+  font-family: var(--serif); font-size: 1rem;
+  color: var(--text); line-height: 1.55;
+  margin-bottom: 1rem;
+}
+.ftp-claim-drawer .cd-section {
+  margin-bottom: .8rem;
+}
+.ftp-claim-drawer .cd-section h5 {
+  font-family: var(--display); font-size: .55rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: .4rem;
+}
+.ftp-claim-drawer .cd-derivation {
+  display: flex; flex-wrap: wrap; gap: .4rem;
+}
+.ftp-claim-drawer .cd-derivation span {
+  font-family: var(--mono); font-size: .65rem;
+  color: var(--text-dim); background: var(--surface3);
+  padding: .2rem .5rem; border-radius: 3px;
+  border: 1px solid var(--border-2);
+}
+.ftp-claim-drawer .cd-derivation span::after {
+  content: '→'; margin-left: .4rem; color: var(--text-muted); opacity: .5;
+}
+.ftp-claim-drawer .cd-derivation span:last-child::after { content: none; }
+.ftp-claim-drawer .cd-kill {
+  background: var(--red-dim); border: 1px solid rgba(201,64,64,.2);
+  border-radius: 6px; padding: .6rem .8rem;
+  font-family: var(--serif); font-size: .85rem;
+  color: var(--text-dim); line-height: 1.5;
+}
+.ftp-claim-drawer .cd-kill strong {
+  color: var(--red); font-family: var(--display);
+  font-size: .55rem; letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.ftp-claim-drawer .cd-lean {
+  font-family: var(--mono); font-size: .7rem;
+  color: var(--teal); background: var(--teal-dim);
+  padding: .4rem .6rem; border-radius: 4px;
+  display: inline-flex; align-items: center; gap: .4rem;
+  border: 1px solid rgba(59,179,154,.2);
+}
+.ftp-claim-drawer .cd-lean i { font-size: .55rem; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MTL BLOCKS — Level 2 (centered, bold, boxed) & Level 3 (expandable)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Level 2: Block */
+.ftp-mtl-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  padding: 1.6rem 2rem;
+  margin: 1.5rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ftp-mtl-block::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent 60%);
+  opacity: .3;
+}
+.ftp-mtl-block .mtl-eq {
+  font-family: var(--serif); font-size: 1.35rem;
+  color: #fff; font-weight: 600;
+  margin-bottom: .8rem; line-height: 1.4;
+}
+.ftp-mtl-block .mtl-sub {
+  font-family: var(--serif); font-size: 1rem;
+  color: var(--gold); font-style: italic;
+  margin-bottom: .7rem; line-height: 1.5;
+}
+.ftp-mtl-block .mtl-mean {
+  font-family: var(--serif); font-size: .95rem;
+  color: var(--text-dim); line-height: 1.65;
+  border-top: 1px solid var(--border);
+  padding-top: .8rem; margin-top: .4rem;
+}
+.ftp-mtl-block .mtl-mean strong { color: var(--text); font-weight: 500; }
+
+/* Level 3: Expandable Full */
+.ftp-mtl-full {
+  border: 1px solid var(--border-gold);
+  border-radius: 10px; overflow: hidden;
+  margin: 1.5rem 0; background: var(--surface2);
+}
+.ftp-mtl-full-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .9rem 1.1rem;
+  background: var(--gold-dim);
+  cursor: pointer; transition: background .2s;
+  border-bottom: 1px solid transparent;
+}
+.ftp-mtl-full-header:hover { background: var(--gold-med); }
+.ftp-mtl-full.open .ftp-mtl-full-header {
+  border-bottom-color: var(--border-gold);
+}
+.ftp-mtl-full-header h4 {
+  font-family: var(--display); font-size: .65rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold); margin: 0;
+}
+.ftp-mtl-full-header i {
+  font-size: .55rem; color: var(--gold);
+  transition: transform .3s;
+}
+.ftp-mtl-full.open .ftp-mtl-full-header i { transform: rotate(180deg); }
+.ftp-mtl-full-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .5s cubic-bezier(.4,0,.2,1), padding .4s;
+  padding: 0 1.1rem;
+}
+.ftp-mtl-full.open .ftp-mtl-full-body {
+  max-height: 900px;
+  padding: 1rem 1.1rem 1.2rem;
+}
+.ftp-mtl-var-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--mono); font-size: .72rem;
+  margin: .6rem 0;
+}
+.ftp-mtl-var-table th {
+  text-align: left; color: var(--gold);
+  font-family: var(--display); font-size: .55rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: .4rem .5rem; border-bottom: 1px solid var(--border-gold);
+}
+.ftp-mtl-var-table td {
+  padding: .35rem .5rem; color: var(--text-dim);
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.ftp-mtl-var-table td:first-child { color: var(--gold); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 3 — AUDIO DOCK (unchanged structure, minor polish)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ftp-audio-dock {
+  width: 100%; max-width: 560px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: .625rem; overflow: hidden;
+  transition: border-color .3s ease;
+  margin: 2rem auto;
+}
+.ftp-audio-dock:hover { border-color: var(--border-gold); }
+.ftp-dock-pills {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.ftp-dock-pill {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  gap: .4rem; padding: .55rem .4rem;
+  background: transparent; border: none; cursor: pointer;
+  font-family: var(--mono); font-size: .58rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted); transition: all .25s ease;
+  position: relative;
+}
+.ftp-dock-pill::after {
+  content: ''; position: absolute; bottom: 0; left: 15%; right: 15%;
+  height: 2px; border-radius: 1px; background: transparent;
+  transition: all .25s ease;
+}
+.ftp-dock-pill:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.ftp-dock-pill[data-src="deep"]     { --pill-c: var(--blue); }
+.ftp-dock-pill[data-src="read"]     { --pill-c: var(--gold); }
+.ftp-dock-pill[data-src="debate"]   { --pill-c: var(--purple); }
+.ftp-dock-pill[data-src="critique"] { --pill-c: var(--teal); }
+.ftp-dock-pill.active { color: var(--pill-c); background: rgba(255,255,255,.02); }
+.ftp-dock-pill.active::after {
+  background: var(--pill-c);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--pill-c) 40%, transparent);
+}
+.ftp-dock-pill .pill-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; opacity: .5; transition: opacity .25s;
+}
+.ftp-dock-pill.active .pill-dot { opacity: 1; }
+.ftp-dock-pill.unavailable { opacity: .3; cursor: default; pointer-events: none; }
+
+.ftp-dock-body {
+  display: flex; align-items: center; gap: .65rem;
+  padding: .65rem .85rem;
+}
+.ftp-dock-body.hidden { display: none; }
+.ftp-dock-play {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid var(--gold); background: transparent;
+  color: var(--gold); font-size: .7rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all .2s ease;
+}
+.ftp-dock-play:hover { background: rgba(212,175,55,.1); transform: scale(1.05); }
+.ftp-dock-play.playing { animation: ftp-pulse-ring 2s ease-in-out infinite; }
+@keyframes ftp-pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,.2); }
+  50% { box-shadow: 0 0 0 4px rgba(212,175,55,.05); }
+}
+.ftp-dock-track-wrap {
+  flex: 1; display: flex; flex-direction: column; gap: .25rem; min-width: 0;
+}
+.ftp-dock-track {
+  width: 100%; height: 4px; background: #222;
+  border-radius: 2px; cursor: pointer; overflow: hidden; position: relative;
+}
+.ftp-dock-fill {
+  height: 100%; width: 0%; border-radius: 2px;
+  background: var(--gold); transition: width .15s linear, background .3s;
+}
+.ftp-dock-times {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: .5rem; color: var(--text-muted);
+}
+.ftp-dock-vol {
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; font-size: .75rem; flex-shrink: 0;
+  padding: 2px; transition: color .2s;
+}
+.ftp-dock-vol:hover { color: var(--text); }
+.ftp-dock-speed {
+  flex-shrink: 0; height: 28px; min-width: 64px;
+  border: 1px solid var(--border); border-radius: .35rem;
+  background: #111; color: var(--text-muted);
+  font-family: var(--mono); font-size: .58rem; font-weight: 600;
+  cursor: pointer; outline: none; padding: 0 .35rem;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.ftp-dock-speed:hover, .ftp-dock-speed:focus {
+  border-color: var(--border-gold); color: var(--text); background: #151515;
+}
+.ftp-dock-empty {
+  display: none; align-items: center; justify-content: center;
+  padding: .85rem;
+  font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted); opacity: .5; font-style: italic;
+}
+.ftp-dock-empty.visible { display: flex; }
+
+.ftp-dock-mini {
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 9999;
+  display: flex; align-items: center; gap: .55rem;
+  padding: .55rem .7rem;
+  border: 1px solid var(--border-gold);
+  border-radius: .55rem;
+  background: rgba(15,15,15,.94);
+  box-shadow: 0 16px 40px rgba(0,0,0,.38);
+  opacity: 0; transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.ftp-dock-mini.visible {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+.ftp-mini-play {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid var(--gold); background: transparent;
+  color: var(--gold); display: flex;
+  align-items: center; justify-content: center;
+  cursor: pointer; font-size: .6rem;
+  transition: transform .2s, background .2s;
+}
+.ftp-mini-play:hover { transform: scale(1.05); background: rgba(212,175,55,.1); }
+.ftp-mini-label {
+  max-width: 110px;
+  color: var(--text-muted);
+  font-family: var(--mono); font-size: .52rem;
+  font-weight: 600; letter-spacing: .08em;
+  line-height: 1.2; text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LAYER 4 — FOOTER SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ftp-light-nav {
+  max-width: var(--max); margin: 0 auto;
+  padding: 2rem 1rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+}
+.ftp-light-nav a {
+  font-family: var(--mono); font-size: .72rem; color: var(--text-muted);
+  transition: all .2s; display: flex; align-items: center; gap: .4rem;
+  padding: .4rem .6rem; border-radius: 4px;
+}
+.ftp-light-nav a:hover { color: var(--gold); background: var(--gold-dim); }
+.ftp-light-nav a.series-home {
+  font-family: var(--display); font-size: .6rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  border: 1px solid var(--border); padding: .45rem 1rem;
+  color: var(--text-dim);
+}
+.ftp-light-nav a.series-home:hover {
+  border-color: var(--gold); color: var(--gold);
+  box-shadow: 0 0 10px rgba(212,175,55,.1);
+}
+.ftp-light-nav .ftp-site-home {
+  font-family: var(--mono); font-size: .58rem;
+  color: var(--text-muted); letter-spacing: .1em;
+}
+.ftp-light-nav .ftp-site-home:hover { color: var(--gold); }
+
+
+/* ── v2.4 LAYER SECTIONS: on-page Proof Layer + MTL Layer (draft-ai) ── */
+.ftp-layer-section {
+  max-width: var(--max); margin: 0 auto; padding: 1.5rem 1rem 2rem;
+}
+.ftp-layer-inner {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 2rem 1.8rem;
+}
+.ftp-layer-intro { color: var(--text-dim); font-size: .92rem; line-height: 1.65; margin: .8rem 0 1.4rem; }
+.ftp-draft-tag {
+  margin-left: auto; font-size: .58rem; font-weight: 700; letter-spacing: .08em;
+  color: #ff6b6b; border: 1px solid rgba(255,107,107,.45); border-radius: 4px;
+  padding: .15rem .45rem; background: rgba(255,107,107,.08);
+}
+.ftp-layer-proof-item {
+  border: 1px solid var(--border); border-radius: 8px; margin-bottom: .8rem;
+  background: var(--surface); overflow: hidden;
+}
+.ftp-layer-proof-head {
+  display: flex; align-items: center; gap: .6rem; cursor: pointer;
+  padding: .85rem 1rem; font-size: .9rem; font-weight: 600;
+}
+.ftp-layer-proof-head .ftp-chip {
+  font-size: .58rem; font-weight: 700; letter-spacing: .06em; border-radius: 4px;
+  padding: .12rem .4rem; text-transform: uppercase;
+}
+.ftp-chip-verified { color: var(--teal); border: 1px solid var(--teal); background: rgba(0,200,180,.08); }
+.ftp-chip-partial  { color: var(--gold); border: 1px solid var(--gold); background: var(--gold-dim); }
+.ftp-chip-draft    { color: var(--text-muted); border: 1px solid var(--border); background: transparent; }
+.ftp-layer-proof-head .fa-chevron-right { margin-left: auto; transition: transform .2s; font-size: .7rem; color: var(--text-muted); }
+.ftp-layer-proof-item.open .fa-chevron-right { transform: rotate(90deg); }
+.ftp-layer-proof-body { display: none; padding: 0 1rem 1rem; font-size: .88rem; color: var(--text-dim); line-height: 1.6; }
+.ftp-layer-proof-item.open .ftp-layer-proof-body { display: block; }
+
+.ftp-mtl-block {
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  padding: 1.2rem 1.2rem 1rem; margin-bottom: 1rem;
+}
+.ftp-mtl-code {
+  display: block; font-family: 'Courier New', monospace; font-size: .95rem;
+  color: var(--gold); background: rgba(0,0,0,.25); border: 1px solid var(--border);
+  border-radius: 6px; padding: .7rem .9rem; margin: .4rem 0 .8rem; overflow-x: auto;
+}
+.ftp-mtl-where { font-size: .82rem; color: var(--text-dim); margin: 0 0 .6rem; }
+.ftp-mtl-where b { color: var(--text); }
+.ftp-mtl-sentence { font-size: .9rem; line-height: 1.6; color: var(--text); margin: .4rem 0; }
+.ftp-mtl-sentence::before { content: "In plain English: "; color: var(--gold); font-weight: 700; font-size: .78rem; letter-spacing: .04em; }
+.ftp-mtl-featurebox { font-size: .82rem; color: var(--text-dim); border-left: 3px solid var(--gold); padding: .4rem 0 .4rem .8rem; margin-top: .6rem; }
+
+.ftp-iso-block { border: 1px solid var(--border-gold, var(--border)); border-radius: 10px; padding: 1.4rem 1.3rem; margin-top: 1.4rem; background: var(--surface); }
+.ftp-iso-head { font-weight: 700; color: var(--gold); font-size: .95rem; margin-bottom: .5rem; }
+.ftp-iso-intro { font-size: .85rem; color: var(--text-dim); margin: 0 0 1rem; }
+.ftp-iso-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: start; }
+.ftp-iso-domain { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .4rem; }
+.ftp-iso-mid { align-self: center; color: var(--gold); font-size: 1.1rem; }
+.ftp-iso-terms { list-style: none; padding: 0; margin: 0; font-size: .8rem; color: var(--text-dim); }
+.ftp-iso-terms li { margin-bottom: .3rem; }
+.ftp-iso-map { margin-top: 1.1rem; border-top: 1px dashed var(--border); padding-top: .9rem; }
+.ftp-iso-row { display: flex; align-items: baseline; gap: .6rem; font-size: .82rem; margin-bottom: .45rem; flex-wrap: wrap; }
+.ftp-iso-row span { font-family: 'Courier New', monospace; color: var(--gold); }
+.ftp-iso-row i { color: var(--text-muted); font-size: .7rem; }
+.ftp-iso-row em { color: var(--text-dim); font-style: normal; font-size: .78rem; }
+.ftp-iso-verdict { font-size: .85rem; color: var(--text); line-height: 1.6; margin: 1rem 0 0; }
+@media (max-width: 700px) { .ftp-iso-grid { grid-template-columns: 1fr; } .ftp-iso-mid { transform: rotate(90deg); justify-self: center; } }
+
+.ftp-nav-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+}
+
+.ftp-audit {
+  max-width: var(--max); margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+.ftp-audit-box {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 2rem 1.8rem;
+  text-align: center; position: relative; overflow: hidden;
+}
+.ftp-audit-box::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: .4;
+}
+.ftp-audit-head {
+  font-family: var(--mono); font-size: .65rem;
+  letter-spacing: .3em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: .8rem;
+}
+.ftp-audit-intro {
+  font-size: .85rem; color: var(--text-dim);
+  margin: 0 auto .6rem; max-width: 640px; line-height: 1.6;
+}
+.ftp-audit-covenant {
+  font-size: .78rem; color: var(--text-muted);
+  margin: 0 auto 1.5rem; max-width: 640px;
+  padding: .7rem 1rem;
+  border-left: 2px solid rgba(212,175,55,.3);
+  border-right: 2px solid rgba(212,175,55,.3);
+  background: rgba(212,175,55,.04);
+  line-height: 1.6; font-style: italic;
+}
+.ftp-audit-covenant b { color: var(--gold); font-weight: 500; font-style: normal; }
+.ftp-audit-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem;
+  text-align: left;
+}
+@media(max-width:700px){ .ftp-audit-grid { grid-template-columns: 1fr; } }
+.ftp-audit-col {
+  padding: 1rem; border-radius: 8px; border: 1px solid var(--border);
+  transition: all .3s; position: relative; overflow: hidden;
+}
+.ftp-audit-col:hover { transform: translateY(-2px); }
+.ftp-audit-col::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0, rgba(255,255,255,.03), transparent 60%);
+  opacity: 0; transition: opacity .3s;
+}
+.ftp-audit-col:hover::before { opacity: 1; }
+.ftp-audit-col h4 {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  margin-bottom: .7rem;
+}
+.ftp-audit-col ul {
+  list-style: none; font-size: .8rem;
+  color: var(--text-dim); line-height: 1.55;
+}
+.ftp-audit-col li { padding: .35rem 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.ftp-audit-col li:last-child { border-bottom: 0; }
+
+.ftp-ac-right { border-color: rgba(59,179,154,.2); }
+.ftp-ac-right h4 { color: var(--teal); }
+.ftp-ac-right:hover { border-color: var(--teal); box-shadow: 0 6px 25px rgba(59,179,154,.1); }
+.ftp-ac-over { border-color: rgba(212,175,55,.2); }
+.ftp-ac-over h4 { color: var(--gold); }
+.ftp-ac-over:hover { border-color: var(--gold); box-shadow: 0 6px 25px rgba(212,175,55,.1); }
+.ftp-ac-wrong { border-color: rgba(201,64,64,.2); }
+.ftp-ac-wrong h4 { color: var(--red); }
+.ftp-ac-wrong:hover { border-color: var(--red); box-shadow: 0 6px 25px rgba(201,64,64,.1); }
+
+.ftp-gold-divider {
+  max-width: var(--max); margin: 0 auto; padding: 0 1rem;
+}
+.ftp-gold-divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.3), transparent);
+}
+
+.ftp-subsection {
+  max-width: var(--max); margin: 0 auto; padding: 2rem 1rem;
+}
+.ftp-sub-head {
+  display: flex; align-items: center; gap: .5rem; margin-bottom: .35rem;
+}
+.ftp-sub-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold); box-shadow: 0 0 6px rgba(212,175,55,.3);
+}
+.ftp-sub-kicker {
+  font-family: var(--mono); font-size: .55rem;
+  color: var(--text-muted); letter-spacing: .18em; text-transform: uppercase;
+}
+.ftp-sub-title {
+  font-family: var(--serif); font-size: 1rem;
+  color: #fff; margin-bottom: 1rem;
+}
+.ftp-sub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: .45rem;
+}
+.ftp-sub-card {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .6rem .75rem; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 6px;
+  transition: all .25s; cursor: pointer;
+}
+.ftp-sub-card:hover {
+  border-color: var(--gold); transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212,175,55,.1);
+}
+.ftp-sub-card i { font-size: .85rem; color: var(--gold); opacity: .55; width: 18px; text-align: center; transition: opacity .2s; }
+.ftp-sub-card:hover i { opacity: 1; }
+.ftp-sub-card h4 { font-size: .72rem; font-weight: 500; color: var(--text); margin: 0; line-height: 1.2; transition: color .2s; }
+.ftp-sub-card:hover h4 { color: var(--gold); }
+.ftp-sub-card p { font-family: var(--mono); font-size: .48rem; color: var(--text-muted); margin: .1rem 0 0; }
+
+.ftp-series-nav {
+  max-width: var(--max); margin: 0 auto;
+  padding: 0 1rem 1.5rem;
+}
+.ftp-series-strip {
+  display: flex; flex-wrap: wrap; gap: .3rem;
+  justify-content: center; padding: .8rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.ftp-series-strip a {
+  font-family: var(--display); font-size: .55rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: .35rem .55rem; border-radius: 3px;
+  color: var(--text-muted); transition: all .2s;
+  border: 1px solid transparent;
+}
+.ftp-series-strip a:hover {
+  color: var(--gold); background: var(--gold-dim);
+  border-color: var(--border-gold);
+}
+.ftp-series-strip a.active {
+  color: var(--gold); background: var(--gold-dim);
+  border-color: var(--border-gold);
+}
+.ftp-series-strip a.soon { opacity: .35; cursor: default; pointer-events: none; }
+
+.ftp-bottom {
+  max-width: var(--max); margin: 0 auto;
+  padding: 0 1rem; text-align: center;
+}
+.ftp-bottom-eq {
+  font-family: var(--mono); font-size: .68rem;
+  color: var(--gold); opacity: .5;
+  margin-bottom: .5rem; letter-spacing: .05em;
+}
+.ftp-bottom-copy {
+  color: var(--text-muted); font-size: .65rem; margin: .2rem 0;
+}
+.ftp-bottom-vow {
+  font-family: var(--serif); font-style: italic;
+  color: var(--text-muted); font-size: .78rem;
+  margin-top: .6rem; padding-bottom: 1.2rem;
+}
+
+.ftp-door {
+  text-align: center; padding: 2.5rem 1rem 3rem;
+  border-top: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  background: var(--surface);
+  margin-top: 1rem;
+}
+.ftp-door::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(212,175,55,.08), transparent 70%);
+  transform: translate(-50%,-50%); pointer-events: none;
+  animation: ftp-pulse-gold 4s ease-in-out infinite;
+}
+@keyframes ftp-pulse-gold { 0%,100%{opacity:.6} 50%{opacity:1} }
+.ftp-door-num {
+  font-family: var(--mono); font-size: 2rem;
+  color: var(--gold); letter-spacing: .15em;
+  margin-bottom: .4rem; cursor: default;
+  transition: all .5s; position: relative;
+}
+.ftp-door-num:hover {
+  text-shadow: 0 0 30px var(--gold-glow), 0 0 60px rgba(212,175,55,.2);
+  letter-spacing: .22em;
+}
+.ftp-door-sub {
+  font-family: var(--serif); font-style: italic;
+  font-size: .9rem; color: var(--text-muted);
+  transition: color .3s; max-width: 400px;
+  margin: 0 auto; line-height: 1.5;
+}
+.ftp-door:hover .ftp-door-sub { color: var(--text-dim); }
+.ftp-door-mark {
+  display: block; width: 40px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 1rem auto 0; opacity: .4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE CONTENT AREA
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ftp-article {
+  max-width: var(--article-max); margin: 0 auto;
+  padding: calc(var(--header-h) + var(--panel-h) + 24px) 1rem 2rem;
+}
+.ftp-article h1 {
+  font-family: var(--serif); font-size: 2.2rem;
+  font-weight: 400; color: #fff;
+  margin-bottom: .6rem; line-height: 1.15;
+}
+.ftp-article .ftp-subtitle {
+  font-family: var(--serif); font-style: italic;
+  font-size: 1.1rem; color: var(--text-dim);
+  margin-bottom: 1rem; line-height: 1.4;
+}
+.ftp-article .ftp-byline {
+  font-family: var(--mono); font-size: .7rem;
+  color: var(--text-muted); margin-bottom: 2rem;
+  padding-bottom: 1.2rem; border-bottom: 1px solid var(--border);
+}
+.ftp-article h2 {
+  font-family: var(--serif); font-size: 1.4rem;
+  color: #fff; font-weight: 400;
+  margin: 2.5rem 0 .8rem; padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.ftp-article h3 {
+  font-family: var(--serif); font-size: 1.1rem;
+  color: var(--text-dim); font-weight: 600;
+  margin: 1.8rem 0 .6rem;
+}
+.ftp-article p {
+  font-family: var(--serif); font-size: 1.05rem;
+  color: var(--text-dim); margin-bottom: 1.2rem;
+  line-height: 1.7;
+}
+.ftp-article blockquote {
+  border-left: 2px solid var(--gold); padding-left: 1.2rem;
+  margin: 1.5rem 0; font-style: italic;
+  color: var(--text-dim); font-family: var(--serif);
+  font-size: 1.05rem;
+}
+.ftp-article ul, .ftp-article ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+  font-family: var(--serif); font-size: 1rem;
+  color: var(--text-dim); line-height: 1.7;
+}
+.ftp-article li { margin-bottom: .35rem; }
+.ftp-article code {
+  font-family: var(--mono); font-size: .85rem;
+  background: var(--surface2); padding: .15rem .4rem;
+  border-radius: 3px; color: var(--gold);
+}
+.ftp-article pre {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 1rem; overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.ftp-article pre code { background: none; padding: 0; font-size: .8rem; color: var(--text-dim); }
+
+.ftp-eq-block {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1.2rem;
+  margin: 1.5rem 0; text-align: center;
+  position: relative;
+}
+.ftp-eq-block .ftp-eq-title {
+  font-family: var(--display); font-size: .6rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: .6rem;
+  text-align: left;
+}
+.ftp-eq-block .ftp-eq-latex {
+  font-family: var(--serif); font-size: 1.2rem;
+  color: var(--text); overflow-x: auto;
+  padding: .5rem 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media(max-width: 900px) {
+  .ftp-domain-pill span:last-child { display: none; }
+  .ftp-domain-pill { padding: .25rem .4rem; }
+  .ftp-domain-pill .ddot { margin-right: 0; }
+  .ftp-chi-badge span:last-child { display: none; }
+}
+@media(max-width: 780px) {
+  .ftp-tool-link span { display: none; }
+  .ftp-tool-link i { margin-right: 0; font-size: .6rem; }
+  .ftp-level { font-size: .5rem; padding: .3rem .45rem; }
+  .ftp-panel-tabs { flex-wrap: wrap; }
+  .ftp-audit-grid { grid-template-columns: 1fr; }
+  .ftp-sub-grid { grid-template-columns: repeat(2, 1fr); }
+  .ftp-article { padding-left: 1rem; padding-right: 1rem; }
+  .ftp-claim-drawer.open { padding: 1rem; }
+}
+@media(max-width: 600px) {
+  .ftp-brand-name { display: none; }
+  .ftp-search-btn kbd { display: none; }
+  .ftp-light-nav { flex-direction: column; gap: .5rem; }
+  .ftp-domains { display: none; }
+  .ftp-dock-pills { flex-wrap: wrap; }
+  .ftp-dock-pill { flex-basis: 50%; min-height: 38px; }
+  .ftp-dock-body { flex-wrap: wrap; }
+  .ftp-dock-track-wrap { flex-basis: calc(100% - 46px); }
+  .ftp-dock-speed { margin-left: 46px; }
+  .ftp-dock-mini { right: .75rem; bottom: .75rem; }
+  .ftp-mtl-block { padding: 1.2rem 1rem; }
+}
+
+/* ══ KIMI vB BOTTOM POLISH (v2.5 merge) — overrides earlier bottom rules via cascade ══ */
+.ftp-light-nav {
+  max-width: var(--max); margin: 0 auto;
+  padding: 2rem 1rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+}
+.ftp-light-nav a {
+  font-family: var(--mono); font-size: .72rem; color: var(--text-muted);
+  transition: all .2s; display: flex; align-items: center; gap: .4rem;
+  padding: .4rem .6rem; border-radius: 4px;
+}
+.ftp-light-nav a:hover { color: var(--gold); background: var(--gold-dim); }
+
+/* Series Home — small, boxed, stays compact */
+.ftp-light-nav a.series-home {
+  font-family: var(--display); font-size: .55rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  border: 1px solid var(--border); padding: .35rem .85rem;
+  color: var(--text-dim);
+  line-height: 1;
+}
+.ftp-light-nav a.series-home:hover {
+  border-color: var(--gold); color: var(--gold);
+  box-shadow: 0 0 10px rgba(212,175,55,.1);
+}
+
+/* Site Home — bigger, dragged down, prominent */
+.ftp-light-nav .ftp-site-home {
+  font-family: var(--mono); font-size: .78rem;
+  color: var(--text-dim); letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-top: .6rem;
+  padding: .5rem .9rem;
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  background: var(--surface2);
+  transition: all .2s;
+}
+.ftp-light-nav .ftp-site-home:hover {
+  color: var(--gold); border-color: var(--border-gold);
+  background: var(--gold-dim);
+}
+
+/* Center column wrapper */
+.ftp-nav-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+}
+
+/* Audit */
+.ftp-audit {
+  max-width: var(--max); margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+.ftp-audit-box {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 2rem 1.8rem;
+  text-align: center; position: relative; overflow: hidden;
+}
+.ftp-audit-box::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: .4;
+}
+.ftp-audit-head {
+  font-family: var(--mono); font-size: .65rem;
+  letter-spacing: .3em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: .8rem;
+}
+.ftp-audit-intro {
+  font-size: .85rem; color: var(--text-dim);
+  margin: 0 auto .6rem; max-width: 640px; line-height: 1.6;
+}
+.ftp-audit-covenant {
+  font-size: .78rem; color: var(--text-muted);
+  margin: 0 auto 1.5rem; max-width: 640px;
+  padding: .7rem 1rem;
+  border-left: 2px solid rgba(212,175,55,.3);
+  border-right: 2px solid rgba(212,175,55,.3);
+  background: rgba(212,175,55,.04);
+  line-height: 1.6; font-style: italic;
+}
+.ftp-audit-covenant b { color: var(--gold); font-weight: 500; font-style: normal; }
+.ftp-audit-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem;
+  text-align: left;
+}
+@media(max-width:700px){ .ftp-audit-grid { grid-template-columns: 1fr; } }
+.ftp-audit-col {
+  padding: 1rem; border-radius: 8px; border: 1px solid var(--border);
+  transition: all .3s; position: relative; overflow: hidden;
+}
+.ftp-audit-col:hover { transform: translateY(-2px); }
+.ftp-audit-col::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0, rgba(255,255,255,.03), transparent 60%);
+  opacity: 0; transition: opacity .3s;
+}
+.ftp-audit-col:hover::before { opacity: 1; }
+.ftp-audit-col h4 {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .15em; text-transform: uppercase;
+  margin-bottom: .7rem;
+}
+.ftp-audit-col ul {
+  list-style: none; font-size: .8rem;
+  color: var(--text-dim); line-height: 1.55;
+}
+.ftp-audit-col li { padding: .35rem 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.ftp-audit-col li:last-child { border-bottom: 0; }
+
+.ftp-ac-right { border-color: rgba(59,179,154,.2); }
+.ftp-ac-right h4 { color: var(--teal); }
+.ftp-ac-right:hover { border-color: var(--teal); box-shadow: 0 6px 25px rgba(59,179,154,.1); }
+.ftp-ac-over { border-color: rgba(212,175,55,.2); }
+.ftp-ac-over h4 { color: var(--gold); }
+.ftp-ac-over:hover { border-color: var(--gold); box-shadow: 0 6px 25px rgba(212,175,55,.1); }
+.ftp-ac-wrong { border-color: rgba(201,64,64,.2); }
+.ftp-ac-wrong h4 { color: var(--red); }
+.ftp-ac-wrong:hover { border-color: var(--red); box-shadow: 0 6px 25px rgba(201,64,64,.1); }
+
+.ftp-gold-divider {
+  max-width: var(--max); margin: 0 auto; padding: 0 1rem;
+}
+.ftp-gold-divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.3), transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUBDOMAIN GRIDS — v2.1 Centered, better proportions
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ftp-subsection {
+  max-width: var(--max); margin: 0 auto;
+  padding: 2.5rem 1rem;
+  text-align: center;
+}
+.ftp-sub-head {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .35rem;
+}
+.ftp-sub-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold); box-shadow: 0 0 6px rgba(212,175,55,.3);
+}
+.ftp-sub-kicker {
+  font-family: var(--mono); font-size: .55rem;
+  color: var(--text-muted); letter-spacing: .18em; text-transform: uppercase;
+}
+.ftp-sub-title {
+  font-family: var(--serif); font-size: 1rem;
+  color: #fff; margin-bottom: 1.2rem;
+}
+
+/* Centered flex-wrap grid so last row centers */
+.ftp-sub-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.ftp-sub-card {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  width: 170px;
+  min-height: 58px;
+  padding: .65rem .85rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all .25s;
+  cursor: pointer;
+  text-align: left;
+}
+.ftp-sub-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212,175,55,.1);
+}
+.ftp-sub-card i {
+  font-size: .85rem;
+  color: var(--gold);
+  opacity: .55;
+  width: 18px;
+  text-align: center;
+  transition: opacity .2s;
+  flex-shrink: 0;
+}
+.ftp-sub-card:hover i { opacity: 1; }
+.ftp-sub-card h4 {
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.2;
+  transition: color .2s;
+}
+.ftp-sub-card:hover h4 { color: var(--gold); }
+.ftp-sub-card p {
+  font-family: var(--mono);
+  font-size: .48rem;
+  color: var(--text-muted);
+  margin: .1rem 0 0;
+}
+
+.ftp-series-nav {
+  max-width: var(--max); margin: 0 auto;
+  padding: 0 1rem 1.5rem;
+}
+.ftp-series-strip {
+  display: flex; flex-wrap: wrap; gap: .3rem;
+  justify-content: center; padding: .8rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.ftp-series-strip a {
+  font-family: var(--display); font-size: .55rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: .35rem .55rem; border-radius: 3px;
+  color: var(--text-muted); transition: all .2s;
+  border: 1px solid transparent;
+}
+.ftp-series-strip a:hover {
+  color: var(--gold); background: var(--gold-dim);
+  border-color: var(--border-gold);
+}
+.ftp-series-strip a.active {
+  color: var(--gold); background: var(--gold-dim);
+  border-color: var(--border-gold);
+}
+.ftp-series-strip a.soon { opacity: .35; cursor: default; pointer-events: none; }
+
+.ftp-bottom {
+  max-width: var(--max); margin: 0 auto;
+  padding: 0 1rem; text-align: center;
+}
+.ftp-bottom-eq {
+  font-family: var(--mono); font-size: .68rem;
+  color: var(--gold); opacity: .5;
+  margin-bottom: .5rem; letter-spacing: .05em;
+}
+.ftp-bottom-copy {
+  color: var(--text-muted); font-size: .65rem; margin: .2rem 0;
+}
+.ftp-bottom-vow {
+  font-family: var(--serif); font-style: italic;
+  color: var(--text-muted); font-size: .78rem;
+  margin-top: .6rem; padding-bottom: 1.2rem;
+}
+
+.ftp-door {
+  text-align: center; padding: 2.5rem 1rem 3rem;
+  border-top: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  background: var(--surface);
+  margin-top: 1rem;
+}
+.ftp-door::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(212,175,55,.08), transparent 70%);
+  transform: translate(-50%,-50%); pointer-events: none;
+  animation: ftp-pulse-gold 4s ease-in-out infinite;
+}
+@keyframes ftp-pulse-gold { 0%,100%{opacity:.6} 50%{opacity:1} }
+.ftp-door-num {
+  font-family: var(--mono); font-size: 2rem;
+  color: var(--gold); letter-spacing: .15em;
+  margin-bottom: .4rem; cursor: default;
+  transition: all .5s; position: relative;
+}
+.ftp-door-num:hover {
+  text-shadow: 0 0 30px var(--gold-glow), 0 0 60px rgba(212,175,55,.2);
+  letter-spacing: .22em;
+}
+.ftp-door-sub {
+  font-family: var(--serif); font-style: italic;
+  font-size: .9rem; color: var(--text-muted);
+  transition: color .3s; max-width: 400px;
+  margin: 0 auto; line-height: 1.5;
+}
+.ftp-door:hover .ftp-door-sub { color: var(--text-dim); }
+.ftp-door-mark {
+  display: block; width: 40px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 1rem auto 0; opacity: .4;
+}
+
+/* ══ PLAYER BAND (v2.5.1): clears fixed topbar + verification bar ══ */
+.ftp-player-band {
+  padding-top: calc(var(--header-h) + var(--panel-h) + 28px);
+  max-width: var(--article-max);
+  margin: 0 auto;
+}
+/* band carries the clearance now — article must not re-add it (overrides Kimi vB block) */
+.ftp-article { padding-top: 1.5rem; }
+
+/* ══ READER LAYERS (v2.5): body[data-reading-level] controls visibility ══ */
+.ftp-reader-layer { display: none; }
+.ftp-reader-layer-label {
+  font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-muted); border: 1px dashed var(--border); border-radius: 4px;
+  display: inline-block; padding: .2rem .5rem; margin-bottom: 1rem;
+}
+body[data-reading-level="highschool"] .ftp-reader-layer[data-reader-layer="highschool"],
+body[data-reading-level="college"]    .ftp-reader-layer[data-reader-layer="college"],
+body[data-reading-level="phd"]        .ftp-reader-layer[data-reader-layer="phd"] { display: block; }
+/* pinned panel gold wrap */
+.ftp-panel-tab.ftp-pin-gold {
+  box-shadow: 0 0 0 2px var(--gold), 0 0 14px var(--gold-glow, rgba(212,175,55,.35));
+  border-radius: 6px; position: relative;
+}
+.ftp-panel-tab.ftp-pin-gold::after {
+  content: 'PINNED'; position: absolute; top: -0.55rem; right: -0.3rem;
+  font-size: .45rem; letter-spacing: .08em; color: var(--gold);
+  background: var(--surface); padding: 0 .25rem; border: 1px solid var(--gold); border-radius: 3px;
+}
+
+.ftp-claim-sentence.claim-open {
+  box-shadow: 0 0 0 1px var(--gold);
+  border-radius: 4px; padding: 0 .2rem;
+  background: var(--gold-dim, rgba(212,175,55,.08));
+}
+</style>
+<base target="_blank">
+</head>
+<body data-shell-version="ftp-shell-v2.5.1" data-shell-template="index-shell-v2" data-shell-contract="#shell-data">
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║  ██████  SHELL_TOP_GROUP START                                         ║
+     ║  Contains: JSON payload · Topbar · Panel toggle · Verification panel · Player║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
+<!-- FTP_SHELL_GROUP:TOP START -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     LAYER 1 — TOP BAR v2.0
+     Wider max-width. Search moved to right-side tool cluster.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- FTP_SHELL_ZONE:TOPBAR START role=global_navigation fixed=true -->
+<header class="ftp-top" id="ftpTopBar" data-shell-zone="topbar" data-shell-role="global_navigation" data-shell-fixed="true" data-json-source="shell_contract.zones.topbar">
+  <div class="ftp-top-inner" data-shell-part="topbar.inner">
+
+    <!-- Brand -->
+    <a href="https://faiththruphysics.com" class="ftp-brand" title="Faith thru Physics" data-shell-part="topbar.brand" data-output-slot="site_home">
+      <span class="ftp-brand-chi">&chi;</span>
+      <span class="ftp-brand-name">Faith thru Physics</span>
+    </a>
+
+    <span class="ftp-vdiv"></span>
+
+    <!-- Domain Pills -->
+    <div class="ftp-domains" id="ftpDomains" data-shell-part="topbar.domain_pills" data-json-source="domains">
+      <button class="ftp-domain-pill" data-domain="theology"><span class="ddot"></span><span>Theology</span></button>
+      <button class="ftp-domain-pill" data-domain="physics"><span class="ddot"></span><span>Physics</span></button>
+      <button class="ftp-domain-pill" data-domain="mathematics"><span class="ddot"></span><span>Math</span></button>
+    </div>
+
+    <!-- Chi Status Badge -->
+    <button class="ftp-chi-badge" id="ftpChiBadge" title="Coherence Score" data-shell-part="topbar.chi_badge" data-json-source="verification.chi">
+      <i class="fas fa-wave-square"></i>
+      <span id="ftpChiValue">&chi; 8.3</span>
+    </button>
+
+    <span class="ftp-spacer"></span>
+
+    <!-- Reading Levels (left of center) -->
+    <div class="ftp-levels" id="ftpReadingLevels" role="tablist" aria-label="Reading level" data-shell-part="topbar.reading_levels" data-json-source="shell_contract.reading_levels">
+      <button class="ftp-level" data-level="highschool" data-reader-level="highschool" data-output-slot="reading_level.highschool" role="tab">High School</button>
+      <button class="ftp-level active" data-level="college" data-reader-level="college" data-output-slot="reading_level.college" role="tab">College</button>
+      <button class="ftp-level" data-level="phd" data-reader-level="phd" data-output-slot="reading_level.phd" role="tab">PhD</button>
+    </div>
+
+    <span class="ftp-spacer"></span>
+
+    <!-- RIGHT CLUSTER: Tools + Search -->
+    <div class="ftp-right-cluster" data-shell-part="topbar.tool_cluster">
+      <a href="/equation/" class="ftp-tool-link" title="Math Translation Layer">
+        <i class="fas fa-square-root-alt"></i><span>MTL</span>
+      </a>
+      <a href="/proof-explorer/" class="ftp-tool-link" title="Proof Explorer">
+        <i class="fas fa-project-diagram"></i><span>Proof</span>
+      </a>
+      <a href="/subdomains/" class="ftp-tool-link" title="Paper Grader">
+        <i class="fas fa-sitemap"></i><span>Grader</span>
+      </a>
+      <span class="ftp-vdiv"></span>
+      <button class="ftp-search-btn" title="Search (Ctrl+K)">
+        <i class="fas fa-search" style="font-size:.55rem"></i>
+        <kbd>Ctrl+K</kbd>
+      </button>
+    </div>
+
+  </div>
+</header>
+<!-- FTP_SHELL_ZONE:TOPBAR END -->
+
+<!-- Panel Toggle -->
+<div class="ftp-panel-toggle" id="ftpPanelToggle" onclick="ftp.togglePanel()" data-shell-zone="panel_toggle" data-shell-role="verification_panel_handle" data-json-source="verification">
+  <span style="display:flex;align-items:center;gap:.5rem">
+    <i class="fas fa-shield-alt" style="color:var(--gold);font-size:.55rem"></i>
+    <span>Verification &amp; Proof</span>
+    <span class="p-badge ok" id="ftpPanelBadge">3 proofs verified</span>
+  </span>
+  <i class="fas fa-chevron-down"></i>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     LAYER 2 — EXPANDABLE PANEL v2.0
+     Added Claims tab. Proof items link to article claims.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- FTP_SHELL_ZONE:VERIFICATION_PANEL START role=metric_variables_dropdown json_mount=deterministic,nlp,api -->
+<div class="ftp-panel" id="ftpPanel" data-shell-zone="verification_panel" data-shell-role="metric_variables_dropdown" data-json-source="verification" data-output-slot="metrics_panel">
+  <div class="ftp-panel-inner" data-shell-part="panel.inner">
+
+    <div class="ftp-panel-tabs" data-shell-part="panel.tabs">
+      <button class="ftp-panel-tab active" data-tab="verify" data-output-slot="panel.verify" onclick="ftp.switchTab('verify')">
+        <i class="fas fa-shield-alt" style="margin-right:.3rem"></i>Verification
+      </button>
+      <button class="ftp-panel-tab" data-tab="claims" data-output-slot="panel.claims" onclick="ftp.switchTab('claims')">
+        <i class="fas fa-bullseye" style="margin-right:.3rem"></i>Claims
+      </button>
+      <button class="ftp-panel-tab" data-tab="proofs" data-output-slot="panel.proofs" onclick="ftp.switchTab('proofs')">
+        <i class="fas fa-project-diagram" style="margin-right:.3rem"></i>Proofs
+      </button>
+      <button class="ftp-panel-tab" data-tab="mtl" data-output-slot="panel.mtl" onclick="ftp.switchTab('mtl')">
+        <i class="fas fa-square-root-alt" style="margin-right:.3rem"></i>Math Translation
+      </button>
+    </div>
+
+    <!-- Tab: Verification -->
+    <div class="ftp-panel-section active" id="tab-verify" data-shell-part="panel.section.verify" data-json-source="verification">
+      <div class="ftp-vgrid">
+        <div class="ftp-vcard">
+          <div class="ftp-vcard-title"><i class="fas fa-check-circle"></i> Axiom Coverage</div>
+          <div class="ftp-vcard-body">
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Axioms Tested</span><span class="ftp-vrow-value" id="v-axiom-count">—/188</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Coverage</span><span class="ftp-vrow-value" id="v-axiom-pct">—%</span></div>
+            <div class="ftp-meter"><div class="ftp-meter-fill high" id="v-axiom-meter" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="ftp-vcard">
+          <div class="ftp-vcard-title"><i class="fas fa-balance-scale"></i> Ten Laws Mapping</div>
+          <div class="ftp-vcard-body">
+            <div class="ftp-law-list" id="v-law-list">
+              <span class="ftp-law-tag" data-law="1">L1 Gravity/Grace</span>
+              <span class="ftp-law-tag" data-law="2">L2 Mass/Meaning</span>
+              <span class="ftp-law-tag" data-law="3">L3 EM/Truth</span>
+              <span class="ftp-law-tag" data-law="4">L4 Strong/Love</span>
+              <span class="ftp-law-tag" data-law="5">L5 Thermo/Judgment</span>
+              <span class="ftp-law-tag" data-law="6">L6 Info/Logos</span>
+              <span class="ftp-law-tag" data-law="7">L7 Quantum/Faith</span>
+              <span class="ftp-law-tag" data-law="8">L8 Relativity/Relationship</span>
+              <span class="ftp-law-tag" data-law="9">L9 Weak/Conservation</span>
+              <span class="ftp-law-tag" data-law="10">L10 Coherence/Christ</span>
+            </div>
+          </div>
+        </div>
+        <div class="ftp-vcard">
+          <div class="ftp-vcard-title"><i class="fas fa-wave-square"></i> Chi Coherence Score</div>
+          <div class="ftp-vcard-body">
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Raw Score</span><span class="ftp-vrow-value" id="v-chi-raw">—</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Normalized</span><span class="ftp-vrow-value" id="v-chi-norm">—/10</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Fruits Score</span><span class="ftp-vrow-value" id="v-fruits">—/9</span></div>
+            <div class="ftp-meter"><div class="ftp-meter-fill high" id="v-chi-meter" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div class="ftp-vcard">
+          <div class="ftp-vcard-title"><i class="fas fa-exchange-alt"></i> Isomorphism Detection</div>
+          <div class="ftp-vcard-body">
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Cross-Domain Bridges</span><span class="ftp-vrow-value" id="v-iso-count">—</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Physics Processes</span><span class="ftp-vrow-value" id="v-physics">—</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Trinity Mappings</span><span class="ftp-vrow-value" id="v-trinity">—</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Master Eq Variables</span><span class="ftp-vrow-value" id="v-meq">—/10</span></div>
+          </div>
+        </div>
+        <div class="ftp-vcard">
+          <div class="ftp-vcard-title"><i class="fas fa-bullseye"></i> Claims &amp; Kill Conditions</div>
+          <div class="ftp-vcard-body">
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Claims Extracted</span><span class="ftp-vrow-value" id="v-claims">—</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Load-Bearing</span><span class="ftp-vrow-value" id="v-load-bearing">—</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Kill Conditions</span><span class="ftp-vrow-value" id="v-kill">—</span></div>
+            <div class="ftp-vrow"><span class="ftp-vrow-label">Contradictions</span><span class="ftp-vrow-value" id="v-contradictions">—</span></div>
+          </div>
+        </div>
+        <div class="ftp-vcard">
+          <div class="ftp-vcard-title"><i class="fas fa-chart-pie"></i> Domain Distribution</div>
+          <div class="ftp-vcard-body" id="v-domains"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Claims (NEW) -->
+    <div class="ftp-panel-section" id="tab-claims" data-shell-part="panel.section.claims" data-json-source="claims">
+      <div class="ftp-claims-list" id="v-claims-list">
+        <!-- Populated from JSON -->
+      </div>
+    </div>
+
+    <!-- Tab: Proofs -->
+    <div class="ftp-panel-section" id="tab-proofs" data-shell-part="panel.section.proofs" data-json-source="proofs">
+      <div class="ftp-proof-list" id="v-proof-list"></div>
+    </div>
+
+    <!-- Tab: MTL -->
+    <div class="ftp-panel-section" id="tab-mtl" data-shell-part="panel.section.mtl" data-json-source="mtl">
+      <div id="v-mtl-list"></div>
+    </div>
+
+  </div>
+</div>
+<!-- FTP_SHELL_ZONE:VERIFICATION_PANEL END -->
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║  ██████  SHELL_TOP_GROUP · ZONE 5: AUDIO PLAYER (relocated from article)║
+     ║  Minimal viable overlay = TOPBAR + THIS PLAYER. Wrapper clears fixed header.║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
+<div class="ftp-player-band" id="ftpPlayerBand" data-shell-group="top" data-shell-zone="audio_player_band" data-shell-role="player_container" data-shell-note="clears fixed topbar; article padding-top reduced accordingly">
+<div class="ftp-shell-boundary" data-shell-boundary="player-start" data-shell-critical="true" aria-hidden="true"><strong>PLAYER SLOT</strong></div>
+
+  <!-- Audio Dock -->
+  <!-- FTP_SHELL_ZONE:AUDIO_PLAYER START role=minimal_viable_audio_overlay json_source=audio -->
+  <div class="ftp-audio-dock" id="ftpAudioDock" data-shell-zone="audio_player" data-shell-role="minimal_viable_audio_overlay" data-json-source="audio" data-output-slot="audio_player.primary">
+    <div class="ftp-dock-pills" id="ftpDockPills" data-shell-part="audio.pills" data-json-source="audio">
+      <button class="ftp-dock-pill active" data-src="read" data-url="https://r2.faiththruphysics.com/GTQ-01/audio/read-aloud.mp3">
+        <span class="pill-dot"></span>Read Aloud
+      </button>
+      <button class="ftp-dock-pill" data-src="debate" data-url="https://r2.faiththruphysics.com/GTQ-01/audio/debate.mp3">
+        <span class="pill-dot"></span>Debate
+      </button>
+      <button class="ftp-dock-pill" data-src="deep" data-url="https://r2.faiththruphysics.com/GTQ-01/audio/deep-dive.mp3">
+        <span class="pill-dot"></span>Deep Dive
+      </button>
+      <button class="ftp-dock-pill" data-src="critique">
+        <span class="pill-dot"></span>Critique
+      </button>
+    </div>
+
+    <div class="ftp-dock-body" id="ftpDockBody" data-shell-part="audio.controls">
+      <button class="ftp-dock-play" id="ftpDockPlay" onclick="ftp.audioToggle()">
+        <i class="fas fa-play" id="ftpDockPlayIcon"></i>
+      </button>
+      <div class="ftp-dock-track-wrap">
+        <div class="ftp-dock-track" id="ftpDockTrack" onclick="ftp.audioSeek(event)">
+          <div class="ftp-dock-fill" id="ftpDockFill"></div>
+        </div>
+        <div class="ftp-dock-times">
+          <span id="ftpDockCurrent">0:00</span>
+          <span id="ftpDockDuration">0:00</span>
+        </div>
+      </div>
+      <button class="ftp-dock-vol" id="ftpDockVol" onclick="ftp.audioMute()">
+        <i class="fas fa-volume-up"></i>
+      </button>
+      <select class="ftp-dock-speed" id="ftpDockSpeed" aria-label="Playback speed" onchange="ftp.audioSetSpeed()">
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option>
+        <option value="1.75">1.75x</option>
+        <option value="2">2x</option>
+      </select>
+    </div>
+
+    <div class="ftp-dock-empty" id="ftpDockEmpty" data-shell-part="audio.empty_state">
+      <i class="fas fa-clock" style="margin-right:.5rem"></i> Audio coming soon
+    </div>
+  </div>
+  <!-- FTP_SHELL_ZONE:AUDIO_PLAYER END -->
+</div>
+<!-- FTP_SHELL_ZONE:AUDIO_PLAYER_BAND END -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     LAYER 2 END — PAGE CONTENT
+     Demo article with claim-wrapped sentences and MTL blocks.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- FTP_SHELL_GROUP:TOP END -->
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║  ██████  SHELL_MIDDLE START — ARTICLE / WHITESPACE ZONE                ║
+     ║  Reader body lives here. HS/College/PhD swaps target #pageContent.       ║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
+<div class="ftp-middle-space" data-shell-group="middle" data-shell-zone="whitespace_upper" data-shell-label="— middle zone: article begins —" aria-hidden="true"></div>
+<!-- FTP_SHELL_GROUP:MIDDLE START -->
+<!-- FTP_SHELL_ZONE:ARTICLE_CONTENT START role=reader_body -->
+<article class="ftp-article" id="pageContent" data-shell-zone="article_content" data-shell-role="reader_body" data-json-source="page">
+
+  <div class="ftp-shell-boundary" data-shell-boundary="content-start" aria-hidden="true"><strong>ARTICLE BODY</strong></div>
+
+<!-- FTP_CONTENT_SLOT:START insert page JSON + page-specific content below -->
+<!-- FTP_SHELL_ZONE:JSON_PAYLOAD START role=canonical_page_payload source=inline -->
+<script id="shell-data" type="application/json" data-shell-zone="json_payload" data-shell-role="canonical_page_payload" data-output-contract="true">
+{
+  "page": {
+    "title": "The Measurement That Collapsed Reality",
+    "subtitle": "When observation itself becomes the force that binds matter to meaning.",
+    "author": "David Lowe",
+    "series": "GTQ",
+    "series_name": "Genesis to Quantum",
+    "series_home": "/genesis-to-quantum/",
+    "slug": "gtq-01-measurement-collapsed-reality",
+    "date": "June 2026",
+    "prev": {
+      "title": "Series Introduction",
+      "url": "/genesis-to-quantum/"
+    },
+    "next": {
+      "title": "Free Will — Two Frames",
+      "url": "/genesis-to-quantum/gtq-02-free-will.html"
+    }
+  },
+  "shell_contract": {
+    "version": "ftp-shell-v2.5.1",
+    "layout_groups": {
+      "top": {
+        "zones": [
+          "json_payload",
+          "topbar",
+          "panel_toggle",
+          "verification_panel",
+          "audio_player_band"
+        ],
+        "note": "minimal viable overlay = topbar + player"
+      },
+      "middle": {
+        "zones": [
+          "whitespace_upper",
+          "article_content",
+          "whitespace_lower"
+        ],
+        "note": "reader body; level swaps target pageContent"
+      },
+      "bottom": {
+        "zones": [
+          "audio_mini_player",
+          "footer_nav",
+          "final_audit",
+          "proof_layer",
+          "mtl_layer",
+          "research_links",
+          "series_footer",
+          "site_footer"
+        ],
+        "note": "proof_layer + mtl_layer are pending breakdown"
+      }
+    },
+    "template": "index-shell-v2.html",
+    "render_order": [
+      "json_payload",
+      "topbar",
+      "verification_panel",
+      "audio_player_band",
+      "article_content",
+      "final_audit",
+      "research_links",
+      "series_footer"
+    ],
+    "zones": {
+      "json_payload": {
+        "id": "shell-data",
+        "type": "application/json",
+        "role": "canonical_page_payload"
+      },
+      "topbar": {
+        "id": "ftpTopBar",
+        "role": "global_navigation"
+      },
+      "verification_panel": {
+        "id": "ftpPanel",
+        "role": "metric_variables_dropdown"
+      },
+      "audio_player": {
+        "id": "ftpAudioDock",
+        "role": "minimal_viable_audio_overlay"
+      },
+      "article_content": {
+        "id": "pageContent",
+        "role": "reader_body"
+      },
+      "final_audit": {
+        "id": "ftpAudit",
+        "role": "epistemic_audit"
+      },
+      "series_footer": {
+        "id": "ftpSeriesStrip",
+        "role": "cross_series_navigation"
+      }
+    },
+    "output_slots": {
+      "deterministic": {
+        "target": "ftpPanel",
+        "source_kind": "chi_qi_v5_batch_summary.json",
+        "status": "planned"
+      },
+      "nlp": {
+        "target": "ftpPanel",
+        "source_kind": "nlp_deep_batch_summary.json",
+        "status": "planned"
+      },
+      "api": {
+        "target": "ftpPanel",
+        "source_kind": "openai_7q_or_api_payload.json",
+        "status": "planned"
+      },
+      "audio": {
+        "target": "ftpAudioDock",
+        "source_kind": "audio[]",
+        "status": "active"
+      },
+      "reading_levels": {
+        "target": "ftpReadingLevels",
+        "source_kind": "levels",
+        "status": "active"
+      }
+    },
+    "reading_levels": [
+      {
+        "key": "highschool",
+        "label": "High School",
+        "target": "pageContent",
+        "status": "active"
+      },
+      {
+        "key": "college",
+        "label": "College",
+        "target": "pageContent",
+        "status": "active"
+      },
+      {
+        "key": "phd",
+        "label": "PhD",
+        "target": "pageContent",
+        "status": "active"
+      }
+    ],
+    "operator_note": "Topbar is isolated above the proof panel. Audio player is the first article-zone component. JSON outputs mount into panel variables, not into the article body.",
+    "layer_status": {
+      "proof_layer": {
+        "status": "draft-ai",
+        "source": "proofs[]",
+        "renderer": "renderProofLayer"
+      },
+      "mtl_layer": {
+        "status": "draft-ai",
+        "source": "mtl[] + inline isomorphism",
+        "renderer": "renderMtlLayer"
+      }
+    },
+    "merge_note": "v2.5: v2.4-merged + Kimi vB bottom CSS polish + reader layers (HS/PhD draft-ai) + sticky claim drawers w/ linked proofs + pinned proof/mtl tabs + slot-based audio (Codex contract).",
+    "audio_contract": "slot-based: audio[] slots 1-4 (1 tts, 2 debate, 3 deep_dive, 4 critique); player hydrates from JSON; empty url = unavailable",
+    "reading_levels_engine": "body[data-reading-level] + .ftp-reader-layer[data-reader-layer]; buttons persist to localStorage ftp-reader-mode; layers highschool/college/phd; HS+PhD content is draft-ai",
+    "pin_contract": "proofs/mtl panel tabs pin open site-wide via localStorage ftp-panel-pin; gold ring class ftp-pin-gold"
+  },
+  "domains": [
+    {
+      "name": "Theology",
+      "key": "theology",
+      "pct": 28,
+      "color": "#d4af37"
+    },
+    {
+      "name": "Physics",
+      "key": "physics",
+      "pct": 22,
+      "color": "#7cc7ff"
+    },
+    {
+      "name": "Cross-Domain",
+      "key": "cross-domain",
+      "pct": 15,
+      "color": "#3bb39a"
+    },
+    {
+      "name": "Evidence",
+      "key": "evidence",
+      "pct": 15,
+      "color": "#7fc77f"
+    },
+    {
+      "name": "Consciousness",
+      "key": "consciousness",
+      "pct": 10,
+      "color": "#a78bfa"
+    },
+    {
+      "name": "Mathematics",
+      "key": "mathematics",
+      "pct": 7,
+      "color": "#ff7d90"
+    },
+    {
+      "name": "Speculative",
+      "key": "speculative",
+      "pct": 3,
+      "color": "#aeb8d6"
+    }
+  ],
+  "verification": {
+    "axioms": {
+      "tested": 94,
+      "total": 188
+    },
+    "laws": {
+      "active": [
+        1,
+        3,
+        4,
+        7,
+        10
+      ]
+    },
+    "chi": {
+      "raw": 7.42,
+      "normalized": 8.3
+    },
+    "fruits": {
+      "score": 7
+    },
+    "isomorphisms": {
+      "count": 12,
+      "physics_processes": 5,
+      "trinity_mappings": 3,
+      "meq_variables": 8
+    },
+    "claims": {
+      "total": 25,
+      "load_bearing": 8,
+      "kill_conditions": 3,
+      "contradictions": 0
+    }
+  },
+  "claims": [
+    {
+      "id": "GTQ-01-C001",
+      "anchor": "claim-epistemic",
+      "sentence": "The measurement problem is not epistemic.",
+      "formal": "Measurement collapse is an objective physical process, not merely an update of knowledge. The wavefunction describes the physical state, not our ignorance of it.",
+      "derivation": [
+        "Schrödinger Equation",
+        "Projection Postulate",
+        "Born Rule"
+      ],
+      "kill_condition": "If measurement can be fully explained by decoherence without observer-dependence, this claim fails.",
+      "lean_ref": "measurement.lean::theorem_3_2",
+      "status": "LEAN_PROVEN",
+      "load_bearing": true,
+      "mtl": {
+        "level": 2,
+        "latex": "i\\hbar\\frac{\\partial}{\\partial t}\\Psi = \\hat{H}\\Psi",
+        "substitution": "Energy operator acting on state vector equals rate of change of that state",
+        "meaning": "Between observations, quantum systems evolve deterministically. The mystery is what happens at the moment of observation."
+      }
+    },
+    {
+      "id": "GTQ-01-C002",
+      "anchor": "claim-rules",
+      "sentence": "These two rules are mutually exclusive.",
+      "formal": "Rule 1 (continuous Schrödinger evolution) and Rule 2 (discontinuous measurement collapse) cannot both be fundamental. They describe incompatible dynamics.",
+      "derivation": [
+        "Unitary Evolution",
+        "Eigenstate Reduction",
+        "Linearity vs. Nonlinearity"
+      ],
+      "kill_condition": "If a single unified equation is discovered that derives both rules, the mutual exclusivity claim dissolves.",
+      "lean_ref": "measurement.lean::lemma_2_1",
+      "status": "LEAN_PROVEN",
+      "load_bearing": true,
+      "mtl": null
+    },
+    {
+      "id": "GTQ-01-C003",
+      "anchor": "claim-incomplete",
+      "sentence": "Physics itself admits it cannot close the system.",
+      "formal": "No formulation of quantum mechanics to date includes 'observation' as a term in the Hamiltonian. The observer is external to the equations.",
+      "derivation": [
+        "Hamiltonian Formalism",
+        "Observer Exclusion",
+        "Open System Proof"
+      ],
+      "kill_condition": "If a future theory of quantum gravity or information embeds the observer into the Lagrangian, this claim is superseded.",
+      "lean_ref": null,
+      "status": "STRUCTURALLY_MAPPED",
+      "load_bearing": true,
+      "mtl": {
+        "level": 3,
+        "title": "Observer Exclusion from Hamiltonian",
+        "latex": "\\hat{H} = \\hat{H}_{\\text{system}} + \\hat{H}_{\\text{environment}}",
+        "variables": [
+          {
+            "sym": "\\hat{H}",
+            "name": "Total Hamiltonian",
+            "domain": "Physics",
+            "meaning": "The complete energy operator of the system"
+          },
+          {
+            "sym": "\\hat{H}_{\\text{system}}",
+            "name": "System Hamiltonian",
+            "domain": "Physics",
+            "meaning": "Energy of the particle/system under study"
+          },
+          {
+            "sym": "\\hat{H}_{\\text{environment}}",
+            "name": "Environment Hamiltonian",
+            "domain": "Physics",
+            "meaning": "Energy of everything else — still not the observer"
+          }
+        ],
+        "plain": "The Hamiltonian contains the system and its environment, but nowhere does it contain a term for the conscious observer who triggers collapse.",
+        "feature": "This is the gap. The observer is real enough to change physics, but not real enough to appear in the equations."
+      }
+    },
+    {
+      "id": "GTQ-01-C004",
+      "anchor": "claim-boundary",
+      "sentence": "The measurement boundary is where physics exposes an unresolved interface.",
+      "formal": "The formalism contains deterministic unitary evolution and discontinuous state update, but it does not derive the transition between those descriptions from a single shared dynamical operator.",
+      "derivation": [
+        "Unitary Evolution",
+        "Projection Postulate",
+        "Boundary Condition Analysis"
+      ],
+      "kill_condition": "If a future closed theory derives collapse from a single internal dynamical law with no external measurement primitive, this boundary claim must be rewritten.",
+      "lean_ref": null,
+      "status": "DRAFT_UNTESTED",
+      "load_bearing": true,
+      "mtl": {
+        "level": 3,
+        "title": "Measurement Boundary Operator",
+        "latex": "\\mathcal{B}_{m} : \\Psi_{\\text{possible}} \\rightarrow \\psi_{\\text{actual}}",
+        "variables": [
+          {
+            "sym": "\\mathcal{B}_{m}",
+            "name": "Measurement Boundary",
+            "domain": "Cross-Domain",
+            "meaning": "The interface where possible states become a recorded actual state"
+          },
+          {
+            "sym": "\\Psi_{\\text{possible}}",
+            "name": "Possible-State Wavefunction",
+            "domain": "Physics",
+            "meaning": "The superposed state before a definite outcome is registered"
+          },
+          {
+            "sym": "\\psi_{\\text{actual}}",
+            "name": "Actualized State",
+            "domain": "Physics",
+            "meaning": "The single measured outcome after the boundary is crossed"
+          }
+        ],
+        "plain": "The proposed boundary operator is not a new accepted physics equation. It is a labeled scaffold for the unresolved transition from possible outcomes to an actual measured result.",
+        "feature": "This gives the importer a concrete place to attach API/NLP/Excel evidence: if the evidence supports the boundary language, keep it; if not, downgrade or delete it."
+      }
+    }
+  ],
+  "proofs": [
+    {
+      "id": "p1",
+      "title": "Observer-Dependence Derivation",
+      "status": "verified",
+      "summary": "The measurement problem is not epistemic. The equations show that prior to observation, the system exists in superposition. Upon measurement, the wavefunction collapses to a single eigenstate. This is derived from the Schrödinger equation with projection operators — no interpretation added.",
+      "url": "/proof-explorer/gtq-01/measurement-problem",
+      "claim_ids": [
+        "GTQ-01-C001"
+      ]
+    },
+    {
+      "id": "p2",
+      "title": "Consciousness Coupling Bound",
+      "status": "partial",
+      "summary": "PEAR-LAB data (2.5M trials, 6.35 sigma) and GCP (325+ replications, 6 sigma) establish that consciousness affects physical output. The coupling mechanism remains open — we know THAT it happens, not precisely HOW. This mirrors Newton's situation with gravity.",
+      "url": "/proof-explorer/gtq-01/consciousness-coupling",
+      "claim_ids": [
+        "GTQ-01-C003"
+      ]
+    },
+    {
+      "id": "p3",
+      "title": "Christianity Satisfies All 20 Axioms",
+      "status": "verified",
+      "summary": "Rule-by-rule verification against information-theoretic constraints. Christianity: 20/20. Materialist atheism: fails A1, A7, A11, A14, A17, A19. Pantheism: fails A2, A5, A8. Deism: fails A4, A13, A15. Islam: fails A6, A12, A18. Buddhism: fails A3, A9, A10, A16, A20. Full scorecard available.",
+      "url": "/proof-explorer/gtq-01/worldview-scorecard",
+      "claim_ids": []
+    },
+    {
+      "id": "p4",
+      "title": "Draft Boundary Interface Test",
+      "status": "draft",
+      "summary": "UNTESTED scaffold proof. The page now carries one deliberately provisional proof object showing how a script can attach a claim, a kill condition, and a math translation layer to the same page payload.",
+      "url": "/proof-explorer/gtq-01/boundary-interface-draft",
+      "claim_ids": [
+        "GTQ-01-C004"
+      ]
+    }
+  ],
+  "mtl": [
+    {
+      "latex": "\\frac{d\\chi}{dt} = G_{\\text{ext}} \\cdot \\eta(K) - \\lambda S(\\chi)",
+      "named": "Rate of coherence change = External grace times knowledge receptivity minus entropy times coherence",
+      "plain": "Coherence changes over time based on external grace times how much knowledge can receive it, minus entropy times a constant. Coherence increases with grace input and decreases with entropy.",
+      "feature": "Multiplicative: if either G_ext (grace) or eta(K) (receptivity) goes to zero, the growth term vanishes entirely. This means grace alone is not enough — the system must also be able to receive it."
+    },
+    {
+      "latex": "\\mathcal{B}_{m} : \\Psi_{\\text{possible}} \\rightarrow \\psi_{\\text{actual}}",
+      "named": "Measurement boundary maps possible-state description to actualized outcome",
+      "plain": "This is a draft translation layer, not a finished theorem. It marks the exact spot where the page needs evidence: how the framework talks about collapse, observation, and actualization without pretending the gap is already solved.",
+      "feature": "Importer target: this object is the simplest prototype for API/NLP output. A script can replace latex, named, plain, feature, and claim_ids without touching the visible HTML."
+    }
+  ],
+  "audio": [
+    {
+      "slot": 1,
+      "src": "read",
+      "label": "Read Aloud / TTS",
+      "kind": "tts",
+      "url": "https://r2.faiththruphysics.com/GTQ-01/audio/read-aloud.mp3"
+    },
+    {
+      "slot": 2,
+      "src": "debate",
+      "label": "Debate",
+      "kind": "debate",
+      "url": "https://r2.faiththruphysics.com/GTQ-01/audio/debate.mp3"
+    },
+    {
+      "slot": 3,
+      "src": "deep",
+      "label": "Deep Dive",
+      "kind": "deep_dive",
+      "url": "https://r2.faiththruphysics.com/GTQ-01/audio/deep-dive.mp3"
+    },
+    {
+      "slot": 4,
+      "src": "critique",
+      "label": "Critique",
+      "kind": "critique",
+      "url": ""
+    }
+  ],
+  "audit": {
+    "right": [
+      "The measurement formalism is standard quantum mechanics — no controversial interpretation.",
+      "The Master Equation derivation holds at 6.35 sigma.",
+      "The isomorphism between Yukawa potential and agape is formally complete."
+    ],
+    "overstated": [
+      "The consciousness bridge is suggestive but not yet rigorously closed.",
+      "We used 'proof' where 'high-confidence inference' would be more honest in places."
+    ],
+    "wrong": [
+      "The initial entropy calculation was off by a factor of 2 — corrected in v4.",
+      "We attributed a source incorrectly; the citation has been fixed."
+    ]
+  }
+}
+</script>
+<!-- FTP_SHELL_ZONE:JSON_PAYLOAD END -->
+
+<h1 data-shell-part="article.title" data-json-source="page.title">The Measurement That Collapsed Reality</h1>
+  <p class="ftp-subtitle" data-shell-part="article.subtitle" data-json-source="page.subtitle">When observation itself becomes the force that binds matter to meaning.</p>
+  <div class="ftp-byline" data-shell-part="article.byline" data-json-source="page.author,page.series,page.date">David Lowe &middot; Faith thru Physics &middot; GTQ-01 &middot; June 2026</div>
+
+  <!-- ══ READER LAYER: HIGH SCHOOL (draft-ai) ══ -->
+  <section class="ftp-reader-layer" data-reader-layer="highschool" data-shell-zone="reader_layer" data-shell-role="easy_translation" data-shell-status="draft-ai" data-output-slot="reading_level.highschool">
+    <div class="ftp-reader-layer-label">High School / Easy Translation — <span style="color:#ff6b6b">AI DRAFT, REVIEW</span></div>
+
+    <h2>The Problem, Simply</h2>
+    <p>Imagine a coin spinning in the air. While it spins, it isn't heads and it isn't tails — it's genuinely both possibilities at once. Quantum physics says the smallest pieces of the universe really work this way. An electron can be in two places at once, spinning both directions at once, until something checks on it.</p>
+    <p>Here's the strange part. Physics has an equation — the Schrödinger equation — that predicts exactly how the spinning happens. It's precise. It never misses. But the moment you <em>look</em>, the coin lands. And the equation that predicted everything else <strong>cannot describe the landing</strong>.</p>
+    <p>
+      <span class="ftp-claim-sentence" data-claim="GTQ-01-C001" data-shell-part="claim.sentence" data-json-source="claims.GTQ-01-C001" data-output-slot="claim.inline" onclick="ftp.toggleClaim(this)">The measurement problem is not epistemic.</span>
+      That's the fancy way of saying: this isn't a gap in what we <em>know</em>. It's a gap in what the universe's own rulebook <em>says</em>. The rulebook has a missing page, and the missing page is the moment someone looks.
+    </p>
+    <p>
+      <span class="ftp-claim-sentence" data-claim="GTQ-01-C003" data-shell-part="claim.sentence" data-json-source="claims.GTQ-01-C003" data-output-slot="claim.inline" onclick="ftp.toggleClaim(this)">Physics itself admits it cannot close the system.</span>
+      Something outside the math finishes the story. The rest of this series asks what that something is.
+    </p>
+    <h3>Reading Map</h3>
+    <p>This page starts the Genesis to Quantum series. Read this and the Final Audit at the bottom — that's the honest scorecard of what we got right and wrong.</p>
+  </section>
+
+  <!-- ══ READER LAYER: PHD / ACADEMIC (draft-ai) ══ -->
+  <section class="ftp-reader-layer" data-reader-layer="phd" data-shell-zone="reader_layer" data-shell-role="academic_translation" data-shell-status="draft-ai" data-output-slot="reading_level.phd">
+    <div class="ftp-reader-layer-label">PhD / Academic Layer — <span style="color:#ff6b6b">AI DRAFT, REVIEW</span></div>
+
+    <h2>The Measurement Problem, Stated Precisely</h2>
+    <p>The dynamical postulate of quantum mechanics asserts unitary evolution: |ψ(t)⟩ = U(t)|ψ(0)⟩, with U generated by a self-adjoint Hamiltonian. Unitarity preserves superposition by construction. The projection postulate asserts that measurement of observable Â with spectral decomposition Â = Σ aᵢP̂ᵢ yields outcome aᵢ with probability ⟨ψ|P̂ᵢ|ψ⟩, updating the state discontinuously to P̂ᵢ|ψ⟩/‖P̂ᵢ|ψ⟩‖.</p>
+    <p>
+      <span class="ftp-claim-sentence" data-claim="GTQ-01-C002" data-shell-part="claim.sentence" data-json-source="claims.GTQ-01-C002" data-output-slot="claim.inline" onclick="ftp.toggleClaim(this)">These two rules are mutually exclusive.</span>
+      No unitary map takes a pure superposition to a proper mixture; decoherence diagonalizes the reduced density matrix in the pointer basis but leaves the global state an improper mixture. Tracing out the environment does not actualize an outcome — it hides the coherences without removing them.
+    </p>
+    <p>The von Neumann chain makes the regress explicit: including the apparatus in the quantum description yields an entangled apparatus-system state, which requires a second apparatus, ad infinitum. The chain terminates only where the formalism is externally supplemented.</p>
+    <p><strong>The objection to name honestly:</strong> the Everettian denies any incompleteness — on that reading nothing collapses and all branches are realized; the "problem" dissolves into the preferred-basis and probability problems. We do not treat that move as free: deriving the Born rule from branch-counting or decision theory remains contested (Wallace's decision-theoretic program, Zurek's envariance), and the framing here — that collapse is <em>dynamically incomplete rather than interpretively ambiguous</em> — is a claim the Everettian rejects at the first step. Claim C003 below survives on either reading, but the reader should know the fork exists.</p>
+    <p>
+      <span class="ftp-claim-sentence" data-claim="GTQ-01-C003" data-shell-part="claim.sentence" data-json-source="claims.GTQ-01-C003" data-output-slot="claim.inline" onclick="ftp.toggleClaim(this)">Physics itself admits it cannot close the system.</span>
+      Either the dynamics is supplemented (objective collapse, e.g. GRW/CSL — empirically bounded but not excluded), the ontology is supplemented (Bohmian guidance equation), the interpretation is supplemented (relative states plus a probability postulate), or the boundary is treated as physically real and unresolved. The last option is the posture of this series: the measurement boundary ℬₘ : Ψ_possible → ψ_actual is scaffolding for an open interface, deliberately labeled DRAFT_UNTESTED in the claims ledger.</p>
+    <h3>Reading Map</h3>
+    <p>GTQ-01 fixes the problem statement. Subsequent papers develop the coherence dynamics dχ/dt = G_ext·η(K) − λS(χ) and its claimed isomorphisms; the Math Translation Layer below carries the term-by-term mappings and the falsification conditions.</p>
+  </section>
+
+  <!-- ══ READER LAYER: COLLEGE / STANDARD (existing prose) ══ -->
+  <section class="ftp-reader-layer" data-reader-layer="college" data-shell-zone="reader_layer" data-shell-role="standard_article" data-output-slot="reading_level.college">
+    <div class="ftp-reader-layer-label">College / Standard Article</div>
+
+  <h2 data-shell-part="article.section" data-section-id="problem">The Problem</h2>
+  <p data-shell-part="article.paragraph" data-section-id="problem" data-reader-slot="highschool,college,phd">Quantum mechanics tells us that particles exist in superposition — in multiple states at once — until they are observed. The moment of measurement forces the system to choose. This is not a metaphor. It is what the equations say.</p>
+  <p>The Schrödinger equation governs how quantum systems evolve. It is deterministic — given the state at one moment, you can compute the state at any future moment. But when we measure, something happens that the equation itself does not describe. The wavefunction collapses. The system jumps from "maybe A, maybe B" to definitively A or definitively B.</p>
+
+  <blockquote>"The quantum measurement problem is the single most important unsolved problem in the foundations of physics. It is not a detail. It is the place where physics itself becomes incomplete."</blockquote>
+
+  <h2 data-shell-part="article.section" data-section-id="formalism">The Formalism</h2>
+  <p>The standard formalism has two rules:</p>
+  <ul>
+    <li><strong>Rule 1 (Schrödinger evolution):</strong> Between measurements, the state evolves continuously and deterministically according to the Schrödinger equation.</li>
+    <li><strong>Rule 2 (Measurement collapse):</strong> Upon measurement, the state jumps discontinuously to one of the possible outcomes, with probability given by the Born rule.</li>
+  </ul>
+
+  <!-- MTL Level 2 Block -->
+  <div class="ftp-mtl-block" data-shell-part="mtl.level2" data-json-source="claims[0].mtl" data-output-slot="mtl.inline.level2">
+    <div class="mtl-eq">iℏ ∂Ψ/∂t = ĤΨ</div>
+    <div class="mtl-sub">Energy operator acting on state vector equals the rate of change of that state</div>
+    <div class="mtl-mean">
+      <strong>What this means:</strong> Between observations, quantum systems evolve deterministically — like a clockwork universe at the smallest scale. The mystery is not in the evolution. It is in what happens at the moment of observation.
+    </div>
+  </div>
+
+  <!-- MTL Level 3 Expandable -->
+  <div class="ftp-mtl-full" id="mtl-full-1" data-shell-part="mtl.level3" data-json-source="mtl[0]" data-output-slot="mtl.inline.level3">
+    <div class="ftp-mtl-full-header" onclick="ftp.toggleMTL(this)">
+      <h4><i class="fas fa-expand" style="margin-right:.4rem"></i>Full Master Equation Explorer</h4>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="ftp-mtl-full-body">
+      <div class="mtl-eq" style="text-align:center;font-size:1.2rem;color:#fff;margin-bottom:.8rem;">
+        dχ/dt = G<sub>ext</sub> · η(K) − λS(χ)
+      </div>
+      <table class="ftp-mtl-var-table">
+        <thead><tr><th>Symbol</th><th>Name</th><th>Domain</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>χ</td><td>Coherence</td><td>Cross-Domain</td><td>The degree of ordered information in a system</td></tr>
+          <tr><td>G<sub>ext</sub></td><td>External Grace</td><td>Theology</td><td>Force that increases order without being generated by the system</td></tr>
+          <tr><td>η(K)</td><td>Receptivity</td><td>Consciousness</td><td>How much knowledge the system can actually receive</td></tr>
+          <tr><td>λ</td><td>Decay constant</td><td>Physics</td><td>Rate at which entropy degrades coherence</td></tr>
+          <tr><td>S(χ)</td><td>Entropy</td><td>Physics</td><td>Measure of disorder in the system</td></tr>
+        </tbody>
+      </table>
+      <div class="ftp-mtl-plain" style="margin-top:.8rem;text-align:center;">
+        Coherence changes over time based on external grace times how much knowledge can receive it,<br>minus entropy times a constant. Grace alone is not enough — the system must also be able to receive it.
+      </div>
+    </div>
+  </div>
+
+  <p>
+    <span class="ftp-claim-sentence" data-claim="GTQ-01-C001" data-shell-part="claim.sentence" data-json-source="claims.GTQ-01-C001" data-output-slot="claim.inline" onclick="ftp.toggleClaim(this)">
+      The measurement problem is not epistemic.
+    </span>
+    The equations show that prior to observation, the system exists in superposition. Upon measurement, the wavefunction collapses to a single eigenstate. This is derived from the Schrödinger equation with projection operators — no interpretation added.
+  </p>
+  <!-- Drawer injected by JS -->
+
+  <p>
+    <span class="ftp-claim-sentence" data-claim="GTQ-01-C002" data-shell-part="claim.sentence" data-json-source="claims.GTQ-01-C002" data-output-slot="claim.inline" onclick="ftp.toggleClaim(this)">
+      These two rules are mutually exclusive.
+    </span>
+    A system cannot be both evolving continuously and jumping discontinuously. Yet both are necessary to match experimental results. This is the measurement problem in its sharpest form.
+  </p>
+
+  <h2 data-shell-part="article.section" data-section-id="interpretation">Where Physics Ends and Something Else Begins</h2>
+  <p>The measurement problem is not about the mathematics. The mathematics works perfectly. It is about what the mathematics means. The equations describe a world in which physical systems are not definitively anything until they are observed — and "observation" is not itself a physical term in the equations.</p>
+
+  <p>
+    <span class="ftp-claim-sentence" data-claim="GTQ-01-C003" data-shell-part="claim.sentence" data-json-source="claims.GTQ-01-C003" data-output-slot="claim.inline" onclick="ftp.toggleClaim(this)">
+      Physics itself admits it cannot close the system.
+    </span>
+    Something outside the equations is required to complete the picture. What that something is — consciousness, hidden variables, many worlds, or something else — is what the rest of this series explores.
+  </p>
+
+  <h3>Reading Map</h3>
+  <p>This article is the entry point for the Genesis to Quantum series. It frames the problem that the rest of the series solves. If you read nothing else, read this and the final audit below.</p>
+  </section><!-- /college reader layer -->
+<!-- FTP_CONTENT_SLOT:END shell bottom begins below -->
+</article>
+<!-- FTP_SHELL_ZONE:ARTICLE_CONTENT END -->
+
+<!-- Mini Player -->
+<!-- FTP_SHELL_GROUP:MIDDLE END -->
+<div class="ftp-middle-space" data-shell-group="middle" data-shell-zone="whitespace_lower" data-shell-label="— middle zone ends: bottom group begins —" aria-hidden="true"></div>
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║  ██████  SHELL_BOTTOM_GROUP START                                      ║
+     ║  Contains: Mini player · Prev/Next nav · Final audit · Proof layer (pending) · MTL layer (pending) · Links · Footer║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
+<!-- FTP_SHELL_GROUP:BOTTOM START -->
+<!-- FTP_SHELL_ZONE:AUDIO_MINI_PLAYER START role=sticky_audio_overlay -->
+<div class="ftp-dock-mini" id="ftpDockMini" aria-hidden="true" data-shell-zone="audio_mini_player" data-shell-role="sticky_audio_overlay" data-json-source="audio" data-output-slot="audio_player.mini">
+  <button class="ftp-mini-play" id="ftpMiniPlay" type="button" onclick="ftp.audioToggle()" aria-label="Play or pause audio">
+    <i class="fas fa-play" id="ftpMiniIcon"></i>
+  </button>
+  <div class="ftp-mini-label" id="ftpMiniLabel">Audio</div>
+</div>
+<!-- FTP_SHELL_ZONE:AUDIO_MINI_PLAYER END -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     LAYER 4 — FOOTER SYSTEM
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- FTP_SHELL_ZONE:FOOTER_NAV START role=prev_next_series_nav -->
+<nav class="ftp-light-nav" id="ftpLightNav" data-shell-zone="footer_nav" data-shell-role="prev_next_series_nav" data-json-source="page.prev,page.next,page.series_home">
+  <a href="#" id="ftpPrevLink"><i class="fas fa-arrow-left"></i> <span id="ftpPrevTitle">Previous</span></a>
+  <div class="ftp-nav-center">
+    <a href="/genesis-to-quantum/" class="series-home" id="ftpSeriesHome">GTQ Series Home</a>
+    <a href="https://faiththruphysics.com" class="ftp-site-home">faiththruphysics.com</a>
+  </div>
+  <a href="#" id="ftpNextLink"><span id="ftpNextTitle">Next</span> <i class="fas fa-arrow-right"></i></a>
+</nav>
+<!-- FTP_SHELL_ZONE:FOOTER_NAV END -->
+
+<!-- FTP_SHELL_ZONE:FINAL_AUDIT START role=epistemic_audit json_source=audit -->
+<section class="ftp-audit" id="ftpAudit" data-shell-zone="final_audit" data-shell-role="epistemic_audit" data-json-source="audit" data-output-slot="audit.final">
+  <div class="ftp-audit-box">
+    <div class="ftp-audit-head">Final Audit</div>
+    <p class="ftp-audit-intro">Every page ends with the same three-part check: what we got right, what we overstated, and what we got wrong.</p>
+    <div class="ftp-audit-covenant">
+      <b>Epistemic covenant:</b> we present these claims as openly, fairly, and truthfully as we can. The evidence can be checked, the mechanisms can be challenged, the proof burden is named. Where the work moves from how the science behaves to why it means something, the choice is stated. We think the pattern is worth believing, but we will not hide where faith begins.
+    </div>
+    <div class="ftp-audit-grid">
+      <div class="ftp-audit-col ftp-ac-right">
+        <h4>What We Got Right</h4>
+        <ul id="ftpAuditRight">
+          <li>Load-bearing claims, clear definitions, and the parts that clearly survived the check.</li>
+        </ul>
+      </div>
+      <div class="ftp-audit-col ftp-ac-over">
+        <h4>What We Overstated</h4>
+        <ul id="ftpAuditOver">
+          <li>Strong direction, but the language ran ahead of the evidence or the proof.</li>
+        </ul>
+      </div>
+      <div class="ftp-audit-col ftp-ac-wrong">
+        <h4>What We Got Wrong</h4>
+        <ul id="ftpAuditWrong">
+          <li>Claims that need correction, tightening, or weaker formulation.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- FTP_SHELL_ZONE:FINAL_AUDIT END -->
+
+<div class="ftp-gold-divider"><div class="ftp-gold-divider-line"></div></div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║  ██████  ZONE: PROOF_LAYER — POPULATED (draft-ai, v2.4)                ║
+     ║  On-page proof drawers rendered from JSON proofs[] by renderProofLayer().║
+     ║  Every proof carries status chip + claim links. Review before publish.   ║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
+<section id="ftpProofLayer" class="ftp-layer-section" data-shell-group="bottom" data-shell-zone="proof_layer" data-shell-role="proof_layer_onpage" data-shell-status="draft-ai" data-json-source="proofs">
+  <div class="ftp-layer-inner">
+    <div class="ftp-sub-head"><span class="ftp-sub-dot"></span><span class="ftp-sub-kicker">Proof Layer</span><span class="ftp-draft-tag">AI DRAFT — REVIEW</span></div>
+    <div class="ftp-sub-title">What Holds, What's Partial, What's Provisional</div>
+    <p class="ftp-layer-intro">Every proof on this page is labeled by status. <b>Verified</b> means the derivation is complete and checkable. <b>Partial</b> means the direction holds but the mechanism is open. <b>Draft</b> means it is scaffolding — deliberately provisional, waiting for evidence. Each proof links back to the claim it supports.</p>
+    <div id="ftpProofLayerList" data-shell-part="proof_layer.list"><!-- rendered by renderProofLayer() --></div>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║  ██████  ZONE: MTL_LAYER — POPULATED (draft-ai, v2.4)                  ║
+     ║  Three-layer equation presentation: (1) equation, (2) term-by-term       ║
+     ║  plain English, (3) isomorphism side-by-side. mtl[] entries rendered by  ║
+     ║  renderMtlLayer(); the isomorphism block is inline HTML.                 ║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
+<section id="ftpMtlLayer" class="ftp-layer-section" data-shell-group="bottom" data-shell-zone="mtl_layer" data-shell-role="mtl_layer_onpage" data-shell-status="draft-ai" data-json-source="mtl,claims.mtl">
+  <div class="ftp-layer-inner">
+    <div class="ftp-sub-head"><span class="ftp-sub-dot"></span><span class="ftp-sub-kicker">Math Translation Layer</span><span class="ftp-draft-tag">AI DRAFT — REVIEW</span></div>
+    <div class="ftp-sub-title">Every Equation Is a Sentence</div>
+    <p class="ftp-layer-intro">Every equation on this page gets three layers: the equation itself, a plain-English translation of every term directly underneath, and — where two domains are claimed to be structurally identical — both equations side by side so you can follow the mapping and verify the claim yourself. You should never have to take our word for the math.</p>
+
+    <div id="ftpMtlLayerList" data-shell-part="mtl_layer.list"><!-- rendered by renderMtlLayer() --></div>
+
+    <!-- ── LAYER 3: ISOMORPHISM BLOCK (inline, draft-ai) ── -->
+    <div class="ftp-iso-block" data-shell-part="mtl_layer.isomorphism" data-shell-status="draft-ai">
+      <div class="ftp-iso-head"><i class="fas fa-exchange-alt"></i> Layer 3 — The Isomorphism Check</div>
+      <p class="ftp-iso-intro">The claim: the coherence equation and the Consciousness Ladder are the same structure in two domains. Don't take the claim — follow the mapping.</p>
+      <div class="ftp-iso-grid">
+        <div class="ftp-iso-col">
+          <div class="ftp-iso-domain">Coherence (χ-field)</div>
+          <code class="ftp-mtl-code">dχ/dt = G<sub>ext</sub> · η(K) − λ·S(χ)</code>
+          <ul class="ftp-iso-terms">
+            <li><b>G<sub>ext</sub></b> — external grace input</li>
+            <li><b>η(K)</b> — receptivity of the system</li>
+            <li><b>λ·S(χ)</b> — entropic loss, scales with state</li>
+          </ul>
+        </div>
+        <div class="ftp-iso-mid"><i class="fas fa-arrows-alt-h"></i></div>
+        <div class="ftp-iso-col">
+          <div class="ftp-iso-domain">Consciousness Ladder</div>
+          <code class="ftp-mtl-code">dC/dt = O·G·(1−C) − S·C</code>
+          <ul class="ftp-iso-terms">
+            <li><b>O·G</b> — openness times grace input</li>
+            <li><b>(1−C)</b> — remaining capacity to receive</li>
+            <li><b>S·C</b> — entropic loss, scales with state</li>
+          </ul>
+        </div>
+      </div>
+      <div class="ftp-iso-map">
+        <div class="ftp-iso-row"><span>G<sub>ext</sub></span><i class="fas fa-long-arrow-alt-right"></i><span>G</span><em>same role: the growth source is external, not self-generated</em></div>
+        <div class="ftp-iso-row"><span>η(K)</span><i class="fas fa-long-arrow-alt-right"></i><span>O·(1−C)</span><em>same role: input only lands where there is capacity to receive it</em></div>
+        <div class="ftp-iso-row"><span>λ·S(χ)</span><i class="fas fa-long-arrow-alt-right"></i><span>S·C</span><em>same role: decay is proportional to the current state — the more you have, the more entropy attacks</em></div>
+      </div>
+      <p class="ftp-iso-verdict"><b>What this constrains:</b> both equations predict the growth term vanishes when receptivity hits zero, no matter how large the external source is — and both predict a stable equilibrium where input rate equals decay rate. If either prediction fails in either domain, the isomorphism breaks. That is a real check, not an analogy.</p>
+    </div>
+  </div>
+</section>
+<!-- FTP_SHELL_ZONE:RESEARCH_LINKS START role=site_reference_links -->
+<section class="ftp-subsection" data-shell-zone="research_links" data-shell-role="proof_research_links">
+  <div class="ftp-sub-head"><span class="ftp-sub-dot"></span><span class="ftp-sub-kicker">Proof &amp; Research</span></div>
+  <div class="ftp-sub-title">The Math Behind the Claims</div>
+  <div class="ftp-sub-grid">
+    <a href="/equation/" class="ftp-sub-card"><i class="fas fa-square-root-alt"></i><div><h4>Master Equation</h4><p>10 variables</p></div></a>
+    <a href="/isomorphism/" class="ftp-sub-card"><i class="fas fa-exchange-alt"></i><div><h4>Isomorphisms</h4><p>38 mappings</p></div></a>
+    <a href="/proof-explorer/" class="ftp-sub-card"><i class="fas fa-project-diagram"></i><div><h4>Proof Explorer</h4><p>Claims + grades</p></div></a>
+    <a href="/rigor/" class="ftp-sub-card"><i class="fas fa-shield-alt"></i><div><h4>Rigor Cards</h4><p>Bible + MDA</p></div></a>
+    <a href="/lean4/" class="ftp-sub-card"><i class="fas fa-code"></i><div><h4>Lean 4 Proofs</h4><p>267 theorems</p></div></a>
+  </div>
+</section>
+
+<section class="ftp-subsection" data-shell-zone="media_links" data-shell-role="reference_media_links">
+  <div class="ftp-sub-head"><span class="ftp-sub-dot"></span><span class="ftp-sub-kicker">Reference &amp; Media</span></div>
+  <div class="ftp-sub-title">Everything Else</div>
+  <div class="ftp-sub-grid">
+    <a href="/glossary/" class="ftp-sub-card"><i class="fas fa-book"></i><div><h4>Glossary</h4><p>300+ terms</p></div></a>
+    <a href="/media/" class="ftp-sub-card"><i class="fas fa-images"></i><div><h4>Media Gallery</h4><p>Visuals + slides</p></div></a>
+    <a href="/podcast/" class="ftp-sub-card"><i class="fas fa-podcast"></i><div><h4>Podcast</h4><p>Episodes + feed</p></div></a>
+    <a href="/audio/" class="ftp-sub-card"><i class="fas fa-headphones"></i><div><h4>Audio Library</h4><p>TTS + narration</p></div></a>
+    <a href="/subdomains/" class="ftp-sub-card"><i class="fas fa-sitemap"></i><div><h4>Paper Grader</h4><p>NLP scoring</p></div></a>
+  </div>
+</section>
+
+<section class="ftp-subsection" data-shell-zone="study_links" data-shell-role="scripture_study_links">
+  <div class="ftp-sub-head"><span class="ftp-sub-dot"></span><span class="ftp-sub-kicker">Scripture &amp; Study</span></div>
+  <div class="ftp-sub-title">Bible Studies</div>
+  <div class="ftp-sub-grid">
+    <a href="/bible-studies/genesis/" class="ftp-sub-card"><i class="fas fa-bible"></i><div><h4>Genesis</h4><p>Creation to covenant</p></div></a>
+    <a href="/bible-studies/john/" class="ftp-sub-card"><i class="fas fa-bible"></i><div><h4>Gospel of John</h4><p>Logos made flesh</p></div></a>
+    <a href="/bible-studies/romans/" class="ftp-sub-card"><i class="fas fa-bible"></i><div><h4>Romans</h4><p>Righteousness revealed</p></div></a>
+    <a href="/bible-studies/revelation/" class="ftp-sub-card"><i class="fas fa-bible"></i><div><h4>Revelation</h4><p>Apocalypse of physics</p></div></a>
+    <a href="/bible-studies/" class="ftp-sub-card"><i class="fas fa-arrow-right"></i><div><h4>All Studies</h4><p>Full index</p></div></a>
+  </div>
+</section>
+
+<nav class="ftp-series-nav" data-shell-zone="series_nav" data-shell-role="cross_series_navigation">
+  <div class="ftp-series-strip" id="ftpSeriesStrip" data-json-source="page.series">
+    <a href="/">Home</a>
+    <a href="/moral-decline/">MDA</a>
+    <a href="/genesis-to-quantum/" class="active">GTQ</a>
+    <a href="/Convergence_Series/">Convergence</a>
+    <a href="/Logos_Papers/">Logos Papers</a>
+    <a href="/one-page-stories/">One-Page Stories</a>
+    <a href="/consciousness/" class="soon" title="Coming Soon">Consciousness</a>
+    <a href="https://zenodo.org/communities/theophysics/" target="_blank" rel="noopener">Zenodo</a>
+  </div>
+</nav>
+<!-- FTP_SHELL_ZONE:RESEARCH_LINKS END -->
+
+<!-- FTP_SHELL_ZONE:SITE_FOOTER START role=site_signature -->
+<div class="ftp-bottom" data-shell-zone="site_footer" data-shell-role="site_signature">
+  <div class="ftp-bottom-eq">&chi; = f(G, M, E, S, T, K, R, Q, F, C)</div>
+  <p class="ftp-bottom-copy">Faith Through Physics &middot; David Lowe &middot; 2026</p>
+  <p class="ftp-bottom-copy">Plant the Flag &middot; POF 2828</p>
+  <p class="ftp-bottom-copy" style="font-size:.58rem">(c) 2024&ndash;2026 David Lowe &mdash; Faith Through Physics</p>
+  <p class="ftp-bottom-vow">"The truth will defend itself. Your job is to say it clearly."</p>
+</div>
+
+<div class="ftp-door" data-shell-zone="closing_mark" data-shell-role="site_closing_mark">
+  <div class="ftp-door-num">15 + 15 = 100</div>
+  <div class="ftp-door-sub">Our inputs don't match our outputs. That's the point.</div>
+  <span class="ftp-door-mark"></span>
+</div>
+<!-- FTP_SHELL_ZONE:SITE_FOOTER END -->
+<!-- FTP_SHELL_GROUP:BOTTOM END -->
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗
+     ║  ██████  SHELL_BOTTOM_GROUP END — END OF PAGE STRUCTURE                ║
+     ║                                                                          ║
+     ╚══════════════════════════════════════════════════════════════════════════╝ -->
+
+
+<script>
+(function() {
+  'use strict';
+
+  let data = null;
+  let audio = new Audio();
+  audio.preload = 'metadata';
+  let activeAudioKey = null;
+  let audioMuted = false;
+  const claimDrawerCache = {};
+
+  function loadData() {
+    const el = document.getElementById('shell-data');
+    if (!el) { console.warn('[shell] No shell-data block found'); return; }
+    try { data = JSON.parse(el.textContent); }
+    catch(e) { console.error('[shell] Invalid JSON in shell-data:', e); }
+  }
+
+  function fmtTime(s) {
+    if (!s || isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // LAYER 1: Top Bar
+  // ═══════════════════════════════════════════════════════════════
+
+  function renderDomains() {
+    if (!data || !data.domains) return;
+    const container = document.getElementById('ftpDomains');
+    if (!container) return;
+    container.innerHTML = data.domains.slice(0, 4).map(function(d) {
+      return '<button class="ftp-domain-pill" data-domain="' + (d.key || d.name.toLowerCase()) + '">' +
+        '<span class="ddot" style="background:' + d.color + '"></span>' +
+        '<span>' + d.name + '</span></button>';
+    }).join('');
+  }
+
+  function renderChiBadge() {
+    if (!data || !data.verification || !data.verification.chi) return;
+    const chi = data.verification.chi.normalized || 0;
+    const el = document.getElementById('ftpChiValue');
+    if (el) el.textContent = 'χ ' + chi.toFixed(1);
+  }
+
+  function applyReadingLevel(level) {
+    document.body.setAttribute('data-reading-level', level);
+  }
+
+  function initReadingLevels() {
+    document.querySelectorAll('.ftp-level').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.ftp-level').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        try { localStorage.setItem('ftp-reader-mode', btn.dataset.level); } catch(_){}
+        applyReadingLevel(btn.dataset.level);
+        document.dispatchEvent(new CustomEvent('ftp-layer-change', { detail: { level: btn.dataset.level } }));
+      });
+    });
+    var startLevel = 'college';
+    try {
+      const saved = localStorage.getItem('ftp-reader-mode');
+      if (saved) startLevel = saved;
+    } catch(_){}
+    const btn = document.querySelector('.ftp-level[data-level="' + startLevel + '"]');
+    if (btn) { document.querySelectorAll('.ftp-level').forEach(function(b){ b.classList.remove('active'); }); btn.classList.add('active'); }
+    applyReadingLevel(startLevel);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // LAYER 2: Expandable Panel
+  // ═══════════════════════════════════════════════════════════════
+
+  function togglePanel() {
+    const panel = document.getElementById('ftpPanel');
+    const toggle = document.getElementById('ftpPanelToggle');
+    if (!panel || !toggle) return;
+    panel.classList.toggle('open');
+    toggle.classList.toggle('open');
+  }
+
+  function switchTab(tabName) {
+    document.querySelectorAll('.ftp-panel-tab').forEach(function(t) {
+      t.classList.toggle('active', t.dataset.tab === tabName);
+    });
+    document.querySelectorAll('.ftp-panel-section').forEach(function(s) {
+      s.classList.toggle('active', s.id === 'tab-' + tabName);
+    });
+    // v2.5 PIN: proofs & mtl tabs stay open site-wide until unpinned.
+    if (tabName === 'proofs' || tabName === 'mtl') {
+      var pinned = null;
+      try { pinned = localStorage.getItem('ftp-panel-pin'); } catch(_){}
+      if (pinned === tabName) {
+        try { localStorage.removeItem('ftp-panel-pin'); } catch(_){}
+        applyPin(null);
+      } else {
+        try { localStorage.setItem('ftp-panel-pin', tabName); } catch(_){}
+        applyPin(tabName);
+      }
+    }
+  }
+
+  function applyPin(tabName) {
+    document.querySelectorAll('.ftp-panel-tab').forEach(function(t) {
+      t.classList.toggle('ftp-pin-gold', !!tabName && t.dataset.tab === tabName);
+    });
+    if (tabName) {
+      var panel = document.getElementById('ftpPanel');
+      var toggle = document.getElementById('ftpPanelToggle');
+      if (panel && !panel.classList.contains('open')) { panel.classList.add('open'); if (toggle) toggle.classList.add('open'); }
+    }
+  }
+
+  function restorePin() {
+    var pinned = null;
+    try { pinned = localStorage.getItem('ftp-panel-pin'); } catch(_){}
+    if (pinned === 'proofs' || pinned === 'mtl') {
+      applyPin(pinned);
+      document.querySelectorAll('.ftp-panel-tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.tab === pinned);
+      });
+      document.querySelectorAll('.ftp-panel-section').forEach(function(s) {
+        s.classList.toggle('active', s.id === 'tab-' + pinned);
+      });
+    }
+  }
+
+
+  function renderVerificationTab() {
+    if (!data || !data.verification) return;
+    const v = data.verification;
+
+    const axiomCount = v.axioms ? v.axioms.tested : 0;
+    const axiomTotal = v.axioms ? v.axioms.total : 188;
+    const axiomPct = Math.round((axiomCount / axiomTotal) * 100);
+    const axiomEl = document.getElementById('v-axiom-count');
+    if (axiomEl) axiomEl.textContent = axiomCount + '/' + axiomTotal;
+    const axiomPctEl = document.getElementById('v-axiom-pct');
+    if (axiomPctEl) axiomPctEl.textContent = axiomPct + '%';
+    const axiomMeter = document.getElementById('v-axiom-meter');
+    if (axiomMeter) {
+      axiomMeter.style.width = axiomPct + '%';
+      axiomMeter.className = 'ftp-meter-fill ' + (axiomPct > 50 ? 'high' : axiomPct > 20 ? 'mid' : 'low');
+    }
+
+    if (v.laws && v.laws.active) {
+      v.laws.active.forEach(function(lawNum) {
+        const tag = document.querySelector('.ftp-law-tag[data-law="' + lawNum + '"]');
+        if (tag) tag.classList.add('active');
+      });
+    }
+
+    const chiNorm = v.chi ? v.chi.normalized : 0;
+    const chiRawEl = document.getElementById('v-chi-raw');
+    if (chiRawEl) chiRawEl.textContent = v.chi ? v.chi.raw : '—';
+    const chiNormEl = document.getElementById('v-chi-norm');
+    if (chiNormEl) chiNormEl.textContent = chiNorm.toFixed(1) + '/10';
+    const fruitsEl = document.getElementById('v-fruits');
+    if (fruitsEl) fruitsEl.textContent = (v.fruits ? v.fruits.score : '—') + '/9';
+    const chiMeter = document.getElementById('v-chi-meter');
+    if (chiMeter) {
+      chiMeter.style.width = (chiNorm * 10) + '%';
+      chiMeter.className = 'ftp-meter-fill ' + (chiNorm >= 7 ? 'high' : chiNorm >= 4 ? 'mid' : 'low');
+    }
+
+    const iso = v.isomorphisms || {};
+    const isoCountEl = document.getElementById('v-iso-count');
+    if (isoCountEl) isoCountEl.textContent = iso.count || '—';
+    const physicsEl = document.getElementById('v-physics');
+    if (physicsEl) physicsEl.textContent = iso.physics_processes || '—';
+    const trinityEl = document.getElementById('v-trinity');
+    if (trinityEl) trinityEl.textContent = iso.trinity_mappings || '—';
+    const meqEl = document.getElementById('v-meq');
+    if (meqEl) meqEl.textContent = (iso.meq_variables || '—') + '/10';
+
+    const claims = v.claims || {};
+    const claimsEl = document.getElementById('v-claims');
+    if (claimsEl) claimsEl.textContent = claims.total || '—';
+    const loadEl = document.getElementById('v-load-bearing');
+    if (loadEl) loadEl.textContent = claims.load_bearing || '—';
+    const killEl = document.getElementById('v-kill');
+    if (killEl) killEl.textContent = claims.kill_conditions || '—';
+    const contradictionsEl = document.getElementById('v-contradictions');
+    if (contradictionsEl) contradictionsEl.textContent = claims.contradictions || '0';
+
+    if (data.domains) {
+      const domContainer = document.getElementById('v-domains');
+      if (domContainer) {
+        domContainer.innerHTML = data.domains.sort(function(a,b){ return b.pct - a.pct; }).map(function(d) {
+          return '<div class="ftp-vrow"><span class="ftp-vrow-label">' + d.name + '</span>' +
+            '<span class="ftp-vrow-value">' + d.pct + '%</span></div>';
+        }).join('');
+      }
+    }
+
+    const proofs = data.proofs || [];
+    const verifiedCount = proofs.filter(function(p){ return p.status === 'verified'; }).length;
+    const badge = document.getElementById('ftpPanelBadge');
+    if (badge) {
+      badge.textContent = verifiedCount + ' of ' + proofs.length + ' proofs verified';
+      badge.className = 'p-badge ' + (verifiedCount === proofs.length ? 'ok' : 'warn');
+    }
+  }
+
+  // ── Claims Tab ──
+  function renderClaimsTab() {
+    if (!data || !data.claims) return;
+    const container = document.getElementById('v-claims-list');
+    if (!container) return;
+
+    container.innerHTML = data.claims.map(function(c) {
+      var statusClass = 'open';
+      if (c.status === 'LEAN_PROVEN') statusClass = 'lean';
+      else if (c.status === 'STRUCTURALLY_MAPPED') statusClass = 'mapped';
+      var loadTag = c.load_bearing ? '<span class="c-status load">LOAD</span>' : '';
+      return '<div class="ftp-claim-row" onclick="ftp.scrollToClaim(\'' + c.id + '\')">' +
+        '<span class="c-id">' + c.id + '</span>' +
+        '<span class="c-text">' + c.sentence + '</span>' +
+        loadTag +
+        '<span class="c-status ' + statusClass + '">' + c.status.replace(/_/g, ' ') + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function scrollToClaim(claimId) {
+    const sentence = document.querySelector('.ftp-claim-sentence[data-claim="' + claimId + '"]');
+    if (!sentence) return;
+    sentence.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Flash highlight
+    sentence.style.transition = 'none';
+    sentence.style.backgroundColor = 'rgba(212,175,55,.2)';
+    setTimeout(function() {
+      sentence.style.transition = 'color .25s, border-bottom-color .25s, background-position .5s';
+      sentence.style.backgroundColor = '';
+    }, 900);
+    // Open drawer
+    toggleClaim(sentence);
+    // Close panel on mobile
+    if (window.innerWidth < 780) togglePanel();
+  }
+
+  // ── Claim Drawer ──
+  function buildDrawerHTML(claim) {
+    var statusClass = 'open';
+    var statusColor = 'var(--red)';
+    if (claim.status === 'LEAN_PROVEN') { statusClass = 'lean'; statusColor = 'var(--teal)'; }
+    else if (claim.status === 'STRUCTURALLY_MAPPED') { statusClass = 'mapped'; statusColor = 'var(--blue)'; }
+
+    var html = '<div class="cd-header">' +
+      '<span class="cd-id">' + claim.id + '</span>' +
+      '<span class="cd-status ' + statusClass + '" style="color:' + statusColor + ';border:1px solid ' + statusColor + ';background:' + statusColor.replace(')', ',.1)').replace('rgb', 'rgba') + '">' + claim.status.replace(/_/g, ' ') + '</span>' +
+      '</div>';
+
+    html += '<div class="cd-formal">' + claim.formal + '</div>';
+
+    if (claim.derivation && claim.derivation.length) {
+      html += '<div class="cd-section"><h5>Derivation Chain</h5>' +
+        '<div class="cd-derivation">' +
+        claim.derivation.map(function(d){ return '<span>' + d + '</span>'; }).join('') +
+        '</div></div>';
+    }
+
+    if (claim.kill_condition) {
+      html += '<div class="cd-section"><h5>Kill Condition</h5>' +
+        '<div class="cd-kill"><strong>Kill &mdash;</strong> ' + claim.kill_condition + '</div></div>';
+    }
+
+    if (claim.lean_ref) {
+      html += '<div class="cd-section"><h5>Lean Reference</h5>' +
+        '<div class="cd-lean"><i class="fas fa-code"></i>' + claim.lean_ref + '</div></div>';
+    }
+
+    if (claim.mtl) {
+      html += '<div class="cd-section"><h5>Math Translation</h5>';
+      if (claim.mtl.level === 2) {
+        html += '<div class="ftp-mtl-block" style="margin:.5rem 0;text-align:left;">' +
+          '<div class="mtl-eq" style="font-size:1.1rem;">' + claim.mtl.latex + '</div>' +
+          '<div class="mtl-sub">' + claim.mtl.substitution + '</div>' +
+          '<div class="mtl-mean">' + claim.mtl.meaning + '</div>' +
+          '</div>';
+      } else if (claim.mtl.level === 3) {
+        html += '<div class="ftp-mtl-full" style="margin:.5rem 0;">' +
+          '<div class="ftp-mtl-full-header" onclick="event.stopPropagation();ftp.toggleMTL(this)">' +
+          '<h4>' + claim.mtl.title + '</h4><i class="fas fa-chevron-down"></i></div>' +
+          '<div class="ftp-mtl-full-body">' +
+          '<div class="mtl-eq" style="text-align:center;font-size:1.1rem;color:#fff;margin-bottom:.6rem;">' + claim.mtl.latex + '</div>';
+        if (claim.mtl.variables) {
+          html += '<table class="ftp-mtl-var-table"><thead><tr><th>Symbol</th><th>Name</th><th>Domain</th><th>Meaning</th></tr></thead><tbody>';
+          claim.mtl.variables.forEach(function(v) {
+            html += '<tr><td>' + v.sym + '</td><td>' + v.name + '</td><td>' + v.domain + '</td><td>' + v.meaning + '</td></tr>';
+          });
+          html += '</tbody></table>';
+        }
+        html += '<div class="ftp-mtl-plain" style="margin-top:.6rem;text-align:center;">' + claim.mtl.plain + '</div>';
+        if (claim.mtl.feature) {
+          html += '<div class="ftp-mtl-feature" style="margin-top:.6rem;"><i class="fas fa-lightbulb"></i>' + claim.mtl.feature + '</div>';
+        }
+        html += '</div></div>';
+      }
+      html += '</div>';
+    }
+
+    // v2.5: attach the proofs that support this claim — line → proof → claim, all in one drawer
+    if (data && data.proofs) {
+      var linked = data.proofs.filter(function(p){ return p.claim_ids && p.claim_ids.indexOf(claim.id) !== -1; });
+      if (linked.length) {
+        html += '<div class="cd-section"><h5>Proof' + (linked.length > 1 ? 's' : '') + '</h5>';
+        linked.forEach(function(p) {
+          var chip = p.status === 'verified' ? 'ftp-chip-verified' : p.status === 'partial' ? 'ftp-chip-partial' : 'ftp-chip-draft';
+          html += '<div class="ftp-mtl-featurebox" style="margin-bottom:.5rem;">' +
+            '<span class="ftp-chip ' + chip + '" style="font-size:.55rem;font-weight:700;letter-spacing:.06em;border-radius:4px;padding:.1rem .35rem;text-transform:uppercase;margin-right:.45rem;">' + p.status + '</span>' +
+            '<b>' + p.title + '</b><br>' + p.summary +
+            (p.url ? ' <a href="' + p.url + '" style="color:var(--gold);">Proof Explorer &rarr;</a>' : '') +
+            '</div>';
+        });
+        html += '</div>';
+      }
+    }
+
+    return html;
+  }
+
+  function toggleClaim(element) {
+    if (!element) return;
+    var claimId = element.dataset.claim;
+    if (!claimId) return;
+
+    // Find or create drawer
+    var drawer = element.nextElementSibling;
+    if (!drawer || !drawer.classList.contains('ftp-claim-drawer')) {
+      drawer = document.createElement('div');
+      drawer.className = 'ftp-claim-drawer';
+      // Populate from JSON
+      if (data && data.claims) {
+        var claim = data.claims.find(function(c){ return c.id === claimId; });
+        if (claim) drawer.innerHTML = buildDrawerHTML(claim);
+      }
+      element.parentNode.insertBefore(drawer, element.nextSibling);
+    }
+
+    // v2.5: drawers are STICKY — each toggles independently and stays open
+    drawer.classList.toggle('open');
+    element.classList.toggle('claim-open', drawer.classList.contains('open'));
+  }
+
+  // ── MTL Full Toggle ──
+  function toggleMTL(header) {
+    var full = header.closest('.ftp-mtl-full');
+    if (full) full.classList.toggle('open');
+  }
+
+  function renderProofsTab() {
+    if (!data || !data.proofs) return;
+    const container = document.getElementById('v-proof-list');
+    if (!container) return;
+
+    container.innerHTML = data.proofs.map(function(p) {
+      const statusColor = p.status === 'verified' ? 'var(--teal)' : p.status === 'partial' ? 'var(--gold)' : 'var(--text-muted)';
+      const statusIcon = p.status === 'verified' ? 'fa-check-circle' : p.status === 'partial' ? 'fa-adjust' : 'fa-circle';
+      var claimLinks = '';
+      if (p.claim_ids && p.claim_ids.length) {
+        claimLinks = '<div style="margin-top:.5rem;font-size:.7rem;color:var(--text-muted);">' +
+          '<i class="fas fa-link" style="color:var(--gold);margin-right:.3rem;font-size:.55rem;"></i>' +
+          'Supports: ' + p.claim_ids.map(function(cid){
+            return '<a href="#" onclick="event.preventDefault();ftp.scrollToClaim(\'' + cid + '\');" style="color:var(--gold);text-decoration:underline;margin-right:.4rem;">' + cid + '</a>';
+          }).join('') + '</div>';
+      }
+      return '<div class="ftp-proof-item" data-proof="' + p.id + '">' +
+        '<div class="ftp-proof-header" onclick="ftp.toggleProof(this)">' +
+        '<span><i class="fas ' + statusIcon + '" style="color:' + statusColor + ';margin-right:.5rem"></i>' + p.title + '</span>' +
+        '<i class="fas fa-chevron-right"></i></div>' +
+        '<div class="ftp-proof-body">' +
+        '<p>' + p.summary + '</p>' +
+        claimLinks +
+        (p.url ? '<a href="' + p.url + '" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;font-size:.78rem"><i class="fas fa-external-link-alt" style="font-size:.6rem"></i> View in Proof Explorer</a>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+
+  function toggleProof(header) {
+    const item = header.parentElement;
+    item.classList.toggle('open');
+  }
+
+  function renderMTLTab() {
+    if (!data || !data.mtl) return;
+    const container = document.getElementById('v-mtl-list');
+    if (!container) return;
+
+    container.innerHTML = data.mtl.map(function(m, i) {
+      return '<div class="ftp-mtl-callout">' +
+        '<div class="ftp-mtl-eq">' + (m.latex ? '$$' + m.latex + '$$' : m.named) + '</div>' +
+        (m.named ? '<div class="ftp-mtl-named">' + m.named + '</div>' : '') +
+        (m.plain ? '<div class="ftp-mtl-plain">' + m.plain + '</div>' : '') +
+        (m.feature ? '<div class="ftp-mtl-feature"><i class="fas fa-lightbulb"></i>' + m.feature + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+
+  // ═══════════════════════════════════════════════════════════════
+  // v2.4 LAYERS: on-page Proof Layer + MTL Layer  [draft-ai]
+  // ═══════════════════════════════════════════════════════════════
+
+  function renderProofLayer() {
+    if (!data || !data.proofs) return;
+    const container = document.getElementById('ftpProofLayerList');
+    if (!container) return;
+    container.innerHTML = data.proofs.map(function(p) {
+      const chip = p.status === 'verified' ? 'ftp-chip-verified' : p.status === 'partial' ? 'ftp-chip-partial' : 'ftp-chip-draft';
+      var links = '';
+      if (p.claim_ids && p.claim_ids.length) {
+        links = '<div style="margin-top:.5rem;font-size:.72rem;color:var(--text-muted);">Supports: ' +
+          p.claim_ids.map(function(cid){
+            return '<a href="#" onclick="event.preventDefault();ftp.scrollToClaim(\'' + cid + '\');" style="color:var(--gold);text-decoration:underline;margin-right:.4rem;">' + cid + '</a>';
+          }).join('') + '</div>';
+      }
+      return '<div class="ftp-layer-proof-item" data-proof="' + p.id + '">' +
+        '<div class="ftp-layer-proof-head" onclick="this.parentElement.classList.toggle(\'open\')">' +
+        '<span class="ftp-chip ' + chip + '">' + p.status + '</span>' +
+        '<span>' + p.title + '</span>' +
+        '<i class="fas fa-chevron-right"></i></div>' +
+        '<div class="ftp-layer-proof-body"><p>' + p.summary + '</p>' + links +
+        (p.url ? '<a href="' + p.url + '" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;font-size:.78rem"><i class="fas fa-external-link-alt" style="font-size:.6rem"></i> View in Proof Explorer</a>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+
+  function renderMtlLayer() {
+    if (!data || !data.mtl) return;
+    const container = document.getElementById('ftpMtlLayerList');
+    if (!container) return;
+
+    // gather term tables from claims that carry mtl.variables, keyed by latex
+    const varMap = {};
+    (data.claims || []).forEach(function(c){
+      if (c.mtl && c.mtl.latex && c.mtl.variables) varMap[c.mtl.latex] = c.mtl.variables;
+    });
+
+    container.innerHTML = data.mtl.map(function(m) {
+      var whereRows = '';
+      const vars = varMap[m.latex];
+      if (vars) {
+        whereRows = '<div class="ftp-mtl-where"><b>Where:</b><br>' + vars.map(function(v){
+          return '<b>' + v.name + '</b> — ' + v.meaning;
+        }).join('<br>') + '</div>';
+      }
+      return '<div class="ftp-mtl-block">' +
+        '<code class="ftp-mtl-code">' + (m.latex || m.named) + '</code>' +
+        whereRows +
+        (m.plain ? '<p class="ftp-mtl-sentence">' + m.plain + '</p>' : '') +
+        (m.feature ? '<div class="ftp-mtl-featurebox"><b>Structural feature:</b> ' + m.feature + '</div>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // LAYER 3: Audio Dock
+  // ═══════════════════════════════════════════════════════════════
+
+  function initAudio() {
+    const dock = document.getElementById('ftpAudioDock');
+    if (!dock) return;
+
+    // v2.5: hydrate pills from slot-based audio[] (Codex contract) — imports only fill JSON
+    if (data && data.audio) {
+      data.audio.forEach(function(a) {
+        const pill = dock.querySelector('.ftp-dock-pill[data-src="' + a.src + '"]');
+        if (!pill) return;
+        if (a.url) { pill.dataset.url = a.url; } else { delete pill.dataset.url; }
+        if (a.label) {
+          // pill text is the last text node after .pill-dot
+          for (var n = pill.childNodes.length - 1; n >= 0; n--) {
+            if (pill.childNodes[n].nodeType === 3 && pill.childNodes[n].textContent.trim()) {
+              pill.childNodes[n].textContent = a.label; break;
+            }
+          }
+        }
+        pill.dataset.slot = a.slot || '';
+        pill.dataset.kind = a.kind || '';
+      });
+    }
+
+    const pills = dock.querySelectorAll('.ftp-dock-pill');
+    const body = document.getElementById('ftpDockBody');
+    const empty = document.getElementById('ftpDockEmpty');
+
+    pills.forEach(function(p){ if (!p.dataset.url) p.classList.add('unavailable'); });
+
+    pills.forEach(function(p) {
+      p.addEventListener('click', function() {
+        const key = p.dataset.src;
+        const url = p.dataset.url;
+        if (!url) return;
+        if (key === activeAudioKey) {
+          if (audio.paused) audio.play(); else audio.pause();
+          return;
+        }
+        audio.pause();
+        audio.src = url;
+        audio.playbackRate = parseFloat(document.getElementById('ftpDockSpeed').value) || 1;
+        activeAudioKey = key;
+        pills.forEach(function(q){ q.classList.remove('active'); });
+        p.classList.add('active');
+        const c = getPillColor(key);
+        document.getElementById('ftpDockFill').style.background = c;
+        if (body) body.classList.remove('hidden');
+        if (empty) empty.classList.remove('visible');
+        updateMiniLabel();
+        audio.play();
+      });
+    });
+
+    var firstAvail = dock.querySelector('.ftp-dock-pill[data-url]');
+    if (firstAvail) {
+      activeAudioKey = firstAvail.dataset.src;
+      audio.src = firstAvail.dataset.url;
+      audio.playbackRate = parseFloat(document.getElementById('ftpDockSpeed').value) || 1;
+      firstAvail.classList.add('active');
+      updateMiniLabel();
+    } else {
+      if (body) body.classList.add('hidden');
+      if (empty) empty.classList.add('visible');
+    }
+
+    audio.addEventListener('play', setAudioIcons.bind(null, false));
+    audio.addEventListener('pause', setAudioIcons.bind(null, true));
+    audio.addEventListener('ended', function() {
+      setAudioIcons(true);
+      document.getElementById('ftpDockFill').style.width = '0%';
+      document.getElementById('ftpDockCurrent').textContent = '0:00';
+    });
+    audio.addEventListener('timeupdate', function() {
+      if (!audio.duration) return;
+      document.getElementById('ftpDockFill').style.width = (audio.currentTime / audio.duration * 100) + '%';
+      document.getElementById('ftpDockCurrent').textContent = fmtTime(audio.currentTime);
+    });
+    audio.addEventListener('loadedmetadata', function() {
+      document.getElementById('ftpDockDuration').textContent = fmtTime(audio.duration);
+    });
+
+    var mini = document.getElementById('ftpDockMini');
+    if (dock && mini) {
+      var observer = new IntersectionObserver(function(entries) {
+        var shouldShow = !entries[0].isIntersecting && !!audio.src;
+        mini.classList.toggle('visible', shouldShow);
+        mini.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+      }, { threshold: 0 });
+      observer.observe(dock);
+    }
+  }
+
+  function getPillColor(key) {
+    var colors = { deep: '#4a9eff', read: '#d4af37', debate: '#a855f7', critique: '#2dd4bf' };
+    return colors[key] || colors.read;
+  }
+
+  function setAudioIcons(paused) {
+    var iconClass = paused ? 'fas fa-play' : 'fas fa-pause';
+    var iconEl = document.getElementById('ftpDockPlayIcon');
+    var miniIcon = document.getElementById('ftpMiniIcon');
+    var playBtn = document.getElementById('ftpDockPlay');
+    if (iconEl) iconEl.className = iconClass;
+    if (miniIcon) miniIcon.className = iconClass;
+    if (playBtn) playBtn.classList.toggle('playing', !paused);
+  }
+
+  function updateMiniLabel() {
+    var pill = document.querySelector('.ftp-dock-pill.active');
+    var label = document.getElementById('ftpMiniLabel');
+    if (label) label.textContent = pill ? pill.textContent.trim() : 'Audio';
+  }
+
+  function audioToggle() {
+    if (!audio.src) return;
+    if (audio.paused) audio.play(); else audio.pause();
+  }
+
+  function audioSeek(e) {
+    if (!audio.duration) return;
+    var track = document.getElementById('ftpDockTrack');
+    var rect = track.getBoundingClientRect();
+    var p = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audio.currentTime = p * audio.duration;
+  }
+
+  function audioMute() {
+    audioMuted = !audioMuted;
+    audio.muted = audioMuted;
+    var volBtn = document.getElementById('ftpDockVol');
+    if (volBtn) volBtn.innerHTML = audioMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+  }
+
+  function audioSetSpeed() {
+    var speedEl = document.getElementById('ftpDockSpeed');
+    if (speedEl) audio.playbackRate = parseFloat(speedEl.value) || 1;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // LAYER 4: Footer
+  // ═══════════════════════════════════════════════════════════════
+
+  function renderFooter() {
+    if (!data || !data.page) return;
+    var p = data.page;
+
+    var prevLink = document.getElementById('ftpPrevLink');
+    var prevTitle = document.getElementById('ftpPrevTitle');
+    if (prevLink && p.prev) { prevLink.href = p.prev.url; if (prevTitle) prevTitle.textContent = p.prev.title; }
+    else if (prevLink) { prevLink.style.visibility = 'hidden'; }
+
+    var nextLink = document.getElementById('ftpNextLink');
+    var nextTitle = document.getElementById('ftpNextTitle');
+    if (nextLink && p.next) { nextLink.href = p.next.url; if (nextTitle) nextTitle.textContent = p.next.title; }
+    else if (nextLink) { nextLink.style.visibility = 'hidden'; }
+
+    var seriesHome = document.getElementById('ftpSeriesHome');
+    if (seriesHome && p.series_home) seriesHome.href = p.series_home;
+    if (seriesHome && p.series) seriesHome.textContent = p.series + ' Series Home';
+
+    if (p.series) {
+      var seriesMap = { 'MDA': '/moral-decline/', 'GTQ': '/genesis-to-quantum/', 'Convergence': '/Convergence_Series/' };
+      var seriesName = p.series;
+      document.querySelectorAll('.ftp-series-strip a').forEach(function(a) {
+        a.classList.remove('active');
+        if (seriesMap[seriesName] && a.getAttribute('href') === seriesMap[seriesName]) {
+          a.classList.add('active');
+        }
+      });
+    }
+
+    if (data.audit) {
+      var rightEl = document.getElementById('ftpAuditRight');
+      if (rightEl && data.audit.right) {
+        rightEl.innerHTML = data.audit.right.map(function(item){ return '<li>' + item + '</li>'; }).join('');
+      }
+      var overEl = document.getElementById('ftpAuditOver');
+      if (overEl && data.audit.overstated) {
+        overEl.innerHTML = data.audit.overstated.map(function(item){ return '<li>' + item + '</li>'; }).join('');
+      }
+      var wrongEl = document.getElementById('ftpAuditWrong');
+      if (wrongEl && data.audit.wrong) {
+        wrongEl.innerHTML = data.audit.wrong.map(function(item){ return '<li>' + item + '</li>'; }).join('');
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // Keyboard
+  // ═══════════════════════════════════════════════════════════════
+
+  function initKeyboard() {
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        alert('Search: (implement your search modal here)');
+      }
+      if (e.key === ' ' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        if (audio.src) { e.preventDefault(); audioToggle(); }
+      }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // Public API
+  // ═══════════════════════════════════════════════════════════════
+
+  window.ftp = {
+    togglePanel: togglePanel,
+    switchTab: switchTab,
+    toggleProof: toggleProof,
+    toggleClaim: toggleClaim,
+    scrollToClaim: scrollToClaim,
+    toggleMTL: toggleMTL,
+    audioToggle: audioToggle,
+    audioSeek: audioSeek,
+    audioMute: audioMute,
+    audioSetSpeed: audioSetSpeed,
+    getData: function() { return data; }
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  // Initialize
+  // ═══════════════════════════════════════════════════════════════
+
+  function init() {
+    loadData();
+    if (!data) {
+      initAudio();
+      initKeyboard();
+      return;
+    }
+    renderDomains();
+    renderChiBadge();
+    initReadingLevels();
+    restorePin();
+    renderVerificationTab();
+    renderClaimsTab();
+    renderProofsTab();
+    renderMTLTab();
+    renderProofLayer();
+    renderMtlLayer();
+    initAudio();
+    renderFooter();
+    initKeyboard();
+    console.log('[shell] Universal shell v2.0 initialized for: ' + (data.page ? data.page.title : 'unknown'));
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
