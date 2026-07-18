@@ -1,4 +1,12 @@
-(function () {
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+
+TARGET_RELATIVE = Path("components") / "reading-levels.js"
+
+REPAIRED_JS = r"""(function () {
   'use strict';
 
   const DEFAULT = 'college';
@@ -119,3 +127,35 @@
     init();
   }
 })();
+"""
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Hide dead reading-level controls and support both tp and ftp shells."
+    )
+    parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument("--apply", action="store_true")
+    args = parser.parse_args()
+
+    target = args.root / TARGET_RELATIVE
+    if not target.exists():
+        raise SystemExit(f"Missing target: {target}")
+
+    current = target.read_text(encoding="utf-8")
+    if current == REPAIRED_JS:
+        print(f"UNCHANGED {target}")
+        return 0
+
+    print(f"{'APPLY' if args.apply else 'DRY'} {target}")
+    print("Fix: hide reading controls when no real switchable reading layers exist.")
+    print("Fix: support legacy .tp-level panels and canonical .ftp-reader-layer panels.")
+
+    if args.apply:
+        target.write_text(REPAIRED_JS, encoding="utf-8", newline="\n")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
