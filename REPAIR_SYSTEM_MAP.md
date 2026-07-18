@@ -17,10 +17,10 @@ Deprecated drifted copies — do **not** work in them:
 
 - Registered migrator:
   `D:\GitHub\Python-WEB\labeler REPAIR\08_repair_scripts\python\migrate_canonical_shell.py`
-  (+ `verify_migrated_page.py` beside it)
 - Locked canonical shells + hash contract:
   `D:\GitHub\Python-WEB\topbar\canonical-page-shell\` (`shell-top.html`,
-  `shell-bottom.html`, `verify_shell_contract.py`, manifest)
+  `shell-bottom.html`, `verify_shell_contract.py`, `verify_migrated_page.py`,
+  manifest)
 - Repair ledger:
   `D:\GitHub\Python-WEB\labeler REPAIR\repair_ledger.jsonl`
 
