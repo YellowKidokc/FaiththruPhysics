@@ -157,7 +157,7 @@
       });
     }
 
-    if(isBar){
+    if(isBar && root.dataset.dock !== 'false'){
       let lastY = window.scrollY;
       const updateDock = ()=>{
         const y = window.scrollY;
