@@ -9,11 +9,33 @@
   const colors = {
     deep:     '#4a9eff',
     debate:   '#a855f7',
+    podcast:  '#a855f7',
     critique: '#dc2626',
     tts:      '#3bb39a',
+    read:     '#3bb39a',
     web:      '#f59e0b',
     default:  '#d4af37'
   };
+
+  /* Canonical modes are read/podcast/deep/critique (see
+     CLOUDFLARE-AUDIO-R2-ROUTING-PLAN.md). Older pages use debate/tts.
+     Aliases let either vocabulary match either data source. */
+  const MODE_ALIASES = {
+    podcast: ['podcast', 'debate'],
+    debate:  ['debate', 'podcast'],
+    read:    ['read', 'tts'],
+    tts:     ['tts', 'read'],
+    deep:    ['deep'],
+    critique:['critique']
+  };
+
+  function resolveSrc(map, mode){
+    const candidates = MODE_ALIASES[mode] || [mode];
+    for(const m of candidates){
+      if(map[m]) return map[m];
+    }
+    return '';
+  }
 
   function fmt(s){
     if(!isFinite(s) || isNaN(s)) return '0:00';
@@ -42,11 +64,13 @@
       if(!tracks.length) return false;
       const map = {};
       tracks.forEach(t=>{ if(t.mode) map[t.mode] = t.url || t.src; });
-      const ttsFallback = map.tts || map['tts-athena'] || map['voice-sample-athena'] || map['tts-orpheus'] || map['voice-sample-orpheus'] || '';
+      const ttsFallback = map.tts || map.read || map['tts-athena'] || map['voice-sample-athena'] || map['tts-orpheus'] || map['voice-sample-orpheus'] || '';
       root.querySelectorAll('.tp-pill').forEach(pill=>{
         const mode = pill.dataset.mode;
-        if(mode && map[mode]) pill.dataset.src = map[mode];
-        else if(mode === 'tts' && ttsFallback) pill.dataset.src = ttsFallback;
+        if(!mode) return;
+        const src = resolveSrc(map, mode);
+        if(src) pill.dataset.src = src;
+        else if((mode === 'tts' || mode === 'read') && ttsFallback) pill.dataset.src = ttsFallback;
       });
       return true;
     }catch(e){
@@ -64,6 +88,19 @@
     if(!audio || !pills.length) return;
 
     await loadTracksFromAPI(root);
+
+    /* Hide pills that ended up with no audio source — a visible pill must
+       always play something. If nothing has a source, hide the player
+       entirely instead of showing a dead control strip. */
+    let livePills = [];
+    pills.forEach(pill=>{
+      if(pill.dataset.src) livePills.push(pill);
+      else pill.style.display = 'none';
+    });
+    if(!livePills.length){
+      root.style.display = 'none';
+      return;
+    }
 
     const playBtn = root.querySelector(isBar ? '.tp-bar-play' : '.tp-btn.play');
     const track   = root.querySelector(isBar ? '.tp-bar-track' : '.tp-track');
@@ -113,7 +150,7 @@
     });
 
     playBtn.addEventListener('click', ()=>{
-      if(!audio.src && pills.length) loadPill(pills[0], false);
+      if(!audio.src && livePills.length) loadPill(livePills[0], false);
       if(audio.paused) audio.play().catch(()=>{});
       else audio.pause();
     });
@@ -166,8 +203,9 @@
       updateDock();
     }
 
-    // init first pill without playing
-    const active = root.querySelector('.tp-pill.active') || pills[0];
+    // init first pill without playing (skip hidden/sourceless pills)
+    let active = root.querySelector('.tp-pill.active');
+    if(!active || !active.dataset.src) active = livePills[0];
     setVisuals(active);
     if(active.dataset.src){
       audio.src = active.dataset.src;

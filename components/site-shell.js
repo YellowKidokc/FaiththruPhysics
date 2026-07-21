@@ -27,7 +27,8 @@
     nextHref: script?.getAttribute('data-next-href') || '',
     seriesHref: script?.getAttribute('data-series-href') || '/proof-explorer/',
     hideTabs: script?.getAttribute('data-hide-tabs') === 'true',
-    audioSlug: script?.getAttribute('data-audio-slug') || document.body?.dataset?.audioSlug || '',
+    audioSlug: script?.getAttribute('data-audio-slug') || document.body?.dataset?.audioSlug ||
+      window.location.pathname.replace(/\.html$/i, '').replace(/^\/+|\/+$/g, '') || '',
     audioApi: script?.getAttribute('data-audio-api') || 'https://faith-audio-pipeline.davidokc28.workers.dev/api/audio',
     hidePlayer: script?.getAttribute('data-hide-player') === 'true',
     shellAccent: script?.getAttribute('data-shell-accent') || '',
@@ -57,7 +58,6 @@
   const LAYERS = [
     { id: 'easy', label: 'Easy Reader' },
     { id: 'academic', label: 'Academic Reader' },
-    { id: 'math', label: 'Math Layer' },
     { id: 'proof', label: 'Proof' },
   ];
 
@@ -181,10 +181,36 @@
       letter-spacing: 0.08em; font-weight: 500;
     }
     .ftp-coming-soon-box p { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin: 0; line-height: 1.6; }
+
+    .mtl-toggle-btn {
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.6); padding: 0.33rem 0.62rem; border-radius: 999px;
+      font: 600 0.58rem 'JetBrains Mono', ui-monospace, monospace;
+      cursor: pointer; text-transform: uppercase; letter-spacing: 0.08em;
+      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .mtl-toggle-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .mtl-toggle-btn.glow-gold {
+      color: var(--ftp-shell-accent, #d4af37);
+      border-color: color-mix(in srgb, var(--ftp-shell-accent, #d4af37) 50%, transparent);
+      background: color-mix(in srgb, var(--ftp-shell-accent, #d4af37) 15%, transparent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--ftp-shell-accent, #d4af37) 30%, transparent);
+      text-shadow: 0 0 8px color-mix(in srgb, var(--ftp-shell-accent, #d4af37) 50%, transparent);
+    }
+    .mtl-title-rig-btn {
+      margin-left: 1rem;
+      vertical-align: middle;
+      font-size: 0.5rem;
+      padding: 0.25rem 0.5rem;
+    }
     @media (max-width: 780px) {
       .ftp-topbar { align-items: stretch; flex-direction: column; }
       .ftp-tb-center { order: 3; }
       .ftp-tb-nav, .ftp-tb-series span, .ftp-tb-home span { display: none; }
+      .mtl-title-rig-btn { margin: 0.5rem 0 0 0; display: inline-flex; }
     }
   `;
 
@@ -233,7 +259,9 @@
     const activeMode = LAYERS.some(l => l.id === storedMode) ? storedMode : cfg.activeTab;
     const tabs = cfg.hideTabs ? '' : `<div class="ftp-layer-tabs">${LAYERS.map(l =>
       `<button class="ftp-layer-tab${l.id === activeMode ? ' active' : ''}" type="button" data-reader-mode="${l.id}" aria-pressed="${l.id === activeMode ? 'true' : 'false'}">${l.label}</button>`
-    ).join('')}</div>`;
+    ).join('')}
+      <button class="mtl-toggle-btn" type="button" aria-pressed="false" aria-label="Toggle Math Translation Layer">Math Translation</button>
+    </div>`;
 
     bar.innerHTML = `
       <a href="/" class="ftp-tb-home">${homeIcon}<span>Faith Through Physics</span></a>
@@ -243,18 +271,65 @@
 
     bar.addEventListener('click', (event) => {
       const btn = event.target.closest('.ftp-layer-tab');
-      if (!btn) return;
-      const mode = btn.getAttribute('data-reader-mode');
-      bar.querySelectorAll('.ftp-layer-tab').forEach(tab => {
-        const active = tab === btn;
-        tab.classList.toggle('active', active);
-        tab.setAttribute('aria-pressed', active ? 'true' : 'false');
-      });
-      setReaderMode(mode);
+      if (btn) {
+        const mode = btn.getAttribute('data-reader-mode');
+        bar.querySelectorAll('.ftp-layer-tab').forEach(tab => {
+          const active = tab === btn;
+          tab.classList.toggle('active', active);
+          tab.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        setReaderMode(mode);
+        return;
+      }
+
+      const mtlBtn = event.target.closest('.mtl-toggle-btn');
+      if (mtlBtn) toggleMTL();
     });
 
     requestAnimationFrame(() => setReaderMode(activeMode));
     return bar;
+  }
+
+  function syncMTLState() {
+    const isActive = localStorage.getItem('ftp-mtl-active') === 'true' || localStorage.getItem('ftp-mtl-mode') === 'true';
+    document.body.classList.toggle('mtl-active', isActive);
+    document.body.classList.toggle('level-math', isActive);
+    document.body.classList.toggle('mtl-mode', isActive);
+
+    document.querySelectorAll('.mtl-toggle-btn').forEach(btn => {
+      btn.classList.toggle('glow-gold', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    document.querySelectorAll('.mtl-callout, .math-translation-block').forEach(callout => {
+      if (isActive) {
+        callout.open = true;
+      } else if (!callout.dataset.userToggled) {
+        callout.open = false;
+      }
+    });
+  }
+
+  function toggleMTL() {
+    const currentState = localStorage.getItem('ftp-mtl-active') === 'true' || localStorage.getItem('ftp-mtl-mode') === 'true';
+    const nextState = (!currentState).toString();
+    localStorage.setItem('ftp-mtl-active', nextState);
+    localStorage.setItem('ftp-mtl-mode', nextState);
+    syncMTLState();
+  }
+
+  function injectTitleRigMtlButton() {
+    const h1 = document.querySelector('h1');
+    if (!h1 || document.querySelector('.mtl-title-rig-btn')) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'mtl-toggle-btn mtl-title-rig-btn';
+    btn.type = 'button';
+    btn.setAttribute('aria-pressed', 'false');
+    btn.setAttribute('aria-label', 'Toggle Math Translation Layer');
+    btn.textContent = 'Math Translation';
+    btn.addEventListener('click', toggleMTL);
+    h1.appendChild(btn);
   }
 
   function buildSubdomainStrip() {
@@ -377,6 +452,8 @@
       document.body.appendChild(buildFooter());
     }
     processComingSoon();
+    injectTitleRigMtlButton();
+    requestAnimationFrame(syncMTLState);
 
     if (window.TPPillPlayer?.initAll) window.TPPillPlayer.initAll();
   }
